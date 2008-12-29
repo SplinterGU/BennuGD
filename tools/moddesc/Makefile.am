@@ -1,0 +1,8 @@
+bin_PROGRAMS=moddesc
+
+INCLUDES = $(COMMON_CFLAGS)
+SOURCE_FILES=moddesc.c
+
+moddesc_SOURCES = $(SOURCE_FILES)
+moddesc_CFLAGS = $(COMMON_CFLAGS)
+moddesc_LDADD = $(COMMON_LIBS)

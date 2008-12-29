@@ -1,0 +1,47 @@
+Bennu Project 1.0
+=================
+
+Instrucciones para poder compilar el proyecto.
+========================================
+
+Se necesita los siguientes paquetes (que pueden ser instalados
+en cualquier directorio del sistema MinGW, solo Win32):
+
+MinGW-5.1.0 (mingw-runtime-3.11.tar.gz
+            w32api-3.8.tar.gz
+            binutils-2.15.91-20040904-1.tar.gz
+            gcc-core-3.4.2-20040916-1.tar.gz
+            gcc-g++-3.4.2-20040916-1.tar.gz
+            mingw32-make-3.80.0-3.tar.gz)
+
+MSYS-1.0.10.exe
+
+(Libs validas tambien para sistemas UNIX)
+
+libpng-1.2.12.tar.gz
+SDL-1.2.11.tar.gz
+SDL_mixer-1.2.7.tar.gz
+smpeg-0.4.3.tar.gz
+zlib-1.2.3.tar.gz
+
+NOTAS:
+    Si bien estas son las versiones utilizadas en esta compilación,
+cualquier versión de estos paquetes debería funcionar correctamente.
+
+Pasos a seguir para compilar:
+
+    ./configure --enable-fpg --enable-map
+    make
+
+NOTAS WIN32:
+    Si tenemos instalado MSVC, en la consola MSYS aseguranos de eliminar
+el seteo de las variables de compilación del MSVC (INCLUDE, LIB, etc.).
+Copiar la SDL.dll en el directorio raiz del proyecto antes de correr configure.
+
+Linux
+-----
+
+lib32z1-dev
+
+./configure --target=i386-pc-linux-gnu --host=i386-pc-linux-gnu --build=i386-pc-linux-gnu (Ubuntu 64)
+

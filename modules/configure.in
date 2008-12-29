@@ -1,0 +1,136 @@
+AC_INIT(bennu,0.93)
+
+AC_CANONICAL_SYSTEM
+AC_ARG_PROGRAM
+
+AC_LIBTOOL_WIN32_DLL
+AC_LIBTOOL_DLOPEN
+AC_PROG_LIBTOOL
+
+AM_MAINTAINER_MODE
+
+echo "Your machine: ${target_cpu} ${target_os}"
+
+AC_ARG_ENABLE(debug, [  --enable-debug       enable use of Debug     (default: no)], enable_debug=$enableval, enable_debug=no)
+AC_ARG_WITH(bennu-prefix,[  --with-bennu-prefix=PFX Prefix where Bennu is installed (optional)], BGD_PATH="$withval", BGD_PATH="`pwd`/../core")
+
+AC_CHECK_TOOL(WINDRES, windres, )
+AM_CONDITIONAL(HAVE_WINDRES, test "$WINDRES" != "")
+
+dnl Aqui es donde se chequeara el SO, pero solo hay una opcion xD
+case "$target_os" in
+    linux-gnu)
+        COMMON_CFLAGS="-Wall -DTARGET_LINUX"
+        COMMON_LIBS="$COMMON_LIBS -lc -lz -ldl"
+	    ;;
+
+    mingw32)
+        INCLUDES="-I/usr/local/include"
+	    LIBS="-L/usr/local/lib"
+	    COMMON_CFLAGS="$INCLUDES -DTARGET_WIN32 -DWIN32 -D_WIN32"
+	    COMMON_LIBS="$LIBS -lz -lshlwapi"
+	    ;;
+
+    dragonfly*)
+        INCLUDES="-I/usr/local/include"
+	    LIBS="-pthread -L/usr/local/lib"
+        COMMON_CFLAGS="-Wall -DTARGET_BSD"
+	    ;;
+
+    darwin*)
+        INCLUDES="-I/usr/local/include"
+        LIBS="-L/usr/local/lib"
+        COMMON_CFLAGS="-Wall -DTARGET_MAC"
+	    ;;
+
+esac
+
+AM_INIT_AUTOMAKE(1.6)
+
+dnl Check for compilers
+AC_PROG_CC
+
+AC_CHECK_LIB(m,fabs,LIBS="$LIBS",AC_MSG_RESULT(math library not found))
+
+if test "x$enable_debug" = "xyes"; then
+	CFLAGS="-g $INCLUDES"
+else
+#	CFLAGS="-O2 -finline-functions -ffast-math $INCLUDES -mtune=pentium4m"
+	CFLAGS="-O2 -finline-functions -fno-strict-aliasing $INCLUDES"
+#	CFLAGS="-O2 $INCLUDES"
+fi
+
+dnl librerias para todos
+
+AC_CHECK_LIB(png, png_read_info, [AC_CHECK_HEADER(png.h,LIBS="$LIBS",)], AC_MSG_ERROR(*** PNG library not found ***), -lz -lm)
+
+AC_CHECK_LIB(z, gzsetparams, [AC_CHECK_HEADER(zlib.h,LIBS="$LIBS",)], [AC_MSG_ERROR(zlib library not found)])
+
+dnl Check for SDL library
+SDL_VERSION=1.2.0
+AM_PATH_SDL($SDL_VERSION, :, AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!]))
+
+AC_CHECK_LIB(SDL_mixer, Mix_AllocateChannels, LIBS="$LIBS", AC_MSG_ERROR([*** SDL_mixer library not found!]))
+AC_CHECK_LIB(X11, [XQueryTree,XMoveWindow],,)
+
+AC_SUBST(COMMON_LIBS)
+AC_SUBST(COMMON_CFLAGS)
+AC_SUBST(BGD_PATH)
+
+
+AC_OUTPUT([
+Makefile
+libgrbase/Makefile
+libvideo/Makefile
+libblit/Makefile
+librender/Makefile
+libdraw/Makefile
+libfont/Makefile
+libtext/Makefile
+libsdlhandler/Makefile
+libwm/Makefile
+libkey/Makefile
+libmouse/Makefile
+libscroll/Makefile
+mod_scroll/Makefile
+mod_mouse/Makefile
+mod_map/Makefile
+mod_video/Makefile
+mod_screen/Makefile
+mod_blendop/Makefile
+mod_text/Makefile
+mod_draw/Makefile
+mod_grproc/Makefile
+mod_effects/Makefile
+mod_key/Makefile
+mod_cd/Makefile
+mod_dir/Makefile
+mod_file/Makefile
+mod_joy/Makefile
+mod_math/Makefile
+mod_mem/Makefile
+mod_proc/Makefile
+mod_rand/Makefile
+mod_regex/Makefile
+mod_say/Makefile
+mod_sort/Makefile
+mod_sound/Makefile
+mod_string/Makefile
+mod_sys/Makefile
+mod_time/Makefile
+mod_timers/Makefile
+mod_path/Makefile
+mod_wm/Makefile
+mod_debug/Makefile
+mod_flic/Makefile
+mod_m7/Makefile
+mod_ffi/Makefile
+])
+
+echo
+echo Bennu Modules $VERSION
+echo
+echo Debug Mode ....... : $enable_debug
+echo
+echo configure complete, now type \'make\'.
+echo

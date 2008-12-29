@@ -1,0 +1,3 @@
+SUBDIRS = bgdrtm \
+          bgdc \
+          bgdi
