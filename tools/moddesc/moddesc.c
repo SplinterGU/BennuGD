@@ -34,6 +34,7 @@
 /* ----------------------------------------------------------------- */
 
 int onlyfenixexport = 0;
+
 int interactive = 1;
 
 /* ----------------------------------------------------------------- */
@@ -142,27 +143,41 @@ int describe_func( char * name, char * paramtypes, int type, void * func )
 
 /* ----------------------------------------------------------------- */
 
+static char * modules_exts[] =
+{
+    ".dll",
+    ".dylib",
+    ".so",
+    NULL
+} ;
+
+/* ----------------------------------------------------------------- */
+
 void describe_module( char *filename )
 {
     void * library = NULL;
+
     char ** globals_def = NULL;
     char ** locals_def = NULL;
     DLCONSTANT * constants_def = NULL;
     DLSYSFUNCS * functions_exports = NULL;
     char ** modules_dependency = NULL;
+
     DLVARFIXUP * globals_fixup = NULL;
     DLVARFIXUP * locals_fixup = NULL;
     HOOK * handler_hooks = NULL;
+
     void ( * RegisterFunctions )( void *( * )( const char * ), int ( * )( char *, char *, int, void * ) ) = NULL ;
     int misc = 0;
 
     char soname[1024];
     char * ptr;
+    char ** pex;
 
-#ifdef WIN32
+#if defined( WIN32 )
 #define DLLEXT      ".dll"
 #define SIZEDLLEXT  4
-#elif defined (TARGET_MAC)
+#elif defined(TARGET_MAC)
 #define DLLEXT      ".dylib"
 #define SIZEDLLEXT  6
 #else
@@ -170,18 +185,30 @@ void describe_module( char *filename )
 #define SIZEDLLEXT  3
 #endif
 
-    snprintf( soname, 1024, "%s" DLLEXT, filename );
+    strncpy ( soname, filename, sizeof ( soname ) );
 
-    for ( ptr = soname ; *ptr ; ptr++ )
+    for ( ptr = soname; *ptr; ptr++ )
     {
-        if ( *ptr == PATH_CHAR_SEP )
-            *ptr = PATH_CHAR_ISEP ;
-        else
-            *ptr = tolower( *ptr );
+        *ptr = tolower( *ptr );
     }
 
-    if ( strlen( soname ) > ( 4 + SIZEDLLEXT ) && strcmp( ptr - ( 4 + SIZEDLLEXT ), ".dll" DLLEXT ) == 0 ) strcpy( ptr - ( 4 + SIZEDLLEXT ), DLLEXT ); // .dll+.ext
-    if ( strlen( soname ) > ( SIZEDLLEXT + SIZEDLLEXT ) && strcmp( ptr - ( SIZEDLLEXT + SIZEDLLEXT ), DLLEXT DLLEXT ) == 0 ) strcpy( ptr - ( SIZEDLLEXT + SIZEDLLEXT ), DLLEXT );
+    pex = modules_exts;
+    while ( pex && * pex )
+    {
+        int nlen = strlen ( soname );
+        int elen = strlen ( *pex );
+        if ( nlen > elen && strcmp( &soname[nlen - elen], *pex ) == 0 )
+        {
+            soname[nlen - elen] = '\0' ;
+            pex = modules_exts;
+        }
+        else
+        {
+            pex++;
+        }
+    }
+
+    strcat( soname, DLLEXT );
 
     filename = soname;
 
@@ -329,16 +356,18 @@ void help( char *argv[] )
     printf( "Usage: %s [options] modulename \n"
             "\n"
             "    -e     On fenix, only report exported functions\n"
-            "    -i[-]  Enable/disable interactive mode (default: on)\n"
+            "    -i[-]  Enable/disable interactive mode (default: on) (only Win32)\n"
             "    -h     This help\n"
             "\n", argv[0] ) ;
 
+#if _WIN32
     if ( interactive )
     {
         printf( "\nPress any key to continue...\n" );
         fflush( stdout );
         char a; scanf( "%c", &a ) ;
     }
+#endif
 }
 
 /* ----------------------------------------------------------------- */
@@ -403,12 +432,14 @@ int main( int argc, char *argv[] )
     }
 
     describe_module( modname );
+#if _WIN32
     if ( interactive )
     {
         printf( "\nPress any key to continue...\n" );
         fflush( stdout );
         char a; scanf( "%c", &a ) ;
     }
+#endif
     exit( 0 );
 }
 
