@@ -426,8 +426,8 @@ int compile_varspace( VARSPACE * n, segment * data, int additive, int copies, in
 
     /* Initialize some stuffs */
 
-    set_type( &type, TYPE_UNDEFINED ) ;
-    set_type( &typeb, TYPE_UNDEFINED ) ;
+    type = typedef_new( TYPE_UNDEFINED ) ;
+    typeb = typedef_new( TYPE_UNDEFINED ) ;
 
     for ( ;; )
     {
