@@ -335,7 +335,7 @@ Copyright (C) 2006 Free Software Foundation, Inc.
 This config.status script is free software; the Free Software Foundation
 gives unlimited permission to copy, distribute and modify it."
 
-ac_pwd='/home/dev/bennu/core'
+ac_pwd='/home/splinter/bennugd/core'
 srcdir='.'
 INSTALL='/usr/bin/install -c'
 MKDIR_P='/bin/mkdir -p'
@@ -521,17 +521,17 @@ s,@LIBS@,|#_!!_#|-ldl -lz,g
 s,@build_alias@,|#_!!_#|,g
 s,@host_alias@,|#_!!_#|,g
 s,@target_alias@,|#_!!_#|,g
-s,@build@,|#_!!_#|x86_64-unknown-linux-gnu,g
-s,@build_cpu@,|#_!!_#|x86_64,g
-s,@build_vendor@,|#_!!_#|unknown,g
+s,@build@,|#_!!_#|i686-pc-linux-gnu,g
+s,@build_cpu@,|#_!!_#|i686,g
+s,@build_vendor@,|#_!!_#|pc,g
 s,@build_os@,|#_!!_#|linux-gnu,g
-s,@host@,|#_!!_#|x86_64-unknown-linux-gnu,g
-s,@host_cpu@,|#_!!_#|x86_64,g
-s,@host_vendor@,|#_!!_#|unknown,g
+s,@host@,|#_!!_#|i686-pc-linux-gnu,g
+s,@host_cpu@,|#_!!_#|i686,g
+s,@host_vendor@,|#_!!_#|pc,g
 s,@host_os@,|#_!!_#|linux-gnu,g
-s,@target@,|#_!!_#|x86_64-unknown-linux-gnu,g
-s,@target_cpu@,|#_!!_#|x86_64,g
-s,@target_vendor@,|#_!!_#|unknown,g
+s,@target@,|#_!!_#|i686-pc-linux-gnu,g
+s,@target_cpu@,|#_!!_#|i686,g
+s,@target_vendor@,|#_!!_#|pc,g
 s,@target_os@,|#_!!_#|linux-gnu,g
 s,@CC@,|#_!!_#|gcc,g
 s,@CFLAGS@,|#_!!_#|-O2 -finline-functions -fno-strict-aliasing ,g
@@ -572,12 +572,12 @@ s,@am__isrc@,|#_!!_#|,g
 s,@CYGPATH_W@,|#_!!_#|echo,g
 s,@PACKAGE@,|#_!!_#|bennu,g
 s,@VERSION@,|#_!!_#|0.93,g
-s,@ACLOCAL@,|#_!!_#|${SHELL} /home/dev/bennu/core/missing --run aclocal-1.10,g
-s,@AUTOCONF@,|#_!!_#|${SHELL} /home/dev/bennu/core/missing --run autoconf,g
-s,@AUTOMAKE@,|#_!!_#|${SHELL} /home/dev/bennu/core/missing --run automake-1.10,g
-s,@AUTOHEADER@,|#_!!_#|${SHELL} /home/dev/bennu/core/missing --run autoheader,g
-s,@MAKEINFO@,|#_!!_#|${SHELL} /home/dev/bennu/core/missing --run makeinfo,g
-s,@install_sh@,|#_!!_#|$(SHELL) /home/dev/bennu/core/install-sh,g
+s,@ACLOCAL@,|#_!!_#|${SHELL} /home/splinter/bennugd/core/missing --run aclocal-1.10,g
+s,@AUTOCONF@,|#_!!_#|${SHELL} /home/splinter/bennugd/core/missing --run autoconf,g
+s,@AUTOMAKE@,|#_!!_#|${SHELL} /home/splinter/bennugd/core/missing --run automake-1.10,g
+s,@AUTOHEADER@,|#_!!_#|${SHELL} /home/splinter/bennugd/core/missing --run autoheader,g
+s,@MAKEINFO@,|#_!!_#|${SHELL} /home/splinter/bennugd/core/missing --run makeinfo,g
+s,@install_sh@,|#_!!_#|$(SHELL) /home/splinter/bennugd/core/install-sh,g
 s,@INSTALL_STRIP_PROGRAM@,|#_!!_#|$(install_sh) -c -s,g
 s,@mkdir_p@,|#_!!_#|/bin/mkdir -p,g
 s,@AWK@,|#_!!_#|mawk,g
@@ -586,7 +586,7 @@ cat >"$tmp/subs-2.sed" <<\CEOF
 /@[a-zA-Z_][a-zA-Z_0-9]*@/!b end
 s,@SET_MAKE@,|#_!!_#|,g
 s,@am__leading_dot@,|#_!!_#|.,g
-s,@AMTAR@,|#_!!_#|${SHELL} /home/dev/bennu/core/missing --run tar,g
+s,@AMTAR@,|#_!!_#|${SHELL} /home/splinter/bennugd/core/missing --run tar,g
 s,@am__tar@,|#_!!_#|${AMTAR} chof - "$$tardir",g
 s,@am__untar@,|#_!!_#|${AMTAR} xf -,g
 s,@DEPDIR@,|#_!!_#|.deps,g

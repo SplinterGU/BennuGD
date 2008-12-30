@@ -66,12 +66,12 @@ fast_install=yes
 
 # The host system.
 host_alias=
-host=x86_64-unknown-linux-gnu
+host=i686-pc-linux-gnu
 host_os=linux-gnu
 
 # The build system.
 build_alias=
-build=x86_64-unknown-linux-gnu
+build=i686-pc-linux-gnu
 build_os=linux-gnu
 
 # An echo program that does not interpret backslashes.
@@ -97,7 +97,7 @@ with_gcc=yes
 EGREP="/bin/grep -E"
 
 # The linker used to build libraries.
-LD="/usr/bin/ld -m elf_i386"
+LD="/usr/bin/ld"
 
 # Whether we need hard or soft links.
 LN_S="ln -s"
@@ -328,7 +328,7 @@ link_all_deplibs=unknown
 sys_lib_search_path_spec=" /usr/lib/gcc/i486-linux-gnu/4.3.2/ /usr/lib/gcc/i486-linux-gnu/4.3.2/ /usr/lib/gcc/i486-linux-gnu/4.3.2/../../../../i486-linux-gnu/lib/i486-linux-gnu/4.3.2/ /usr/lib/gcc/i486-linux-gnu/4.3.2/../../../../i486-linux-gnu/lib/../lib/ /usr/lib/gcc/i486-linux-gnu/4.3.2/../../../i486-linux-gnu/4.3.2/ /usr/lib/gcc/i486-linux-gnu/4.3.2/../../../../lib/ /lib/i486-linux-gnu/4.3.2/ /lib/../lib/ /usr/lib/i486-linux-gnu/4.3.2/ /usr/lib/../lib/ /usr/lib/gcc/i486-linux-gnu/4.3.2/../../../../i486-linux-gnu/lib/ /usr/lib/gcc/i486-linux-gnu/4.3.2/../../../ /lib/ /usr/lib/"
 
 # Run-time system search path for libraries
-sys_lib_dlsearch_path_spec="/lib /usr/lib /lib/i486-linux-gnu /usr/lib/i486-linux-gnu /usr/local/lib "
+sys_lib_dlsearch_path_spec="/lib /usr/lib /usr/lib/bgd /usr/lib/bgd/lib /usr/lib/bgd/module /lib/i486-linux-gnu /usr/lib/i486-linux-gnu /usr/local/lib "
 
 # Fix the shell variable $srcfile for the compiler.
 fix_srcfile_path=""
@@ -7238,12 +7238,12 @@ fast_install=yes
 
 # The host system.
 host_alias=
-host=x86_64-unknown-linux-gnu
+host=i686-pc-linux-gnu
 host_os=linux-gnu
 
 # The build system.
 build_alias=
-build=x86_64-unknown-linux-gnu
+build=i686-pc-linux-gnu
 build_os=linux-gnu
 
 # An echo program that does not interpret backslashes.
@@ -7269,7 +7269,7 @@ with_gcc=yes
 EGREP="/bin/grep -E"
 
 # The linker used to build libraries.
-LD="/usr/bin/ld -m elf_i386"
+LD="/usr/bin/ld"
 
 # Whether we need hard or soft links.
 LN_S="ln -s"
@@ -7497,7 +7497,7 @@ link_all_deplibs=unknown
 sys_lib_search_path_spec=" /usr/lib/gcc/i486-linux-gnu/4.3.2/ /usr/lib/gcc/i486-linux-gnu/4.3.2/ /usr/lib/gcc/i486-linux-gnu/4.3.2/../../../../i486-linux-gnu/lib/i486-linux-gnu/4.3.2/ /usr/lib/gcc/i486-linux-gnu/4.3.2/../../../../i486-linux-gnu/lib/../lib/ /usr/lib/gcc/i486-linux-gnu/4.3.2/../../../i486-linux-gnu/4.3.2/ /usr/lib/gcc/i486-linux-gnu/4.3.2/../../../../lib/ /lib/i486-linux-gnu/4.3.2/ /lib/../lib/ /usr/lib/i486-linux-gnu/4.3.2/ /usr/lib/../lib/ /usr/lib/gcc/i486-linux-gnu/4.3.2/../../../../i486-linux-gnu/lib/ /usr/lib/gcc/i486-linux-gnu/4.3.2/../../../ /lib/ /usr/lib/"
 
 # Run-time system search path for libraries
-sys_lib_dlsearch_path_spec="/lib /usr/lib /lib/i486-linux-gnu /usr/lib/i486-linux-gnu /usr/local/lib "
+sys_lib_dlsearch_path_spec="/lib /usr/lib /usr/lib/bgd /usr/lib/bgd/lib /usr/lib/bgd/module /lib/i486-linux-gnu /usr/lib/i486-linux-gnu /usr/local/lib "
 
 # Fix the shell variable $srcfile for the compiler.
 fix_srcfile_path=""
