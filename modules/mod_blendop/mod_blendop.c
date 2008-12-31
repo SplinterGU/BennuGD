@@ -286,3 +286,12 @@ DLSYSFUNCS __bgdexport( mod_blendop, functions_exports)[] =
 };
 
 /* --------------------------------------------------------------------------- */
+
+char * __bgdexport( mod_blendop, modules_dependency )[] =
+{
+    "libgrbase",
+    NULL
+};
+
+/* --------------------------------------------------------------------------- */
+

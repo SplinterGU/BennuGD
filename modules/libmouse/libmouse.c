@@ -344,6 +344,7 @@ char * __bgdexport( libmouse, modules_dependency )[] =
     "libgrbase",
     "libvideo",
     "libblit",
+    "librender", // Add by Sandman
     NULL
 };
 
