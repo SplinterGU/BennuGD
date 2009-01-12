@@ -205,6 +205,7 @@ void draw_vline( GRAPH * dest, REGION * clip, int x, int y, int h )
     }
 
     dest->modified = 2 ;
+    dest->info_flags &= ~GI_CLEAN;
 
     if ( h < 0 ) h = -h, y -= ( h /*- 1*/ ) ;
 
@@ -370,6 +371,7 @@ void draw_hline( GRAPH * dest, REGION * clip, int x, int y, int w )
     }
 
     dest->modified = 2 ;
+    dest->info_flags &= ~GI_CLEAN;
 
     if ( w < 0 ) w = -w, x -= ( w /*- 1*/ ) ;
 
@@ -505,6 +507,7 @@ void draw_box( GRAPH * dest, REGION * clip, int x, int y, int w, int h )
     }
 
     dest->modified = 2 ;
+    dest->info_flags &= ~GI_CLEAN;
 
     if ( w < 0 ) w = -w, x -= ( w /*- 1*/ ) ;
     if ( h < 0 ) h = -h, y -= ( h /*- 1*/ ) ;
@@ -651,6 +654,7 @@ void draw_circle( GRAPH * dest, REGION * clip, int x, int y, int r )
     }
 
     dest->modified = 2 ;
+    dest->info_flags &= ~GI_CLEAN;
 
     if ( dest->format->depth == 8 || dest->format->depth == 1 )
     {
@@ -809,6 +813,7 @@ void draw_line( GRAPH * dest, REGION * clip, int x, int y, int w, int h )
     }
 
     dest->modified = 2 ;
+    dest->info_flags &= ~GI_CLEAN;
 
     w1 = ABS( w ); h1 = ABS( h );
 
@@ -1062,6 +1067,7 @@ void draw_bezier( GRAPH * dest, REGION * clip, int x1, int y1, int x2, int y2, i
     int n = 1;
 
     dest->modified = 2 ;
+    dest->info_flags &= ~GI_CLEAN;
 
     /* Compute number of iterations */
 
