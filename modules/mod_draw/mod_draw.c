@@ -246,10 +246,19 @@ static int _moddraw_object_new( DRAWING_OBJECT * dr, int z )
 
 static void _moddraw_object_destroy( int id )
 {
-    DRAWING_OBJECT * dr = ( DRAWING_OBJECT * ) id;
+    DRAWING_OBJECT * dr = ( DRAWING_OBJECT * ) id, * next;
+    int destroyall = 0;
 
-    if ( dr )
+    if ( !dr )
     {
+        dr = drawing_objects;
+        destroyall = 1;
+    }
+
+    while ( dr )
+    {
+        next = dr->next;
+
         if ( dr->next ) dr->next->prev = dr->prev;
         if ( dr->prev ) dr->prev->next = dr->next;
 
@@ -258,6 +267,10 @@ static void _moddraw_object_destroy( int id )
         if ( drawing_objects == dr ) drawing_objects = dr->next;
 
         free( dr );
+
+        if ( !destroyall ) break;
+
+        dr = next;
     }
 }
 
@@ -377,6 +390,8 @@ static int moddraw_box( INSTANCE * my, int * params )
     draw_box( drawing_graph, 0, params[ 0 ], params[ 1 ], params[ 2 ] - params[ 0 ], params[ 3 ] - params[ 1 ] ) ;
     return 1 ;
 }
+
+/* --------------------------------------------------------------------------- */
 
 static int moddraw_rect( INSTANCE * my, int * params )
 {
