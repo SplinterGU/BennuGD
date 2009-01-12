@@ -1,5 +1,5 @@
 /*
- *  Copyright © 2008 SplinterGU
+ *  Copyright © 2008-2009 SplinterGU
  *
  *  This file is part of Bennu - Game Development
  *
@@ -378,7 +378,7 @@ int main( int argc, char *argv[] )
     char * modname = NULL;
 
     printf( "Module Describe v1.1 (Build: %s %s)\n"
-            "Copyright (C) 2008 SplinterGU\n"
+            "Copyright (C) 2009 SplinterGU\n"
             "This utility comes with ABSOLUTELY NO WARRANTY.\n"
             "%s -h for details\n\n", __DATE__, __TIME__, argv[0] ) ;
 

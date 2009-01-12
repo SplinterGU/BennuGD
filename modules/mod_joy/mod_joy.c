@@ -1,5 +1,5 @@
 /*
- *  Copyright © 2006-2008 SplinterGU (Fenix/Bennugd)
+ *  Copyright © 2006-2009 SplinterGU (Fenix/Bennugd)
  *  Copyright © 2002-2006 Fenix Team (Fenix)
  *  Copyright © 1999-2002 José Luis Cebrián Pagüe (Fenix)
  *
@@ -24,7 +24,7 @@
 /* --------------------------------------------------------------------------- */
 /* Thanks Sandman for suggest on openjoys at initialization time               */
 /* --------------------------------------------------------------------------- */
-/* Credits SplinterGU/Sandman 2007-2008                                        */
+/* Credits SplinterGU/Sandman 2007-2009                                        */
 /* --------------------------------------------------------------------------- */
 
 #include <stdio.h>

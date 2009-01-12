@@ -1,5 +1,5 @@
 /*
- *  Copyright © 2006-2008 SplinterGU (Fenix/Bennugd)
+ *  Copyright © 2006-2009 SplinterGU (Fenix/Bennugd)
  *  Copyright © 2002-2006 Fenix Team (Fenix)
  *  Copyright © 1999-2002 José Luis Cebrián Pagüe (Fenix)
  *
@@ -59,7 +59,7 @@ extern void       varspace_add (VARSPACE * n, VARIABLE v) ;
 extern VARIABLE * varspace_search (VARSPACE * n, int code) ;
 extern void       varspace_dump (VARSPACE * n, int indent) ;
 extern void       varspace_destroy (VARSPACE * n) ;
-extern void	  varspace_varstring (VARSPACE * n, int offset) ;
+extern void	      varspace_varstring (VARSPACE * n, int offset) ;
 
 /* Datos globales y locales */
 
