@@ -33,6 +33,22 @@
 #include "libgrbase.h"
 
 /* --------------------------------------------------------------------------- */
+
+#define BLUR_NORMAL     0
+#define BLUR_3x3        1
+#define BLUR_5x5        2
+#define BLUR_5x5_MAP    3
+
+#define GSCALE_RGB      0
+#define GSCALE_R        1
+#define GSCALE_G        2
+#define GSCALE_B        3
+#define GSCALE_RG       4
+#define GSCALE_RB       5
+#define GSCALE_GB       6
+#define GSCALE_OFF     -1
+
+/* --------------------------------------------------------------------------- */
 /* Esto podria/deberia estar en una liberia general */
 
 #ifdef __GNUC__
@@ -139,7 +155,10 @@ static int modeffects_filter( INSTANCE *my, int *params )
 
     map2 = bitmap_clone( map );
 
-    r1 = 0;g1 = 0;b1 = 0;c = 0;
+    r1 = 0;
+    g1 = 0;
+    b1 = 0;
+    c = 0;
     for ( i = 0;i < map->width;i++ )
     {
         for ( j = 0;j < map->height;j++ )
@@ -149,7 +168,9 @@ static int modeffects_filter( INSTANCE *my, int *params )
 
             for ( y = j - 1;y < j + 2;y++ )
             {
-                r2 = 0;g2 = 0;b2 = 0;
+                r2 = 0;
+                g2 = 0;
+                b2 = 0;
                 for ( x = i - 1;x < i + 2;x++, c++ )
                 {
                     color = _get_pixel( map, ( x < 0 ) ? 0 : ( x > map->width - 1 ) ? map->width - 1 : x, ( y < 0 ) ? 0 : ( y > map->height - 1 ) ? map->height - 1 : y );
@@ -169,7 +190,9 @@ static int modeffects_filter( INSTANCE *my, int *params )
                     b1 += ( float )( b2 * tabla[c] );
                 }
             }
-            r1 /= tabla[9];g1 /= tabla[9];b1 /= tabla[9];
+            r1 /= tabla[9];
+            g1 /= tabla[9];
+            b1 /= tabla[9];
             r = ((( int )r1 ) > 255 ) ? 255 : ( int )r1;
             g = ((( int )g1 ) > 255 ) ? 255 : ( int )g1;
             b = ((( int )b1 ) > 255 ) ? 255 : ( int )b1;
@@ -184,7 +207,10 @@ static int modeffects_filter( INSTANCE *my, int *params )
                 c = gr_rgb( r, g, b );
 
             _put_pixel( map2, i, j, c );
-            r1 = 0;g1 = 0;b1 = 0;c = 0;
+            r1 = 0;
+            g1 = 0;
+            b1 = 0;
+            c = 0;
         }
     }
     memcpy( map->data, map2->data, map->height*map->pitch );
@@ -207,7 +233,7 @@ static int modeffects_blur( INSTANCE *my, int *params ) // fpg,map,tipo
 
     switch ( params[2] )
     {
-        case 0:
+        case BLUR_NORMAL:
             //METODO 1 "RAPIDO" izq y arriba
             for ( i = 0;i < map->width;i++ )
                 for ( j = 0;j < map->height;j++ )
@@ -223,7 +249,9 @@ static int modeffects_blur( INSTANCE *my, int *params ) // fpg,map,tipo
                     {
                         gr_get_rgb( _get_pixel( map, i + 1, j ), &r2, &g2, &b2 );
                     }
-                    r += r2;g += g2;b += b2;
+                    r += r2;
+                    g += g2;
+                    b += b2;
                     if ( j > 0 )
                     {
                         gr_get_rgb( _get_pixel( map, i, j - 1 ), &r2, &g2, &b2 );
@@ -232,15 +260,22 @@ static int modeffects_blur( INSTANCE *my, int *params ) // fpg,map,tipo
                     {
                         gr_get_rgb( _get_pixel( map, i, j + 1 ), &r2, &g2, &b2 );
                     }
-                    r += r2;g += g2;b += b2;
-                    r /= 3;g /= 3;b /= 3;
+                    r += r2;
+                    g += g2;
+                    b += b2;
+                    r /= 3;
+                    g /= 3;
+                    b /= 3;
                     _put_pixel( map, i, j, gr_rgb( r, g, b ) );
                 }
             break;
 
-        case 1:
+        case BLUR_3x3:
             // METODO2 LENTO 3x3
-            r = 0;g = 0;b = 0;c = 0;
+            r = 0;
+            g = 0;
+            b = 0;
+            c = 0;
             for ( i = 0;i < map->width;i++ )
                 for ( j = 0;j < map->height;j++ )
                 {
@@ -254,20 +289,30 @@ static int modeffects_blur( INSTANCE *my, int *params ) // fpg,map,tipo
                         {
                             if ( x < 0 || x > map->width - 1 || y < 0 || y > map->height - 1 ) continue;
                             gr_get_rgb( _get_pixel( map, x, y ), &r2, &g2, &b2 );
-                            r += r2;g += g2;b += b2;
+                            r += r2;
+                            g += g2;
+                            b += b2;
                             c++;
                         }
                     }
                     if ( !c ) continue;
-                    r /= c;g /= c;b /= c;
+                    r /= c;
+                    g /= c;
+                    b /= c;
                     _put_pixel( map, i, j, gr_rgb( r, g, b ) );
-                    r = 0;g = 0;b = 0;c = 0;
+                    r = 0;
+                    g = 0;
+                    b = 0;
+                    c = 0;
                 }
             break;
 
-        case 2:
+        case BLUR_5x5:
             // METODO3 aun mas LENTO 5x5
-            r = 0;g = 0;b = 0;c = 0;
+            r = 0;
+            g = 0;
+            b = 0;
+            c = 0;
             for ( i = 0;i < map->width;i++ )
             {
                 for ( j = 0;j < map->height;j++ )
@@ -282,22 +327,32 @@ static int modeffects_blur( INSTANCE *my, int *params ) // fpg,map,tipo
                         {
                             if ( x < 0 || x > map->width - 1 || y < 0 || y > map->height - 1 ) continue;
                             gr_get_rgb( _get_pixel( map, x, y ), &r2, &g2, &b2 );
-                            r += r2;g += g2;b += b2;
+                            r += r2;
+                            g += g2;
+                            b += b2;
                             c++;
                         }
                     }
                     if ( !c ) continue;
-                    r /= c;g /= c;b /= c;
+                    r /= c;
+                    g /= c;
+                    b /= c;
                     _put_pixel( map, i, j, gr_rgb( r, g, b ) );
-                    r = 0;g = 0;b = 0;c = 0;
+                    r = 0;
+                    g = 0;
+                    b = 0;
+                    c = 0;
                 }
             }
             break;
 
-        case 3:
+        case BLUR_5x5_MAP:
             // METODO4 5x5 mapa adicional
             map2 = bitmap_clone( map );
-            r = 0;g = 0;b = 0;c = 0;
+            r = 0;
+            g = 0;
+            b = 0;
+            c = 0;
             for ( i = 0;i < map->width;i++ )
             {
                 for ( j = 0;j < map->height;j++ )
@@ -312,20 +367,28 @@ static int modeffects_blur( INSTANCE *my, int *params ) // fpg,map,tipo
                         {
                             if ( x < 0 || x > map->width - 1 || y < 0 || y > map->height - 1 ) continue;
                             gr_get_rgb( _get_pixel( map, x, y ), &r2, &g2, &b2 );
-                            r += r2;g += g2;b += b2;
+                            r += r2;
+                            g += g2;
+                            b += b2;
                             c++;
                         }
                     }
                     if ( !c ) continue;
-                    r /= c;g /= c;b /= c;
+                    r /= c;
+                    g /= c;
+                    b /= c;
                     _put_pixel( map2, i, j, gr_rgb( r, g, b ) );
-                    r = 0;g = 0;b = 0;c = 0;
+                    r = 0;
+                    g = 0;
+                    b = 0;
+                    c = 0;
                 }
             }
             memcpy( map->data, map2->data, map->height*map->pitch );
             bitmap_destroy( map2 );
             break;
-        default: break;
+        default:
+            break;
 
     }
     return 1 ;
@@ -348,27 +411,36 @@ static int modeffects_grayscale( INSTANCE *my, int *params ) //fpg,map,tipo
             c = ( int )( 0.3 * r + 0.59 * g + 0.11 * b );
             switch ( params[2] )
             {
-                case 0: // RGB
+                case GSCALE_RGB: // RGB
                     c = gr_rgb( c, c, c );
                     break;
-                case 1: // R
+
+                case GSCALE_R: // R
                     c = gr_rgb( c, 0, 0 );
                     break;
-                case 2: // G
+
+                case GSCALE_G: // G
                     c = gr_rgb( 0, c, 0 );
                     break;
-                case 3: // B
+
+                case GSCALE_B: // B
                     c = gr_rgb( 0, 0, c );
                     break;
-                case 4: // RG
+
+                case GSCALE_RG: // RG
                     c = gr_rgb( c, c, 0 );
                     break;
-                case 5: // RB
+
+                case GSCALE_RB: // RB
                     c = gr_rgb( c, 0, c );
                     break;
-                case 6: // GB
+
+
+                case GSCALE_GB: // GB
                     c = gr_rgb( 0, c, c );
                     break;
+
+                case GSCALE_OFF:
                 default:
                     c = gr_rgb( r, g, b );
             }
@@ -402,6 +474,27 @@ static int modeffects_rgbscale( INSTANCE *my, int *params ) //fpg, map, r, g, b
     return 1 ;
 }
 
+/* --------------------------------------------------------------------------- */
+
+DLCONSTANT __bgdexport( mod_effects, constants_def )[] =
+{
+    { "BLUR_NORMAL" , TYPE_INT, BLUR_NORMAL     },
+    { "BLUR_3x3"    , TYPE_INT, BLUR_3x3        },
+    { "BLUR_5x5"    , TYPE_INT, BLUR_5x5        },
+    { "BLUR_5x5_MAP", TYPE_INT, BLUR_5x5_MAP    },
+
+    { "GSCALE_RGB"  , TYPE_INT, GSCALE_RGB      },
+    { "GSCALE_R"    , TYPE_INT, GSCALE_R        },
+    { "GSCALE_G"    , TYPE_INT, GSCALE_G        },
+    { "GSCALE_B"    , TYPE_INT, GSCALE_B        },
+    { "GSCALE_RG"   , TYPE_INT, GSCALE_RG       },
+    { "GSCALE_RB"   , TYPE_INT, GSCALE_RB       },
+    { "GSCALE_GB"   , TYPE_INT, GSCALE_GB       },
+    { "GSCALE_OFF"  , TYPE_INT, GSCALE_OFF      },
+
+    { NULL          , 0       , 0               }
+} ;
+
 /* ----------------------------------------------------------------- */
 /* Declaracion de funciones                                          */
 
@@ -411,7 +504,7 @@ DLSYSFUNCS  __bgdexport( mod_effects, functions_exports )[] =
     { "RGBSCALE"    , "IIFFF" , TYPE_INT    , modeffects_rgbscale  },
     { "BLUR"        , "IIB"   , TYPE_INT    , modeffects_blur      },
     { "FILTER"      , "IIP"   , TYPE_INT    , modeffects_filter    },
-    { NULL          , NULL    , 0           , NULL          }
+    { NULL          , NULL    , 0           , NULL                 }
 };
 
 /* ----------------------------------------------------------------- */
