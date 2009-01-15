@@ -50,7 +50,6 @@ GRAPH * gr_read_png( const char * filename )
 {
     GRAPH * bitmap ;
     unsigned int n, x ;
-    int shift;
     uint16_t * ptr ;
     uint32_t * ptr32 ;
     uint32_t * orig ;
@@ -100,7 +99,7 @@ GRAPH * gr_read_png( const char * filename )
 
     png_set_read_fn( png_ptr, 0, user_read_data ) ;
     png_read_info( png_ptr, info_ptr ) ;
-    png_get_IHDR( png_ptr, info_ptr, &width, &height, &depth, &color, 0, 0 , 0 ) ;
+    png_get_IHDR( png_ptr, info_ptr, &width, &height, &depth, &color, 0, 0, 0 ) ;
 
     row = malloc( sizeof( uint32_t ) * width );
     if ( !row )
@@ -126,6 +125,7 @@ GRAPH * gr_read_png( const char * filename )
         png_set_gray_to_rgb( png_ptr );
         if ( color == PNG_COLOR_TYPE_GRAY ) png_set_filler( png_ptr, 0xFF, PNG_FILLER_AFTER ) ;
     }
+
     if ( depth == 16 ) png_set_strip_16( png_ptr ) ;
 
     if ( color == PNG_COLOR_TYPE_RGB ) png_set_filler( png_ptr, 0xFF, PNG_FILLER_AFTER ) ;
@@ -183,71 +183,49 @@ GRAPH * gr_read_png( const char * filename )
 
         if ( depth == 4 )
         {
-            for ( n =  0 ; n < height ; n++ )
+            for ( n =  0; n < height; n++ )
             {
                 char * orig, * dest;
                 orig = rowpointers[n];
                 dest = orig + width - 1;
                 orig += ( width - 1 ) / 2;
 
-                shift = (( width & 0x01 ) << 2 );
-
-                for ( x = 0 ; x < width ; x++ )
+                for ( x = width; x--; )
                 {
-                    *dest-- = (( *orig >> shift ) & 0x0F );
-                    if ( shift == 4 )
-                    {
-                        shift = 0;
-                        orig--;
-                    }
-                    else
-                        shift = 4;
+                    *dest-- = ( *orig >> ((( 1 - ( x & 0x01 ) ) << 2 ) ) ) & 0x0F ;
+                    if ( !( x & 0x01 ) ) orig--;
                 }
             }
         }
         else if ( depth == 2 )
         {
-            for ( n = 0 ; n < height ; n++ )
+            for ( n = 0; n < height; n++ )
             {
                 char * orig, * dest;
                 orig = rowpointers[n];
                 dest = orig + width - 1;
                 orig += ( width - 1 ) / 4;
 
-                shift = (( 3 - (( width + 3 ) & 0x03 ) ) << 1 );
-
-                for ( x = 0 ; x < width ; x++ )
+                for ( x = width; x--; )
                 {
-                    *dest-- = (( *orig >> shift ) & 0x03 );
-                    if ( shift == 6 )
-                    {
-                        shift = 0;
-                        orig--;
-                    }
-                    else
-                        shift += 2 ;
+                    *dest-- = ( *orig >> ((( 3 - ( x & 0x03 ) ) << 1 ) ) ) & 0x03 ;
+                    if ( !( x & 0x03 ) ) orig--;
                 }
             }
         }
         else if ( depth == 1 )
         {
-            for ( n = shift = 0 ; n < height ; n++ )
+            for ( n = 0; n < height; n++ )
             {
                 char * orig, * dest;
                 orig = rowpointers[n];
                 dest = orig + width - 1;
                 orig += ( width - 1 ) / 8;
-                shift = (( 7 - (( width + 7 ) & 0x07 ) ) << 1 );
-                for ( x = 0 ; x < width ; x++ )
+
+                for ( x = width; x--; )
                 {
-                    *dest-- = (( *orig >> shift ) & 0x01 );
-                    if ( shift == 7 )
-                    {
-                        shift = 0;
-                        orig--;
-                    }
-                    else
-                        shift++ ;
+                    *dest-- = ( *orig >> ( 7 - ( x & 0x07 ) ) ) & 0x01 ;
+                    if ( !( x & 0x07 ) ) orig--;
                 }
             }
         }
