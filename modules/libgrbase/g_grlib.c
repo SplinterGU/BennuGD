@@ -81,7 +81,6 @@ int grlib_new()
     {
         libs[ i ] = lib ;
         lib_nextid = i + 1;
-
         return i ;
     }
 
@@ -110,6 +109,7 @@ static GRLIB * grlib_create()
 
     lib->name[ 0 ] = 0 ;
     lib->map_reserved = 32 ;
+
     return lib ;
 }
 
@@ -149,6 +149,7 @@ void grlib_destroy( int libid )
 {
     int i ;
     GRLIB * lib = grlib_get( libid ) ;
+
     if ( !lib ) return ;
 
     libs[ libid ] = 0 ;
@@ -181,7 +182,7 @@ int grlib_unload_map( int libid, int mapcode )
 {
     GRLIB * lib ;
 
-    if ( !libid || mapcode < 1 || mapcode > 999 )
+    if ( mapcode < 1 || mapcode > 999 )
         lib = syslib ;
     else
         lib = grlib_get( libid ) ;
@@ -216,7 +217,7 @@ int grlib_add_map( int libid, GRAPH * map )
 {
     GRLIB * lib ;
 
-    if ( !libid || map->code < 1 || map->code > 999 )
+    if ( map->code < 1 || map->code > 999 )
         lib = syslib ;
     else
         lib = grlib_get( libid ) ;
@@ -278,7 +279,7 @@ GRAPH * bitmap_get( int libid, int mapcode )
     /* Get the map from the system library
      * (the only one that can have more than 1000 maps)
      */
-    if ( !libid || mapcode > 999 ) lib = syslib ;
+    if ( mapcode < 0 || mapcode > 999 ) lib = syslib ;
 
     if ( !lib ) lib = grlib_get( libid ) ;
 
