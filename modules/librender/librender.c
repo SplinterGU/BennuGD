@@ -93,40 +93,41 @@ char * __bgdexport( librender, locals_def ) =
     "z;\n"
     "file;\n"
     "graph;\n"
-    "size = 100;\n"
+    "size=100;\n"
     "angle;\n"
     "flags;\n"
-    "alpha = 255;\n"
-    "palette = 0;\n"
+    "alpha=255;\n"
+    "palette=0;\n"
     "region;\n"
     "resolution;\n"
-    "size_x = 100;\n"
-    "size_y = 100;\n"
-    "blendop = 0;\n"
+    "size_x=100;\n"
+    "size_y=100;\n"
+    "blendop=0;\n"
     "pointer xgraph;\n"
 
     "STRUCT _render_reserved_\n"
-    "  object_id = 0;\n"
-    "  graph_ptr = 0;\n"
-    "  xgraph_flags;\n"
-    "  STRUCT _saved_\n"
-    "    x;\n"
-    "    y;\n"
-    "    z;\n"
-    "    file;\n"
-    "    graph;\n"
-    "    size;\n"
-    "    angle;\n"
-    "    flags;\n"
-    "    alpha;\n"
-    "    palette;\n"
-    "    size_x;\n"
-    "    size_y;\n"
-    "    blendop;\n"
-    "    pointer xgraph;\n"
-    "  END \n"
-    "END \n"
-
+    "object_id=0;\n"
+    "graph_ptr=0;\n"
+    "xgraph_flags;\n"
+    "STRUCT _saved_\n"
+    "x;\n"
+    "y;\n"
+    "z;\n"
+    "file;\n"
+    "graph;\n"
+    "size;\n"
+    "angle;\n"
+    "flags;\n"
+    "alpha;\n"
+    "palette;\n"
+    "size_x;\n"
+    "size_y;\n"
+    "blendop;\n"
+    "pointer xgraph;\n"
+    "centerx;\n"
+    "centery;\n"
+    "END\n"
+    "END\n"
     ;
 
 /* --------------------------------------------------------------------------- */
@@ -191,8 +192,10 @@ DLVARFIXUP __bgdexport( librender, locals_fixup )[] =
     { "_render_reserved_._saved_.size_y" , NULL, -1, -1 },                  // 32           SAVED_GRAPHSIZEY    32
     { "_render_reserved_._saved_.blendop" , NULL, -1, -1 },                 // 33           SAVED_BLENDOP       33
     { "_render_reserved_._saved_.xgraph" , NULL, -1, -1 },                  // 34           SAVED_XGRAPH        34
+    { "_render_reserved_._saved_.centerx" , NULL, -1, -1 },                 // 35           SAVED_COORDX        35
+    { "_render_reserved_._saved_.centery" , NULL, -1, -1 },                 // 36           SAVED_COORDY        36
 
-    { "reserved.status" , NULL, -1, -1 },                                   // 35           STATUS              35
+    { "reserved.status" , NULL, -1, -1 },                                   // 37           STATUS              37
 
     { NULL , NULL, -1, -1 }
 };

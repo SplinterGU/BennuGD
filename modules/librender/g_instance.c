@@ -326,7 +326,13 @@ int draw_instance_info( INSTANCE * i, REGION * region, int * z, int * drawme )
         LOCINT32( librender, i, SAVED_GRAPHSIZEY )    != LOCINT32( librender, i, GRAPHSIZEY )     ||
         LOCDWORD( librender, i, SAVED_FLAGS )         != LOCDWORD( librender, i, FLAGS )          ||
         LOCDWORD( librender, i, SAVED_FILEID )        != LOCDWORD( librender, i, FILEID )         ||
-        LOCDWORD( librender, i, SAVED_XGRAPH )        != LOCDWORD( librender, i, XGRAPH )   ;
+        LOCDWORD( librender, i, SAVED_XGRAPH )        != LOCDWORD( librender, i, XGRAPH )         ||
+        graph->ncpoints &&
+        (
+            LOCDWORD( librender, i, SAVED_CENTERX )       != graph->cpoints[0].x                  ||
+            LOCDWORD( librender, i, SAVED_CENTERY )       != graph->cpoints[0].y
+        )
+        ;
 
     if ( changed )
     {
@@ -347,6 +353,16 @@ int draw_instance_info( INSTANCE * i, REGION * region, int * z, int * drawme )
         LOCDWORD( librender, i, SAVED_FLAGS )        = LOCDWORD( librender, i, FLAGS );
         LOCDWORD( librender, i, SAVED_FILEID )       = LOCDWORD( librender, i, FILEID );
         LOCDWORD( librender, i, SAVED_XGRAPH )       = LOCDWORD( librender, i, XGRAPH );
+        if ( graph->ncpoints )
+        {
+            LOCDWORD( librender, i, SAVED_CENTERX )      = graph->cpoints[0].x;
+            LOCDWORD( librender, i, SAVED_CENTERY )      = graph->cpoints[0].y;
+        }
+        else
+        {
+            LOCDWORD( librender, i, SAVED_CENTERX )      = CPOINT_UNDEFINED;
+            LOCDWORD( librender, i, SAVED_CENTERY )      = CPOINT_UNDEFINED;
+        }
 
         instance_get_bbox( i, graph, region );
         return 1;

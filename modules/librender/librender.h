@@ -110,8 +110,10 @@
 #define SAVED_GRAPHSIZEY    32
 #define SAVED_BLENDOP       33
 #define SAVED_XGRAPH        34
+#define SAVED_CENTERX       35
+#define SAVED_CENTERY       36
 
-#define STATUS              35
+#define STATUS              37
 
 /* --------------------------------------------------------------------------- */
 

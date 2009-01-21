@@ -291,6 +291,8 @@ void bitmap_set_cpoint( GRAPH * map, uint32_t point, int x, int y )
 
     if ( point < 0 ) return ;
 
+    if ( point == 0 ) map->modified = 1;
+
     if ( map->ncpoints <= point )
     {
         map->cpoints = ( CPOINT * ) realloc( map->cpoints, ( point + 1 ) * sizeof( CPOINT ) ) ;
