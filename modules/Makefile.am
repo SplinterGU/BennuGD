@@ -43,4 +43,4 @@ SUBDIRS = \
     mod_debug       \
     mod_flic        \
     mod_m7          \
-    mod_ffi
+#    mod_ffi
