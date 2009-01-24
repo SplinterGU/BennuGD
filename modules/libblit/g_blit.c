@@ -1780,28 +1780,6 @@ static void gr_calculate_corners(
         center_y = ( dest->height / 2.0 ) - 0.5 ;
     }
 
-    if ( scalex == 100 && scaley == 100 && angle == 0 )
-    {
-        lef_x = - center_x ;
-        rig_x = + ( dest->width  - 0.5 - center_x ) ;
-        top_y = - center_y ;
-        bot_y = + ( dest->height - 0.5 - center_y ) ;
-
-        corners[0].x = ( screen_x  + lef_x ) * 1000 ;
-        corners[0].y = ( screen_y  + top_y ) * 1000 ;
-
-        corners[1].x = ( screen_x  + rig_x ) * 1000 ;
-        corners[1].y = ( screen_y  + top_y ) * 1000 ;
-
-        corners[2].x = ( screen_x  + lef_x ) * 1000 ;
-        corners[2].y = ( screen_y  + bot_y ) * 1000 ;
-
-        corners[3].x = ( screen_x  + rig_x ) * 1000 ;
-        corners[3].y = ( screen_y  + bot_y ) * 1000 ;
-
-        return;
-    }
-
     if ( flags & B_HMIRROR )
     {
         if (_angle)
@@ -1822,6 +1800,28 @@ static void gr_calculate_corners(
         }
         else
             center_y = dest->height - center_y - 1 ;
+    }
+
+    if ( scalex == 100 && scaley == 100 && angle == 0 )
+    {
+        lef_x = - center_x ;
+        rig_x = + ( dest->width  - 0.5 - center_x ) ;
+        top_y = - center_y ;
+        bot_y = + ( dest->height - 0.5 - center_y ) ;
+
+        corners[0].x = ( screen_x  + lef_x ) * 1000 ;
+        corners[0].y = ( screen_y  + top_y ) * 1000 ;
+
+        corners[1].x = ( screen_x  + rig_x ) * 1000 ;
+        corners[1].y = ( screen_y  + top_y ) * 1000 ;
+
+        corners[2].x = ( screen_x  + lef_x ) * 1000 ;
+        corners[2].y = ( screen_y  + bot_y ) * 1000 ;
+
+        corners[3].x = ( screen_x  + rig_x ) * 1000 ;
+        corners[3].y = ( screen_y  + bot_y ) * 1000 ;
+
+        return;
     }
 
     /* Adjust size to prevent integer conversion errors */
