@@ -96,6 +96,7 @@ static int drawing_z = -512 ;
 static int _moddraw_object_info( DRAWING_OBJECT * dr, REGION * clip, int * z, int * drawme )
 {
     REGION newclip;
+    int minx, miny, maxx, maxy;
 
     * drawme = 1;
 
@@ -124,15 +125,37 @@ static int _moddraw_object_info( DRAWING_OBJECT * dr, REGION * clip, int * z, in
             break;
     }
 
+    minx = newclip.x;
+    miny = newclip.y;
+    maxx = newclip.x2;
+    maxy = newclip.y2;
+
+    if ( minx > maxx )
+    {
+        minx = newclip.x2;
+        maxx = newclip.x;
+    }
+
+    if ( miny > maxy )
+    {
+        miny = newclip.y2;
+        maxy = newclip.y;
+    }
+
+    newclip.x = minx;
+    newclip.y = miny;
+    newclip.x2 = maxx;
+    newclip.y2 = maxy;
+
     if (
         newclip.x != clip->x || newclip.y != clip->y ||
         newclip.x2 != clip->x2 || newclip.y2 != clip->y2 )
     {
         * clip = newclip;
-        return 1;
+        return 0;
     }
 
-    return 0;
+    return 1;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -531,7 +554,7 @@ static int moddraw_map_put_pixel( INSTANCE * my, int * params )
 /* --------------------------------------------------------------------------- */
 /* Declaracion de funciones                                                    */
 
-DLSYSFUNCS __bgdexport( mod_draw, functions_exports)[] =
+DLSYSFUNCS __bgdexport( mod_draw, functions_exports )[] =
 {
     /* Funciones de primitivas */
     { "DRAWING_MAP"     , "II"          , TYPE_INT  , moddraw_drawing_map       },
@@ -556,7 +579,7 @@ DLSYSFUNCS __bgdexport( mod_draw, functions_exports)[] =
 
 /* --------------------------------------------------------------------------- */
 
-char * __bgdexport( mod_draw, modules_dependency)[] =
+char * __bgdexport( mod_draw, modules_dependency )[] =
 {
     "libgrbase",
     "librender",

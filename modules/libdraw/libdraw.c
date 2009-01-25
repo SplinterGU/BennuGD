@@ -214,7 +214,6 @@ void draw_vline( GRAPH * dest, REGION * clip, int x, int y, int h )
     if ( y < clip->y ) h += y - clip->y, y = clip->y;
     if ( y + h > clip->y2 ) h = clip->y2 - y /*+ 1*/ ;
 
-
     switch ( dest->format->depth )
     {
         case 1:

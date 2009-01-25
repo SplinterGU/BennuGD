@@ -246,6 +246,7 @@ void gr_update_objects_mark_rects( int restore, int dump )
 
                 /* Update key & get_info */
                 ready = object->ready;
+                /* NOTE: Returned bbox must be ordered !!! */
                 object->changed = ( *object->info )( object->what, &object->bbox, &object->z, &object->ready );
 
                 /* Move to correct container */

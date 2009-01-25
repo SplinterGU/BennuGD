@@ -50,6 +50,8 @@ static int last_mouseangle = 0;
 static int last_mousesize = 0;
 static int last_mouseflags = 0;
 static int last_mouseregion = 0;
+static int last_mousecenterx = -1;
+static int last_mousecentery = -1;
 
 static GRAPH * mouse_map = NULL;
 
@@ -248,7 +250,13 @@ static int mouse_info( INSTANCE * i, REGION * clip, int * z, int * drawme )
         last_mouseangle  != mouseangle  ||
         last_mousesize   != mousesize   ||
         last_mouseflags  != mouseflags  ||
-        last_mouseregion != mouseregion ;
+        last_mouseregion != mouseregion ||
+        mouse_map->ncpoints &&
+        (
+            last_mousecenterx != mouse_map->cpoints[0].x ||
+            last_mousecentery != mouse_map->cpoints[0].y
+        )
+        ;
 
     if ( changed )
     {
@@ -261,6 +269,16 @@ static int mouse_info( INSTANCE * i, REGION * clip, int * z, int * drawme )
         last_mousesize      = mousesize ;
         last_mouseflags     = mouseflags ;
         last_mouseregion    = mouseregion ;
+        if ( mouse_map->ncpoints )
+        {
+            last_mousecenterx = mouse_map->cpoints[0].x;
+            last_mousecentery = mouse_map->cpoints[0].y;
+        }
+        else
+        {
+            last_mousecenterx = CPOINT_UNDEFINED;
+            last_mousecentery = CPOINT_UNDEFINED;
+        }
 
         gr_get_bbox(
             clip,
