@@ -42,6 +42,7 @@
 
 int fntcolor8 = -1 ;
 int fntcolor16 = 0xFFFF;
+int fntcolor32 = 0xFFFFFFFF;
 
 /* --------------------------------------------------------------------------- */
 
@@ -56,6 +57,7 @@ typedef struct _text
     int alignment ;
     int color8 ;
     int color16 ;
+    int color32 ;
     int objectid ;
     int last_value ;
     char * text ;           /* Memoria dinámica */
@@ -342,7 +344,7 @@ static int info_text( TEXT * text, REGION * bbox, int * z, int * drawme )
 void draw_text( TEXT * text, REGION * clip )
 {
     const char * str = get_text( text );
-    int save8, save16;
+    int save8, save16, save32;
     FONT * font;
 
     // Splinter
@@ -359,14 +361,17 @@ void draw_text( TEXT * text, REGION * clip )
 
     save8 = fntcolor8;
     save16 = fntcolor16;
+    save32 = fntcolor32;
 
     fntcolor8 = text->color8;
     fntcolor16 = text->color16;
+    fntcolor32 = text->color32;
 
     if ( !gr_text_put( 0, clip, text->fontid, text->_x, text->_y, str ) ) gr_text_destroy( text->id );
 
     fntcolor8 = save8;
     fntcolor16 = save16;
+    fntcolor32 = save32;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -411,6 +416,7 @@ int gr_text_new( int fontid, int x, int y, int alignment, const char * text )
     texts[textid].text = text ? strdup( text ) : 0 ;
     texts[textid].color8 = fntcolor8 ;
     texts[textid].color16 = fntcolor16 ;
+    texts[textid].color32 = fntcolor32 ;
     texts[textid].objectid = gr_new_object( texts[textid].z, info_text, draw_text, &texts[textid] );
     texts[textid].last_value = 0 ;
 
@@ -595,7 +601,7 @@ int gr_text_put( GRAPH * dest, REGION * clip, int fontid, int x, int y, const un
     FONT   * f ;
     uint8_t  current_char;
     int flags ;
-    int save8, save16;
+    int save8, save16, save32;
 
     if ( !text || !*text ) return -1;
     if ( fontid < 0 || fontid >= MAX_FONTS || !fonts[fontid] ) return 0; // Incorrect font type
@@ -608,6 +614,7 @@ int gr_text_put( GRAPH * dest, REGION * clip, int fontid, int x, int y, const un
 
     save8 = pixel_color8;
     save16 = pixel_color16;
+    save32 = pixel_color32;
 
     if ( fntcolor8 == -1 )
     {
@@ -617,6 +624,7 @@ int gr_text_put( GRAPH * dest, REGION * clip, int fontid, int x, int y, const un
     {
         pixel_color8 = fntcolor8;
         pixel_color16 = fntcolor16;
+        pixel_color32 = fntcolor32;
     }
 
     while ( *text )
@@ -647,6 +655,7 @@ int gr_text_put( GRAPH * dest, REGION * clip, int fontid, int x, int y, const un
 
     pixel_color8 = save8;
     pixel_color16 = save16;
+    pixel_color32 = save32;
 
     return 1;
 }
@@ -734,16 +743,33 @@ void gr_text_setcolor( int c )
     {
         fntcolor8 = 0;
         fntcolor16 = 0;
-    }
-    else if ( sys_pixel_format->depth == 8 )
-    {
-        fntcolor8 = c ;
+        fntcolor32 = 0;
     }
     else
     {
-        gr_get_rgb( c, &r, &g, &b );
-        fntcolor8 = gr_find_nearest_color( r, g, b );
-        fntcolor16 = c ;
+        switch ( sys_pixel_format->depth )
+        {
+            case    8:
+            {
+                fntcolor8 = c ;
+                break;
+            }
+
+            case    16:
+            {
+                gr_get_rgb( c, &r, &g, &b );
+                fntcolor8 = gr_find_nearest_color( r, g, b );
+                fntcolor16 = c ;
+                break;
+            }
+            case    32:
+            {
+                gr_get_rgb( c, &r, &g, &b );
+                fntcolor8 = gr_find_nearest_color( r, g, b );
+                fntcolor32 = c ;
+                break;
+            }
+        }
     }
 }
 
@@ -751,7 +777,22 @@ void gr_text_setcolor( int c )
 
 int gr_text_getcolor()
 {
-    return (( sys_pixel_format->depth == 8 ) ? fntcolor8 : fntcolor16 ) ;
+    switch ( sys_pixel_format->depth )
+    {
+        case    8:
+        {
+            return fntcolor8 ;
+        }
+
+        case    16:
+        {
+            return fntcolor16 ;
+        }
+        case    32:
+        {
+            return fntcolor32 ;
+        }
+    }
 }
 
 /* --------------------------------------------------------------------------- */
