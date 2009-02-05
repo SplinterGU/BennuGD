@@ -21892,7 +21892,7 @@ fi
 
 
 
-ac_config_files="$ac_config_files Makefile libgrbase/Makefile libvideo/Makefile libblit/Makefile librender/Makefile libdraw/Makefile libfont/Makefile libtext/Makefile libsdlhandler/Makefile libwm/Makefile libkey/Makefile libmouse/Makefile libscroll/Makefile mod_scroll/Makefile mod_mouse/Makefile mod_map/Makefile mod_video/Makefile mod_screen/Makefile mod_blendop/Makefile mod_text/Makefile mod_draw/Makefile mod_grproc/Makefile mod_effects/Makefile mod_key/Makefile mod_cd/Makefile mod_dir/Makefile mod_file/Makefile mod_joy/Makefile mod_math/Makefile mod_mem/Makefile mod_proc/Makefile mod_rand/Makefile mod_regex/Makefile mod_say/Makefile mod_sort/Makefile mod_sound/Makefile mod_string/Makefile mod_sys/Makefile mod_time/Makefile mod_timers/Makefile mod_path/Makefile mod_wm/Makefile mod_debug/Makefile mod_flic/Makefile mod_m7/Makefile mod_ffi/Makefile"
+ac_config_files="$ac_config_files Makefile libgrbase/Makefile libvideo/Makefile libblit/Makefile librender/Makefile libdraw/Makefile libfont/Makefile libtext/Makefile libsdlhandler/Makefile libwm/Makefile libkey/Makefile libmouse/Makefile libscroll/Makefile mod_scroll/Makefile mod_mouse/Makefile mod_map/Makefile mod_video/Makefile mod_screen/Makefile mod_blendop/Makefile mod_text/Makefile mod_draw/Makefile mod_grproc/Makefile mod_effects/Makefile mod_key/Makefile mod_cd/Makefile mod_dir/Makefile mod_file/Makefile mod_joy/Makefile mod_math/Makefile mod_mem/Makefile mod_proc/Makefile mod_rand/Makefile mod_regex/Makefile mod_say/Makefile mod_sort/Makefile mod_sound/Makefile mod_string/Makefile mod_sys/Makefile mod_time/Makefile mod_timers/Makefile mod_path/Makefile mod_wm/Makefile mod_debug/Makefile mod_flic/Makefile mod_m7/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -22553,7 +22553,6 @@ do
     "mod_debug/Makefile") CONFIG_FILES="$CONFIG_FILES mod_debug/Makefile" ;;
     "mod_flic/Makefile") CONFIG_FILES="$CONFIG_FILES mod_flic/Makefile" ;;
     "mod_m7/Makefile") CONFIG_FILES="$CONFIG_FILES mod_m7/Makefile" ;;
-    "mod_ffi/Makefile") CONFIG_FILES="$CONFIG_FILES mod_ffi/Makefile" ;;
 
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}

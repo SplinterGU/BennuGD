@@ -124,7 +124,6 @@ mod_wm/Makefile
 mod_debug/Makefile
 mod_flic/Makefile
 mod_m7/Makefile
-#mod_ffi/Makefile
 ])
 
 echo

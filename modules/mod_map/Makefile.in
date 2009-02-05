@@ -267,7 +267,7 @@ clean-libLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-mod_map.la: $(mod_map_la_OBJECTS) $(mod_map_la_DEPENDENCIES)
+mod_map.la: $(mod_map_la_OBJECTS) $(mod_map_la_DEPENDENCIES) 
 	$(mod_map_la_LINK) -rpath $(libdir) $(mod_map_la_OBJECTS) $(mod_map_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
