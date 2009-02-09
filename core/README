@@ -30,7 +30,7 @@ cualquier versión de estos paquetes debería funcionar correctamente.
 
 Pasos a seguir para compilar:
 
-    ./configure --enable-fpg --enable-map
+    ./configure
     make
 
 NOTAS WIN32:
