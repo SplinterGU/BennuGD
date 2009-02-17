@@ -216,10 +216,11 @@ int gr_save_fpg( int libid, const char * filename )
     rgb_component * palette = NULL;
 
     /* Get the library and open the file */
-
+/*
     if ( !libid )
         lib = syslib ;
     else
+*/
         lib = grlib_get( libid );
 
     if ( !lib ) return 0;
