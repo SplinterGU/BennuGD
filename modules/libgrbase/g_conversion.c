@@ -357,9 +357,9 @@ void gr_convert16_ScreenTo565( uint16_t * ptr, int len )
 
 void gr_fade16( GRAPH * graph, int r, int g, int b )
 {
-    uint16_t Rtable[ 32 ];
-    uint16_t Gtable[ 32 ];
-    uint16_t Btable[ 32 ];
+    uint32_t Rtable[ 32 ];
+    uint32_t Gtable[ 32 ];
+    uint32_t Btable[ 32 ];
     uint32_t x, y;
     uint32_t Rmask;
     uint32_t Rshift;
@@ -396,13 +396,35 @@ void gr_fade16( GRAPH * graph, int r, int g, int b )
     Gshift = sys_pixel_format->Gshift - sys_pixel_format->Gloss + 3;
     Bshift = sys_pixel_format->Bshift - sys_pixel_format->Bloss + 3;
 
-    for ( y = 0 ; y < graph->height ; y++ )
+    if ( graph->format->depth == 16 )
     {
-        uint16_t * ptr = ( uint16_t * ) graph->data + graph->pitch * y / 2;
+        char * p = graph->data ;
+        uint16_t * ptr ;
 
-        for ( x = 0 ; x < graph->width ; x++, ptr++ )
+        for ( y = 0 ; y < graph->height ; y++ )
         {
-            *ptr = ( Rtable[(( *ptr & Rmask ) >> Rshift )] | Gtable[(( *ptr & Gmask ) >> Gshift )] | Btable[(( *ptr & Bmask ) >> Bshift )] );
+            ptr = ( uint16_t * ) p ;
+
+            for ( x = 0 ; x < graph->width ; x++, ptr++ )
+            {
+                *ptr = ( Rtable[(( *ptr & Rmask ) >> Rshift )] | Gtable[(( *ptr & Gmask ) >> Gshift )] | Btable[(( *ptr & Bmask ) >> Bshift )] );
+            }
+            p += graph->pitch ;
+        }
+    }
+    else if ( graph->format->depth == 32 )
+    {
+        char * p = graph->data ;
+        uint32_t * ptr ;
+
+        for ( y = 0 ; y < graph->height ; y++ )
+        {
+            ptr = ( uint32_t * ) p ;
+            for ( x = 0 ; x < graph->width ; x++, ptr++ )
+            {
+                *ptr = ( Rtable[(( *ptr & Rmask ) >> Rshift )] | Gtable[(( *ptr & Gmask ) >> Gshift )] | Btable[(( *ptr & Bmask ) >> Bshift )] );
+            }
+            p += graph->pitch ;
         }
     }
 }

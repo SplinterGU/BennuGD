@@ -50,7 +50,7 @@ static void activate_vpalette()
 
     if (( sys_pixel_format ) && ( sys_pixel_format->palette ) )
     {
-        if ( sys_pixel_format->depth == 16 )
+        if ( sys_pixel_format->depth > 8 )
         {
             for ( n = 0 ; n < 256 ; n++ )
                 sys_pixel_format->palette->colorequiv[ n ] = SDL_MapRGB( screen->format, sys_pixel_format->palette->rgb[ n ].r, sys_pixel_format->palette->rgb[ n ].g, sys_pixel_format->palette->rgb[ n ].b ) ;
@@ -145,7 +145,7 @@ void gr_fade_step()
 
         activate_vpalette() ;
 
-        if ( scrbitmap->format->depth == 16 )
+        if ( scrbitmap->format->depth > 8 )
         {
             gr_fade16( scrbitmap, fade_pos.r, fade_pos.g, fade_pos.b );
         }
