@@ -44,7 +44,6 @@ static uint8_t * alpha8[ 256 ];
 static int alpha16_tables_ok = 0 ;
 static int alpha8_tables_ok = 0 ;
 
-
 /* --------------------------------------------------------------------------- */
 
 #define ALPHA_STEPS     0
@@ -161,6 +160,7 @@ static void init_alpha8_tables( int count )
 {
     int i, color, color2, inc, next = 0, factor;
     uint8_t * table8 = NULL;
+    rgb_component * rgb ;
 
     if ( count <= 0 ) count = 1;
     if ( count > 128 ) count = 128;
@@ -173,7 +173,7 @@ static void init_alpha8_tables( int count )
 
     if ( alpha8_tables_ok )
     {
-        for ( table8 = NULL, i = 0 ; i < 256 ; i++ )
+        for ( table8 = NULL, i = 0; i < 256; i++ )
         {
             if ( alpha8[ i ] != table8 )
             {
@@ -186,22 +186,27 @@ static void init_alpha8_tables( int count )
 
     /* Make new ones */
 
-    for ( i = 0 ; i < 256 ; i++ )
+    if ( !sys_pixel_format->palette )
+        rgb = ( rgb_component * ) default_palette;
+    else
+        rgb = sys_pixel_format->palette->rgb ;
+
+    for ( i = 0; i < 256; i++ )
     {
         if ( i == next )
         {
             table8 = malloc( 65536 );
             factor = next + inc / 2;
             next += inc;
-            if ( factor > 255 ) factor = 256;
+            if ( factor > 255 ) factor = 255;
 
-            for ( color = 0 ; color < 256 ; color++ )
+            for ( color = 0; color < 256; color++ )
             {
-                for ( color2 = 0 ; color2 < 256 ; color2++ )
+                for ( color2 = 0; color2 < 256; color2++ )
                 {
-                    int r = ( sys_pixel_format->palette->rgb[ color ].r * factor + sys_pixel_format->palette->rgb[ color2 ].r * ( 255 - factor ) );
-                    int g = ( sys_pixel_format->palette->rgb[ color ].g * factor + sys_pixel_format->palette->rgb[ color2 ].g * ( 255 - factor ) );
-                    int b = ( sys_pixel_format->palette->rgb[ color ].b * factor + sys_pixel_format->palette->rgb[ color2 ].b * ( 255 - factor ) );
+                    int r = ( rgb[ color ].r * factor + rgb[ color2 ].r * ( 255 - factor ) ) >> 8 ;
+                    int g = ( rgb[ color ].g * factor + rgb[ color2 ].g * ( 255 - factor ) ) >> 8 ;
+                    int b = ( rgb[ color ].b * factor + rgb[ color2 ].b * ( 255 - factor ) ) >> 8 ;
                     table8[( color << 8 ) + color2 ] = gr_find_nearest_color( r, g, b );
                 }
                 table8[ color ] = color;

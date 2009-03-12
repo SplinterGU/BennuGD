@@ -330,15 +330,15 @@ int find_nearest_color( PALETTE * pal, int first, int last, int r, int g, int b 
 
     for ( i = first; i <= last; ++i )
     {
-        rd = ( palrgb[i].r - ( r & ~0x3 ) ) ;
-        gd = ( palrgb[i].g - ( g & ~0x3 ) ) ;
-        bd = ( palrgb[i].b - ( b & ~0x3 ) ) ;
+        rd = ( palrgb[i].r - ( r /*& ~0x02 */) ) ;
+        gd = ( palrgb[i].g - ( g /*& ~0x02 */) ) ;
+        bd = ( palrgb[i].b - ( b /*& ~0x02 */) ) ;
 
-        distance = ( rd * rd ) + ( gd * gd ) + ( bd * bd );
+        distance = ( rd * rd ) + ( gd * gd ) + ( bd * bd ) ;
         if ( distance < smallest )
         {
             pixel = i;
-            if ( distance == 0 ) break;  /* Perfect match! */
+            if ( !distance ) break;  /* Perfect match! */
             smallest = distance;
         }
     }
@@ -657,10 +657,17 @@ void gr_get_rgb( int color, int *r, int *g, int *b )
 
     if ( sys_pixel_format->depth < 16 )
     {
+        rgb_component * rgb ;
+
+        if ( !sys_pixel_format->palette )
+            rgb = ( rgb_component * ) default_palette;
+        else
+            rgb = sys_pixel_format->palette->rgb ;
+
         color &= 0xFF ;
-        ( *r ) = sys_pixel_format->palette->rgb[ color ].r ;
-        ( *g ) = sys_pixel_format->palette->rgb[ color ].g ;
-        ( *b ) = sys_pixel_format->palette->rgb[ color ].b ;
+        ( *r ) = rgb[ color ].r ;
+        ( *g ) = rgb[ color ].g ;
+        ( *b ) = rgb[ color ].b ;
 
         return ;
     }
@@ -678,10 +685,17 @@ void gr_get_rgba( int color, int *r, int *g, int *b, int *a )
 
     if ( sys_pixel_format->depth < 16 )
     {
+        rgb_component * rgb ;
+
+        if ( !sys_pixel_format->palette )
+            rgb = ( rgb_component * ) default_palette;
+        else
+            rgb = sys_pixel_format->palette->rgb ;
+
         color &= 0xFF ;
-        ( *r ) = sys_pixel_format->palette->rgb[ color ].r ;
-        ( *g ) = sys_pixel_format->palette->rgb[ color ].g ;
-        ( *b ) = sys_pixel_format->palette->rgb[ color ].b ;
+        ( *r ) = rgb[ color ].r ;
+        ( *g ) = rgb[ color ].g ;
+        ( *b ) = rgb[ color ].b ;
 
         return ;
     }
@@ -748,13 +762,13 @@ void gr_make_trans_table()
     else
         rgb = ( rgb_component * ) default_palette;
 
-    for ( a = 0 ; a < 256 ; a++ )
+    for ( a = 0; a < 256; a++ )
     {
         r1 = rgb[ a ].r / 2 ;
         g1 = rgb[ a ].g / 2 ;
         b1 = rgb[ a ].b / 2 ;
 
-        for ( b = 0 ; b < a ; b++ )
+        for ( b = 0; b < a; b++ )
             trans_table[ a ][ b ] =
                 trans_table[ b ][ a ] =
                     find_nearest_color( NULL, b, a, r1 + rgb[ b ].r / 2, g1 + rgb[ b ].g / 2, b1 + rgb[ b ].b / 2 ) ;

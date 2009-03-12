@@ -83,7 +83,6 @@ uint32_t * pcolorequiv = NULL ;
 
 uint32_t _factor ;
 uint32_t _factor2 ;
-int _translucent = 0;
 
 /* --------------------------------------------------------------------------- */
 
@@ -341,7 +340,7 @@ static void draw_span_8to8_tablend( GRAPH * dest, GRAPH * orig, int x, int y, in
     while ( pixels-- )
     {
         uint8_t * tex = ( uint8_t * ) orig->data + orig->pitch * ( ct >> 16 ) + ( cs >> 16 );
-        if ( *tex ) *ptr = ( uint8_t ) ghost8[blend_func(( *tex << 8 ),*ptr )] + *ptr;
+        if ( *tex ) *ptr = ( uint8_t ) ghost8[(blend_func( *tex, *ptr ) << 8 )+ *ptr ];
         ptr++;
         cs += incs, ct += inct;
     }
@@ -1031,7 +1030,7 @@ static void draw_hspan_8to8_tablend( uint8_t * scr, uint8_t * tex, int pixels, i
     {
         for ( i = pixels; i--; )
         {
-            if ( *tex ) *scr = ( uint8_t ) ghost8[blend_func(( *tex << 8 ),*scr )] + *scr;
+            if ( *tex ) *scr = ( uint8_t ) ghost8[(blend_func( *tex,*scr ) << 8 )+ *scr ];
             scr++;
             tex += incs;
         }
@@ -1776,8 +1775,8 @@ static void gr_calculate_corners(
     }
     else
     {
-        center_x = ( dest->width  / 2.0 ) /*- 0.5 test*/ ;
-        center_y = ( dest->height / 2.0 ) /*- 0.5 test*/ ;
+        center_x = ( dest->width  / 2.0 ) - 0.5 ;
+        center_y = ( dest->height / 2.0 ) - 0.5 ;
     }
 
     if ( flags & B_HMIRROR )
@@ -1805,9 +1804,9 @@ static void gr_calculate_corners(
     if ( scalex == 100 && scaley == 100 && angle == 0 )
     {
         lef_x = - center_x ;
-        rig_x = + ( dest->width  - /*0.5 - test*/ center_x ) ;
+        rig_x = + ( dest->width  - 0.5 - center_x ) ;
         top_y = - center_y ;
-        bot_y = + ( dest->height - /*0.5 - test*/ center_y ) ;
+        bot_y = + ( dest->height - 0.5 - center_y ) ;
 
         corners[0].x = ( screen_x  + lef_x ) * 1000 ;
         corners[0].y = ( screen_y  + top_y ) * 1000 ;
@@ -1840,9 +1839,9 @@ static void gr_calculate_corners(
     /* Calculate the non-rotated non-translated coordinates */
 
     lef_x = - center_x * scalexf;
-    rig_x = + ( dest->width  - /*0.5 - test*/ center_x ) * scalexf ;
+    rig_x = + ( dest->width  - 0.5 - center_x ) * scalexf ;
     top_y = - center_y * scaleyf;
-    bot_y = + ( dest->height - /*0.5 - test*/ center_y ) * scaleyf ;
+    bot_y = + ( dest->height - 0.5 - center_y ) * scaleyf ;
 
     /* Rotate the coordinates */
 
@@ -2003,12 +2002,10 @@ void gr_rotated_blit(
         {
             if ( flags & B_TRANSLUCENT )
             {
-                _translucent = 1;
                 _factor = ((( flags & B_ALPHA_MASK ) >> B_ALPHA_SHIFT ) ) >> 1;
             }
             else
             {
-                _translucent = 0;
                 _factor = ((( flags & B_ALPHA_MASK ) >> B_ALPHA_SHIFT ) ) ;
             }
 
@@ -2045,7 +2042,6 @@ void gr_rotated_blit(
     {
         _factor = 128 ;
         _factor2 = 128 ;
-        _translucent = 1;
         ghost1 = ghost2 = colorghost ;
         ghost8 = ( uint8_t * ) trans_table ;
     }
@@ -2362,7 +2358,7 @@ void gr_rotated_blit(
     if ((( flags & B_VMIRROR ) && angle ) || (( flags & B_HMIRROR ) && !angle ) )
     {
         vertex[1].s = vertex[3].s = half_texel_size_y ;
-        vertex[0].s = vertex[2].s = gr->width - half_texel_size_x - 1 ;
+        vertex[0].s = vertex[2].s = gr->width - half_texel_size_x /*- 1*/ ;
     }
     else
     {
@@ -2373,7 +2369,7 @@ void gr_rotated_blit(
     if ((( flags & B_HMIRROR ) && angle ) || (( flags & B_VMIRROR ) && !angle ) )
     {
         vertex[2].t = vertex[3].t = half_texel_size_x;
-        vertex[0].t = vertex[1].t = gr->height - half_texel_size_y - 1 ;
+        vertex[0].t = vertex[1].t = gr->height - half_texel_size_y /*- 1*/ ;
     }
     else
     {
@@ -2601,12 +2597,10 @@ void gr_blit(
         {
             if ( flags & B_TRANSLUCENT )
             {
-                _translucent = 1;
                 _factor = ((( flags & B_ALPHA_MASK ) >> B_ALPHA_SHIFT ) ) >> 1;
             }
             else
             {
-                _translucent = 0;
                 _factor = ((( flags & B_ALPHA_MASK ) >> B_ALPHA_SHIFT ) ) ;
             }
 
@@ -2643,7 +2637,6 @@ void gr_blit(
     {
         _factor = 128 ;
         _factor2 = 128 ;
-        _translucent = 1;
         ghost1 = ghost2 = colorghost ;
         ghost8 = ( uint8_t * ) trans_table ;
     }
