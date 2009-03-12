@@ -1776,8 +1776,8 @@ static void gr_calculate_corners(
     }
     else
     {
-        center_x = ( dest->width  / 2.0 ) - 0.5 ;
-        center_y = ( dest->height / 2.0 ) - 0.5 ;
+        center_x = ( dest->width  / 2.0 ) /*- 0.5 test*/ ;
+        center_y = ( dest->height / 2.0 ) /*- 0.5 test*/ ;
     }
 
     if ( flags & B_HMIRROR )
@@ -1805,9 +1805,9 @@ static void gr_calculate_corners(
     if ( scalex == 100 && scaley == 100 && angle == 0 )
     {
         lef_x = - center_x ;
-        rig_x = + ( dest->width  - 0.5 - center_x ) ;
+        rig_x = + ( dest->width  - /*0.5 - test*/ center_x ) ;
         top_y = - center_y ;
-        bot_y = + ( dest->height - 0.5 - center_y ) ;
+        bot_y = + ( dest->height - /*0.5 - test*/ center_y ) ;
 
         corners[0].x = ( screen_x  + lef_x ) * 1000 ;
         corners[0].y = ( screen_y  + top_y ) * 1000 ;
@@ -1840,9 +1840,9 @@ static void gr_calculate_corners(
     /* Calculate the non-rotated non-translated coordinates */
 
     lef_x = - center_x * scalexf;
-    rig_x = + ( dest->width  - 0.5 - center_x ) * scalexf ;
+    rig_x = + ( dest->width  - /*0.5 - test*/ center_x ) * scalexf ;
     top_y = - center_y * scaleyf;
-    bot_y = + ( dest->height - 0.5 - center_y ) * scaleyf ;
+    bot_y = + ( dest->height - /*0.5 - test*/ center_y ) * scaleyf ;
 
     /* Rotate the coordinates */
 
@@ -2050,9 +2050,7 @@ void gr_rotated_blit(
         ghost8 = ( uint8_t * ) trans_table ;
     }
 
-    /*
-        if ((flags & B_TRANSLUCENT) && !trans_table_updated) gr_make_trans_table() ;
-    */
+    if ((flags & B_TRANSLUCENT) && !trans_table_updated) gr_make_trans_table() ;
 
     blend_func = ( BLEND_FUNC * ) NULL;
 
@@ -2650,9 +2648,7 @@ void gr_blit(
         ghost8 = ( uint8_t * ) trans_table ;
     }
 
-    /*
-        if ((flags & B_TRANSLUCENT) && !trans_table_updated) gr_make_trans_table() ;
-    */
+    if ((flags & B_TRANSLUCENT) && !trans_table_updated) gr_make_trans_table() ;
 
     blend_func = ( BLEND_FUNC * ) NULL;
 
