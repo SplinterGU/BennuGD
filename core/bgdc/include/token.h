@@ -40,18 +40,18 @@
 #define NOTOKEN    6
 
 extern struct _token
-{
-	int type ;
-	int code ;
-	float value ;
-	int file;
-	int line;
-} token ;
+    {
+        int type ;
+        int code ;
+        float value ;
+        int file;
+        int line;
+    } token ;
 
-extern void token_init (const char * source, int file) ;
-extern void token_next () ;
-extern void token_back () ;
-extern void token_dump () ;
+extern void token_init( const char * source, int file ) ;
+extern void token_next() ;
+extern void token_back() ;
+extern void token_dump() ;
 
 extern int line_count ;
 extern int current_file ;

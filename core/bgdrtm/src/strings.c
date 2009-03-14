@@ -75,6 +75,40 @@ static int      string_last_id = 1 ;        /* How many strings slots are used. 
 
 /* --------------------------------------------------------------------------- */
 
+void _string_ptoa( char *t, void * ptr )
+{
+    unsigned char c ;
+    int p = ( int ) ptr;
+
+    c = ((( p ) & 0xf0000000 ) >> 28 );
+    *t++ = ( c > 9 ? '7' : '0' ) + c; // '7' + 10 = 'A'
+
+    c = ((( p ) & 0x0f000000 ) >> 24 );
+    *t++ = ( c > 9 ? '7' : '0' ) + c; // '7' + 10 = 'A'
+
+    c = ((( p ) & 0x00f00000 ) >> 20 );
+    *t++ = ( c > 9 ? '7' : '0' ) + c; // '7' + 10 = 'A'
+
+    c = ((( p ) & 0x000f0000 ) >> 16 );
+    *t++ = ( c > 9 ? '7' : '0' ) + c; // '7' + 10 = 'A'
+
+    c = ((( p ) & 0x0000f000 ) >> 12 );
+    *t++ = ( c > 9 ? '7' : '0' ) + c; // '7' + 10 = 'A'
+
+    c = ((( p ) & 0x00000f00 ) >>  8 );
+    *t++ = ( c > 9 ? '7' : '0' ) + c; // '7' + 10 = 'A'
+
+    c = ((( p ) & 0x000000f0 ) >>  4 );
+    *t++ = ( c > 9 ? '7' : '0' ) + c; // '7' + 10 = 'A'
+
+    c = ( p ) & 0x0000000f;
+    *t++ = ( c > 9 ? '7' : '0' ) + c; // '7' + 10 = 'A'
+
+    *t = '\0';
+}
+
+/* --------------------------------------------------------------------------- */
+
 void _string_ntoa( char *p, unsigned long n )
 {
     char * i = p ;
@@ -524,7 +558,7 @@ int string_ptoa( void * n )
     str = ( char * ) malloc( 10 ) ;
     assert( str )  ;
 
-    sprintf( str, "%p", n ) ;
+    _string_ptoa( str, n ) ;
 
     id = string_getid() ;
     string_ptr[id] = str ;
@@ -559,7 +593,8 @@ int string_ftoa( float n )
     if ( ptr >= str && *ptr == '.' ) *ptr = 0 ;
     if ( *str == 0 )
     {
-        *str = '0'; * ( str + 1 ) = '\0';
+        *str = '0';
+        * ( str + 1 ) = '\0';
     }
 
     id = string_getid() ;

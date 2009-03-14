@@ -26,6 +26,9 @@
 
 #include "bgdc.h"
 
+#include "varspace.h"
+#include "messages.c"
+
 /* ---------------------------------------------------------------------- */
 /* Gestor de constantes                                                   */
 /* ---------------------------------------------------------------------- */
@@ -34,58 +37,70 @@ static CONSTANT * constants ;
 static int constants_used ;
 static int constants_reserved ;
 
-void constants_init ()
+void constants_init()
 {
-	constants = (CONSTANT *) calloc (16, sizeof(CONSTANT));
-	constants_reserved = 16 ;
-	constants_used = 0 ;
+    constants = ( CONSTANT * ) calloc( 16, sizeof( CONSTANT ) );
+    constants_reserved = 16 ;
+    constants_used = 0 ;
 }
 
-void constants_alloc (int count)
+void constants_alloc( int count )
 {
-	constants = (CONSTANT *) realloc (constants, (constants_reserved += count) * sizeof(CONSTANT)) ;
-	if (!constants)
-	{
-		fprintf (stdout, "constants_alloc: out of memory\n") ;
-		exit (1) ;
-	}
+    constants = ( CONSTANT * ) realloc( constants, ( constants_reserved += count ) * sizeof( CONSTANT ) ) ;
+    if ( !constants )
+    {
+        fprintf( stdout, "constants_alloc: out of memory\n" ) ;
+        exit( 1 ) ;
+    }
 }
 
-CONSTANT * constants_search (int code)
+CONSTANT * constants_search( int code )
 {
-	int i ;
+    int i ;
 
-	for (i = 0 ; i < constants_used ; i++)
-		if (constants[i].code == code)
-			return &constants[i] ;
-	return 0 ;
+    for ( i = 0 ; i < constants_used ; i++ ) if ( constants[i].code == code ) return &constants[i] ;
+    return 0 ;
 }
 
-void constants_add (int code, TYPEDEF type, int value)
+void constants_add( int code, TYPEDEF type, int value )
 {
     CONSTANT * c;
 
-	if (constants_used == constants_reserved) constants_alloc (16) ;
+    if ( constants_used == constants_reserved ) constants_alloc( 16 ) ;
 
-    if ((c = constants_search(code)) && (!typedef_is_equal(c->type, type) || c->value != value))
+    if ( varspace_search( &global, code ) )
     {
-        token.code = string_new(identifier_name(code));
-        token.type = STRING;
-        compile_error("Constant redefined");
+        token.code = code;
+        token.type = IDENTIFIER;
+        compile_error( MSG_VARIABLE_REDECLARED_AS_CONSTANT ) ;
     }
 
-	constants[constants_used].code = code ;
-	constants[constants_used].type = type ;
-	constants[constants_used].value = value ;
-	constants_used++ ;
+    if ( varspace_search( &local, code ) )
+    {
+        token.code = code;
+        token.type = IDENTIFIER;
+        compile_error( MSG_VARIABLE_REDECLARED_AS_CONSTANT ) ;
+    }
+
+    if (( c = constants_search( code ) ) && ( !typedef_is_equal( c->type, type ) || c->value != value ) )
+    {
+        token.code = string_new( identifier_name( code ) );
+        token.type = STRING;
+        compile_error( "Constant redefined" );
+    }
+
+    constants[constants_used].code = code ;
+    constants[constants_used].type = type ;
+    constants[constants_used].value = value ;
+    constants_used++ ;
 }
 
-void constants_dump ()
+void constants_dump()
 {
-	int i ;
+    int i ;
 
-	printf ("---- %d constants of %d ----\n", constants_used, constants_reserved) ;
-	for (i = 0 ; i < constants_used ; i++)
-		printf ("%4d: %-16s= %d\n", i,
-			identifier_name(constants[i].code), constants[i].value) ;
+    printf( "---- %d constants of %d ----\n", constants_used, constants_reserved ) ;
+    for ( i = 0 ; i < constants_used ; i++ )
+        printf( "%4d: %-16s= %d\n", i,
+                identifier_name( constants[i].code ), constants[i].value ) ;
 }

@@ -173,8 +173,9 @@ static int check_numeric_or_string_types( expresion_result * left, expresion_res
         codeblock_add( code, MN_A2STR, 0 ) ;
         return MN_STRING;
     }
-    if ( typedef_is_array( right->type ) && right->type.chunk[1].type == TYPE_CHAR &&
-            typedef_is_array( left->type )  &&  left->type.chunk[1].type == TYPE_CHAR )
+    if (
+        typedef_is_array( right->type ) && right->type.chunk[1].type == TYPE_CHAR &&
+        typedef_is_array( left->type )  &&  left->type.chunk[1].type == TYPE_CHAR )
     {
         left->type = typedef_new( TYPE_STRING );
         right->type = typedef_new( TYPE_STRING );
@@ -716,12 +717,13 @@ SYSPROC * compile_bestproc( SYSPROC ** procs )
                 reduce_arrays = 0;
                 res = compile_expresion( 0, 1, 0, 0 );
                 reduce_arrays = 1;
-
-                while ( typedef_is_pointer( res.type ) )
-                {
-                    codeblock_add( code, MN_PTR, 0 );
-                    res.type = typedef_reduce( res.type );
-                }
+                /*
+                                while ( typedef_is_pointer( res.type ) )
+                                {
+                                    codeblock_add( code, MN_PTR, 0 );
+                                    res.type = typedef_reduce( res.type );
+                                }
+                */
                 if ( typedef_is_struct( res.type ) )
                 {
                     int size = res.type.varspace->count * sizeof( DCB_TYPEDEF );
@@ -755,13 +757,26 @@ SYSPROC * compile_bestproc( SYSPROC ** procs )
             {
                 switch ( validtypes[0] )
                 {
-                    case 'I': type = TYPE_DWORD   ; break ;
-                    case 'B': type = TYPE_BYTE    ; break ;
-                    case 'W': type = TYPE_WORD    ; break ;
-                    case 'S': type = TYPE_STRING  ; break ;
-                    case 'P': type = TYPE_POINTER ; break ;
-                    case 'F': type = TYPE_FLOAT   ; break ;
-                    default:  compile_error( MSG_INVALID_PARAMT ) ;
+                    case 'I':
+                        type = TYPE_DWORD   ;
+                        break ;
+                    case 'B':
+                        type = TYPE_BYTE    ;
+                        break ;
+                    case 'W':
+                        type = TYPE_WORD    ;
+                        break ;
+                    case 'S':
+                        type = TYPE_STRING  ;
+                        break ;
+                    case 'P':
+                        type = TYPE_POINTER ;
+                        break ;
+                    case 'F':
+                        type = TYPE_FLOAT   ;
+                        break ;
+                    default:
+                        compile_error( MSG_INVALID_PARAMT ) ;
                 }
 
                 res = compile_expresion( 0, 0, 0, type ) ;
@@ -806,6 +821,7 @@ SYSPROC * compile_bestproc( SYSPROC ** procs )
                 default:
                     break ;
             }
+
             if ( strlen( validtypes ) != 1 ) compile_error( MSG_INVALID_PARAMT ) ;
 
             /* Eliminate all functions that are not selected */
@@ -824,13 +840,26 @@ SYSPROC * compile_bestproc( SYSPROC ** procs )
 
             switch ( validtypes[0] )
             {
-                case 'I': type = TYPE_DWORD   ; break ;
-                case 'B': type = TYPE_BYTE    ; break ;
-                case 'W': type = TYPE_WORD    ; break ;
-                case 'S': type = TYPE_STRING  ; break ;
-                case 'P': type = TYPE_POINTER ; break ;
-                case 'F': type = TYPE_FLOAT   ; break ;
-                default:  compile_error( MSG_INVALID_PARAMT ) ;
+                case 'I':
+                    type = TYPE_DWORD   ;
+                    break ;
+                case 'B':
+                    type = TYPE_BYTE    ;
+                    break ;
+                case 'W':
+                    type = TYPE_WORD    ;
+                    break ;
+                case 'S':
+                    type = TYPE_STRING  ;
+                    break ;
+                case 'P':
+                    type = TYPE_POINTER ;
+                    break ;
+                case 'F':
+                    type = TYPE_FLOAT   ;
+                    break ;
+                default:
+                    compile_error( MSG_INVALID_PARAMT ) ;
             }
             res = convert_result_type( res, type ) ;
         }
@@ -876,13 +905,26 @@ int compile_paramlist( BASETYPE * types, const char * paramtypes )
         {
             switch ( *paramtypes++ )
             {
-                case 'I': type = TYPE_DWORD   ; break ;
-                case 'B': type = TYPE_BYTE    ; break ;
-                case 'W': type = TYPE_WORD    ; break ;
-                case 'S': type = TYPE_STRING  ; break ;
-                case 'P': type = TYPE_POINTER ; break ;
-                case 'F': type = TYPE_FLOAT   ; break ;
-                default:  compile_error( MSG_INVALID_PARAMT ) ;
+                case 'I':
+                    type = TYPE_DWORD   ;
+                    break ;
+                case 'B':
+                    type = TYPE_BYTE    ;
+                    break ;
+                case 'W':
+                    type = TYPE_WORD    ;
+                    break ;
+                case 'S':
+                    type = TYPE_STRING  ;
+                    break ;
+                case 'P':
+                    type = TYPE_POINTER ;
+                    break ;
+                case 'F':
+                    type = TYPE_FLOAT   ;
+                    break ;
+                default:
+                    compile_error( MSG_INVALID_PARAMT ) ;
             }
         }
 
@@ -1056,6 +1098,12 @@ expresion_result compile_cast()
             res.type = type;
             return res;
         }
+        else if ( typedef_is_float( res.type ) )
+        {
+            codeblock_add( code, MN_FLOAT2INT, 0 );
+            res.type = type;
+            return res;
+        }
         compile_error( MSG_PTR_CONVERSION );
     }
     else if ( typedef_is_float( type ) )
@@ -1132,7 +1180,7 @@ expresion_result compile_cast()
             codeblock_add( code, MN_STR2INT, 0 );
             res.type = typedef_new( TYPE_INT );
         }
-        else if ( typedef_is_integer( res.type ) || typedef_base( res.type ) == TYPE_CHAR )
+        else if ( typedef_is_integer( res.type ) || typedef_is_pointer( res.type ) || typedef_base( res.type ) == TYPE_CHAR )
         {
             if ( res.lvalue )
             {
@@ -1766,7 +1814,7 @@ expresion_result compile_operand()
             {
                 if ( t == MN_FLOAT )
                 {
-/*                    if ( right.fvalue == 0.0 ) compile_error( MSG_DIVIDE_BY_ZERO ) ; */
+                    /*                    if ( right.fvalue == 0.0 ) compile_error( MSG_DIVIDE_BY_ZERO ) ; */
                     if ( op == MN_MOD ) compile_error( MSG_NUMBER_REQUIRED ) ;
                     res.fvalue = left.fvalue / right.fvalue ;
                     res.type = typedef_new( TYPE_FLOAT ) ;
@@ -1803,8 +1851,9 @@ expresion_result compile_operation()
 
         /* Suma(o resta) de un entero a un puntero */
 
-        if ( typedef_is_pointer( left.type ) && token.type == IDENTIFIER &&
-                ( token.code == identifier_plus || token.code == identifier_minus ) ) /* "+" o "-" */
+        if (
+            typedef_is_pointer( left.type ) && token.type == IDENTIFIER &&
+            ( token.code == identifier_plus || token.code == identifier_minus ) ) /* "+" o "-" */
         {
             TYPEDEF ptr_t = typedef_reduce( left.type ) ;
 
@@ -1974,11 +2023,12 @@ expresion_result compile_comparison_1()
     for ( ;; )
     {
         token_next() ;
-        if ( token.type == IDENTIFIER && (
-                    token.code == identifier_gt ||      /* ">" */
-                    token.code == identifier_lt ||      /* "<" */
-                    token.code == identifier_gte ||     /* ">=" or "=>" */
-                    token.code == identifier_lte ) )    /* "<=" or "=<" */
+        if (
+            token.type == IDENTIFIER && (
+                token.code == identifier_gt ||      /* ">" */
+                token.code == identifier_lt ||      /* "<" */
+                token.code == identifier_gte ||     /* ">=" or "=>" */
+                token.code == identifier_lte ) )    /* "<=" or "=<" */
         {
             int is_unsigned = 0;
 
@@ -1993,7 +2043,8 @@ expresion_result compile_comparison_1()
             t = check_numeric_or_string_types( &left, &right ) ;
             if ( t != MN_FLOAT && t != MN_STRING ) t = MN_DWORD ;
 
-            if ( typedef_is_unsigned( left.type ) && typedef_is_unsigned( right.type ) ) is_unsigned = MN_UNSIGNED;
+            if ( typedef_is_unsigned( left.type ) || typedef_is_unsigned( right.type ) )
+                is_unsigned = MN_UNSIGNED;
 
             if ( op == identifier_gt )   /* ">" */
             {
@@ -2385,7 +2436,7 @@ expresion_result compile_ternarycond()
             if (
                 ( typedef_is_integer( base.type ) && base.value ) ||
                 ( typedef_is_float( base.type ) && base.fvalue )
-               )
+            )
             {
                 right = compile_expresion( 0, 0, 0, 0 );
                 if ( code ) pos = codeblock_pos( code );
@@ -2425,7 +2476,6 @@ expresion_result compile_ternarycond()
 
         if ( base.constant && res.constant && right.constant )
         {
-            printf( "%s:%d\n", __FILE__, __LINE__ ) ; fflush( stdout ) ;
             if ( typedef_is_integer( base.type ) )
             {
                 return base.value ? right : res;
@@ -2495,7 +2545,13 @@ expresion_result compile_subexpresion()
                     right.type = base.type ;
                 }
 
-                if ( !typedef_is_pointer( right.type ) && !typedef_is_integer( right.type ) ) compile_error( MSG_NOT_A_POINTER ) ;
+                if ( typedef_base( right.type ) == TYPE_FLOAT )
+                {
+                    codeblock_add( code, MN_FLOAT2INT, 0 );
+                    right.type = base.type;
+                }
+
+//                if ( !typedef_is_pointer( right.type ) && !typedef_is_integer( right.type ) ) compile_error( MSG_NOT_A_POINTER ) ;
 
                 /* Un puntero "void" puede asignarse a otro cualquiera */
                 //            if (typedef_base(typedef_reduce(right.type)) == TYPE_UNDEFINED) {

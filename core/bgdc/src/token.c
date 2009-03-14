@@ -446,7 +446,9 @@ void preprocessor_expand( DEFINE * def )
 
     /* Find left parenthesis */
 
-    disable_expand_defines++; token_next(); disable_expand_defines--;
+    disable_expand_defines++;
+    token_next();
+    disable_expand_defines--;
     if ( token.type != IDENTIFIER || token.code != identifier_leftp ) compile_error( MSG_EXPECTED, "(" );
 
     /* Mark parameters' starting and ending positions */
@@ -511,7 +513,9 @@ void preprocessor_expand( DEFINE * def )
             if ( !*source_ptr ) break;
             if ( *source_ptr != '\n' )
             {
-                disable_expand_defines++; token_next(); disable_expand_defines--;
+                disable_expand_defines++;
+                token_next();
+                disable_expand_defines--;
                 if ( token.type == NOTOKEN ) break;
                 if ( token.type == IDENTIFIER )
                 {
@@ -662,8 +666,10 @@ void preprocessor()
         while ( *ptr && *ptr != '\n' )
             if ( *ptr == '\\' && *( ptr + 1 ) == '\n' )
             {
-                *ptr = ' '; ptr++;
-                *ptr = ' '; ptr++;
+                *ptr = ' ';
+                ptr++;
+                *ptr = ' ';
+                ptr++;
                 line_count++;
             }
             else
@@ -713,7 +719,9 @@ void preprocessor()
 
         prepro_stack[prepro_sp++] = token.code;
 
-        disable_expand_defines++; token_next(); disable_expand_defines--;
+        disable_expand_defines++;
+        token_next();
+        disable_expand_defines--;
 
         if ( token.type != IDENTIFIER ) compile_error( MSG_INVALID_IDENTIFIER );
 
@@ -766,8 +774,10 @@ void preprocessor()
         while ( *ptr && *ptr != '\n' && *ptr != ';' )
             if ( *ptr == '\\' && *( ptr + 1 ) == '\n' )
             {
-                *ptr = ' '; ptr++;
-                *ptr = ' '; ptr++;
+                *ptr = ' ';
+                ptr++;
+                *ptr = ' ';
+                ptr++;
                 line_count++;
             }
             else

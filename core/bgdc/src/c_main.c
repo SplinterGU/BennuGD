@@ -440,7 +440,7 @@ static void import_module( const char * filename )
 #define SIZEDLLEXT  3
 #endif
 
-    strncpy ( soname, filename, sizeof ( soname ) );
+    strncpy( soname, filename, sizeof( soname ) );
 
     for ( ptr = soname; *ptr; ptr++ )
     {
@@ -453,8 +453,8 @@ static void import_module( const char * filename )
     pex = modules_exts;
     while ( pex && * pex )
     {
-        int nlen = strlen ( soname );
-        int elen = strlen ( *pex );
+        int nlen = strlen( soname );
+        int elen = strlen( *pex );
         if ( nlen > elen && strcmp( &soname[nlen - elen], *pex ) == 0 )
         {
             soname[nlen - elen] = '\0' ;
@@ -572,7 +572,7 @@ void compile_import( void )
     token_next() ;
     if ( token.type != STRING ) compile_error( MSG_STRING_EXP ) ;
 
-    import_module( string_get ( token.code ) );
+    import_module( string_get( token.code ) );
 }
 
 /* ---------------------------------------------------------------------- */

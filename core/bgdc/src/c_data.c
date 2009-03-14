@@ -364,7 +364,7 @@ int compile_struct_data( VARSPACE * n, segment * data, int size, int sub )
 
 static void set_type( TYPEDEF * t, BASETYPE type )
 {
-#if 0
+/*
     int n ;
 
     for ( n = 0 ; n < t->depth ; n++ )
@@ -374,8 +374,7 @@ static void set_type( TYPEDEF * t, BASETYPE type )
             break ;
         }
     return ;
-#endif
-
+*/
     t->chunk[t->depth-1].type = type ;
 }
 
@@ -660,6 +659,8 @@ int compile_varspace( VARSPACE * n, segment * data, int additive, int copies, in
             for ( i = 0; collision[i];i++ )
                 if ( varspace_search( collision[i], token.code ) ) compile_error( MSG_VARIABLE_REDECLARE ) ;
         /* (2006/11/19 19:34 GMT-03:00, Splinter - jj_arg@yahoo.com) */
+
+        if ( constants_search( token.code ) ) compile_error( MSG_CONSTANT_REDECLARED_AS_VARIABLE ) ;
 
         code = token.code ;
         n->vars[n->count].code = token.code ;

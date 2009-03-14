@@ -104,7 +104,6 @@ void core_init()
 {
     int i = 0, code ;
 
-
     while ( constants_def[i].name )
     {
         code = identifier_search_or_add( constants_def[i].name ) ;
