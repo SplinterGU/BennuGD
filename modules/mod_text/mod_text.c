@@ -132,6 +132,7 @@ static int modtext_write_var (INSTANCE * my, int * params)
                 t = TEXT_CHARARRAY;
                 break;
             }
+            break;
 
         case TYPE_SBYTE:
             t = TEXT_SBYTE;
@@ -147,6 +148,10 @@ static int modtext_write_var (INSTANCE * my, int * params)
 
         case TYPE_INT:
             t = TEXT_INT;
+            break;
+
+        case TYPE_POINTER:
+            t = TEXT_POINTER;
             break;
 
         default:

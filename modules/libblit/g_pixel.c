@@ -31,7 +31,6 @@ int pixel_color8 = 15 ;
 uint16_t pixel_color16 = 0xFFFF ;
 uint16_t pixel_color16_alpha = 0xFFFF ;
 uint32_t pixel_color32 = 0xFFFFFFFF ;
-uint32_t pixel_color32_alpha = 0xFFFFFFFF ;
 
 int pixel_alpha = 255;
 uint8_t * pixel_alpha8 = NULL ;
@@ -113,7 +112,47 @@ void gr_put_pixel( GRAPH * dest, int x, int y, int color )
             break;
 
         case 32:
-            _Pixel32(( uint8_t * ) dest->data + dest->pitch * y + ( x << 2 ), (unsigned int) color, 0 ) ; // Alpha pending
+            {
+                uint32_t * ptr = ( uint8_t * ) dest->data + dest->pitch * y + ( x << 2 ) ;
+
+                if ( pixel_alpha == 255 && ( color & 0xff000000 ) == 0xff000000 )
+                {
+                    *ptr = color ;
+                }
+                else
+                {
+                    unsigned int _f = color & 0xff000000, _f2 ;
+                    unsigned int r, g, b ;
+
+                    _f = ( _f >> 24 ) * pixel_alpha / 255 ;
+                    _f2 = 255 - _f ;
+
+                    if ( _f != 0xff000000 )
+                    {
+                        r = ( ( color & 0x00ff0000 ) * _f + (( *ptr & 0x00ff0000 ) * _f2 ) ) >> 8 ;
+                        g = ( ( color & 0x0000ff00 ) * _f + (( *ptr & 0x0000ff00 ) * _f2 ) ) >> 8 ;
+                        b = ( ( color & 0x000000ff ) * _f + (( *ptr & 0x000000ff ) * _f2 ) ) >> 8 ;
+
+                        if ( r > 0x00ff0000 ) r = 0x00ff0000 ; else r &= 0x00ff0000 ;
+                        if ( g > 0x0000ff00 ) g = 0x0000ff00 ; else g &= 0x0000ff00 ;
+                        if ( b > 0x000000ff ) b = 0x000000ff ; else b &= 0x000000ff ;
+
+                        *ptr = 0xff000000 | r | g | b ;
+                    }
+                    else
+                    {
+                        r = ( ( color & 0x00ff0000 ) * pixel_alpha + (( *ptr & 0x00ff0000 ) * _f2 ) ) >> 8 ;
+                        g = ( ( color & 0x0000ff00 ) * pixel_alpha + (( *ptr & 0x0000ff00 ) * _f2 ) ) >> 8 ;
+                        b = ( ( color & 0x000000ff ) * pixel_alpha + (( *ptr & 0x000000ff ) * _f2 ) ) >> 8 ;
+
+                        if ( r > 0x00ff0000 ) r = 0x00ff0000 ; else r &= 0x00ff0000 ;
+                        if ( g > 0x0000ff00 ) g = 0x0000ff00 ; else g &= 0x0000ff00 ;
+                        if ( b > 0x000000ff ) b = 0x000000ff ; else b &= 0x000000ff ;
+
+                        *ptr = 0xff000000 | r | g | b ;
+                    }
+                }
+            }
             break;
     }
 

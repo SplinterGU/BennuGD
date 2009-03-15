@@ -41,7 +41,6 @@ extern int pixel_alpha ;
 
 extern uint8_t * pixel_alpha8 ;
 extern uint16_t * pixel_alpha16 ;
-extern uint32_t * pixel_alpha32 ;
 
 /* --------------------------------------------------------------------------- */
 /* Pixels */
@@ -51,7 +50,7 @@ extern uint32_t * pixel_alpha32 ;
 
 #define _Pixel8(ptr,color)              * ((uint8_t *)(ptr)) = (( pixel_alpha == 255 ) ? (color) : (pixel_alpha8[(uint8_t)(((color) << 8) + *(ptr))]))
 #define _Pixel16(ptr,color,color_alpha) * ((uint16_t *)(ptr)) = (( pixel_alpha == 255 ) ? (color) : (pixel_alpha16[(uint16_t)*(ptr)] + (color_alpha)))
-#define _Pixel32(ptr,color,color_alpha) * ((uint32_t *)(ptr)) = (( pixel_alpha == 255 ) ? (color) : (color))
+#define _Pixel32(ptr,color)             * ((uint32_t *)(ptr)) = (( pixel_alpha == 255 ) ? (color) : (color))
 
 /* --------------------------------------------------------------------------- */
 

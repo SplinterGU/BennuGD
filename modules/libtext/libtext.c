@@ -121,8 +121,7 @@ DLVARFIXUP __bgdexport( libtext, globals_fixup )[] =
 
 static const char * get_text( TEXT * text )
 {
-    static char buffer[128];
-    char * aux;
+    static char buffer[64];
 
     switch ( text->on )
     {
@@ -133,50 +132,50 @@ static const char * get_text( TEXT * text )
             return string_get( *( int* )text->var ) ;
 
         case TEXT_INT:
-//            sprintf( buffer, "%d", *( int * )text->var ) ;
             _string_ntoa( buffer, *( int * )text->var ) ;
             return buffer ;
 
         case TEXT_DWORD:
-//            sprintf( buffer, "%u", *( int * )text->var ) ;
             _string_utoa( buffer, *( int * )text->var ) ;
             return buffer ;
 
         case TEXT_FLOAT:
-            sprintf( buffer, "%f", *( float * )text->var ) ;
-            aux = buffer + 1; // We know that buffer contain at least 2 chars, skip first
-            while ( *( aux + 1 ) ) aux++; // We can test for pointer + 1 because we know that buffer contain at least 2 chars
-            while ( *aux == '0' && *( aux - 1 ) != '.' ) *aux-- = '\0';
-            return buffer ;
+            {
+                char * aux;
+                sprintf( buffer, "%f", *( float * )text->var ) ;
+                aux = buffer + 1; // We know that buffer contain at least 2 chars, skip first
+                while ( *( aux + 1 ) ) aux++; // We can test for pointer + 1 because we know that buffer contain at least 2 chars
+                while ( *aux == '0' && *( aux - 1 ) != '.' ) *aux-- = '\0';
+                return buffer ;
+            }
 
         case TEXT_BYTE:
-//            sprintf( buffer, "%d", *( uint8_t * )text->var ) ;
             _string_utoa( buffer, *( uint8_t * )text->var ) ;
             return buffer ;
 
         case TEXT_SBYTE:
-//            sprintf( buffer, "%d", *( int8_t * )text->var ) ;
             _string_ntoa( buffer, *( int8_t * )text->var ) ;
             return buffer ;
 
         case TEXT_CHAR:
-//            sprintf( buffer, "%c", *( uint8_t * )text->var ) ;
             *buffer = *( uint8_t * )text->var ;
             *( buffer + 1 ) = '\0';
             return buffer ;
 
         case TEXT_WORD:
-//            sprintf( buffer, "%d", *( uint16_t * )text->var ) ;
             _string_utoa( buffer, *( uint16_t * )text->var ) ;
             return buffer ;
 
         case TEXT_SHORT:
-//            sprintf( buffer, "%d", *( int16_t * )text->var ) ;
             _string_ntoa( buffer, *( int16_t * )text->var ) ;
             return buffer ;
 
         case TEXT_CHARARRAY:
             return ( const char * )( text->var );
+
+        case TEXT_POINTER:
+            _string_ptoa( buffer, *( void ** ) text->var );
+            return buffer ;
     }
 
     return NULL;
@@ -302,6 +301,7 @@ static int info_text( TEXT * text, REGION * bbox, int * z, int * drawme )
         case TEXT_FLOAT:
         case TEXT_INT:
         case TEXT_DWORD:
+        case TEXT_POINTER:
             if ( text->last_value == *( int * )text->var ) return 0;
             text->last_value = *( int * )text->var;
             return 1;

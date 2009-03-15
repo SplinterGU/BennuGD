@@ -126,15 +126,58 @@ _inline void _HLine32_nostipple( uint32_t * ptr, uint32_t length )
 {
     register int n ;
 
-    if ( pixel_alpha == 255 )
+    if ( pixel_alpha == 255 && ( pixel_color32 & 0xff000000 ) == 0xff000000 )
     {
         for ( n = length; n >= 0; n-- ) *ptr++ = pixel_color32 ;
     }
-    /*    else
+    else
+    {
+        unsigned int _f = pixel_color32 & 0xff000000, _f2 ;
+        unsigned int _c1, _c2, _c3 ;
+        unsigned int r, g, b ;
+
+        _f = ( _f >> 24 ) * pixel_alpha / 255 ;
+        _f2 = 255 - _f ;
+
+        if ( _f != 0xff000000 )
         {
-            for ( n = length; n >= 0; n--, ptr++ ) *ptr = pixel_alpha16[ *ptr ] + pixel_color16_alpha ;
+            _c1 = ( pixel_color32 & 0x00ff0000 ) * _f ;
+            _c2 = ( pixel_color32 & 0x0000ff00 ) * _f ;
+            _c3 = ( pixel_color32 & 0x000000ff ) * _f ;
+
+            for ( n = length; n >= 0; n-- )
+            {
+                r = ( _c1 + (( *ptr & 0x00ff0000 ) * _f2 ) ) >> 8 ;
+                g = ( _c2 + (( *ptr & 0x0000ff00 ) * _f2 ) ) >> 8 ;
+                b = ( _c3 + (( *ptr & 0x000000ff ) * _f2 ) ) >> 8 ;
+
+                if ( r > 0x00ff0000 ) r = 0x00ff0000 ; else r &= 0x00ff0000 ;
+                if ( g > 0x0000ff00 ) g = 0x0000ff00 ; else g &= 0x0000ff00 ;
+                if ( b > 0x000000ff ) b = 0x000000ff ; else b &= 0x000000ff ;
+
+                *ptr++ = 0xff000000 | r | g | b ;
+            }
         }
-        */
+        else
+        {
+            _c1 = ( pixel_color32 & 0x00ff0000 ) * pixel_alpha ;
+            _c2 = ( pixel_color32 & 0x0000ff00 ) * pixel_alpha ;
+            _c3 = ( pixel_color32 & 0x000000ff ) * pixel_alpha ;
+
+            for ( n = length; n >= 0; n-- )
+            {
+                r = ( _c1 + (( *ptr & 0x00ff0000 ) * _f2 ) ) >> 8 ;
+                g = ( _c2 + (( *ptr & 0x0000ff00 ) * _f2 ) ) >> 8 ;
+                b = ( _c3 + (( *ptr & 0x000000ff ) * _f2 ) ) >> 8 ;
+
+                if ( r > 0x00ff0000 ) r = 0x00ff0000 ; else r &= 0x00ff0000 ;
+                if ( g > 0x0000ff00 ) g = 0x0000ff00 ; else g &= 0x0000ff00 ;
+                if ( b > 0x000000ff ) b = 0x000000ff ; else b &= 0x000000ff ;
+
+                *ptr++ = 0xff000000 | r | g | b ;
+            }
+        }
+    }
 }
 
 /* --------------------------------------------------------------------------- */
@@ -143,31 +186,77 @@ _inline void _HLine32_stipple( uint32_t * ptr, uint32_t length )
 {
     register int n ;
 
-    if ( pixel_alpha == 255 )
+    if ( pixel_alpha == 255 && ( pixel_color32 & 0xff000000 ) == 0xff000000 )
     {
-        for ( n = length; n >= 0; n--, ptr++ )
+        for ( n = length; n >= 0; n-- )
         {
-            if ( drawing_stipple & 1 ) * ptr = pixel_color32 ;
+            if ( drawing_stipple & 1 ) *ptr = pixel_color32 ;
             drawing_stipple = (( drawing_stipple << 1 ) | (( drawing_stipple & 0x80000000 ) ? 1 : 0 ) );
         }
     }
-    /*
-        else
+    else
+    {
+        unsigned int _f = pixel_color32 & 0xff000000, _f2 ;
+        unsigned int _c1, _c2, _c3 ;
+        unsigned int r, g, b ;
+
+        _f = ( _f >> 24 ) * pixel_alpha / 255 ;
+        _f2 = 255 - _f ;
+
+        if ( _f != 0xff000000 )
         {
-            for ( n = length; n >= 0; n--, ptr++ )
+            _c1 = ( pixel_color32 & 0x00ff0000 ) * _f ;
+            _c2 = ( pixel_color32 & 0x0000ff00 ) * _f ;
+            _c3 = ( pixel_color32 & 0x000000ff ) * _f ;
+
+            for ( n = length; n >= 0; n-- )
             {
-                if ( drawing_stipple & 1 ) * ptr = pixel_alpha32[ *ptr ] + pixel_color32_alpha ;
+                if ( drawing_stipple & 1 )
+                {
+                    r = ( _c1 + (( *ptr & 0x00ff0000 ) * _f2 ) ) >> 8 ;
+                    g = ( _c2 + (( *ptr & 0x0000ff00 ) * _f2 ) ) >> 8 ;
+                    b = ( _c3 + (( *ptr & 0x000000ff ) * _f2 ) ) >> 8 ;
+
+                    if ( r > 0x00ff0000 ) r = 0x00ff0000 ; else r &= 0x00ff0000 ;
+                    if ( g > 0x0000ff00 ) g = 0x0000ff00 ; else g &= 0x0000ff00 ;
+                    if ( b > 0x000000ff ) b = 0x000000ff ; else b &= 0x000000ff ;
+
+                    *ptr++ = 0xff000000 | r | g | b ;
+                }
                 drawing_stipple = (( drawing_stipple << 1 ) | (( drawing_stipple & 0x80000000 ) ? 1 : 0 ) );
             }
         }
-    */
+        else
+        {
+            _c1 = ( pixel_color32 & 0x00ff0000 ) * pixel_alpha ;
+            _c2 = ( pixel_color32 & 0x0000ff00 ) * pixel_alpha ;
+            _c3 = ( pixel_color32 & 0x000000ff ) * pixel_alpha ;
+
+            for ( n = length; n >= 0; n-- )
+            {
+                if ( drawing_stipple & 1 )
+                {
+                    r = ( _c1 + (( *ptr & 0x00ff0000 ) * _f2 ) ) >> 8 ;
+                    g = ( _c2 + (( *ptr & 0x0000ff00 ) * _f2 ) ) >> 8 ;
+                    b = ( _c3 + (( *ptr & 0x000000ff ) * _f2 ) ) >> 8 ;
+
+                    if ( r > 0x00ff0000 ) r = 0x00ff0000 ; else r &= 0x00ff0000 ;
+                    if ( g > 0x0000ff00 ) g = 0x0000ff00 ; else g &= 0x0000ff00 ;
+                    if ( b > 0x000000ff ) b = 0x000000ff ; else b &= 0x000000ff ;
+
+                    *ptr++ = 0xff000000 | r | g | b ;
+                }
+                drawing_stipple = (( drawing_stipple << 1 ) | (( drawing_stipple & 0x80000000 ) ? 1 : 0 ) );
+            }
+        }
+    }
 }
 
 /* --------------------------------------------------------------------------- */
 /*
  *  FUNCTION : draw_vline
  *
- *  Draw a vertical rectangle
+ *  Draw a vertical line
  *
  *  PARAMS :
  *      dest            Destination bitmap or NULL for screen
@@ -220,7 +309,7 @@ void draw_vline( GRAPH * dest, REGION * clip, int x, int y, int h )
         {
             uint8_t * ptr = dest->data;
             int mask ;
-            ptr += dest->pitch * y + x / 8;
+            ptr += dest->pitch * y + ( x >> 3 ) ;
             mask = ( 1 << ( 7 - ( x & 7 ) ) );
             if ( drawing_stipple != 0xFFFFFFFF )
             {
@@ -277,7 +366,7 @@ void draw_vline( GRAPH * dest, REGION * clip, int x, int y, int h )
         case 16:
         {
             uint16_t * ptr = dest->data ;
-            int inc = dest->pitch / 2 ;
+            int inc = dest->pitch >> 1 ;
             ptr += inc * y + x ;
             if ( drawing_stipple != 0xFFFFFFFF )
             {
@@ -302,23 +391,137 @@ void draw_vline( GRAPH * dest, REGION * clip, int x, int y, int h )
         case 32:
         {
             uint32_t * ptr = dest->data ;
-            int inc = dest->pitch / 4 ;
+            int inc = dest->pitch >> 2 ;
             ptr += inc * y + x ;
             if ( drawing_stipple != 0xFFFFFFFF )
             {
-                while ( h-- >= 0 )
+                if ( pixel_alpha == 255 && ( pixel_color32 & 0xff000000 ) == 0xff000000 )
                 {
-                    if ( drawing_stipple & 1 ) _Pixel32( ptr, pixel_color32, pixel_color32_alpha ) ;
-                    drawing_stipple = (( drawing_stipple << 1 ) | (( drawing_stipple & 0x80000000 ) ? 1 : 0 ) );
-                    ptr += inc ;
+                    while ( h-- >= 0 )
+                    {
+                        if ( drawing_stipple & 1 ) * ptr = pixel_color32 ;
+                        drawing_stipple = (( drawing_stipple << 1 ) | (( drawing_stipple & 0x80000000 ) ? 1 : 0 ) );
+                        ptr += inc ;
+                    }
+                }
+                else
+                {
+                    unsigned int _f = pixel_color32 & 0xff000000, _f2 ;
+                    unsigned int _c1, _c2, _c3 ;
+                    unsigned int r, g, b ;
+
+                    _f = ( _f >> 24 ) * pixel_alpha / 255 ;
+                    _f2 = 255 - _f ;
+
+                    if ( _f != 0xff000000 )
+                    {
+                        _c1 = ( pixel_color32 & 0x00ff0000 ) * _f ;
+                        _c2 = ( pixel_color32 & 0x0000ff00 ) * _f ;
+                        _c3 = ( pixel_color32 & 0x000000ff ) * _f ;
+
+                        while ( h-- >= 0 )
+                        {
+                            if ( drawing_stipple & 1 )
+                            {
+                                r = ( _c1 + (( *ptr & 0x00ff0000 ) * _f2 ) ) >> 8 ;
+                                g = ( _c2 + (( *ptr & 0x0000ff00 ) * _f2 ) ) >> 8 ;
+                                b = ( _c3 + (( *ptr & 0x000000ff ) * _f2 ) ) >> 8 ;
+
+                                if ( r > 0x00ff0000 ) r = 0x00ff0000 ; else r &= 0x00ff0000 ;
+                                if ( g > 0x0000ff00 ) g = 0x0000ff00 ; else g &= 0x0000ff00 ;
+                                if ( b > 0x000000ff ) b = 0x000000ff ; else b &= 0x000000ff ;
+
+                                *ptr = 0xff000000 | r | g | b ;
+                            }
+                            drawing_stipple = (( drawing_stipple << 1 ) | (( drawing_stipple & 0x80000000 ) ? 1 : 0 ) );
+                            ptr += inc;
+                        }
+                    }
+                    else
+                    {
+                        _c1 = ( pixel_color32 & 0x00ff0000 ) * pixel_alpha ;
+                        _c2 = ( pixel_color32 & 0x0000ff00 ) * pixel_alpha ;
+                        _c3 = ( pixel_color32 & 0x000000ff ) * pixel_alpha ;
+
+                        while ( h-- >= 0 )
+                        {
+                            if ( drawing_stipple & 1 )
+                            {
+                                r = ( _c1 + (( *ptr & 0x00ff0000 ) * _f2 ) ) >> 8 ;
+                                g = ( _c2 + (( *ptr & 0x0000ff00 ) * _f2 ) ) >> 8 ;
+                                b = ( _c3 + (( *ptr & 0x000000ff ) * _f2 ) ) >> 8 ;
+
+                                if ( r > 0x00ff0000 ) r = 0x00ff0000 ; else r &= 0x00ff0000 ;
+                                if ( g > 0x0000ff00 ) g = 0x0000ff00 ; else g &= 0x0000ff00 ;
+                                if ( b > 0x000000ff ) b = 0x000000ff ; else b &= 0x000000ff ;
+
+                                *ptr = 0xff000000 | r | g | b ;
+                            }
+                            drawing_stipple = (( drawing_stipple << 1 ) | (( drawing_stipple & 0x80000000 ) ? 1 : 0 ) );
+                            ptr += inc;
+                        }
+                    }
                 }
             }
             else
             {
-                while ( h-- >= 0 )
+                if ( pixel_alpha == 255 && ( pixel_color32 & 0xff000000 ) == 0xff000000 )
                 {
-                    _Pixel32( ptr, pixel_color32, pixel_color32_alpha ) ;
-                    ptr += inc ;
+                    while ( h-- >= 0 )
+                    {
+                        * ptr = pixel_color32 ;
+                        ptr += inc ;
+                    }
+                }
+                else
+                {
+                    unsigned int _f = pixel_color32 & 0xff000000, _f2 ;
+                    unsigned int _c1, _c2, _c3 ;
+                    unsigned int r, g, b ;
+
+                    _f = ( _f >> 24 ) * pixel_alpha / 255 ;
+                    _f2 = 255 - _f ;
+
+                    if ( _f != 0xff000000 )
+                    {
+                        _c1 = ( pixel_color32 & 0x00ff0000 ) * _f ;
+                        _c2 = ( pixel_color32 & 0x0000ff00 ) * _f ;
+                        _c3 = ( pixel_color32 & 0x000000ff ) * _f ;
+
+                        while ( h-- >= 0 )
+                        {
+                            r = ( _c1 + (( *ptr & 0x00ff0000 ) * _f2 ) ) >> 8 ;
+                            g = ( _c2 + (( *ptr & 0x0000ff00 ) * _f2 ) ) >> 8 ;
+                            b = ( _c3 + (( *ptr & 0x000000ff ) * _f2 ) ) >> 8 ;
+
+                            if ( r > 0x00ff0000 ) r = 0x00ff0000 ; else r &= 0x00ff0000 ;
+                            if ( g > 0x0000ff00 ) g = 0x0000ff00 ; else g &= 0x0000ff00 ;
+                            if ( b > 0x000000ff ) b = 0x000000ff ; else b &= 0x000000ff ;
+
+                            *ptr = 0xff000000 | r | g | b ;
+                            ptr += inc;
+                        }
+                    }
+                    else
+                    {
+                        _c1 = ( pixel_color32 & 0x00ff0000 ) * pixel_alpha ;
+                        _c2 = ( pixel_color32 & 0x0000ff00 ) * pixel_alpha ;
+                        _c3 = ( pixel_color32 & 0x000000ff ) * pixel_alpha ;
+
+                        while ( h-- >= 0 )
+                        {
+                            r = ( _c1 + (( *ptr & 0x00ff0000 ) * _f2 ) ) >> 8 ;
+                            g = ( _c2 + (( *ptr & 0x0000ff00 ) * _f2 ) ) >> 8 ;
+                            b = ( _c3 + (( *ptr & 0x000000ff ) * _f2 ) ) >> 8 ;
+
+                            if ( r > 0x00ff0000 ) r = 0x00ff0000 ; else r &= 0x00ff0000 ;
+                            if ( g > 0x0000ff00 ) g = 0x0000ff00 ; else g &= 0x0000ff00 ;
+                            if ( b > 0x000000ff ) b = 0x000000ff ; else b &= 0x000000ff ;
+
+                            *ptr = 0xff000000 | r | g | b ;
+                            ptr += inc;
+                        }
+                    }
                 }
             }
         }
@@ -385,7 +588,7 @@ void draw_hline( GRAPH * dest, REGION * clip, int x, int y, int w )
         {
             uint8_t * ptr = dest->data;
             int mask ;
-            ptr += dest->pitch * y + x / 8;
+            ptr += dest->pitch * y + ( x >> 3 );
             mask = ( 1 << ( 7 - ( x & 7 ) ) );
 
             if ( drawing_stipple != 0xFFFFFFFF )
@@ -441,7 +644,7 @@ void draw_hline( GRAPH * dest, REGION * clip, int x, int y, int w )
         case 16:
         {
             uint16_t * ptr = dest->data ;
-            ptr += dest->pitch * y / 2 + x ;
+            ptr += ( dest->pitch >> 1 ) * y + x ;
             if ( drawing_stipple == 0xFFFFFFFF )
                 _HLine16_nostipple( ptr, w ) ;
             else
@@ -452,7 +655,7 @@ void draw_hline( GRAPH * dest, REGION * clip, int x, int y, int w )
         case 32:
         {
             uint32_t * ptr = dest->data ;
-            ptr += dest->pitch * y / 4 + x ;
+            ptr += ( dest->pitch >> 2 ) * y + x ;
             if ( drawing_stipple == 0xFFFFFFFF )
                 _HLine32_nostipple( ptr, w ) ;
             else
@@ -548,8 +751,8 @@ void draw_box( GRAPH * dest, REGION * clip, int x, int y, int w, int h )
         case 16:
         {
             uint16_t * ptr = dest->data ;
-            int inc = dest->pitch / 2 ;
-            ptr += dest->pitch / 2 * y + x ;
+            int inc = dest->pitch >> 1 ;
+            ptr += inc * y + x ;
             while ( h-- >= 0 )
             {
                 _HLine16_nostipple( ptr, w ) ;
@@ -561,8 +764,8 @@ void draw_box( GRAPH * dest, REGION * clip, int x, int y, int w, int h )
         case 32:
         {
             uint32_t * ptr = dest->data ;
-            int inc = dest->pitch / 4 ;
-            ptr += dest->pitch / 4 * y + x ;
+            int inc = dest->pitch >> 2 ;
+            ptr += inc * y + x ;
             while ( h-- >= 0 )
             {
                 _HLine32_nostipple( ptr, w ) ;
@@ -734,8 +937,8 @@ void draw_fcircle( GRAPH * dest, REGION * clip, int x, int y, int r )
     {
         if ( cx != cy )
         {
-            draw_hline( dest, clip, x - cy, y - cx, 2 * cy /*+1*/ ) ;
-            if ( cx ) draw_hline( dest, clip, x - cy, y + cx, 2 * cy /*+1*/ ) ;
+            draw_hline( dest, clip, x - cy, y - cx, cy << 1 /*+1*/ ) ;
+            if ( cx ) draw_hline( dest, clip, x - cy, y + cx, cy << 1 /*+1*/ ) ;
         }
         if ( df < 0 )
         {
@@ -744,8 +947,8 @@ void draw_fcircle( GRAPH * dest, REGION * clip, int x, int y, int r )
         else
         {
             df += dse, de += 2, dse += 4;
-            draw_hline( dest, clip, x - cx, y - cy, 2 * cx /*+1*/ ) ;
-            if ( cy ) draw_hline( dest, clip, x - cx, y + cy, 2 * cx /*+1*/ ) ;
+            draw_hline( dest, clip, x - cx, y - cy, cx << 1 /*+1*/ ) ;
+            if ( cy ) draw_hline( dest, clip, x - cx, y + cy, cx << 1 /*+1*/ ) ;
             cy-- ;
         }
         cx++ ;
@@ -814,7 +1017,8 @@ void draw_line( GRAPH * dest, REGION * clip, int x, int y, int w, int h )
     dest->modified = 2 ;
     dest->info_flags &= ~GI_CLEAN;
 
-    w1 = ABS( w ); h1 = ABS( h );
+    w1 = ABS( w );
+    h1 = ABS( h );
 
     /* Clipping de la línea - INCORRECTO pero funcional */
 
@@ -823,45 +1027,53 @@ void draw_line( GRAPH * dest, REGION * clip, int x, int y, int w, int h )
     if ( x < clip->x )
     { /* izquierda */
         if (( x + w ) < clip->x ) return ;
-        n = clip->x - x; m = w ? ( n * h ) / ABS( w ) : 0;
+        n = clip->x - x;
+        m = w ? ( n * h ) / ABS( w ) : 0;
         x += n, w -= n, y += m, h -= m ;    // if (w == 0) return ;
     }
     if (( x + w ) < clip->x )
     { /* w < 0 */
-        n = clip->x - ( x + w ); m = w ? ( n * h ) / ABS( w ) : 0;
+        n = clip->x - ( x + w );
+        m = w ? ( n * h ) / ABS( w ) : 0;
         w += n, h -= m ; // if (w == 0) return ;
     }
     if ( y < clip->y )
     { /* arriba */
         if (( y + h ) < clip->y ) return ;
-        m = clip->y - y; n = h ? ( m * w ) / ABS( h ) : 0;
+        m = clip->y - y;
+        n = h ? ( m * w ) / ABS( h ) : 0;
         x += n, w -= n, y += m, h -= m ; // if (h == 0) return ;
     }
     if (( y + h ) < clip->y )
     { /* h < 0 */
-        m = clip->y - ( y + h ); n = h ? ( m * w ) / ABS( h ) : 0;
+        m = clip->y - ( y + h );
+        n = h ? ( m * w ) / ABS( h ) : 0;
         w -= n, h += m ; // if (h == 0) return ;
     }
     if ( x > clip->x2 )
     { /* derecha */
         if (( x + w ) > clip->x2 ) return ;
-        n = x - clip->x2; m = w ? ( n * h ) / ABS( w ) : 0;
+        n = x - clip->x2;
+        m = w ? ( n * h ) / ABS( w ) : 0;
         x -= n, w += n, y += m, h -= m ; // if (w == 0) return ;
     }
     if (( x + w ) > clip->x2 )
     { /* w > 0 */
-        n = ( x + w ) - clip->x2; m = w ? ( n * h ) / ABS( w ) : 0;
+        n = ( x + w ) - clip->x2;
+        m = w ? ( n * h ) / ABS( w ) : 0;
         w -= n, h -= m ; // if (w == 0) return ;
     }
     if ( y > clip->y2 )
     { /* abajo */
         if (( y + h ) > clip->y2 ) return ;
-        m = y - clip->y2; n = h ? ( m * w ) / ABS( h ) : 0;
+        m = y - clip->y2;
+        n = h ? ( m * w ) / ABS( h ) : 0;
         x += n, w -= n, y -= m, h += m ; // if (h == 0) return ;
     }
     if (( y + h ) > clip->y2 )
     { /* h > 0 */
-        m = ( y + h ) - clip->y2; n = h ? ( m * w ) / ABS( h ) : 0;
+        m = ( y + h ) - clip->y2;
+        n = h ? ( m * w ) / ABS( h ) : 0;
         w -= n, h -= m ; // if (h == 0) return ;
     }
 
@@ -871,26 +1083,34 @@ void draw_line( GRAPH * dest, REGION * clip, int x, int y, int w, int h )
 
     /* Aquí va una implementación deprisa y corriendo de Bresenham */
 
-    w = ABS( w ); h = ABS( h );
+    w = ABS( w );
+    h = ABS( h );
 
     if ( w > h )
     {
-        i1 = 2 * h1; dd = i1 - w1; i2 = dd - w1; dd -= w1 - w;
+        i1 = 2 * h1;
+        dd = i1 - w1;
+        i2 = dd - w1;
+        dd -= w1 - w;
     }
     else
     {
-        i1 = 2 * w1; dd = i1 - h1; i2 = dd - h1; dd -= h1 - h;
+        i1 = 2 * w1;
+        dd = i1 - h1;
+        i2 = dd - h1;
+        dd -= h1 - h;
     }
 
     switch ( dest->format->depth )
     {
         case 1:
         {
-            uint8_t * ptr = dest->data + dest->pitch * y + x / 8;
+            uint8_t * ptr = dest->data + dest->pitch * y + ( x >> 3 ) ;
             uint8_t mask, rmask ;
             mask = ( 1 << ( 7 - ( x & 7 ) ) );
 
-            if ( hinc < 0 ) rmask = 0x01 ; else rmask = 0x80 ;
+            if ( hinc < 0 ) rmask = 0x01 ;
+            else rmask = 0x80 ;
 
             if ( w > h ) while ( w-- >= 0 )
                 {
@@ -986,7 +1206,7 @@ void draw_line( GRAPH * dest, REGION * clip, int x, int y, int w, int h )
         break;
         case 16:
         {
-            uint16_t * ptr = ( uint16_t * ) dest->data + dest->pitch * y / 2 + x;
+            uint16_t * ptr = ( uint16_t * ) dest->data + ( dest->pitch >> 1 ) * y + x;
 
             if ( w > h ) while ( w-- >= 0 )
                 {
@@ -1008,24 +1228,300 @@ void draw_line( GRAPH * dest, REGION * clip, int x, int y, int w, int h )
         break;
         case 32:
         {
-            uint32_t * ptr = ( uint32_t * ) dest->data + dest->pitch * y / 4 + x;
+            uint32_t * ptr = ( uint32_t * ) dest->data + ( dest->pitch >> 2 ) * y + x;
 
-            if ( w > h ) while ( w-- >= 0 )
+            if ( drawing_stipple == 0xffffffff )
+            {
+                if ( w > h )
                 {
-                    if ( drawing_stipple & 1 ) _Pixel32( ptr, pixel_color32, pixel_color32_alpha ) ;
-                    drawing_stipple = (( drawing_stipple << 1 ) | (( drawing_stipple & 0x80000000 ) ? 1 : 0 ) );
-                    ptr += hinc;
-                    if ( dd >= 0 ) ptr += vinc, dd += i2 ;
-                    else dd += i1 ;
+                    if ( pixel_alpha == 255 && ( pixel_color32 & 0xff000000 ) == 0xff000000 )
+                    {
+                        while ( w-- >= 0 )
+                        {
+                            *ptr = pixel_color32 ;
+                            ptr += hinc;
+                            if ( dd >= 0 ) ptr += vinc, dd += i2 ;
+                            else dd += i1 ;
+                        }
+                    }
+                    else
+                    {
+                        unsigned int _f = pixel_color32 & 0xff000000, _f2 ;
+                        unsigned int _c1, _c2, _c3 ;
+                        unsigned int r, g, b ;
+
+                        _f = ( _f >> 24 ) * pixel_alpha / 255 ;
+                        _f2 = 255 - _f ;
+
+                        if ( _f != 0xff000000 )
+                        {
+                            _c1 = ( pixel_color32 & 0x00ff0000 ) * _f ;
+                            _c2 = ( pixel_color32 & 0x0000ff00 ) * _f ;
+                            _c3 = ( pixel_color32 & 0x000000ff ) * _f ;
+
+                            while ( w-- >= 0 )
+                            {
+                                r = ( _c1 + (( *ptr & 0x00ff0000 ) * _f2 ) ) >> 8 ;
+                                g = ( _c2 + (( *ptr & 0x0000ff00 ) * _f2 ) ) >> 8 ;
+                                b = ( _c3 + (( *ptr & 0x000000ff ) * _f2 ) ) >> 8 ;
+
+                                if ( r > 0x00ff0000 ) r = 0x00ff0000 ; else r &= 0x00ff0000 ;
+                                if ( g > 0x0000ff00 ) g = 0x0000ff00 ; else g &= 0x0000ff00 ;
+                                if ( b > 0x000000ff ) b = 0x000000ff ; else b &= 0x000000ff ;
+
+                                *ptr = 0xff000000 | r | g | b ;
+                                ptr += hinc;
+                                if ( dd >= 0 ) ptr += vinc, dd += i2 ;
+                                else dd += i1 ;
+                            }
+                        }
+                        else
+                        {
+                            _c1 = ( pixel_color32 & 0x00ff0000 ) * pixel_alpha ;
+                            _c2 = ( pixel_color32 & 0x0000ff00 ) * pixel_alpha ;
+                            _c3 = ( pixel_color32 & 0x000000ff ) * pixel_alpha ;
+
+                            while ( w-- >= 0 )
+                            {
+                                r = ( _c1 + (( *ptr & 0x00ff0000 ) * _f2 ) ) >> 8 ;
+                                g = ( _c2 + (( *ptr & 0x0000ff00 ) * _f2 ) ) >> 8 ;
+                                b = ( _c3 + (( *ptr & 0x000000ff ) * _f2 ) ) >> 8 ;
+
+                                if ( r > 0x00ff0000 ) r = 0x00ff0000 ; else r &= 0x00ff0000 ;
+                                if ( g > 0x0000ff00 ) g = 0x0000ff00 ; else g &= 0x0000ff00 ;
+                                if ( b > 0x000000ff ) b = 0x000000ff ; else b &= 0x000000ff ;
+
+                                *ptr = 0xff000000 | r | g | b ;
+                                ptr += hinc;
+                                if ( dd >= 0 ) ptr += vinc, dd += i2 ;
+                                else dd += i1 ;
+                            }
+                        }
+                    }
                 }
-            else while ( h-- >= 0 )
+                else
                 {
-                    if ( drawing_stipple & 1 ) _Pixel32( ptr, pixel_color32, pixel_color32_alpha ) ;
-                    drawing_stipple = (( drawing_stipple << 1 ) | (( drawing_stipple & 0x80000000 ) ? 1 : 0 ) );
-                    ptr += vinc;
-                    if ( dd >= 0 ) ptr += hinc, dd += i2 ;
-                    else dd += i1 ;
+                    if ( pixel_alpha == 255 && ( pixel_color32 & 0xff000000 ) == 0xff000000 )
+                    {
+                        while ( h-- >= 0 )
+                        {
+                            *ptr = pixel_color32 ;
+                            ptr += vinc;
+                            if ( dd >= 0 ) ptr += hinc, dd += i2 ;
+                            else dd += i1 ;
+                        }
+                    }
+                    else
+                    {
+                        unsigned int _f = pixel_color32 & 0xff000000, _f2 ;
+                        unsigned int _c1, _c2, _c3 ;
+                        unsigned int r, g, b ;
+
+                        _f = ( _f >> 24 ) * pixel_alpha / 255 ;
+                        _f2 = 255 - _f ;
+
+                        if ( _f != 0xff000000 )
+                        {
+                            _c1 = ( pixel_color32 & 0x00ff0000 ) * _f ;
+                            _c2 = ( pixel_color32 & 0x0000ff00 ) * _f ;
+                            _c3 = ( pixel_color32 & 0x000000ff ) * _f ;
+
+                            while ( h-- >= 0 )
+                            {
+                                r = ( _c1 + (( *ptr & 0x00ff0000 ) * _f2 ) ) >> 8 ;
+                                g = ( _c2 + (( *ptr & 0x0000ff00 ) * _f2 ) ) >> 8 ;
+                                b = ( _c3 + (( *ptr & 0x000000ff ) * _f2 ) ) >> 8 ;
+
+                                if ( r > 0x00ff0000 ) r = 0x00ff0000 ; else r &= 0x00ff0000 ;
+                                if ( g > 0x0000ff00 ) g = 0x0000ff00 ; else g &= 0x0000ff00 ;
+                                if ( b > 0x000000ff ) b = 0x000000ff ; else b &= 0x000000ff ;
+
+                                *ptr = 0xff000000 | r | g | b ;
+                                ptr += vinc;
+                                if ( dd >= 0 ) ptr += hinc, dd += i2 ;
+                                else dd += i1 ;
+                            }
+                        }
+                        else
+                        {
+                            _c1 = ( pixel_color32 & 0x00ff0000 ) * pixel_alpha ;
+                            _c2 = ( pixel_color32 & 0x0000ff00 ) * pixel_alpha ;
+                            _c3 = ( pixel_color32 & 0x000000ff ) * pixel_alpha ;
+
+                            while ( h-- >= 0 )
+                            {
+                                r = ( _c1 + (( *ptr & 0x00ff0000 ) * _f2 ) ) >> 8 ;
+                                g = ( _c2 + (( *ptr & 0x0000ff00 ) * _f2 ) ) >> 8 ;
+                                b = ( _c3 + (( *ptr & 0x000000ff ) * _f2 ) ) >> 8 ;
+
+                                if ( r > 0x00ff0000 ) r = 0x00ff0000 ; else r &= 0x00ff0000 ;
+                                if ( g > 0x0000ff00 ) g = 0x0000ff00 ; else g &= 0x0000ff00 ;
+                                if ( b > 0x000000ff ) b = 0x000000ff ; else b &= 0x000000ff ;
+
+                                *ptr = 0xff000000 | r | g | b ;
+                                ptr += vinc;
+                                if ( dd >= 0 ) ptr += hinc, dd += i2 ;
+                                else dd += i1 ;
+                            }
+                        }
+                    }
                 }
+            }
+            else
+            {
+                if ( w > h )
+                {
+                    if ( pixel_alpha == 255 && ( pixel_color32 & 0xff000000 ) == 0xff000000 )
+                    {
+                        while ( w-- >= 0 )
+                        {
+                            if ( drawing_stipple & 1 ) *ptr = pixel_color32 ;
+                            drawing_stipple = (( drawing_stipple << 1 ) | (( drawing_stipple & 0x80000000 ) ? 1 : 0 ) );
+                            ptr += hinc;
+                            if ( dd >= 0 ) ptr += vinc, dd += i2 ;
+                            else dd += i1 ;
+                        }
+                    }
+                    else
+                    {
+                        unsigned int _f = pixel_color32 & 0xff000000, _f2 ;
+                        unsigned int _c1, _c2, _c3 ;
+                        unsigned int r, g, b ;
+
+                        _f = ( _f >> 24 ) * pixel_alpha / 255 ;
+                        _f2 = 255 - _f ;
+
+                        if ( _f != 0xff000000 )
+                        {
+                            _c1 = ( pixel_color32 & 0x00ff0000 ) * _f ;
+                            _c2 = ( pixel_color32 & 0x0000ff00 ) * _f ;
+                            _c3 = ( pixel_color32 & 0x000000ff ) * _f ;
+
+                            while ( w-- >= 0 )
+                            {
+                                if ( drawing_stipple & 1 )
+                                {
+                                    r = ( _c1 + (( *ptr & 0x00ff0000 ) * _f2 ) ) >> 8 ;
+                                    g = ( _c2 + (( *ptr & 0x0000ff00 ) * _f2 ) ) >> 8 ;
+                                    b = ( _c3 + (( *ptr & 0x000000ff ) * _f2 ) ) >> 8 ;
+
+                                    if ( r > 0x00ff0000 ) r = 0x00ff0000 ; else r &= 0x00ff0000 ;
+                                    if ( g > 0x0000ff00 ) g = 0x0000ff00 ; else g &= 0x0000ff00 ;
+                                    if ( b > 0x000000ff ) b = 0x000000ff ; else b &= 0x000000ff ;
+
+                                    *ptr = 0xff000000 | r | g | b ;
+                                }
+                                drawing_stipple = (( drawing_stipple << 1 ) | (( drawing_stipple & 0x80000000 ) ? 1 : 0 ) );
+                                ptr += hinc;
+                                if ( dd >= 0 ) ptr += vinc, dd += i2 ;
+                                else dd += i1 ;
+                            }
+                        }
+                        else
+                        {
+                            _c1 = ( pixel_color32 & 0x00ff0000 ) * pixel_alpha ;
+                            _c2 = ( pixel_color32 & 0x0000ff00 ) * pixel_alpha ;
+                            _c3 = ( pixel_color32 & 0x000000ff ) * pixel_alpha ;
+
+                            while ( w-- >= 0 )
+                            {
+                                if ( drawing_stipple & 1 )
+                                {
+                                    r = ( _c1 + (( *ptr & 0x00ff0000 ) * _f2 ) ) >> 8 ;
+                                    g = ( _c2 + (( *ptr & 0x0000ff00 ) * _f2 ) ) >> 8 ;
+                                    b = ( _c3 + (( *ptr & 0x000000ff ) * _f2 ) ) >> 8 ;
+
+                                    if ( r > 0x00ff0000 ) r = 0x00ff0000 ; else r &= 0x00ff0000 ;
+                                    if ( g > 0x0000ff00 ) g = 0x0000ff00 ; else g &= 0x0000ff00 ;
+                                    if ( b > 0x000000ff ) b = 0x000000ff ; else b &= 0x000000ff ;
+
+                                    *ptr = 0xff000000 | r | g | b ;
+                                }
+                                drawing_stipple = (( drawing_stipple << 1 ) | (( drawing_stipple & 0x80000000 ) ? 1 : 0 ) );
+                                ptr += hinc;
+                                if ( dd >= 0 ) ptr += vinc, dd += i2 ;
+                                else dd += i1 ;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if ( pixel_alpha == 255 && ( pixel_color32 & 0xff000000 ) == 0xff000000 )
+                    {
+                        while ( h-- >= 0 )
+                        {
+                            if ( drawing_stipple & 1 ) *ptr = pixel_color32 ;
+                            drawing_stipple = (( drawing_stipple << 1 ) | (( drawing_stipple & 0x80000000 ) ? 1 : 0 ) );
+                            ptr += vinc;
+                            if ( dd >= 0 ) ptr += hinc, dd += i2 ;
+                            else dd += i1 ;
+                        }
+                    }
+                    else
+                    {
+                        unsigned int _f = pixel_color32 & 0xff000000, _f2 ;
+                        unsigned int _c1, _c2, _c3 ;
+                        unsigned int r, g, b ;
+
+                        _f = ( _f >> 24 ) * pixel_alpha / 255 ;
+                        _f2 = 255 - _f ;
+
+                        if ( _f != 0xff000000 )
+                        {
+                            _c1 = ( pixel_color32 & 0x00ff0000 ) * _f ;
+                            _c2 = ( pixel_color32 & 0x0000ff00 ) * _f ;
+                            _c3 = ( pixel_color32 & 0x000000ff ) * _f ;
+
+                            while ( h-- >= 0 )
+                            {
+                                if ( drawing_stipple & 1 )
+                                {
+                                    r = ( _c1 + (( *ptr & 0x00ff0000 ) * _f2 ) ) >> 8 ;
+                                    g = ( _c2 + (( *ptr & 0x0000ff00 ) * _f2 ) ) >> 8 ;
+                                    b = ( _c3 + (( *ptr & 0x000000ff ) * _f2 ) ) >> 8 ;
+
+                                    if ( r > 0x00ff0000 ) r = 0x00ff0000 ; else r &= 0x00ff0000 ;
+                                    if ( g > 0x0000ff00 ) g = 0x0000ff00 ; else g &= 0x0000ff00 ;
+                                    if ( b > 0x000000ff ) b = 0x000000ff ; else b &= 0x000000ff ;
+
+                                    *ptr = 0xff000000 | r | g | b ;
+                                }
+                                drawing_stipple = (( drawing_stipple << 1 ) | (( drawing_stipple & 0x80000000 ) ? 1 : 0 ) );
+                                ptr += vinc;
+                                if ( dd >= 0 ) ptr += hinc, dd += i2 ;
+                                else dd += i1 ;
+                            }
+                        }
+                        else
+                        {
+                            _c1 = ( pixel_color32 & 0x00ff0000 ) * pixel_alpha ;
+                            _c2 = ( pixel_color32 & 0x0000ff00 ) * pixel_alpha ;
+                            _c3 = ( pixel_color32 & 0x000000ff ) * pixel_alpha ;
+
+                            while ( h-- >= 0 )
+                            {
+                                if ( drawing_stipple & 1 )
+                                {
+                                    r = ( _c1 + (( *ptr & 0x00ff0000 ) * _f2 ) ) >> 8 ;
+                                    g = ( _c2 + (( *ptr & 0x0000ff00 ) * _f2 ) ) >> 8 ;
+                                    b = ( _c3 + (( *ptr & 0x000000ff ) * _f2 ) ) >> 8 ;
+
+                                    if ( r > 0x00ff0000 ) r = 0x00ff0000 ; else r &= 0x00ff0000 ;
+                                    if ( g > 0x0000ff00 ) g = 0x0000ff00 ; else g &= 0x0000ff00 ;
+                                    if ( b > 0x000000ff ) b = 0x000000ff ; else b &= 0x000000ff ;
+
+                                    *ptr = 0xff000000 | r | g | b ;
+                                }
+                                drawing_stipple = (( drawing_stipple << 1 ) | (( drawing_stipple & 0x80000000 ) ? 1 : 0 ) );
+                                ptr += vinc;
+                                if ( dd >= 0 ) ptr += hinc, dd += i2 ;
+                                else dd += i1 ;
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -1097,13 +1593,18 @@ void draw_bezier( GRAPH * dest, REGION * clip, int x1, int y1, int x2, int y2, i
 
     for ( i = 0; i < n; i++ )
     {
-        x += dx; dx += d2x; d2x += d3x;
-        y += dy; dy += d2y; d2y += d3y;
+        x += dx;
+        dx += d2x;
+        d2x += d3x;
+        y += dy;
+        dy += d2y;
+        d2y += d3y;
         if (( int16_t )( xp ) != ( int16_t )( x ) || ( int16_t )( yp ) != ( int16_t )( y ) )
         {
             draw_line( dest, clip, ( int16_t ) xp, ( int16_t ) yp, ( int16_t ) x - ( int16_t ) xp, ( int16_t ) y - ( int16_t ) yp );
         }
-        xp = x; yp = y;
+        xp = x;
+        yp = y;
     }
 }
 

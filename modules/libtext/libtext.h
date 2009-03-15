@@ -46,6 +46,7 @@
 #define TEXT_DWORD          9
 #define TEXT_SBYTE          10
 #define TEXT_CHAR           11
+#define TEXT_POINTER        12
 
 /* Alineacion para textos */
 #define ALIGN_TOP_LEFT      0
