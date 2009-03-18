@@ -21030,11 +21030,9 @@ fi
 
 
 if test "x$enable_debug" = "xyes"; then
-	CFLAGS="-g $INCLUDES"
+	CFLAGS+="-g $INCLUDES"
 else
-#	CFLAGS="-O2 -finline-functions -ffast-math $INCLUDES -mtune=pentium4m"
-	CFLAGS="-O2 -finline-functions -fno-strict-aliasing $INCLUDES"
-#	CFLAGS="-O2 $INCLUDES"
+	CFLAGS+="-O2 -finline-functions -fno-strict-aliasing $INCLUDES"
 fi
 
 
