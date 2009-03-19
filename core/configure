@@ -20387,9 +20387,9 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 if test "x$enable_debug" = "xyes"; then
-    CFLAGS+="-g $INCLUDES"
+    CFLAGS+=" -g $INCLUDES"
 else
-    CFLAGS+="-O2 -finline-functions -fno-strict-aliasing $INCLUDES"
+    CFLAGS+=" -O2 -finline-functions -fno-strict-aliasing $INCLUDES"
 fi
 
 
