@@ -128,7 +128,7 @@ void _string_ntoa( char *p, unsigned long n )
     }
     while ( n /= 10 ) ;
 
-    if ( p > i ) while ( *i++ = *p++ ) ;
+    if ( p > i ) while (( *i++ = *p++ ) ) ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -146,7 +146,7 @@ void _string_utoa( char *p, unsigned long n )
     }
     while ( n /= 10 ) ;
 
-    if ( p > i ) while ( *i++ = *p++ ) ;
+    if ( p > i ) while (( *i++ = *p++ ) ) ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -496,16 +496,20 @@ int string_newa( const char * ptr, unsigned count )
 int string_concat( int code1, char * str2 )
 {
     char * str1 ;
+    int len1, len2;
 
     assert( code1 < string_allocated && code1 >= 0 ) ;
 
     str1 = string_ptr[code1] ;
     assert( str1 ) ;
 
-    str1 = ( char * ) realloc( str1, strlen( str1 ) + strlen( str2 ) + 1 ) ;
+    len1 = strlen( str1 ) ;
+    len2 = strlen( str2 ) + 1 ;
+
+    str1 = ( char * ) realloc( str1, len1 + len2 ) ;
     assert( str1 ) ;
 
-    strcat( str1, str2 ) ;
+    memmove( str1 + len1, str2, len2 ) ;
 
     string_ptr[code1] = str1 ;
 
@@ -525,15 +529,20 @@ int string_add( int code1, int code2 )
     const char * str2 = string_get( code2 ) ;
     char * str3 ;
     int id ;
+    int len1, len2;
 
     assert( str1 ) ;
     assert( str2 ) ;
 
-    str3 = ( char * ) malloc( strlen( str1 ) + strlen( str2 ) + 1 ) ;
+    len1 = strlen( str1 ) ;
+    len2 = strlen( str2 ) + 1;
+
+    str3 = ( char * ) malloc( len1 + len2 ) ;
     assert( str3 ) ;
 
-    strcpy( str3, str1 ) ;
-    strcat( str3, str2 ) ;
+    memmove( str3, str1, len1 ) ;
+    memmove( str3 + len1, str2, len2 ) ;
+
     id = string_getid() ;
 
     string_ptr[id] = str3 ;
@@ -683,18 +692,31 @@ int string_comp( int code1, int code2 )
 int string_char( int n, int nchar )
 {
     const char * str = string_get( n ) ;
-    int          len ;
     char buffer[2] ;
+#if 0
+    int len ;
+#endif
 
     assert( str ) ;
-    len = strlen( str ) ;
 
-    if ( nchar >= len ) nchar = len ;
-    if ( nchar < 0 ) nchar = len + nchar ;
-    if ( nchar < 0 ) nchar = len ;
+#if 0
+    len = strlen( str ) ;
+    if ( nchar >= len ) return string_new( "" ) ;
+    if ( nchar < 0 )
+    {
+        nchar = len + nchar ;
+        if ( nchar < 0 ) return string_new( "" ) ;
+    }
+#endif
+
+    if ( nchar < 0 )
+    {
+        nchar = strlen( str ) + nchar ;
+        if ( nchar < 0 ) return string_new( "" ) ;
+    }
 
     buffer[0] = str[nchar] ;
-    buffer[1] = 0 ;
+    buffer[1] = '\0' ;
 
     return string_new( buffer ) ;
 }
@@ -718,9 +740,13 @@ int string_substr( int code, int first, int len )
     assert( str ) ;
     rlen = strlen( str ) ;
 
-    if ( first < 0 ) first = rlen + first ;
-    if ( first < 0 ) first = 0 ;
-    if ( first > ( rlen - 1 ) ) return string_new( "" ) ;
+    if ( first < 0 )
+    {
+        first = rlen + first ;
+        if ( first < 0 ) return string_new( "" ) ;
+    }
+    else
+        if ( first > ( rlen - 1 ) ) return string_new( "" ) ;
 
     if ( len < 0 )
     {
@@ -761,26 +787,42 @@ int string_substr( int code, int first, int len )
 
 int string_find( int code1, int code2, int first )
 {
-    const char * str1 = string_get( code1 ) ;
-    const char * str2 = string_get( code2 ) ;
-    int pos, len1, len2 ;
+    char * str1 = ( char * ) string_get( code1 ) ;
+    char * str2 = ( char * ) string_get( code2 ) ;
+    char * p = str1, * p1, * p2 ;
 
     assert( str1 && str2 ) ;
-    len1 = strlen( str1 );
-    len2 = strlen( str2 ) ;
 
-    pos = first;
-    if ( pos < 0 )
+    if ( first < 0 )
     {
-        pos = len1 + pos;
-        if ( pos < 0 ) pos = 0;
+        first += strlen( str1 ) ;
+        if ( first < 0 ) return -1;
+        str1 += first;
     }
-    if ( pos > len1 ) pos = len1;
+    else
+    {
+        /* Avoid use strlen */
+        while ( first-- && *str1 ) str1++;
+        if ( !*str1 ) return -1;
+    }
 
-    for ( ; str1[pos] && pos >= 0 ; first >= 0 ? pos++ : pos-- )
+    while ( *str1 )
     {
-        if ( memcmp( str1 + pos, str2, len2 ) == 0 ) return pos ;
+        if ( *str1 == *str2 )
+        {
+            p1 = str1 + 1;
+            p2 = str2 + 1;
+
+            while ( *p1 && *p2 && *p1 == *p2 )
+            {
+                p1++;
+                p2++;
+            }
+            if ( !*p2 ) return str1 - p;
+        }
+        str1++;
     }
+
     return -1 ;
 }
 
@@ -800,22 +842,22 @@ int string_find( int code1, int code2, int first )
 int string_ucase( int code )
 {
     const char * str = string_get( code ) ;
-    char       * bptr, * ptr ;
+    char       * base, * ptr ;
     int          id ;
 
     assert( str ) ;
 
-    bptr = ( char * )malloc( strlen( str ) + 1 ) ;
-    assert( bptr ) ;
+    base = ( char * )malloc( strlen( str ) + 1 ) ;
+    assert( base ) ;
 
-    for ( ptr = bptr; *str ; ptr++, str++ ) *ptr = TOUPPER( *str ) ;
+    for ( ptr = base; *str ; ptr++, str++ ) *ptr = TOUPPER( *str ) ;
     ptr[0] = '\0' ;
 
     id = string_getid() ;
-    string_ptr[id] = bptr ;
+    string_ptr[id] = base ;
     string_uct[id] = 0 ;
 
-    // printf( "[STRING] (ucase) String %d created: \"%s\"\n", id, bptr ) ;
+    // printf( "[STRING] (ucase) String %d created: \"%s\"\n", id, base ) ;
 
     return id ;
 }
@@ -836,22 +878,22 @@ int string_ucase( int code )
 int string_lcase( int code )
 {
     const char * str = string_get( code ) ;
-    char       * bptr, * ptr ;
+    char       * base, * ptr ;
     int          id ;
 
     assert( str ) ;
 
-    bptr = ( char * )malloc( strlen( str ) + 1 ) ;
-    assert( bptr ) ;
+    base = ( char * )malloc( strlen( str ) + 1 ) ;
+    assert( base ) ;
 
-    for ( ptr = bptr; *str ; ptr++, str++ ) *ptr = TOLOWER( *str ) ;
+    for ( ptr = base; *str ; ptr++, str++ ) *ptr = TOLOWER( *str ) ;
     ptr[0] = '\0' ;
 
     id = string_getid() ;
-    string_ptr[id] = bptr ;
+    string_ptr[id] = base ;
     string_uct[id] = 0 ;
 
-    // printf( "[STRING] (lcase) String %d created: \"%s\"\n", id, bptr ) ;
+    // printf( "[STRING] (lcase) String %d created: \"%s\"\n", id, base ) ;
 
     return id ;
 }
@@ -870,22 +912,18 @@ int string_lcase( int code )
 
 int string_strip( int code )
 {
-    const char * ptr = string_get( code ) ;
-    char *       ostr;
-    char *       bptr;
-    int          id = string_new( ptr );
+    const char * str = string_get( code ) ;
+    char * base, * ptr;
+    int id = string_new( str );
 
-    ostr = ( char * )string_get( id ) ;
-    bptr = ostr;
-    assert( bptr );
+    ptr = base = ( char * )string_get( id ) ;
 
-    while ( *ptr == ' ' || *ptr == '\n' || *ptr == '\r' || *ptr == '\t' ) ptr++;
+    assert( ptr );
 
-    while ( *ptr ) *bptr++ = *ptr++;
-
-    while ( bptr > ostr && ( bptr[-1] == ' ' || bptr[-1] == '\n' || bptr[-1] == '\r' || bptr[-1] == '\t' ) ) bptr--;
-
-    *bptr = '\0';
+    while ( *str == ' ' || *str == '\n' || *str == '\r' || *str == '\t' ) str++;
+    while ( *str ) *ptr++ = *str++;
+    while ( ptr > base && ( ptr[-1] == ' ' || ptr[-1] == '\n' || ptr[-1] == '\r' || ptr[-1] == '\t' ) ) ptr--;
+    *ptr = '\0';
 
     return id ;
 }
@@ -974,8 +1012,8 @@ int string_format( double number, int dec, char point, char thousands )
 
 int string_casecmp( int code1, int code2 )
 {
-    const unsigned char * str1 = string_get( code1 ) ;
-    const unsigned char * str2 = string_get( code2 ) ;
+    unsigned char * str1 = ( unsigned char * ) string_get( code1 ) ;
+    unsigned char * str2 = ( unsigned char * ) string_get( code2 ) ;
 
     while ( *str1 || *str2 )
     {

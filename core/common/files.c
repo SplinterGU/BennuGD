@@ -109,8 +109,9 @@ int file_read( file * fp, void * buffer, int len )
     if ( fp->type == F_GZFILE )
     {
         int result = gzread( fp->gz, buffer, len ) ;
-        if (( fp->error = ( result < 0 ) ) != 0 )
-            result = 0 ;
+        fp->error = ( result < len );
+//        if (( fp->error = ( result < len ) ) != 0 ) result = 0 ;
+        if ( result < 0 ) result = 0;
         return result ;
     }
 

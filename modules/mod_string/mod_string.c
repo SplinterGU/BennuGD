@@ -308,6 +308,7 @@ static int modstring_formatFI( INSTANCE * my, int * params )
 
 DLSYSFUNCS  __bgdexport( mod_string, functions_exports )[] =
 {
+    { "STRLEN"     , "S"   , TYPE_INT   , modstring_strlen     },
     { "LEN"        , "S"   , TYPE_INT   , modstring_strlen     },
     { "UCASE"      , "S"   , TYPE_STRING, modstring_strupper   },
     { "LCASE"      , "S"   , TYPE_STRING, modstring_strlower   },

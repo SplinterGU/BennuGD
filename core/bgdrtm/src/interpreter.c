@@ -416,6 +416,7 @@ int instance_go( INSTANCE * r )
                     fprintf( stderr, "ERROR: Runtime error in %s(%d) - Unknown system function\n", r->proc->name, LOCDWORD( r, PROCESS_ID ) ) ;
                     exit( 0 );
                 }
+
                 r->stack_ptr -= p->params ;
                 *r->stack_ptr = ( *p->func )( r, r->stack_ptr ) ;
                 r->stack_ptr++ ;

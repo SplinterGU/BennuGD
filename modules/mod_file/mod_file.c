@@ -157,13 +157,13 @@ static int modfile_fputs( INSTANCE * my, int * params )
 
 static int modfile_fgets( INSTANCE * my, int * params )
 {
-    char buffer[1024] ;
+    char buffer[1025] ;
     int len, done = 0 ;
     int str = string_new( "" );
 
     while ( !done )
     {
-        len = file_gets(( file * )params[0], buffer, sizeof( buffer ) ) ;
+        len = file_gets(( file * )params[0], buffer, sizeof( buffer ) - 1) ;
         if ( len < 1 ) break;
 
         if ( buffer[len-1] == '\r' || buffer[len-1] == '\n' )
@@ -181,25 +181,33 @@ static int modfile_fgets( INSTANCE * my, int * params )
 
 static int modfile_file( INSTANCE * my, int * params )
 {
-    char buffer[1024] ;
+    char buffer[1025] ;
     int str = string_new( "" ) ;
     file * f ;
     int l;
 
     f = file_open( string_get( params[0] ), "rb" ) ;
     string_discard( params[0] ) ;
-    if ( !f ) return 0 ;
 
-    while ( !file_eof( f ) )
+    if ( f )
     {
-        if ( !( l = file_read( f, buffer, sizeof( buffer ) ) ) ) break ;
-        buffer[l] = '\0';
-        string_concat( str, buffer ) ;
-        buffer[0] = '\0';
+        while ( !file_eof( f ) )
+        {
+            l = file_read( f, buffer, sizeof( buffer ) - 1 ) ;
+            buffer[l] = '\0' ;
+            if ( l )
+            {
+                string_concat( str, buffer ) ;
+                buffer[0] = '\0' ;
+            }
+            else
+                break;
+        }
+        file_close( f ) ;
     }
-    string_concat( str, buffer ) ;
+
     string_use( str ) ;
-    file_close( f ) ;
+
     return str ;
 }
 
@@ -237,6 +245,7 @@ DLSYSFUNCS  __bgdexport( mod_file, functions_exports)[] =
     { "FGETS"       , "I"    , TYPE_STRING, modfile_fgets       },
     { "FEOF"        , "I"    , TYPE_INT   , modfile_feof        },
     { "FILE"        , "S"    , TYPE_STRING, modfile_file        },
+    { "FEXISTS"     , "S"    , TYPE_INT   , modfile_exists      } ,
     { "FILE_EXISTS" , "S"    , TYPE_INT   , modfile_exists      } ,
     { 0             , 0      , 0          , 0                   }
 };
