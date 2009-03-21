@@ -3548,12 +3548,12 @@ fi
 
 case "$target_os" in
     linux-gnu*)
-        CFLAGS+=" -Wall"
-        LDFLAGS+=" -lc -ldl"
+        CFLAGS=" -Wall"
+        LDFLAGS=" -lc -ldl"
 	    ;;
 
     mingw32)
-	    CFLAGS+=" -DWIN32 -D_WIN32"
+	    CFLAGS=" -DWIN32 -D_WIN32"
 	    ;;
 
 esac

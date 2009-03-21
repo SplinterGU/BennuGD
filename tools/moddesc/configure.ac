@@ -26,12 +26,12 @@ AC_ARG_WITH(bennu-prefix,[  --with-bennu-prefix=PFX Prefix where Bennu is instal
 
 case "$target_os" in
     linux-gnu*)
-        CFLAGS+=" -Wall"
-        LDFLAGS+=" -lc -ldl"
+        CFLAGS=" -Wall"
+        LDFLAGS=" -lc -ldl"
 	    ;;
 
     mingw32)
-	    CFLAGS+=" -DWIN32 -D_WIN32"
+	    CFLAGS=" -DWIN32 -D_WIN32"
 	    ;;
 
 esac

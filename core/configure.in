@@ -61,9 +61,9 @@ dnl Check for compilers
 AC_PROG_CC
 
 if test "x$enable_debug" = "xyes"; then
-    CFLAGS+=" -g $INCLUDES"
+    CFLAGS=" -g $INCLUDES"
 else
-    CFLAGS+=" -O2 -finline-functions -fno-strict-aliasing $INCLUDES"
+    CFLAGS=" -O2 -finline-functions -fno-strict-aliasing $INCLUDES"
 fi
 
 dnl librerias para todos
