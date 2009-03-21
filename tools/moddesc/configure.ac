@@ -36,8 +36,8 @@ case "$target_os" in
 
 esac
 
-CFLAGS+=" -I${bennu_prefix}/include -I/usr/local/include -I/usr/include "
-LDFLAGS+=" -L/usr/local/lib -L/usr/lib"
+CFLAGS="$CFLAGS -I${bennu_prefix}/include -I/usr/local/include -I/usr/include "
+LDFLAGS="$LDFLAGS -L/usr/local/lib -L/usr/lib"
 
 # Checks for header files.
 AC_HEADER_STDC
