@@ -89,6 +89,7 @@ libsdlhandler/Makefile
 libwm/Makefile
 libkey/Makefile
 libmouse/Makefile
+libjoy/Makefile
 libscroll/Makefile
 mod_scroll/Makefile
 mod_mouse/Makefile

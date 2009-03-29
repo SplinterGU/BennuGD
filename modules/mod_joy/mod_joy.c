@@ -31,28 +31,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef TARGET_MAC
-#include <SDL/SDL.h>
-#else
-#include <SDL.h>
-#endif
-
 /* --------------------------------------------------------------------------- */
 
 #include "bgddl.h"
-
 #include "bgdrtm.h"
 
-#include "files.h"
-#include "xstrings.h"
-
-/* --------------------------------------------------------------------------- */
-
-#define MAX_JOYS    32
-
-static int _max_joys = 0;
-static SDL_Joystick * _joysticks[MAX_JOYS];
-static int _selected_joystick = -1;
+#include "libjoy.h"
 
 /* --------------------------------------------------------------------------- */
 /**
@@ -62,7 +46,7 @@ static int _selected_joystick = -1;
 
 static int modjoy_num( INSTANCE * my, int * params )
 {
-    return _max_joys ;
+    return ( libjoy_num() );
 }
 
 /* --------------------------------------------------------------------------- */
@@ -73,10 +57,7 @@ static int modjoy_num( INSTANCE * my, int * params )
 
 static int modjoy_name( INSTANCE * my, int * params )
 {
-    int result;
-    result = string_new( SDL_JoystickName( params[0] ) );
-    string_use( result );
-    return result;
+    return ( libjoy_name( params[0] ) );
 }
 
 /* --------------------------------------------------------------------------- */
@@ -87,7 +68,7 @@ static int modjoy_name( INSTANCE * my, int * params )
 
 static int modjoy_select( INSTANCE * my, int * params )
 {
-    return ( _selected_joystick = params[0] );
+    return ( libjoy_select( params[0] ) );
 }
 
 /* --------------------------------------------------------------------------- */
@@ -98,11 +79,7 @@ static int modjoy_select( INSTANCE * my, int * params )
 
 static int modjoy_buttons( INSTANCE * my, int * params )
 {
-    if ( _selected_joystick >= 0 && _selected_joystick < _max_joys )
-    {
-        return SDL_JoystickNumButtons( _joysticks[_selected_joystick] ) ;
-    }
-    return -1 ;
+    return ( libjoy_buttons() ) ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -113,41 +90,29 @@ static int modjoy_buttons( INSTANCE * my, int * params )
 
 static int modjoy_axes( INSTANCE * my, int * params )
 {
-    if ( _selected_joystick >= 0 && _selected_joystick < _max_joys )
-    {
-        return SDL_JoystickNumAxes( _joysticks[_selected_joystick] ) ;
-    }
-    return -1 ;
+    return ( libjoy_axes() ) ;
 }
 
 /* --------------------------------------------------------------------------- */
 /**
- * JOY_GET_BUTTON ()
+ * JOY_GET_BUTTON (int button)
  * Returns the selected joystick state for the given button
  **/
 
 static int modjoy_get_button( INSTANCE * my, int * params )
 {
-    if ( _selected_joystick >= 0 && _selected_joystick < _max_joys )
-    {
-        return SDL_JoystickGetButton( _joysticks[_selected_joystick], params[0] ) ;
-    }
-    return -1 ;
+    return ( libjoy_get_button( params[0] ) ) ;
 }
 
 /* --------------------------------------------------------------------------- */
 /**
- * JOY_GET_POSITION ()
+ * JOY_GET_POSITION (int axis)
  * Returns the selected joystick state for the given axis
  **/
 
 static int modjoy_get_position( INSTANCE * my, int * params )
 {
-    if ( _selected_joystick >= 0 && _selected_joystick < _max_joys )
-    {
-        return SDL_JoystickGetAxis( _joysticks[_selected_joystick], params[0] ) ;
-    }
-    return -1 ;
+    return ( libjoy_get_position( params[0] ) ) ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -158,11 +123,7 @@ static int modjoy_get_position( INSTANCE * my, int * params )
 
 static int modjoy_hats( INSTANCE * my, int * params )
 {
-    if ( _selected_joystick >= 0 && _selected_joystick < _max_joys )
-    {
-        return SDL_JoystickNumHats( _joysticks[_selected_joystick] ) ;
-    }
-    return -1 ;
+    return ( libjoy_hats() ) ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -173,11 +134,7 @@ static int modjoy_hats( INSTANCE * my, int * params )
 
 static int modjoy_balls( INSTANCE * my, int * params )
 {
-    if ( _selected_joystick >= 0 && _selected_joystick < _max_joys )
-    {
-        return SDL_JoystickNumBalls( _joysticks[_selected_joystick] ) ;
-    }
-    return -1 ;
+    return ( libjoy_balls() ) ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -188,14 +145,7 @@ static int modjoy_balls( INSTANCE * my, int * params )
 
 static int modjoy_get_hat( INSTANCE * my, int * params )
 {
-    if ( _selected_joystick >= 0 && _selected_joystick < _max_joys )
-    {
-        if ( params[0] >= 0 && params[0] <= SDL_JoystickNumHats( _joysticks[_selected_joystick] ) )
-        {
-            return SDL_JoystickGetHat( _joysticks[_selected_joystick], params[0] ) ;
-        }
-    }
-    return -1 ;
+    return ( libjoy_get_hat( params[0] ) ) ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -206,14 +156,7 @@ static int modjoy_get_hat( INSTANCE * my, int * params )
 
 static int modjoy_get_ball( INSTANCE * my, int * params )
 {
-    if ( _selected_joystick >= 0 && _selected_joystick < _max_joys )
-    {
-        if ( params[0] >= 0 && params[0] <= SDL_JoystickNumBalls( _joysticks[params[0]] ) )
-        {
-            return SDL_JoystickGetBall( _joysticks[_selected_joystick], params[0], ( int* )params[1], ( int* )params[2] ) ;
-        }
-    }
-    return -1 ;
+    return ( libjoy_get_ball( params[0], ( int* )params[1], ( int* )params[2] ) ) ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -228,11 +171,7 @@ static int modjoy_get_ball( INSTANCE * my, int * params )
 
 static int modjoy_buttons_specific( INSTANCE * my, int * params )
 {
-    if ( params[0] >= 0 && params[0] < _max_joys )
-    {
-        return SDL_JoystickNumButtons( _joysticks[params[0]] ) ;
-    }
-    return -1 ;
+    return ( libjoy_buttons_specific( params[0] ) ) ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -243,11 +182,7 @@ static int modjoy_buttons_specific( INSTANCE * my, int * params )
 
 static int modjoy_axes_specific( INSTANCE * my, int * params )
 {
-    if ( params[0] >= 0 && params[0] < _max_joys )
-    {
-        return SDL_JoystickNumAxes( _joysticks[params[0]] ) ;
-    }
-    return -1 ;
+    return ( libjoy_axes_specific( params[0] ) ) ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -258,14 +193,7 @@ static int modjoy_axes_specific( INSTANCE * my, int * params )
 
 static int modjoy_get_button_specific( INSTANCE * my, int * params )
 {
-    if ( params[0] >= 0 && params[0] < _max_joys )
-    {
-        if ( params[1] >= 0 && params[1] <= SDL_JoystickNumButtons( _joysticks[params[0]] ) )
-        {
-            return SDL_JoystickGetButton( _joysticks[params[0]], params[1] ) ;
-        }
-    }
-    return -1 ;
+    return ( libjoy_get_button_specific( params[0], params[1] ) );
 }
 
 /* --------------------------------------------------------------------------- */
@@ -276,14 +204,7 @@ static int modjoy_get_button_specific( INSTANCE * my, int * params )
 
 static int modjoy_get_position_specific( INSTANCE * my, int * params )
 {
-    if ( params[0] >= 0 && params[0] < _max_joys )
-    {
-        if ( params[1] >= 0 && params[1] <= SDL_JoystickNumAxes( _joysticks[params[0]] ) )
-        {
-            return SDL_JoystickGetAxis( _joysticks[params[0]], params[1] ) ;
-        }
-    }
-    return -1 ;
+    return ( libjoy_get_position_specific( params[0], params[1] ) );
 }
 
 /* --------------------------------------------------------------------------- */
@@ -296,11 +217,7 @@ static int modjoy_get_position_specific( INSTANCE * my, int * params )
 
 static int modjoy_hats_specific( INSTANCE * my, int * params )
 {
-    if ( params[0] >= 0 && params[0] < _max_joys )
-    {
-        return SDL_JoystickNumHats( _joysticks[params[0]] ) ;
-    }
-    return -1 ;
+    return ( libjoy_hats_specific( params[0] ) ) ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -311,11 +228,7 @@ static int modjoy_hats_specific( INSTANCE * my, int * params )
 
 static int modjoy_balls_specific( INSTANCE * my, int * params )
 {
-    if ( params[0] >= 0 && params[0] < _max_joys )
-    {
-        return SDL_JoystickNumBalls( _joysticks[params[0]] ) ;
-    }
-    return -1 ;
+    return ( libjoy_balls_specific( params[0] ) ) ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -326,14 +239,7 @@ static int modjoy_balls_specific( INSTANCE * my, int * params )
 
 static int modjoy_get_hat_specific( INSTANCE * my, int * params )
 {
-    if ( params[0] >= 0 && params[0] < _max_joys )
-    {
-        if ( params[1] >= 0 && params[1] <= SDL_JoystickNumHats( _joysticks[params[0]] ) )
-        {
-            return SDL_JoystickGetHat( _joysticks[params[0]], params[1] ) ;
-        }
-    }
-    return -1 ;
+    return ( libjoy_get_hat_specific( params[0], params[1] ) );
 }
 
 /* --------------------------------------------------------------------------- */
@@ -344,14 +250,7 @@ static int modjoy_get_hat_specific( INSTANCE * my, int * params )
 
 static int modjoy_get_ball_specific( INSTANCE * my, int * params )
 {
-    if ( params[0] >= 0 && params[0] < _max_joys )
-    {
-        if ( params[1] >= 0 && params[1] <= SDL_JoystickNumBalls( _joysticks[params[0]] ) )
-        {
-            return SDL_JoystickGetBall( _joysticks[params[0]], params[1], ( int* )params[2], ( int* )params[3] ) ;
-        }
-    }
-    return -1 ;
+    return ( libjoy_get_ball_specific( params[0], params[1], ( int * ) params[2], ( int * ) params[3] ) );
 }
 
 /* ---------------------------------------------------------------------- */
@@ -383,7 +282,6 @@ DLSYSFUNCS  __bgdexport( mod_joy, functions_exports )[] =
     { "JOY_GETPOSITION"     , "I"     , TYPE_INT    , modjoy_get_position          },
     { "JOY_GETPOSITION"     , "II"    , TYPE_INT    , modjoy_get_position_specific },
 
-
     { "JOY_NUMHATS"         , ""      , TYPE_INT    , modjoy_hats                  },
     { "JOY_NUMHATS"         , "I"     , TYPE_INT    , modjoy_hats_specific         },   /* Added by Sandman */
     { "JOY_NUMBALLS"        , ""      , TYPE_INT    , modjoy_balls                 },
@@ -404,68 +302,11 @@ DLSYSFUNCS  __bgdexport( mod_joy, functions_exports )[] =
     { 0                     , 0       , 0           , 0                             }
 };
 
-/* --------------------------------------------------------------------------- */
-
-DLCONSTANT __bgdexport( mod_joy, constants_def )[] =
-{
-    { "JOY_HAT_CENTERED"    , TYPE_DWORD, SDL_HAT_CENTERED  },
-    { "JOY_HAT_UP"          , TYPE_DWORD, SDL_HAT_UP        },
-    { "JOY_HAT_RIGHT"       , TYPE_DWORD, SDL_HAT_RIGHT     },
-    { "JOY_HAT_DOWN"        , TYPE_DWORD, SDL_HAT_DOWN      },
-    { "JOY_HAT_LEFT"        , TYPE_DWORD, SDL_HAT_LEFT      },
-    { "JOY_HAT_RIGHTUP"     , TYPE_DWORD, SDL_HAT_RIGHTUP   },
-    { "JOY_HAT_RIGHTDOWN"   , TYPE_DWORD, SDL_HAT_RIGHTDOWN },
-    { "JOY_HAT_LEFTUP"      , TYPE_DWORD, SDL_HAT_LEFTUP    },
-    { "JOY_HAT_LEFTDOWN"    , TYPE_DWORD, SDL_HAT_LEFTDOWN  },
-    { NULL                  , 0         , 0                 }
-} ;
-
-/* ----------------------------------------------------------------- */
-/* Funciones de inicializacion del modulo/plugin                     */
-
-void  __bgdexport( mod_joy, module_initialize )()
-{
-    int i;
-
-    if ( !SDL_WasInit( SDL_INIT_JOYSTICK ) )
-    {
-        SDL_InitSubSystem( SDL_INIT_JOYSTICK );
-        SDL_JoystickEventState( SDL_ENABLE ) ;
-    }
-
-    /* Open all joysticks */
-    if (( _max_joys = SDL_NumJoysticks() ) > MAX_JOYS )
-    {
-        printf( "[JOY] Warning: maximum number of joysticks exceeded (%i>%i)", _max_joys, MAX_JOYS );
-        _max_joys = MAX_JOYS;
-    }
-
-    for ( i = 0; i < _max_joys; i++ )
-    {
-        _joysticks[i] = SDL_JoystickOpen( i ) ;
-        if ( !_joysticks[i] ) printf( "[JOY] Failed to open joystick '%i'", i );
-    }
-
-    SDL_JoystickUpdate() ;
-}
-
-/* ----------------------------------------------------------------- */
-
-void  __bgdexport( mod_joy, module_finalize )()
-{
-    int i;
-    for ( i = 0; i < _max_joys; i++ )
-        if ( _joysticks[i] ) SDL_JoystickClose( _joysticks[i] ) ;
-
-    if ( SDL_WasInit( SDL_INIT_JOYSTICK ) ) SDL_QuitSubSystem( SDL_INIT_JOYSTICK );
-
-}
-
 /* ----------------------------------------------------------------- */
 
 char * __bgdexport( mod_joy, modules_dependency )[] =
 {
-    "libsdlhandler",
+    "libjoy",
     NULL
 };
 

@@ -35,7 +35,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-subdir = mod_joy
+subdir = libjoy
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.in
@@ -52,12 +52,12 @@ am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
 am__installdirs = "$(DESTDIR)$(libdir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
-mod_joy_la_DEPENDENCIES =
-am_mod_joy_la_OBJECTS = mod_joy_la-mod_joy.lo
-mod_joy_la_OBJECTS = $(am_mod_joy_la_OBJECTS)
-mod_joy_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(mod_joy_la_CFLAGS) \
-	$(CFLAGS) $(mod_joy_la_LDFLAGS) $(LDFLAGS) -o $@
+libjoy_la_DEPENDENCIES =
+am_libjoy_la_OBJECTS = libjoy_la-libjoy.lo
+libjoy_la_OBJECTS = $(am_libjoy_la_OBJECTS)
+libjoy_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libjoy_la_CFLAGS) \
+	$(CFLAGS) $(libjoy_la_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -70,8 +70,8 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(mod_joy_la_SOURCES)
-DIST_SOURCES = $(mod_joy_la_SOURCES)
+SOURCES = $(libjoy_la_SOURCES)
+DIST_SOURCES = $(libjoy_la_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -198,12 +198,12 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-lib_LTLIBRARIES = mod_joy.la
-mod_joy_la_SOURCES = mod_joy.c
-mod_joy_la_CFLAGS = $(COMMON_CFLAGS) -I$(BGD_PATH)/include -I$(BGD_PATH)/bgdrtm/include -I../libjoy
-mod_joy_la_LDFLAGS = -s -module -no-undefined -avoid-version
-mod_joy_la_LIBADD = $(LIBADD_DL) -L../libjoy/.libs -ljoy -L$(BGD_PATH)/bgdrtm/src/.libs -lbgdrtm
-CLEANFILES = mod_joy.la
+lib_LTLIBRARIES = libjoy.la
+libjoy_la_SOURCES = libjoy.c
+libjoy_la_CFLAGS = $(COMMON_CFLAGS) $(SDL_CFLAGS) -I$(BGD_PATH)/include -I$(BGD_PATH)/bgdrtm/include
+libjoy_la_LDFLAGS = -s -module -no-undefined -avoid-version
+libjoy_la_LIBADD = $(LIBADD_DL) -lSDL -L$(BGD_PATH)/bgdrtm/src/.libs -lbgdrtm
+CLEANFILES = libjoy.la
 all: all-am
 
 .SUFFIXES:
@@ -217,9 +217,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  mod_joy/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  libjoy/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  mod_joy/Makefile
+	  $(AUTOMAKE) --gnu  libjoy/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -264,8 +264,8 @@ clean-libLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-mod_joy.la: $(mod_joy_la_OBJECTS) $(mod_joy_la_DEPENDENCIES) 
-	$(mod_joy_la_LINK) -rpath $(libdir) $(mod_joy_la_OBJECTS) $(mod_joy_la_LIBADD) $(LIBS)
+libjoy.la: $(libjoy_la_OBJECTS) $(libjoy_la_DEPENDENCIES) 
+	$(libjoy_la_LINK) -rpath $(libdir) $(libjoy_la_OBJECTS) $(libjoy_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -273,7 +273,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mod_joy_la-mod_joy.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjoy_la-libjoy.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -296,12 +296,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
-mod_joy_la-mod_joy.lo: mod_joy.c
-@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mod_joy_la_CFLAGS) $(CFLAGS) -MT mod_joy_la-mod_joy.lo -MD -MP -MF $(DEPDIR)/mod_joy_la-mod_joy.Tpo -c -o mod_joy_la-mod_joy.lo `test -f 'mod_joy.c' || echo '$(srcdir)/'`mod_joy.c
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/mod_joy_la-mod_joy.Tpo $(DEPDIR)/mod_joy_la-mod_joy.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='mod_joy.c' object='mod_joy_la-mod_joy.lo' libtool=yes @AMDEPBACKSLASH@
+libjoy_la-libjoy.lo: libjoy.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libjoy_la_CFLAGS) $(CFLAGS) -MT libjoy_la-libjoy.lo -MD -MP -MF $(DEPDIR)/libjoy_la-libjoy.Tpo -c -o libjoy_la-libjoy.lo `test -f 'libjoy.c' || echo '$(srcdir)/'`libjoy.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libjoy_la-libjoy.Tpo $(DEPDIR)/libjoy_la-libjoy.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='libjoy.c' object='libjoy_la-libjoy.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mod_joy_la_CFLAGS) $(CFLAGS) -c -o mod_joy_la-mod_joy.lo `test -f 'mod_joy.c' || echo '$(srcdir)/'`mod_joy.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libjoy_la_CFLAGS) $(CFLAGS) -c -o libjoy_la-libjoy.lo `test -f 'libjoy.c' || echo '$(srcdir)/'`libjoy.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

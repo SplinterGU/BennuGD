@@ -10,6 +10,7 @@ SUBDIRS = \
     libwm           \
     libkey          \
     libmouse        \
+    libjoy          \
     libscroll       \
     mod_scroll      \
     mod_mouse       \

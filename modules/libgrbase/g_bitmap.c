@@ -242,8 +242,8 @@ GRAPH * bitmap_clone( GRAPH * map )
 
     if ( map->cpoints )
     {
-        gr->cpoints = malloc( 4 * map->ncpoints ) ;
-        memcpy( gr->cpoints, map->cpoints, 4 * map->ncpoints ) ;
+        gr->cpoints = malloc( sizeof( CPOINT ) * map->ncpoints ) ;
+        memcpy( gr->cpoints, map->cpoints, sizeof( CPOINT ) * map->ncpoints ) ;
         gr->ncpoints = map->ncpoints ;
     }
 
