@@ -1,25 +1,25 @@
 /*
-*  Copyright © 2006-2009 SplinterGU (Fenix/Bennugd)
-*  Copyright © 2002-2006 Fenix Team (Fenix)
-*  Copyright © 1999-2002 José Luis Cebrián Pagüe (Fenix)
-*
-*  This file is part of Bennu - Game Development
-*
-*  Bennu is free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  Bennu is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  You should have received a copy of the GNU General Public License
-*  along with this program; if not, write to the Free Software
-*  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-*
-*/
+ *  Copyright © 2006-2009 SplinterGU (Fenix/Bennugd)
+ *  Copyright © 2002-2006 Fenix Team (Fenix)
+ *  Copyright © 1999-2002 José Luis Cebrián Pagüe (Fenix)
+ *
+ *  This file is part of Bennu - Game Development
+ *
+ *  Bennu is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Bennu is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+ *
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -85,18 +85,18 @@ char * __bgdexport( mod_dir, globals_def )=
 /* (usada en tiempo de ejecucion)                                    */
 
 DLVARFIXUP __bgdexport( mod_dir, globals_fixup)[] =
-{
-    /* Nombre de variable global, puntero al dato, tamaño del elemento, cantidad de elementos */
-    { "fileinfo.path" , NULL, -1, -1 },
-    { "fileinfo.name" , NULL, -1, -1 },
-    { "fileinfo.directory" , NULL, -1, -1 },
-    { "fileinfo.hidden" , NULL, -1, -1 },
-    { "fileinfo.readonly" , NULL, -1, -1 },
-    { "fileinfo.size" , NULL, -1, -1 },
-    { "fileinfo.created" , NULL, -1, -1 },
-    { "fileinfo.modified" , NULL, -1, -1 },
-    { NULL, NULL, -1, -1 }
-};
+    {
+        /* Nombre de variable global, puntero al dato, tamaño del elemento, cantidad de elementos */
+        { "fileinfo.path" , NULL, -1, -1 },
+        { "fileinfo.name" , NULL, -1, -1 },
+        { "fileinfo.directory" , NULL, -1, -1 },
+        { "fileinfo.hidden" , NULL, -1, -1 },
+        { "fileinfo.readonly" , NULL, -1, -1 },
+        { "fileinfo.size" , NULL, -1, -1 },
+        { "fileinfo.created" , NULL, -1, -1 },
+        { "fileinfo.modified" , NULL, -1, -1 },
+        { NULL, NULL, -1, -1 }
+    };
 
 /* ----------------------------------------------------------------- */
 /* DIRECTORY FUNCTIONS */
@@ -113,27 +113,34 @@ static int moddir_cd( INSTANCE * my, int * params )
 static int moddir_chdir( INSTANCE * my, int * params )
 {
     const char * d = string_get( params[ 0 ] ) ;
-    return ( dir_change( d ) ) ;
+    int ret = dir_change( d ) ;
+    string_discard( params[ 0 ] ) ;
+    return ( ret ) ;
 }
 
 static int moddir_mkdir( INSTANCE * my, int * params )
 {
     const char * d = string_get( params[ 0 ] ) ;
-    return ( dir_create( d ) ) ;
+    int ret = dir_create( d ) ;
+    string_discard( params[ 0 ] ) ;
+    return ( ret ) ;
 }
 
 static int moddir_rmdir( INSTANCE * my, int * params )
 {
     const char * d = string_get( params[ 0 ] ) ;
-    return ( dir_delete( d ) ) ;
+    int ret = dir_delete( d );
+    string_discard( params[ 0 ] ) ;
+    return ( ret ) ;
 }
 
 static int moddir_rm( INSTANCE * my, int * params )
 {
     const char * d = string_get( params[ 0 ] ) ;
-    return ( dir_deletefile( d ) ) ;
+    int ret = dir_deletefile( d );
+    string_discard( params[ 0 ] ) ;
+    return ( ret ) ;
 }
-
 
 /*  string GLOB (STRING path)
  *
@@ -317,9 +324,9 @@ static int moddir_glob( INSTANCE * my, int * params )
 #if defined(TARGET_MAC)
         glob( path_final, GLOB_ERR | GLOB_NOSORT, NULL, &globd );
 #elif defined(TARGET_BEOS)
-        glob( path_final, GLOB_ERR | GLOB_NOSORT, NULL, &globd );
+    glob( path_final, GLOB_ERR | GLOB_NOSORT, NULL, &globd );
 #else
-        glob( path_final, GLOB_ERR | GLOB_PERIOD | GLOB_NOSORT, NULL, &globd );
+    glob( path_final, GLOB_ERR | GLOB_PERIOD | GLOB_NOSORT, NULL, &globd );
 #endif
         currentFile = 0;
     }
@@ -392,15 +399,16 @@ static int moddir_glob( INSTANCE * my, int * params )
 /* ---------------------------------------------------------------------- */
 
 DLSYSFUNCS __bgdexport( mod_dir, functions_exports)[] =
-{
-    /* Archivos y directorios */
-    { "CD" , "" , TYPE_STRING , moddir_cd },
-    { "CHDIR" , "S" , TYPE_INT , moddir_chdir },
-    { "MKDIR" , "S" , TYPE_INT , moddir_mkdir },
-    { "RMDIR" , "S" , TYPE_INT , moddir_rmdir },
-    { "GLOB" , "S" , TYPE_STRING , moddir_glob },
-    { "CD" , "S" , TYPE_STRING , moddir_chdir },
-    { "RM" , "S" , TYPE_INT , moddir_rm },
-    { 0 , 0 , 0 , 0 }
-};
+    {
+        /* Archivos y directorios */
+        { "CD" , "" , TYPE_STRING , moddir_cd },
+        { "CHDIR" , "S" , TYPE_INT , moddir_chdir },
+        { "MKDIR" , "S" , TYPE_INT , moddir_mkdir },
+        { "RMDIR" , "S" , TYPE_INT , moddir_rmdir },
+        { "GLOB" , "S" , TYPE_STRING , moddir_glob },
+        { "CD" , "S" , TYPE_STRING , moddir_chdir },
+        { "RM" , "S" , TYPE_INT , moddir_rm },
+        { 0 , 0 , 0 , 0 }
+    };
 
+/* ---------------------------------------------------------------------- */

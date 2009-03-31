@@ -47,6 +47,8 @@
 #define G_PITCH         4
 #define G_DEPTH         5
 
+#define B_CLEAR         0x00000001
+
 /* --------------------------------------------------------------------------- */
 
 DLCONSTANT __bgdexport( mod_map, constants_def )[] =
@@ -60,6 +62,8 @@ DLCONSTANT __bgdexport( mod_map, constants_def )[] =
     { "G_Y_CENTER",     TYPE_INT,   G_Y_CENTER  },
     { "G_PITCH",        TYPE_INT,   G_PITCH     },
     { "G_DEPTH",        TYPE_INT,   G_DEPTH     },
+
+    { "B_CLEAR",        TYPE_INT,   B_CLEAR     },
 
     { NULL              , 0       , 0           }
 } ;
@@ -219,6 +223,16 @@ static int modmap_new_map( INSTANCE * my, int * params )
     GRAPH * map ;
     map = bitmap_new_syslib( params[0], params[1], params[2] ) ;
     if ( map ) gr_clear( map );
+    return map ? map->code : 0 ;
+}
+
+/* --------------------------------------------------------------------------- */
+
+static int modmap_new_map_extend( INSTANCE * my, int * params )
+{
+    GRAPH * map ;
+    map = bitmap_new_syslib( params[0], params[1], params[2] ) ;
+    if ( map && ( params[3] & B_CLEAR )) gr_clear( map );
     return map ? map->code : 0 ;
 }
 
@@ -919,6 +933,7 @@ DLSYSFUNCS  __bgdexport( mod_map, functions_exports )[] =
     { "MAP_PUT"             , "IIIII"       , TYPE_INT      , modmap_map_put            },
     { "MAP_XPUT"            , "IIIIIIII"    , TYPE_INT      , modmap_map_xput           },
     { "MAP_NEW"             , "III"         , TYPE_INT      , modmap_new_map            },
+    { "MAP_NEW"             , "IIII"        , TYPE_INT      , modmap_new_map_extend     },
     { "MAP_CLEAR"           , "III"         , TYPE_INT      , modmap_map_clear          },
     { "MAP_CLONE"           , "II"          , TYPE_INT      , modmap_map_clone          },
     { "MAP_NAME"            , "II"          , TYPE_STRING   , modmap_map_name           },

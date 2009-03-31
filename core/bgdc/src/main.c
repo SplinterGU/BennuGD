@@ -27,7 +27,7 @@
 
 #include <time.h>
 
-#ifdef WIN32
+#ifdef WIN32 
 // NEEDED FOR LOCALE DETECTION
 #include <windows.h>
 #include <windef.h>
@@ -121,9 +121,9 @@ int main( int argc, char **argv )
             {
                 if ( argv[i][j] == 'd' )
                 {
-                    if ( argv[i][j+1] >= '0' && argv[i][j+1] <= '9' )
+                    if ( argv[i][j + 1] >= '0' && argv[i][j + 1] <= '9' )
                     {
-                        debug = atoi( &argv[i][j+1] );
+                        debug = atoi( &argv[i][j + 1] );
                     }
                     else
                     {
@@ -133,9 +133,9 @@ int main( int argc, char **argv )
 
                 if ( argv[i][j] == 'o' )
                 {
-                    if ( argv[i][j+1] )
-                        strncpy( dcbname, &argv[i][j+1], sizeof( dcbname ) );
-                    else if ( argv[i+1] && argv[i+1][0] != '-' )
+                    if ( argv[i][j + 1] )
+                        strncpy( dcbname, &argv[i][j + 1], sizeof( dcbname ) );
+                    else if ( argv[i + 1] && argv[i + 1][0] != '-' )
                         strncpy( dcbname, argv[++i], sizeof( dcbname ) );
                     break;
                 }
@@ -152,9 +152,9 @@ int main( int argc, char **argv )
                 {
                     // -s "stub": Use a stub
 
-                    if ( argv[i][j+1] )
-                        strncpy( stubname, &argv[i][j+1], __MAX_PATH );
-                    else if ( argv[i+1] && argv[i+1][0] != '-' )
+                    if ( argv[i][j + 1] )
+                        strncpy( stubname, &argv[i][j + 1], __MAX_PATH );
+                    else if ( argv[i + 1] && argv[i + 1][0] != '-' )
                         strncpy( stubname, argv[++i], __MAX_PATH );
                     break;
                 }
@@ -163,12 +163,12 @@ int main( int argc, char **argv )
                 {
                     // -f "file": Embed a file to the DCB
 
-                    if ( argv[i][j+1] )
-                        dcb_add_file( argv[i+j] + 1 );
-                    else while ( argv[i+1] )
+                    if ( argv[i][j + 1] )
+                        dcb_add_file( argv[i + j] + 1 );
+                    else while ( argv[i + 1] )
                         {
-                            if ( argv[i+1][0] == '-' ) break;
-                            dcb_add_file( argv[i+1] );
+                            if ( argv[i + 1][0] == '-' ) break;
+                            dcb_add_file( argv[i + 1] );
                             i++;
                         }
                     break;
@@ -178,14 +178,14 @@ int main( int argc, char **argv )
                 {
                     // -i "path": add a file to the path for include files
 
-                    if ( argv[i][j+1] == 0 )
+                    if ( argv[i][j + 1] == 0 )
                     {
                         if ( i == argc - 1 )
                         {
                             printf( MSG_DIRECTORY_MISSING "\n" );
                             exit( 1 );
                         }
-                        file_addp( argv[i+1] );
+                        file_addp( argv[i + 1] );
                         i++;
                         break;
                     }
@@ -197,11 +197,11 @@ int main( int argc, char **argv )
                 {
                     // -lLANG:  Set the language for errors and messages
 
-                    if ( argv[i][j+1] == 0 )
+                    if ( argv[i][j + 1] == 0 )
                     {
                         if ( i != argc - 1 )
                         {
-                            strcpy( langinfo, argv[i+1] );
+                            strcpy( langinfo, argv[i + 1] );
                         }
                         i++;
                         break;
@@ -217,14 +217,14 @@ int main( int argc, char **argv )
 
                     // -D<macro>=<text>
 
-                    if ( argv[i][j+1] )
+                    if ( argv[i][j + 1] )
                     {
-                        macro = strdup( &argv[i][j+1] );
+                        macro = strdup( &argv[i][j + 1] );
                     }
                     else
                     {
-                        if ( argv[i+1][0] == '-' ) break;
-                        macro = strdup( argv[i+1] );
+                        if ( argv[i + 1][0] == '-' ) break;
+                        macro = strdup( argv[i + 1] );
                         i++;
                     }
 
@@ -245,7 +245,7 @@ int main( int argc, char **argv )
 
                 if ( argv[i][j] == 'C' )
                 {
-                    if ( argv[i][j+1] == 'a' ) autodeclare = 1 ;
+                    if ( argv[i][j + 1] == 'a' ) autodeclare = 1 ;
                     break;
                 }
 
@@ -351,7 +351,7 @@ int main( int argc, char **argv )
         if ( !file_exists( stubname ) )
         {
 #ifdef WIN32
-            char   exepath[__MAX_PATH];
+            char exepath[__MAX_PATH];
 
             GetModuleFileName( NULL, exepath, sizeof( exepath ) );
             PathRemoveFileSpec( exepath );
@@ -380,6 +380,7 @@ int main( int argc, char **argv )
                     return -1;
                 }
 #endif
+
             }
         }
 

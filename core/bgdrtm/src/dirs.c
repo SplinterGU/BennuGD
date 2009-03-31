@@ -50,7 +50,6 @@
 
 char * dir_path_convert( const char * dir )
 {
-
     char *c, *p ;
 
     p = strdup( dir ) ;
@@ -79,10 +78,7 @@ char * dir_path_convert( const char * dir )
 
 char * dir_current( void )
 {
-
-    char dir[1024] ; /* buffer to the directory */
-    char * c = getcwd( dir, sizeof( dir ) ) ;
-    return c ? strdup( c ) : NULL ;
+    return ( getcwd( NULL, 0 ) ) ;
 }
 
 /*
@@ -101,7 +97,6 @@ char * dir_current( void )
 
 int dir_change( const char * dir )
 {
-
     char *c = dir_path_convert( dir ) ;
     int r = chdir( c ) ;
     free( c ) ;
@@ -125,7 +120,6 @@ int dir_change( const char * dir )
 
 int dir_create( const char * dir )
 {
-
     char *c = dir_path_convert( dir ) ;
     int r ;
 
@@ -154,7 +148,6 @@ int dir_create( const char * dir )
 
 int dir_delete( const char * dir )
 {
-
     char *c = dir_path_convert( dir ) ;
     int r = rmdir( c ) ;
     free( c ) ;
