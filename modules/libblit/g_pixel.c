@@ -29,13 +29,13 @@
 
 int pixel_color8 = 15 ;
 uint16_t pixel_color16 = 0xFFFF ;
-uint16_t pixel_color16_alpha = 0xFFFF ;
 uint32_t pixel_color32 = 0xFFFFFFFF ;
+
+uint16_t pixel_color16_alpha = 0xFFFF ;
 
 int pixel_alpha = 255;
 uint8_t * pixel_alpha8 = NULL ;
 uint16_t * pixel_alpha16 = NULL ;
-uint32_t * pixel_alpha32 = NULL ;
 
 /* --------------------------------------------------------------------------- */
 /*
@@ -127,7 +127,7 @@ void gr_put_pixel( GRAPH * dest, int x, int y, int color )
                     _f = ( _f >> 24 ) * pixel_alpha / 255 ;
                     _f2 = 255 - _f ;
 
-                    if ( _f != 0xff000000 )
+                    if ( _f != 0x000000ff )
                     {
                         r = ( ( color & 0x00ff0000 ) * _f + (( *ptr & 0x00ff0000 ) * _f2 ) ) >> 8 ;
                         g = ( ( color & 0x0000ff00 ) * _f + (( *ptr & 0x0000ff00 ) * _f2 ) ) >> 8 ;
@@ -137,7 +137,7 @@ void gr_put_pixel( GRAPH * dest, int x, int y, int color )
                         if ( g > 0x0000ff00 ) g = 0x0000ff00 ; else g &= 0x0000ff00 ;
                         if ( b > 0x000000ff ) b = 0x000000ff ; else b &= 0x000000ff ;
 
-                        *ptr = 0xff000000 | r | g | b ;
+                        *ptr = ( _f << 24 ) | r | g | b ;
                     }
                     else
                     {
@@ -207,35 +207,19 @@ void gr_put_pixelc( GRAPH * dest, REGION * clip, int x, int y, int color )
 void gr_setcolor( int c )
 {
     int r, g, b;
-
-    if ( c == 0 )
+    if ( c )
     {
+        gr_get_rgb( c, &r, &g, &b );
+        pixel_color8 = gr_find_nearest_color( r, g, b );
+    }
+    else
         pixel_color8 = 0;
-        pixel_color16 = 0;
-        pixel_color32 = 0;
-    }
-    else if ( sys_pixel_format->depth == 8 )
-    {
-        pixel_color8 = c;
-    }
-    else if ( sys_pixel_format->depth > 8 )
-    {
-        if ( c > 255 || c < 0 )
-        {
-            gr_get_rgb( c, &r, &g, &b );
-            pixel_color8 = gr_find_nearest_color( r, g, b );
-        }
-        else
-        {
-            pixel_color8 = c;
-        }
 
-        /* Fix this */
-        pixel_color16 = c ;
-        pixel_color32 = c ;
-    }
+    /* Fix this */
+    pixel_color16 = c ;
+    pixel_color32 = c ;
 
-    if ( pixel_alpha != 255 ) pixel_color16_alpha = gr_alpha16( pixel_alpha )[ pixel_color16 ];
+    if ( sys_pixel_format->depth == 16 && pixel_alpha != 255 ) pixel_color16_alpha = gr_alpha16( pixel_alpha )[ pixel_color16 ];
 }
 
 /* --------------------------------------------------------------------------- */
@@ -259,8 +243,8 @@ void gr_setalpha( int value )
 
     if ( sys_pixel_format->depth == 16 )
     {
-        pixel_alpha16 = gr_alpha16( 255 - value );
         pixel_alpha8 = gr_alpha8( value );
+        pixel_alpha16 = gr_alpha16( 255 - value );
         pixel_color16_alpha = gr_alpha16( value )[ pixel_color16 ];
     }
     else

@@ -139,11 +139,13 @@ _inline void _HLine32_nostipple( uint32_t * ptr, uint32_t length )
         _f = ( _f >> 24 ) * pixel_alpha / 255 ;
         _f2 = 255 - _f ;
 
-        if ( _f != 0xff000000 )
+        if ( _f != 0x000000ff )
         {
             _c1 = ( pixel_color32 & 0x00ff0000 ) * _f ;
             _c2 = ( pixel_color32 & 0x0000ff00 ) * _f ;
             _c3 = ( pixel_color32 & 0x000000ff ) * _f ;
+
+            _f <<= 24 ;
 
             for ( n = length; n >= 0; n-- )
             {
@@ -155,7 +157,7 @@ _inline void _HLine32_nostipple( uint32_t * ptr, uint32_t length )
                 if ( g > 0x0000ff00 ) g = 0x0000ff00 ; else g &= 0x0000ff00 ;
                 if ( b > 0x000000ff ) b = 0x000000ff ; else b &= 0x000000ff ;
 
-                *ptr++ = 0xff000000 | r | g | b ;
+                *ptr++ = _f | r | g | b ;
             }
         }
         else
@@ -203,11 +205,13 @@ _inline void _HLine32_stipple( uint32_t * ptr, uint32_t length )
         _f = ( _f >> 24 ) * pixel_alpha / 255 ;
         _f2 = 255 - _f ;
 
-        if ( _f != 0xff000000 )
+        if ( _f != 0x000000ff )
         {
             _c1 = ( pixel_color32 & 0x00ff0000 ) * _f ;
             _c2 = ( pixel_color32 & 0x0000ff00 ) * _f ;
             _c3 = ( pixel_color32 & 0x000000ff ) * _f ;
+
+            _f <<= 24 ;
 
             for ( n = length; n >= 0; n-- )
             {
@@ -221,7 +225,7 @@ _inline void _HLine32_stipple( uint32_t * ptr, uint32_t length )
                     if ( g > 0x0000ff00 ) g = 0x0000ff00 ; else g &= 0x0000ff00 ;
                     if ( b > 0x000000ff ) b = 0x000000ff ; else b &= 0x000000ff ;
 
-                    *ptr++ = 0xff000000 | r | g | b ;
+                    *ptr++ = _f | r | g | b ;
                 }
                 drawing_stipple = (( drawing_stipple << 1 ) | (( drawing_stipple & 0x80000000 ) ? 1 : 0 ) );
             }
@@ -413,11 +417,13 @@ void draw_vline( GRAPH * dest, REGION * clip, int x, int y, int h )
                     _f = ( _f >> 24 ) * pixel_alpha / 255 ;
                     _f2 = 255 - _f ;
 
-                    if ( _f != 0xff000000 )
+                    if ( _f != 0x000000ff )
                     {
                         _c1 = ( pixel_color32 & 0x00ff0000 ) * _f ;
                         _c2 = ( pixel_color32 & 0x0000ff00 ) * _f ;
                         _c3 = ( pixel_color32 & 0x000000ff ) * _f ;
+
+                        _f <<= 24 ;
 
                         while ( h-- >= 0 )
                         {
@@ -431,7 +437,7 @@ void draw_vline( GRAPH * dest, REGION * clip, int x, int y, int h )
                                 if ( g > 0x0000ff00 ) g = 0x0000ff00 ; else g &= 0x0000ff00 ;
                                 if ( b > 0x000000ff ) b = 0x000000ff ; else b &= 0x000000ff ;
 
-                                *ptr = 0xff000000 | r | g | b ;
+                                *ptr = _f | r | g | b ;
                             }
                             drawing_stipple = (( drawing_stipple << 1 ) | (( drawing_stipple & 0x80000000 ) ? 1 : 0 ) );
                             ptr += inc;
@@ -482,11 +488,13 @@ void draw_vline( GRAPH * dest, REGION * clip, int x, int y, int h )
                     _f = ( _f >> 24 ) * pixel_alpha / 255 ;
                     _f2 = 255 - _f ;
 
-                    if ( _f != 0xff000000 )
+                    if ( _f != 0x000000ff )
                     {
                         _c1 = ( pixel_color32 & 0x00ff0000 ) * _f ;
                         _c2 = ( pixel_color32 & 0x0000ff00 ) * _f ;
                         _c3 = ( pixel_color32 & 0x000000ff ) * _f ;
+
+                        _f <<= 24 ;
 
                         while ( h-- >= 0 )
                         {
@@ -498,7 +506,7 @@ void draw_vline( GRAPH * dest, REGION * clip, int x, int y, int h )
                             if ( g > 0x0000ff00 ) g = 0x0000ff00 ; else g &= 0x0000ff00 ;
                             if ( b > 0x000000ff ) b = 0x000000ff ; else b &= 0x000000ff ;
 
-                            *ptr = 0xff000000 | r | g | b ;
+                            *ptr = _f | r | g | b ;
                             ptr += inc;
                         }
                     }
@@ -1253,11 +1261,13 @@ void draw_line( GRAPH * dest, REGION * clip, int x, int y, int w, int h )
                         _f = ( _f >> 24 ) * pixel_alpha / 255 ;
                         _f2 = 255 - _f ;
 
-                        if ( _f != 0xff000000 )
+                        if ( _f != 0x000000ff )
                         {
                             _c1 = ( pixel_color32 & 0x00ff0000 ) * _f ;
                             _c2 = ( pixel_color32 & 0x0000ff00 ) * _f ;
                             _c3 = ( pixel_color32 & 0x000000ff ) * _f ;
+
+                            _f <<= 24 ;
 
                             while ( w-- >= 0 )
                             {
@@ -1269,7 +1279,7 @@ void draw_line( GRAPH * dest, REGION * clip, int x, int y, int w, int h )
                                 if ( g > 0x0000ff00 ) g = 0x0000ff00 ; else g &= 0x0000ff00 ;
                                 if ( b > 0x000000ff ) b = 0x000000ff ; else b &= 0x000000ff ;
 
-                                *ptr = 0xff000000 | r | g | b ;
+                                *ptr = _f | r | g | b ;
                                 ptr += hinc;
                                 if ( dd >= 0 ) ptr += vinc, dd += i2 ;
                                 else dd += i1 ;
@@ -1320,11 +1330,13 @@ void draw_line( GRAPH * dest, REGION * clip, int x, int y, int w, int h )
                         _f = ( _f >> 24 ) * pixel_alpha / 255 ;
                         _f2 = 255 - _f ;
 
-                        if ( _f != 0xff000000 )
+                        if ( _f != 0x000000ff )
                         {
                             _c1 = ( pixel_color32 & 0x00ff0000 ) * _f ;
                             _c2 = ( pixel_color32 & 0x0000ff00 ) * _f ;
                             _c3 = ( pixel_color32 & 0x000000ff ) * _f ;
+
+                            _f <<= 24 ;
 
                             while ( h-- >= 0 )
                             {
@@ -1336,7 +1348,7 @@ void draw_line( GRAPH * dest, REGION * clip, int x, int y, int w, int h )
                                 if ( g > 0x0000ff00 ) g = 0x0000ff00 ; else g &= 0x0000ff00 ;
                                 if ( b > 0x000000ff ) b = 0x000000ff ; else b &= 0x000000ff ;
 
-                                *ptr = 0xff000000 | r | g | b ;
+                                *ptr = _f | r | g | b ;
                                 ptr += vinc;
                                 if ( dd >= 0 ) ptr += hinc, dd += i2 ;
                                 else dd += i1 ;
@@ -1391,11 +1403,13 @@ void draw_line( GRAPH * dest, REGION * clip, int x, int y, int w, int h )
                         _f = ( _f >> 24 ) * pixel_alpha / 255 ;
                         _f2 = 255 - _f ;
 
-                        if ( _f != 0xff000000 )
+                        if ( _f != 0x000000ff )
                         {
                             _c1 = ( pixel_color32 & 0x00ff0000 ) * _f ;
                             _c2 = ( pixel_color32 & 0x0000ff00 ) * _f ;
                             _c3 = ( pixel_color32 & 0x000000ff ) * _f ;
+
+                            _f <<= 24 ;
 
                             while ( w-- >= 0 )
                             {
@@ -1409,7 +1423,7 @@ void draw_line( GRAPH * dest, REGION * clip, int x, int y, int w, int h )
                                     if ( g > 0x0000ff00 ) g = 0x0000ff00 ; else g &= 0x0000ff00 ;
                                     if ( b > 0x000000ff ) b = 0x000000ff ; else b &= 0x000000ff ;
 
-                                    *ptr = 0xff000000 | r | g | b ;
+                                    *ptr = _f | r | g | b ;
                                 }
                                 drawing_stipple = (( drawing_stipple << 1 ) | (( drawing_stipple & 0x80000000 ) ? 1 : 0 ) );
                                 ptr += hinc;
@@ -1467,11 +1481,13 @@ void draw_line( GRAPH * dest, REGION * clip, int x, int y, int w, int h )
                         _f = ( _f >> 24 ) * pixel_alpha / 255 ;
                         _f2 = 255 - _f ;
 
-                        if ( _f != 0xff000000 )
+                        if ( _f != 0x000000ff )
                         {
                             _c1 = ( pixel_color32 & 0x00ff0000 ) * _f ;
                             _c2 = ( pixel_color32 & 0x0000ff00 ) * _f ;
                             _c3 = ( pixel_color32 & 0x000000ff ) * _f ;
+
+                            _f <<= 24 ;
 
                             while ( h-- >= 0 )
                             {
@@ -1485,7 +1501,7 @@ void draw_line( GRAPH * dest, REGION * clip, int x, int y, int w, int h )
                                     if ( g > 0x0000ff00 ) g = 0x0000ff00 ; else g &= 0x0000ff00 ;
                                     if ( b > 0x000000ff ) b = 0x000000ff ; else b &= 0x000000ff ;
 
-                                    *ptr = 0xff000000 | r | g | b ;
+                                    *ptr = _f | r | g | b ;
                                 }
                                 drawing_stipple = (( drawing_stipple << 1 ) | (( drawing_stipple & 0x80000000 ) ? 1 : 0 ) );
                                 ptr += vinc;

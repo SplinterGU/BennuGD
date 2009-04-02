@@ -35,10 +35,8 @@ extern uint16_t pixel_color16 ;
 extern uint32_t pixel_color32 ;
 
 extern uint16_t pixel_color16_alpha ;
-extern uint32_t pixel_color32_alpha ;
 
 extern int pixel_alpha ;
-
 extern uint8_t * pixel_alpha8 ;
 extern uint16_t * pixel_alpha16 ;
 
