@@ -82,7 +82,7 @@ void dcb_add_file( const char * filename )
     if ( strlen( filename ) > 3 && !strncmp( filename + strlen( filename ) - 3, ".so", 3 ) )    return;
     if ( strlen( filename ) > 6 && !strncmp( filename + strlen( filename ) - 6, ".dylib", 6 ) ) return;
 
-    fp = file_open( filename, "rb0" );
+    fp = file_open( filename, "rb" );
     if ( !fp ) return;
     size = file_size( fp );
     file_close( fp );
@@ -516,6 +516,8 @@ int dcb_save( const char * filename, int options, const char * stubname )
     {
         int siz = dcb.file[n].SName;
         ARRANGE_DWORD( &dcb.file[n].SName );
+        ARRANGE_DWORD( &dcb.file[n].SFile );
+        ARRANGE_DWORD( &dcb.file[n].OFile );
         file_write( fp, &dcb.file[n], sizeof( DCB_FILE ) );
         file_write( fp, dcb_fullname[n], siz );
     }
@@ -523,7 +525,7 @@ int dcb_save( const char * filename, int options, const char * stubname )
     for ( n = 0; n < dcb_filecount; n++ )
     {
         char buffer[8192];
-        file * fp_r = file_open( dcb_fullname[n], "rb" );
+        file * fp_r = file_open ( dcb_fullname[n], "rb" );
         int chunk_size, siz = 0;
 
         assert( fp_r );
@@ -533,9 +535,6 @@ int dcb_save( const char * filename, int options, const char * stubname )
             file_write( fp, buffer, chunk_size );
             if ( chunk_size < 8192 ) break;
         }
-
-        printf( "  File %s added (%10d bytes)\n", dcb_fullname[n], siz );
-
         file_close( fp_r );
     }
 

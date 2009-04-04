@@ -277,12 +277,7 @@ int dcb_load_from( file * fp, int offset )
     ARRANGE_DWORD( &dcb.data.OSourceFiles );
     ARRANGE_DWORD( &dcb.data.OSysProcsCodes );
 
-    if ( memcmp( dcb.data.Header, DCB_MAGIC, sizeof( DCB_MAGIC ) ) != 0 ||
-            ( dcb.data.Version & 0xFF00 ) != ( DCB_VERSION & 0xFF00 ) )
-    {
-        printf( "%s: no es un DCB version %d o compatible", fp->name, DCB_VERSION >> 8 ) ;
-        return 0 ;
-    }
+    if ( memcmp( dcb.data.Header, DCB_MAGIC, sizeof( DCB_MAGIC ) ) != 0 || ( dcb.data.Version & 0xFF00 ) != ( DCB_VERSION & 0xFF00 ) ) return 0 ;
 
     globaldata = calloc( dcb.data.SGlobal + 4, 1 ) ;
     localdata  = calloc( dcb.data.SLocal + 4, 1 ) ;
@@ -362,7 +357,6 @@ int dcb_load_from( file * fp, int offset )
         char fname[__MAX_PATH];
 
         xfile_init( dcb.data.NFiles );
-
         file_seek( fp, offset + dcb.data.OFilesTab, SEEK_SET ) ;
         for ( n = 0 ; n < dcb.data.NFiles; n++ )
         {

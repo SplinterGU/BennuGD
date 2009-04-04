@@ -100,8 +100,10 @@ int file_read( file * fp, void * buffer, int len )
             fp->eof = 1 ;
             len = xf->size + xf->offset - fp->pos ;
         }
+
         fseek( xf->fp, fp->pos, SEEK_SET ) ;
         result = fread( buffer, 1, len, xf->fp ) ;
+
         fp->pos = ftell( xf->fp ) ;
         return result ;
     }
@@ -502,9 +504,22 @@ int file_size( file * fp )
 {
     long pos, size ;
 
-    if ( fp->type == F_XFILE )
-        return x_file[fp->n].size ;
+    if ( fp->type == F_XFILE ) return x_file[fp->n].size ;
 
+    pos = file_pos( fp );
+    if ( fp->type == F_GZFILE )
+    {
+        char buffer[8192];
+        size = pos;
+        while ( !file_eof( fp ) ) size += file_read( fp, buffer, 8192 );
+    }
+    else
+    {
+        file_seek(fp, 0, SEEK_END ) ;
+        size = file_pos( fp ) ;
+    }
+    file_seek(fp, pos, SEEK_SET ) ;
+/*
     if ( fp->type == F_GZFILE )
     {
         fprintf( stderr, "file_size: inválida en ficheros comprimidos\n" ) ;
@@ -515,6 +530,7 @@ int file_size( file * fp )
     fseek( fp->fp, 0, SEEK_END ) ;
     size = ftell( fp->fp ) ;
     fseek( fp->fp, pos, SEEK_SET ) ;
+*/
     return size ;
 }
 
@@ -627,7 +643,7 @@ file * file_open( const char * filename, char * mode )
 
     /* Si archivo real no existe en disco */
     if ( strchr( mode, 'r' ) && strchr( mode, 'b' ) &&  // Solo archivos read-only
-            !strchr( mode, '+' ) && !strchr( mode, 'w' ) )
+         !strchr( mode, '+' ) && !strchr( mode, 'w' ) )
     {
         for ( i = 0 ; i < x_files_count ; i++ )
         {
