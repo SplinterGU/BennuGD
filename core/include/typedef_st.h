@@ -73,6 +73,6 @@ TYPEDEF ;
 #define typedef_count(t)        ((t).chunk[0].count)
 #define typedef_base(t)         ((t).chunk[0].type)
 #define typedef_members(t)      ((t).varspace)
-#define typedef_is_unsigned(t)	((t).chunk[0].type <= 8 && !((t).chunk[0].type & 1))
+#define typedef_is_unsigned(t)	((t).chunk[0].type <= 8 && (t).chunk[0].type > 0 && !((t).chunk[0].type & 1))
 
 #endif

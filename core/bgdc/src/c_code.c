@@ -53,8 +53,28 @@ static int check_integer_type( expresion_result *exp )
 
     if ( typedef_is_integer( exp->type ) )
     {
-        if ( typedef_base( exp->type ) == TYPE_BYTE ) return MN_BYTE ;
-        if ( typedef_base( exp->type ) == TYPE_WORD ) return MN_WORD ;
+        BASETYPE t = typedef_base( exp->type ) ;
+        switch (t)
+        {
+            case TYPE_SHORT	 :
+            case TYPE_WORD	 :
+                return MN_WORD ;
+
+            case TYPE_SBYTE	 :
+            case TYPE_BYTE	 :
+                return MN_BYTE ;
+
+            case TYPE_UNDEFINED :
+            case TYPE_INT       :
+            case TYPE_DWORD     :
+            case TYPE_CHAR      :
+            case TYPE_FLOAT     :
+            case TYPE_STRING    :
+            case TYPE_ARRAY     :
+            case TYPE_STRUCT    :
+            case TYPE_POINTER   :
+                break;
+        }
         return MN_DWORD ;
     }
 
@@ -82,10 +102,28 @@ static int check_integer_types( expresion_result *left, expresion_result *right 
         {
             if ( typedef_base( left->type ) == typedef_base( right->type ) )
             {
-                if ( typedef_base( left->type ) == TYPE_BYTE )
-                    return MN_BYTE ;
-                if ( typedef_base( left->type ) == TYPE_WORD )
-                    return MN_WORD ;
+                BASETYPE t = typedef_base( left->type ) ;
+                switch (t)
+                {
+                    case TYPE_SHORT	 :
+                    case TYPE_WORD	 :
+                        return MN_WORD ;
+
+                    case TYPE_SBYTE	 :
+                    case TYPE_BYTE	 :
+                        return MN_BYTE ;
+
+                    case TYPE_UNDEFINED :
+                    case TYPE_INT       :
+                    case TYPE_DWORD     :
+                    case TYPE_CHAR      :
+                    case TYPE_FLOAT     :
+                    case TYPE_STRING    :
+                    case TYPE_ARRAY     :
+                    case TYPE_STRUCT    :
+                    case TYPE_POINTER   :
+                        break;
+                }
             }
             return MN_DWORD ;
         }
@@ -216,18 +254,25 @@ int mntype( TYPEDEF type, int accept_structs )
     BASETYPE t ;
 
     while ( typedef_is_array( type ) ) type = typedef_reduce( type ) ;
-    t = typedef_base( type ) ;
 
-    if ( t == TYPE_DWORD )   return MN_DWORD | MN_UNSIGNED;
-    if ( t == TYPE_INT )     return MN_DWORD;
-    if ( t == TYPE_WORD )    return MN_WORD | MN_UNSIGNED;
-    if ( t == TYPE_SHORT )   return MN_WORD ;
-    if ( t == TYPE_BYTE )    return MN_BYTE | MN_UNSIGNED;
-    if ( t == TYPE_SBYTE )   return MN_BYTE ;
-    if ( t == TYPE_CHAR )    return MN_BYTE ;
-    if ( t == TYPE_FLOAT )   return MN_FLOAT ;
-    if ( t == TYPE_STRING )  return MN_STRING;
-    if ( t == TYPE_POINTER ) return MN_DWORD ;
+    t = typedef_base( type ) ;
+    switch (t)
+    {
+        case TYPE_DWORD   : return MN_DWORD | MN_UNSIGNED;
+        case TYPE_INT     : return MN_DWORD;
+        case TYPE_WORD    : return MN_WORD | MN_UNSIGNED;
+        case TYPE_SHORT   : return MN_WORD ;
+        case TYPE_BYTE    : return MN_BYTE | MN_UNSIGNED;
+        case TYPE_SBYTE   : return MN_BYTE ;
+        case TYPE_CHAR    : return MN_BYTE ;
+        case TYPE_FLOAT   : return MN_FLOAT ;
+        case TYPE_STRING  : return MN_STRING;
+        case TYPE_POINTER : return MN_DWORD ;
+        case TYPE_UNDEFINED :
+        case TYPE_ARRAY     :
+        case TYPE_STRUCT    :
+            break;
+    }
 
     if ( t == TYPE_STRUCT && accept_structs ) return 0;
 
@@ -1875,6 +1920,7 @@ expresion_result compile_operation()
             res.asignation = 0 ;
             res.call       = 0 ;
             res.type       = left.type ;
+
             left = res ;
             continue ;
         }
@@ -1882,7 +1928,7 @@ expresion_result compile_operation()
         /* Suma de cadenas */
 
         if ( typedef_is_array( left.type ) && left.lvalue &&
-                token.type == IDENTIFIER && token.code == identifier_plus && left.type.chunk[1].type == TYPE_CHAR ) /* "+" */
+             token.type == IDENTIFIER && token.code == identifier_plus && left.type.chunk[1].type == TYPE_CHAR ) /* "+" */
         {
             codeblock_add( code, MN_A2STR, 0 ) ;
             left.lvalue = 0 ;
@@ -1937,6 +1983,7 @@ expresion_result compile_operation()
                 res.asignation = 0 ;
                 res.call       = 0 ;
                 res.type       = typedef_new( TYPE_STRING ) ;
+
                 left = res ;
                 continue ;
             }
@@ -1958,7 +2005,7 @@ expresion_result compile_operation()
             }
             else
             {
-                res.type   = typedef_new( TYPE_DWORD ) ;
+                res.type   = left.type /*typedef_new( TYPE_INT )*/ ;
                 res.value  = op == MN_ADD ? left.value + right.value : left.value - right.value ;
             }
 
@@ -2103,7 +2150,6 @@ expresion_result compile_comparison_1()
             res.call       = 0 ;
             res.constant   = ( right.constant && left.constant ) ;
             res.type       = typedef_new( TYPE_INT ) ;
-
             left = res;
             continue;
         }
@@ -3011,6 +3057,15 @@ expresion_result convert_result_type( expresion_result res, BASETYPE t )
 
                 case TYPE_DWORD:
                     sprintf( buffer, "%u", ( int32_t )res.value ) ;
+                    break;
+
+                case TYPE_UNDEFINED :
+                case TYPE_CHAR      :
+                case TYPE_FLOAT     :
+                case TYPE_STRING    :
+                case TYPE_ARRAY     :
+                case TYPE_STRUCT    :
+                case TYPE_POINTER   :
                     break;
             }
             res.value = string_new( buffer ) ;
