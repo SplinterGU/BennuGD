@@ -67,6 +67,12 @@ int debug     = 0;  /* 1 if running in debug mode      */
 #ifdef TARGET_BSD
 #define _OS_ID          OS_BSD
 #endif
+#ifdef TARGET_GP2X
+#ifdef _OS_ID
+#undef _OS_ID
+#endif
+#define _OS_ID          OS_GP2X
+#endif
 
 /* --------------------------------------------------------------------------- */
 /*

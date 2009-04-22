@@ -60,6 +60,7 @@ constants_def[] =
     { "OS_GP32"         , TYPE_DWORD, OS_GP32             },
     { "OS_DC"           , TYPE_DWORD, OS_DC               },
     { "OS_BSD"          , TYPE_DWORD, OS_BSD              },
+    { "OS_GP2X"         , TYPE_DWORD, OS_GP2X             },
 
     { "MIN_INT"         , TYPE_INT  , -2147483647L - 1    },
     { "MAX_INT"         , TYPE_INT  , 2147483647L         },

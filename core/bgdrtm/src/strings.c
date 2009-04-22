@@ -593,6 +593,7 @@ int string_ftoa( float n )
     assert( str )  ;
 
     sprintf( str, "%f", n ) ;
+
     ptr = str + strlen( str ) - 1 ;
     while ( ptr >= str )
     {
@@ -603,7 +604,7 @@ int string_ftoa( float n )
     if ( *str == 0 )
     {
         *str = '0';
-        * ( str + 1 ) = '\0';
+        *( str + 1 ) = '\0';
     }
 
     id = string_getid() ;
@@ -945,7 +946,7 @@ int string_format( double number, int dec, char point, char thousands )
 {
     char * str = malloc( 128 );
     char * s = str, * t, * p = NULL;
-    int c, id ;
+    int c, id, neg ;
 
     assert( str );
 
@@ -954,21 +955,34 @@ int string_format( double number, int dec, char point, char thousands )
     else
         sprintf( str, "%.*f", dec, number );
 
+    neg = (*str == '-') ? 1 : 0;
+
     p = s;
-    while ( *s )
+    if ( !dec )
     {
-        if ( dec && *s == '.' )
-        {
-            * s = point;
-            while ( *s ) s++;
-            break;
-        }
-        s++;
+        while ( *s ) s++;
         p = s;
     }
+    else
+    {
+        while ( *s )
+        {
+            if ( *s == '.' )
+            {
+                *s = point;
+                while ( *s ) s++;
+                break;
+            }
+            s++;
+            p = s;
+        }
+    }
+
+    /* p = where decimal point is */
+    /* s = where '\0' is */
 
     if ( thousands )
-        t = s + ( p - str ) / 3;
+        t = s + (p - (str + neg) - 1 ) / 3;
     else
         t = s;
 
@@ -991,7 +1005,7 @@ int string_format( double number, int dec, char point, char thousands )
 
     id = string_getid() ;
 
-    string_ptr[id] = t + 1 ;
+    string_ptr[id] = str ;
     string_uct[id] = 0 ;
 
     return id;

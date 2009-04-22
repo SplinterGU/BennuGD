@@ -31,6 +31,12 @@ case "$target_os" in
 	    COMMON_LIBS="$LIBS -lz -lshlwapi"
 	    ;;
 
+    mingw32msvc)
+        INCLUDES="-I/usr/i586-mingw32msvc/include"
+	    COMMON_CFLAGS="$INCLUDES -DTARGET_WIN32 -DWIN32 -D_WIN32"
+	    COMMON_LDFLAGS="-L/usr/i586-mingw32msvc/lib -lz -lshlwapi"
+	    ;;
+
     dragonfly*)
         INCLUDES="-I/usr/local/include"
 	    LIBS="-pthread -L/usr/local/lib"
