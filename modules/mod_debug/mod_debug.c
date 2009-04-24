@@ -2591,7 +2591,7 @@ static void console_draw( INSTANCE * i, REGION * clip )
 
     for ( count = 0; count < console_lines; count++ )
     {
-        systext_color( 0xC0C0C0, 0x010101 ) ;
+        systext_color( 0xC0C0C0, 0x000020 ) ;
         if ( !console[line] || console_scroll_lateral_pos >= strlen( console[line] ) )
         {
             systext_puts( scrbitmap, x, y, "", console_columns ) ;
