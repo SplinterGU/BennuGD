@@ -33,21 +33,6 @@ CONTAINER * sorted_object_list = NULL;
 
 /* --------------------------------------------------------------------------- */
 
-CONTAINER * search_container( int key )
-{
-    CONTAINER * ctr = NULL;
-
-    if ( !sorted_object_list ) return NULL;
-
-    for ( ctr = sorted_object_list; ctr && ctr->key > key; ctr = ctr->next );
-
-    if ( ctr && ctr->key == key ) return ctr;
-
-    return NULL;
-}
-
-/* --------------------------------------------------------------------------- */
-
 CONTAINER * get_container( int key )
 {
     CONTAINER * ctr = NULL, * prev_ctr = NULL, * new_ctr = NULL;
@@ -162,6 +147,7 @@ int gr_new_object( int z, OBJ_INFO * info, OBJ_DRAW * draw, void * what )
     object->bbox_saved.y = -2;
     object->bbox_saved.x2 = -2;
     object->bbox_saved.y2 = -2;
+    object->ctr = ctr;
     object->seq = 0;
     object->prev = NULL;
 
@@ -200,8 +186,7 @@ void gr_destroy_object( int id )
 
     if ( !object ) return ;
 
-    ctr = search_container( object->z );
-    if ( !ctr ) return ;
+    ctr = object->ctr;
 
     if ( object->next ) object->next->prev = object->prev;
     if ( object->prev ) object->prev->next = object->next;
