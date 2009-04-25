@@ -38,8 +38,6 @@ typedef struct _object
     REGION bbox ;
     REGION bbox_saved ;
 
-    struct _container * ctr ;
-
     int seq;
 
     struct _object * prev ;
@@ -63,6 +61,7 @@ CONTAINER ;
 
 /* --------------------------------------------------------------------------- */
 
+extern CONTAINER * search_container( int key ) ;
 extern CONTAINER * get_container( int key ) ;
 extern void destroy_container( CONTAINER * ctr ) ;
 extern int gr_new_object( int z, OBJ_INFO * info, OBJ_DRAW * draw, void * what );

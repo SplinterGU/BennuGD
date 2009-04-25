@@ -586,15 +586,13 @@ int string_ptoa( void * n )
 
 int string_ftoa( float n )
 {
-    char * str, * ptr ;
+    char * str = ( char * ) malloc( 32 ), * ptr = str;
     int id ;
 
-    str = ( char * ) malloc( 32 ) ;
     assert( str )  ;
 
-    sprintf( str, "%f", n ) ;
+    ptr += sprintf( str, "%f", n ) - 1;
 
-    ptr = str + strlen( str ) - 1 ;
     while ( ptr >= str )
     {
         if ( *ptr != '0' ) break ;
@@ -694,21 +692,8 @@ int string_char( int n, int nchar )
 {
     const char * str = string_get( n ) ;
     char buffer[2] ;
-#if 0
-    int len ;
-#endif
 
     assert( str ) ;
-
-#if 0
-    len = strlen( str ) ;
-    if ( nchar >= len ) return string_new( "" ) ;
-    if ( nchar < 0 )
-    {
-        nchar = len + nchar ;
-        if ( nchar < 0 ) return string_new( "" ) ;
-    }
-#endif
 
     if ( nchar < 0 )
     {
@@ -951,31 +936,21 @@ int string_format( double number, int dec, char point, char thousands )
     assert( str );
 
     if ( dec == -1 )
-        sprintf( str, "%f", number );
+        s += sprintf( str, "%f", number );
     else
-        sprintf( str, "%.*f", dec, number );
+        s += sprintf( str, "%.*f", dec, number );
 
     neg = (*str == '-') ? 1 : 0;
 
-    p = s;
-    if ( !dec )
+    if ( dec )
     {
-        while ( *s ) s++;
-        p = s;
+        p = str;
+        while ( *p && *p != '.' ) p++;
+        if ( *p ) *p = point;
     }
     else
     {
-        while ( *s )
-        {
-            if ( *s == '.' )
-            {
-                *s = point;
-                while ( *s ) s++;
-                break;
-            }
-            s++;
-            p = s;
-        }
+        p = s;
     }
 
     /* p = where decimal point is */
