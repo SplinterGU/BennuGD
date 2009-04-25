@@ -200,6 +200,7 @@ void gr_destroy_object( int id )
     if ( !object ) return ;
 
     ctr = search_container( object->z );
+    if ( !ctr ) return;
 
     if ( object->next ) object->next->prev = object->prev;
     if ( object->prev ) object->prev->next = object->next;
