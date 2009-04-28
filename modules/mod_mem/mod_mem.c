@@ -193,9 +193,15 @@ static int modmem_memcmp( INSTANCE * my, int * params )
     return ( memcmp(( void * )params[0], ( void * )params[1], params[2] ) ) ;
 }
 
-static int modmem_memcopy( INSTANCE * my, int * params )
+static int modmem_memmove( INSTANCE * my, int * params )
 {
     memmove(( void * )params[0], ( void * )params[1], params[2] ) ;
+    return 1 ;
+}
+
+static int modmem_memcopy( INSTANCE * my, int * params )
+{
+    memcpy(( void * )params[0], ( void * )params[1], params[2] ) ;
     return 1 ;
 }
 
@@ -254,7 +260,7 @@ DLSYSFUNCS __bgdexport( mod_mem, functions_exports )[] =
     { "MEM_SETW"        , "PWI"   , TYPE_INT    , modmem_memsetw        },
     { "MEM_SETI"        , "PII"   , TYPE_INT    , modmem_memseti        },
     { "MEM_COPY"        , "PPI"   , TYPE_INT    , modmem_memcopy        },
-    { "MEM_MOVE"        , "PPI"   , TYPE_INT    , modmem_memcopy        },
+    { "MEM_MOVE"        , "PPI"   , TYPE_INT    , modmem_memmove        },
     { "MEM_AVAILABLE"   , ""      , TYPE_INT    , modmem_memory_free    },
     { "MEM_TOTAL"       , ""      , TYPE_INT    , modmem_memory_total   },
 
@@ -266,7 +272,7 @@ DLSYSFUNCS __bgdexport( mod_mem, functions_exports )[] =
     { "MEMSETW"         , "PWI"   , TYPE_INT    , modmem_memsetw        },
     { "MEMSETI"         , "PII"   , TYPE_INT    , modmem_memseti        },
     { "MEMCOPY"         , "PPI"   , TYPE_INT    , modmem_memcopy        },
-    { "MEMMOVE"         , "PPI"   , TYPE_INT    , modmem_memcopy        },
+    { "MEMMOVE"         , "PPI"   , TYPE_INT    , modmem_memmove        },
     { "MEMORY_FREE"     , ""      , TYPE_INT    , modmem_memory_free    },
     { "MEMORY_TOTAL"    , ""      , TYPE_INT    , modmem_memory_total   },
     { 0                 , 0       , 0           , 0                     }
