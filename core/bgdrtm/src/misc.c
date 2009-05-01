@@ -131,14 +131,14 @@ void bgdrtm_entry( int argc, char * argv[] )
  *
  */
 
-void bgdrtm_exit( int n )
+void bgdrtm_exit( int exit_value )
 {
+    int n;
     /* Finalize all modules */
     if ( module_finalize_count )
         for ( n = 0; n < module_finalize_count; n++ )
             module_finalize_list[n]();
-
-    exit( n ) ;
+    exit( exit_value ) ;
 }
 
 /* --------------------------------------------------------------------------- */

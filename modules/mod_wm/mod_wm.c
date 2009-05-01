@@ -131,8 +131,8 @@ static int bgd_move_window( INSTANCE * my, int * params )
             res = XMoveWindow( wminfo.info.x11.display, parent, params[0], params[1] );
             XMapRaised(wminfo.info.x11.display, parent); /* Show Window */
             wminfo.info.x11.unlock_func();
+            if ( children ) XFree( children );
         }
-        if ( children ) XFree( children );
     }
 #endif
 #endif

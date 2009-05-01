@@ -92,6 +92,7 @@ static int modsys_exec( INSTANCE * my, int * params )
     else if ( child == 0 )
     {
         execvp( filename, ( const char ** )argv );
+        exit(-1);
     }
     else
     {
@@ -99,10 +100,14 @@ static int modsys_exec( INSTANCE * my, int * params )
         switch ( mode )
         {
             case _P_WAIT:
-                if ( waitpid( child, &status, WUNTRACED ) != child ) status = -1;
+                if ( waitpid( child, &status, WUNTRACED ) != child )
+                    status = -1;
+                else
+                    status = (int)(char)WEXITSTATUS(status);
                 break;
 
             case _P_NOWAIT:
+                status = child;
                 break;
         }
     }
