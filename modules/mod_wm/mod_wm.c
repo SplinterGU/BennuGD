@@ -105,19 +105,10 @@ static int bgd_move_window( INSTANCE * my, int * params )
     if ( full_screen ) return 0;
 
     SDL_VERSION( &wminfo.version );
-    if ( !SDL_GetWMInfo( &wminfo ) > 0 ) return 0 ;
+    if ( !(SDL_GetWMInfo( &wminfo ) > 0) ) return 0 ;
 
 #ifdef WIN32
-    /*
-    typedef struct {
-        SDL_version version;
-        HWND window;
-        HGLRC hglrc;
-    } SDL_SysWMinfo;
-    */
-
     /* Set the new window position */
-
     res = SetWindowPos(
                 wminfo.window,     // handle to window
                 HWND_NOTOPMOST,    // Possibly will have no effect... it stays below top-most
@@ -132,36 +123,17 @@ static int bgd_move_window( INSTANCE * my, int * params )
     Window root, parent, *children = NULL;
     unsigned int children_count;
 
-    /*
-    typedef struct {
-    SDL_version version;
-    SDL_SYSWM_TYPE subsystem;
-    union {
-        struct {
-            Display *display;
-            Window window;
-            void (*lock_func)(void);
-            void (*unlock_func)(void);
-            Window fswindow;
-            Window wmwindow;
-            } x11;
-        } info;
-    } SDL_SysWMinfo;
-    */
-
-    wminfo.info.x11.lock_func();
-    if ( XQueryTree( wminfo.info.x11.display, wminfo.info.x11.window, &root, &parent, &children, &children_count ) != BadWindow )
+    if ( wminfo.subsystem == SDL_SYSWM_X11 )
     {
-        if ( children ) XFree( children );
-
-        if ( XQueryTree( wminfo.info.x11.display, parent, &root, &parent, &children, &children_count ) != BadWindow )
+        if ( XQueryTree( wminfo.info.x11.display, wminfo.info.x11.window, &root, &parent, &children, &children_count ) != BadWindow )
         {
-            if ( children ) XFree( children );
-
+            wminfo.info.x11.lock_func();
             res = XMoveWindow( wminfo.info.x11.display, parent, params[0], params[1] );
+            XMapRaised(wminfo.info.x11.display, parent); /* Show Window */
+            wminfo.info.x11.unlock_func();
         }
+        if ( children ) XFree( children );
     }
-    wminfo.info.x11.unlock_func();
 #endif
 #endif
 

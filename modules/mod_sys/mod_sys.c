@@ -76,7 +76,7 @@ static int modsys_exec( INSTANCE * my, int * params )
 
     // fill argv
     argv = ( char ** ) calloc( argc + 2, sizeof( char * ) );
-    argv[0] = ( char * ) string_get( params[1] );
+    argv[0] = filename;
     for ( n = 0; n < argc; n++ )
         argv[n + 1] = ( char * ) string_get((( int * )( params[3] ) )[n] );
 
@@ -109,7 +109,7 @@ static int modsys_exec( INSTANCE * my, int * params )
 #endif
 
     // Free resources
-    string_discard( params[0] );
+    string_discard( params[1] );
     if ( argv ) free( argv );
 
     return ( status ) ;
