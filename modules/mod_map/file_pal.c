@@ -42,6 +42,7 @@ PALETTE * gr_read_pal( file * fp )
 
     pal = pal_new_rgb(( uint8_t * )colors );
     pal_refresh( pal );
+
     if ( !sys_pixel_format->palette )
     {
         sys_pixel_format->palette = pal_new( pal );
@@ -146,6 +147,7 @@ int gr_load_pal( const char * filename )
     file * fp = file_open( filename, "rb" ) ;
     char header[8] ;
     PALETTE * r = NULL ;
+    int old_sys_pal = sys_pixel_format->palette ;
 
     if ( !fp ) return 0 ;
 
@@ -174,6 +176,14 @@ int gr_load_pal( const char * filename )
             pal_use( graph->format->palette );
             bitmap_destroy( graph );
         }
+    }
+
+    if ( r )
+    {
+        if ( old_sys_pal ) pal_destroy( sys_pixel_format->palette );
+
+        sys_pixel_format->palette = pal_new( r );
+        palette_changed = 1 ;
     }
 
     if ( fp ) file_close( fp ) ;

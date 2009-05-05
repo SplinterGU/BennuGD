@@ -655,9 +655,36 @@ static int modmap_pal_map_getid( INSTANCE * my, int * params )
 
 /* --------------------------------------------------------------------------- */
 
+static int modmap_set_system_pal( INSTANCE * my, int * params )
+{
+    if ( pal_set(( PALETTE * )NULL, 0, 256, (( PALETTE * )params[3])->rgb ) )
+    {
+        pal_refresh( sys_pixel_format->palette );
+        return 1;
+    }
+    return 0;
+}
+
+/* --------------------------------------------------------------------------- */
+
+static int modmap_set_system_pal_raw( INSTANCE * my, int * params )
+{
+    if ( pal_set(( PALETTE * )NULL, 0, 256, ( uint8_t * )params[3] ) )
+    {
+        pal_refresh( sys_pixel_format->palette );
+        return 1;
+    }
+    return 0;
+}
+
+/* ---------------------------------------------------------------------- */
+
+
 static int modmap_pal_set( INSTANCE * my, int * params )
 {
-    return ( pal_set(( PALETTE * )( params[0] ), params[1], params[2], ( uint8_t * )params[3] ) ) ;
+    int ret = pal_set(( PALETTE * )( params[0] ), params[1], params[2], ( uint8_t * )params[3] ) ;
+    if ( ret && !params[0] ) pal_refresh( sys_pixel_format->palette );
+    return ret;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -968,6 +995,8 @@ DLSYSFUNCS  __bgdexport( mod_map, functions_exports )[] =
     { "PAL_MAP_REMOVE"      , "II"          , TYPE_INT      , modmap_pal_map_remove     },
     { "PAL_GET"             , "IIP"         , TYPE_INT      , modmap_get_colors         },
     { "PAL_GET"             , "IIIP"        , TYPE_INT      , modmap_pal_get            },
+    { "PAL_SYS_SET"         , "I"           , TYPE_INT      , modmap_set_system_pal     },
+    { "PAL_SYS_SET"         , "P"           , TYPE_INT      , modmap_set_system_pal_raw },
     { "PAL_SET"             , "IIP"         , TYPE_INT      , modmap_set_colors         },
     { "PAL_SET"             , "IIIP"        , TYPE_INT      , modmap_pal_set            },
     { "PAL_SAVE"            , "S"           , TYPE_INT      , modmap_save_system_pal    },

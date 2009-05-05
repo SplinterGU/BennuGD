@@ -170,9 +170,10 @@ GRAPH * gr_read_png( const char * filename )
 
         bitmap->format->palette = pal_new_rgb(( uint8_t * )colors );
         pal_refresh( bitmap->format->palette );
+
         if ( !sys_pixel_format->palette )
         {
-            sys_pixel_format->palette = pal_new( bitmap->format->palette ) ;
+            sys_pixel_format->palette = pal_new( bitmap->format->palette );
             palette_changed = 1 ;
         }
 

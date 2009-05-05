@@ -206,16 +206,26 @@ void gr_put_pixelc( GRAPH * dest, REGION * clip, int x, int y, int color )
 
 void gr_setcolor( int c )
 {
+/*
     int r, g, b;
+
     if ( c )
     {
-        gr_get_rgb( c, &r, &g, &b );
-        pixel_color8 = gr_find_nearest_color( r, g, b );
+        if ( sys_pixel_format->depth != 8 )
+        {
+            gr_get_rgb( c, &r, &g, &b );
+            pixel_color8 = gr_find_nearest_color( r, g, b );
+        }
+        else
+        {
+
+        }
     }
     else
         pixel_color8 = 0;
-
+*/
     /* Fix this */
+    pixel_color8 = c;
     pixel_color16 = c ;
     pixel_color32 = c ;
 

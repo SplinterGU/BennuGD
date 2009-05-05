@@ -191,15 +191,17 @@ static int modscreen_clear_screen( INSTANCE * my, int * params )
 
 static int modscreen_get_screen( INSTANCE * my, int * params )
 {
-    GRAPH * map ;
-
+    GRAPH * map = bitmap_clone( bitmap_get( 0, -1 ) );
+/*
     map = bitmap_new_syslib( scr_width, scr_height, sys_pixel_format->depth ) ;
     if ( !map ) return 0;
 
     gr_draw_screen( map, 1, 1 );
     map->modified = 1;
-
+*/
     map->info_flags = GI_NOCOLORKEY ;
+    map->code = bitmap_next_code();
+    grlib_add_map( 0, map );
 
     return map->code ;
 }

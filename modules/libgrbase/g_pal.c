@@ -512,7 +512,13 @@ void pal_destroy( PALETTE * pal )
 int pal_get( PALETTE * spal, int color, int num, uint8_t * pal )
 {
     if ( !spal || num < 1 || color < 0 || color > 255 ) return 0;
-    if ( color + num >= 256 ) num = 256 - color ;
+    if ( color + num > 256 ) num = 256 - color ;
+
+    if ( !spal )
+    {
+        if ( !sys_pixel_format->palette ) sys_pixel_format->palette = pal_new( NULL );
+        spal = sys_pixel_format->palette ;
+    }
 
     while ( num-- )
     {
@@ -528,7 +534,13 @@ int pal_get( PALETTE * spal, int color, int num, uint8_t * pal )
 int pal_set( PALETTE * spal, int color, int num, uint8_t * pal )
 {
     if ( !spal || num < 1 || color < 0 || color > 255 ) return 0;
-    if ( color + num >= 256 ) num = 256 - color ;
+    if ( color + num > 256 ) num = 256 - color ;
+
+    if ( !spal )
+    {
+        if ( !sys_pixel_format->palette ) sys_pixel_format->palette = pal_new( NULL );
+        spal = sys_pixel_format->palette ;
+    }
 
     while ( num-- )
     {
@@ -546,7 +558,7 @@ int pal_map_assign( int libid, int mapcode, PALETTE * palid )
     GRAPH * bmp = bitmap_get( libid, mapcode ) ;
     PALETTE * oldpal ;
 
-    if ( !bmp || !palid || bmp->format->depth != 8 ) return 0 ;
+    if ( !bmp /*|| !palid*/ || bmp->format->depth != 8 ) return 0 ;
 
     oldpal = bmp->format->palette ;
     bmp->format->palette = palid ;
@@ -800,7 +812,7 @@ void gr_set_rgb( int color, int r, int g, int b )
 void gr_get_colors( int color, int num, uint8_t * pal )
 {
     if ( num < 1 || color < 0 || color > 255 ) return ;
-    if ( color + num >= 256 ) num = 256 - color ;
+    if ( color + num > 256 ) num = 256 - color ;
 
     while ( num-- )
     {
@@ -815,7 +827,7 @@ void gr_get_colors( int color, int num, uint8_t * pal )
 void gr_set_colors( int color, int num, uint8_t * pal )
 {
     if ( num < 1 || color < 0 || color > 255 ) return ;
-    if ( color + num >= 256 ) num = 256 - color ;
+    if ( color + num > 256 ) num = 256 - color ;
 
     while ( num-- )
     {
