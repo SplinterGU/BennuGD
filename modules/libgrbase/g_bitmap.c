@@ -248,7 +248,7 @@ GRAPH * bitmap_clone( GRAPH * map )
     }
 
     gr->blend_table = map->blend_table;
-    gr->info_flags = map->info_flags ;
+    gr->info_flags = map->info_flags & ~GI_EXTERNAL_DATA ;
     gr->modified = map->modified ;
     gr->format->palette = map->format->palette ;
     pal_use( map->format->palette );
