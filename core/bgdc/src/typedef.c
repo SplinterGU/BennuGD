@@ -218,6 +218,7 @@ int typedef_is_equal( TYPEDEF a, TYPEDEF b )
 
     for ( n = 0; n < a.depth; n++ )
     {
+        if ( a.chunk[n].type == TYPE_STRUCT && b.chunk[n].type == TYPE_STRUCT && a.varspace != b.varspace ) return 0;
         if ( a.chunk[n].type != b.chunk[n].type ) return 0;
         if ( a.chunk[n].type == TYPE_ARRAY && a.chunk[n].count != b.chunk[n].count ) return 0;
     }

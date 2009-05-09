@@ -316,7 +316,6 @@ int compile_struct_data( VARSPACE * n, segment * data, int size, int sub )
             else if ( typedef_is_struct( next_type ) )   /* Next variable is another struct */
             {
                 compile_struct_data( next_type.varspace, data, 1, 1 ) ;
-
             }
             else   /* Next variable is a single type */
             {

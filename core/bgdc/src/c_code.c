@@ -476,18 +476,24 @@ int compile_sizeof( VARSPACE * here, int * content_size, char * content_type, in
 
     if ( base )
     {
-        for ( ;; )
+        token_next() ;
+        if ( token.type == IDENTIFIER && token.code != identifier_point )
         {
-            token_next() ;
-            if ( token.type == IDENTIFIER && ( token.code == identifier_pointer || token.code == identifier_multiply ) ) /* "POINTER" */
-            {
-                base = 4 ;
-                continue ;
-            }
             token_back() ;
-            break ;
+            for ( ;; )
+            {
+                token_next() ;
+                if ( token.type == IDENTIFIER && ( token.code == identifier_pointer || token.code == identifier_multiply ) ) /* "POINTER" */
+                {
+                    base = 4 ;
+                    continue ;
+                }
+                token_back() ;
+                break ;
+            }
+            return base ;
         }
-        return base ;
+        token_back() ;
     }
 
     if ( check_datatype ) compile_error( MSG_INVALID_TYPE ) ;
@@ -568,7 +574,7 @@ int compile_sizeof( VARSPACE * here, int * content_size, char * content_type, in
     }
 
     if ( token.type == IDENTIFIER && token.code == identifier_leftb &&
-            ( typedef_is_pointer( type ) || typedef_is_string( type ) ) ) /* Indexado de punteros ptr[0] o cadenas */
+         ( typedef_is_pointer( type ) || typedef_is_string( type ) ) ) /* Indexado de punteros ptr[0] o cadenas */
     {
         // Ningun array entra por aca
         CODEBLOCK_POS p = codeblock_pos( code );
@@ -644,12 +650,12 @@ int compile_sizeof( VARSPACE * here, int * content_size, char * content_type, in
     {
         if ( typedef_is_pointer( type ) ) type = typedef_reduce( type ) ;
         if ( !typedef_is_struct( type ) &&
-                typedef_base( type ) != TYPE_DWORD && typedef_base( type ) != TYPE_INT  /* Soporte de process type para publicas */
+              typedef_base( type ) != TYPE_DWORD && typedef_base( type ) != TYPE_INT  /* Soporte de process type para publicas */
            )
             compile_error( MSG_STRUCT_REQUIRED ) ;
 
         if ( typedef_is_struct( type ) || typedef_is_pointer( type ) ||
-                typedef_base( type ) == TYPE_DWORD || typedef_base( type ) == TYPE_INT )
+             typedef_base( type ) == TYPE_DWORD || typedef_base( type ) == TYPE_INT )
             return compile_sizeof( typedef_members( type ), content_size, content_type, parent_count ) ;
 
         return compile_sizeof( &local, content_size, content_type, parent_count ) ;
@@ -1311,6 +1317,10 @@ expresion_result compile_cast()
         else
             compile_error( MSG_CONVERSION );
     }
+    else if ( typedef_is_struct( type ) )
+    {
+        res.type = type;
+    }
     else
         compile_error( MSG_CONVERSION );
 
@@ -1908,7 +1918,7 @@ expresion_result compile_operation()
             right = compile_operand() ;
             if ( right.lvalue ) codeblock_add( code, mntype( right.type, 0 ) | MN_PTR, 0 ) ;
 
-            if ( !typedef_is_integer( right.type ) ) compile_error( MSG_INCOMP_TYPES ) ;
+            if ( !typedef_is_integer( right.type ) && !typedef_is_pointer( right.type )) compile_error( MSG_INCOMP_TYPES ) ;
 
             if ( typedef_size( ptr_t ) > 1 )
                 codeblock_add( code, MN_ARRAY, ( op == MN_ADD ? 1 : -1 ) * typedef_size( ptr_t ) ) ;
