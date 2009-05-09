@@ -352,7 +352,7 @@ int gr_set_mode( int width, int height, int depth )
         }
         else
         {
-            ico = SDL_CreateRGBSurfaceFrom( icon->data, 32, 32, 16, 64, 0xF800, 0x07E0, 0x001F, 0x00 ) ;
+            ico = SDL_CreateRGBSurfaceFrom( icon->data, 32, 32, icon->format->depth, icon->pitch, icon->format->Rmask, icon->format->Gmask, icon->format->Bmask, icon->format->Amask ) ;
         }
         SDL_SetColorKey( ico, SDL_SRCCOLORKEY, SDL_MapRGB( ico->format, 0, 0, 0 ) ) ;
         SDL_WM_SetIcon( ico, NULL );
