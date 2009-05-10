@@ -309,8 +309,8 @@ int gr_set_mode( int width, int height, int depth )
 
     SDL_WM_GrabInput( grab_input ? SDL_GRAB_ON : SDL_GRAB_OFF ) ;
 
-    // Aqui las llamadas a SDL_WM funcs...
-    SDL_WM_SetCaption( apptitle, "" ) ;
+    /* Set window title */
+    gr_set_caption( apptitle ) ;
 
     if ( !sys_pixel_format )
     {
