@@ -43,6 +43,5 @@ extern PIXEL_FORMAT * sys_pixel_format ;
 
 extern GRAPH * background ;
 extern GRAPH * scrbitmap ;
-extern GRAPH * icon ;
 
 #endif

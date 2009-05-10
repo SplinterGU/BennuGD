@@ -38,8 +38,6 @@ PIXEL_FORMAT * sys_pixel_format = NULL;
 GRAPH * background = NULL ;
 GRAPH * scrbitmap = NULL ;
 
-GRAPH * icon = NULL ;
-
 /* --------------------------------------------------------------------------- */
 /* Module initialization                                                       */
 

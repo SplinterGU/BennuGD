@@ -327,10 +327,12 @@ int draw_instance_info( INSTANCE * i, REGION * region, int * z, int * drawme )
         LOCDWORD( librender, i, SAVED_FLAGS )         != LOCDWORD( librender, i, FLAGS )          ||
         LOCDWORD( librender, i, SAVED_FILEID )        != LOCDWORD( librender, i, FILEID )         ||
         LOCDWORD( librender, i, SAVED_XGRAPH )        != LOCDWORD( librender, i, XGRAPH )         ||
-        graph->ncpoints &&
         (
-            LOCDWORD( librender, i, SAVED_CENTERX )       != graph->cpoints[0].x                  ||
-            LOCDWORD( librender, i, SAVED_CENTERY )       != graph->cpoints[0].y
+            graph->ncpoints &&
+            (
+                LOCDWORD( librender, i, SAVED_CENTERX )       != graph->cpoints[0].x              ||
+                LOCDWORD( librender, i, SAVED_CENTERY )       != graph->cpoints[0].y
+            )
         )
         ;
 

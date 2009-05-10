@@ -46,46 +46,15 @@
 
 static int bgd_set_title( INSTANCE * my, int * params )
 {
-    SDL_WM_SetCaption( apptitle = ( char * )string_get( params[0] ), "" ) ;
+    gr_set_caption( ( char * )string_get( params[0] ) ) ;
     return 1 ;
 }
 
 /* --------------------------------------------------------------------------- */
 
-static SDL_Color palette[256];
-
 static int bgd_set_icon( INSTANCE * my, int * params )
 {
-    SDL_Surface *ico = NULL;
-
-    icon = bitmap_get( params[0], params[1] ) ;
-    if ( icon )
-    {
-        if ( icon->format->depth == 8 )
-        {
-            int n ;
-
-            if ( sys_pixel_format && sys_pixel_format->palette )
-                for ( n = 0 ; n < 256 ; n++ )
-                {
-                    palette[ n ].r = sys_pixel_format->palette->rgb[ n ].r;
-                    palette[ n ].g = sys_pixel_format->palette->rgb[ n ].g;
-                    palette[ n ].b = sys_pixel_format->palette->rgb[ n ].b;
-                }
-
-            ico = SDL_CreateRGBSurfaceFrom( icon->data, 32, 32, 8, 32, 0x00, 0x00, 0x00, 0x00 ) ;
-            SDL_SetPalette( ico, SDL_LOGPAL, palette, 0, 256 );
-        }
-        else
-        {
-            ico = SDL_CreateRGBSurfaceFrom( icon->data, 32, 32, icon->format->depth, icon->pitch, icon->format->Rmask, icon->format->Gmask, icon->format->Bmask, icon->format->Amask ) ;
-        }
-
-        SDL_SetColorKey( ico, SDL_SRCCOLORKEY, SDL_MapRGB( ico->format, 0, 0, 0 ) ) ;
-        SDL_WM_SetIcon( ico, NULL );
-        SDL_FreeSurface( ico ) ;
-    }
-
+    gr_set_icon( bitmap_get( params[0], params[1] ) );
     return 1 ;
 }
 

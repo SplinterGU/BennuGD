@@ -629,7 +629,7 @@ void compile_constants()
 
 void compile_process()
 {
-    PROCDEF * proc ;
+    PROCDEF * proc, * external_proc ;
     VARIABLE  * var ;
     int is_declare = 0 ;
     int is_function = 0 ;
@@ -813,6 +813,7 @@ void compile_process()
     ctype = typedef_new( type ) ;
     ctypeb = ctype ;
     signed_prefix = unsigned_prefix = 0;
+    external_proc = NULL;
     while ( token.type != IDENTIFIER || token.code != identifier_rightp )
     {
         type = typeb;
@@ -837,6 +838,7 @@ void compile_process()
             type = signed_prefix ? TYPE_INT : TYPE_DWORD;
             unsigned_prefix = signed_prefix = 0;
             ctype = typedef_new( type ) ;
+            external_proc = NULL;
             token_next() ;
         }
         else if ( token.type == IDENTIFIER && token.code == identifier_int )
@@ -845,6 +847,7 @@ void compile_process()
             type = unsigned_prefix ? TYPE_DWORD : TYPE_INT;
             unsigned_prefix = signed_prefix = 0;
             ctype = typedef_new( type ) ;
+            external_proc = NULL;
             token_next() ;
         }
         else if ( token.type == IDENTIFIER && token.code == identifier_word )
@@ -853,6 +856,7 @@ void compile_process()
             type = signed_prefix ? TYPE_SHORT : TYPE_WORD ;
             unsigned_prefix = signed_prefix = 0;
             ctype = typedef_new( type ) ;
+            external_proc = NULL;
             token_next() ;
         }
         else if ( token.type == IDENTIFIER && token.code == identifier_short )
@@ -861,6 +865,7 @@ void compile_process()
             type = unsigned_prefix ? TYPE_WORD : TYPE_SHORT;
             unsigned_prefix = signed_prefix = 0;
             ctype = typedef_new( type ) ;
+            external_proc = NULL;
             token_next() ;
         }
         else if ( token.type == IDENTIFIER && token.code == identifier_byte )
@@ -869,6 +874,7 @@ void compile_process()
             type = signed_prefix ? TYPE_SBYTE : TYPE_BYTE ;
             unsigned_prefix = signed_prefix = 0;
             ctype = typedef_new( type ) ;
+            external_proc = NULL;
             token_next() ;
         }
         else if ( token.type == IDENTIFIER && token.code == identifier_char )
@@ -876,6 +882,7 @@ void compile_process()
             type_implicit = 0;
             type = TYPE_CHAR ;
             ctype = typedef_new( type ) ;
+            external_proc = NULL;
             token_next() ;
         }
         else if ( token.type == IDENTIFIER && token.code == identifier_string )
@@ -883,6 +890,7 @@ void compile_process()
             type_implicit = 0;
             type = TYPE_STRING ;
             ctype = typedef_new( type ) ;
+            external_proc = NULL;
             token_next() ;
         }
         else if ( token.type == IDENTIFIER && token.code == identifier_float )
@@ -890,14 +898,23 @@ void compile_process()
             type_implicit = 0;
             type = TYPE_FLOAT ;
             ctype = typedef_new( type ) ;
+            external_proc = NULL;
             token_next() ;
         }
         else if ( token.type == IDENTIFIER && segment_by_name( token.code ) )
         {
             type_implicit = 0;
-            ctype = *typedef_by_name( token.code ) ;
             type = TYPE_STRUCT ;
+            ctype = *typedef_by_name( token.code ) ;
+            external_proc = NULL;
             token_next() ;
+        }
+        else if ( !external_proc && ( external_proc = procdef_search( token.code ) ) )    // Variables tipo proceso, Splinter
+        {
+            type_implicit = 0;
+            type = TYPE_INT ;
+            ctype = typedef_new( type ) ;
+            token_next();
         }
 
         if ( signed_prefix || unsigned_prefix )
@@ -905,7 +922,6 @@ void compile_process()
             compile_error( MSG_INVALID_TYPE );
             signed_prefix = unsigned_prefix = 0;
         }
-
 
         typeb = type;
         ctypeb = ctype;
@@ -1022,14 +1038,14 @@ void compile_process()
                     proc->privars->vars[proc->privars->count].type   = ctype;
                     proc->privars->vars[proc->privars->count].offset = proc->pridata->current ;
                     proc->privars->vars[proc->privars->count].code   = token.code ;
+                    if ( external_proc ) proc->privars->vars[proc->privars->count].type.varspace = external_proc->pubvars;
                     proc->privars->count++ ;
                     segment_add_dword( proc->pridata, 0 ) ;
                 }
             }
         }
 
-        if ( proc->declared && proc->paramtype[params] != type )
-            compile_error( MSG_PROTO_ERROR ) ;
+        if ( proc->declared && proc->paramtype[params] != type ) compile_error( MSG_PROTO_ERROR ) ;
 
         if ( proc->params != -1 )
         {

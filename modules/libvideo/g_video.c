@@ -40,6 +40,8 @@
 
 /* --------------------------------------------------------------------------- */
 
+GRAPH * icon = NULL ;
+
 SDL_Surface * screen = NULL ;
 
 char * apptitle = NULL ;
@@ -189,6 +191,50 @@ void gr_wait_vsync()
 
 /* --------------------------------------------------------------------------- */
 
+void gr_set_caption( char * title )
+{
+    SDL_WM_SetCaption( apptitle = title, "" ) ;
+}
+
+/* --------------------------------------------------------------------------- */
+
+int gr_set_icon( GRAPH * map )
+{
+    if (( icon = map ))
+    {
+        SDL_Surface *ico = NULL;
+        if ( icon->format->depth == 8 )
+        {
+            SDL_Color palette[256];
+            if ( sys_pixel_format && sys_pixel_format->palette )
+            {
+                int n ;
+                for ( n = 0 ; n < 256 ; n++ )
+                {
+                    palette[ n ].r = sys_pixel_format->palette->rgb[ n ].r;
+                    palette[ n ].g = sys_pixel_format->palette->rgb[ n ].g;
+                    palette[ n ].b = sys_pixel_format->palette->rgb[ n ].b;
+                }
+            }
+
+            ico = SDL_CreateRGBSurfaceFrom( icon->data, 32, 32, 8, 32, 0x00, 0x00, 0x00, 0x00 ) ;
+            SDL_SetPalette( ico, SDL_LOGPAL, palette, 0, 256 );
+        }
+        else
+        {
+            ico = SDL_CreateRGBSurfaceFrom( icon->data, 32, 32, icon->format->depth, icon->pitch, icon->format->Rmask, icon->format->Gmask, icon->format->Bmask, icon->format->Amask ) ;
+        }
+
+        SDL_SetColorKey( ico, SDL_SRCCOLORKEY, SDL_MapRGB( ico->format, 0, 0, 0 ) ) ;
+        SDL_WM_SetIcon( ico, NULL );
+        SDL_FreeSurface( ico ) ;
+    }
+
+    return 1 ;
+}
+
+/* --------------------------------------------------------------------------- */
+
 int gr_set_mode( int width, int height, int depth )
 {
     int n ;
@@ -332,32 +378,7 @@ int gr_set_mode( int width, int height, int depth )
 
     // Finalmente seteamos icono de aplicacion
     // Necesitamos crear una surface a partir de un MAP generico de 16x16...
-    if ( icon )
-    {
-        if ( icon->format->depth == 8 )
-        {
-            SDL_Color palette[256];
-            int n ;
-
-            if ( sys_pixel_format && sys_pixel_format->palette )
-                for ( n = 0 ; n < 256 ; n++ )
-                {
-                    palette[ n ].r = sys_pixel_format->palette->rgb[ n ].r;
-                    palette[ n ].g = sys_pixel_format->palette->rgb[ n ].g;
-                    palette[ n ].b = sys_pixel_format->palette->rgb[ n ].b;
-                }
-
-            ico = SDL_CreateRGBSurfaceFrom( icon->data, 32, 32, 8, 32, 0x00, 0x00, 0x00, 0x00 ) ;
-            SDL_SetPalette( ico, SDL_LOGPAL, palette, 0, 256 );
-        }
-        else
-        {
-            ico = SDL_CreateRGBSurfaceFrom( icon->data, 32, 32, icon->format->depth, icon->pitch, icon->format->Rmask, icon->format->Gmask, icon->format->Bmask, icon->format->Amask ) ;
-        }
-        SDL_SetColorKey( ico, SDL_SRCCOLORKEY, SDL_MapRGB( ico->format, 0, 0, 0 ) ) ;
-        SDL_WM_SetIcon( ico, NULL );
-        SDL_FreeSurface( ico ) ;
-    }
+    gr_set_icon( icon );
 
     if ( background ) background->modified = 1;
 
