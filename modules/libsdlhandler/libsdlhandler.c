@@ -32,16 +32,14 @@
 
 static void  dump_new_events()
 {
-    SDL_PumpEvents();
-}
-
-/* ----------------------------------------------------------------- */
-
-static void  discard_all_pending_queued_events()
-{
     SDL_Event event;
+    /* Remove all pendings events */
+
     /* We can't return -1, just return 0 (no event) on error */
     while ( SDL_PeepEvents( &event, 1, SDL_GETEVENT, SDL_ALLEVENTS ) > 0 );
+
+    /* Get new events */
+    SDL_PumpEvents();
 }
 
 /* ----------------------------------------------------------------- */
@@ -67,7 +65,6 @@ void __bgdexport( libsdlhandler, module_finalize )()
 HOOK __bgdexport( libsdlhandler, handler_hooks )[] =
 {
     { 5000, dump_new_events                   },
-    { 2000, discard_all_pending_queued_events },
     {    0, NULL                              }
 } ;
 
