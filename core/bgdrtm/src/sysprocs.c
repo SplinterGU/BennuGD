@@ -270,7 +270,7 @@ static void get_var_info( DLVARFIXUP * varfixup, DCB_VAR * basevar, int nvars, c
             if ( n == v->NVars ) return ; // not a member
 
             rvar = var[n] ;
-            rdata += var[n].Offset ;
+            rdata = ((uint8_t *)rdata) + var[n].Offset ;
 
             get_token() ;
             continue ;
@@ -290,7 +290,7 @@ static void get_var_info( DLVARFIXUP * varfixup, DCB_VAR * basevar, int nvars, c
             if ( index >= rvar.Type.Count[0] ) return ; // Index out of bounds
 
             rvar.Type = treduce( rvar.Type ) ;
-            rdata += index * tsize( rvar.Type ) ;
+            rdata = ((uint8_t *) rdata ) + index * tsize( rvar.Type ) ;
 
             get_token() ;
             if ( token.name[0] == ']' ) get_token() ; // Skip ]
