@@ -84,6 +84,7 @@ GRAPH * gr_read_png( const char * filename )
     {
         png_destroy_read_struct( &png_ptr, &info_ptr, &end_info ) ;
         file_close( png ) ;
+        return NULL;
     }
 
     /* Rutina de error */
@@ -92,7 +93,7 @@ GRAPH * gr_read_png( const char * filename )
     {
         png_destroy_read_struct( &png_ptr, &info_ptr, &end_info ) ;
         file_close( png ) ;
-        return 0 ;
+        return NULL;
     }
 
     /* Recupera información sobre el PNG */
@@ -106,16 +107,16 @@ GRAPH * gr_read_png( const char * filename )
     {
         png_destroy_read_struct( &png_ptr, &info_ptr, &end_info ) ;
         file_close( png ) ;
-        return 0 ;
+        return NULL;
     }
 
     rowpointers = malloc( sizeof( png_bytep ) * height );
     if ( !rowpointers )
     {
         png_destroy_read_struct( &png_ptr, &info_ptr, &end_info ) ;
-        file_close( png ) ;
         free( row ) ;
-        return 0 ;
+        file_close( png ) ;
+        return NULL;
     }
 
     /* Configura los distintos modos disponibles */
@@ -139,10 +140,10 @@ GRAPH * gr_read_png( const char * filename )
     if ( !bitmap )
     {
         png_destroy_read_struct( &png_ptr, &info_ptr, &end_info ) ;
-        file_close( png ) ;
         free( rowpointers ) ;
         free( row ) ;
-        return 0 ;
+        file_close( png ) ;
+        return NULL;
     }
 
     if ( color == PNG_COLOR_TYPE_PALETTE )
@@ -153,9 +154,10 @@ GRAPH * gr_read_png( const char * filename )
         if ( !png_palette )
         {
             png_destroy_read_struct( &png_ptr, &info_ptr, &end_info ) ;
-            file_close( png ) ;
             free( rowpointers ) ;
             free( row ) ;
+            file_close( png ) ;
+            return NULL;
         }
         png_get_PLTE( png_ptr, info_ptr, &png_palette, &n ) ;
 
@@ -285,11 +287,13 @@ GRAPH * gr_read_png( const char * filename )
     /* Fin */
 
     if ( !setjmp( png_ptr->jmpbuf ) ) png_read_end( png_ptr, 0 ) ;
-    file_close( png ) ;
+
     bitmap->modified = 1 ;
 
-    free( row ) ;
+    png_destroy_read_struct( &png_ptr, &info_ptr, &end_info ) ;
     free( rowpointers ) ;
+    free( row ) ;
+    file_close( png ) ;
 
     return bitmap ;
 }
@@ -334,10 +338,17 @@ int gr_save_png( GRAPH * gr, const char * filename )
     }
 
     png_ptr  = png_create_write_struct( PNG_LIBPNG_VER_STRING, 0, 0, 0 ) ;
-    info_ptr = png_create_info_struct( png_ptr ) ;
-
-    if ( !png_ptr || !info_ptr )
+    if ( !png_ptr )
     {
+        free( rowpointers ) ;
+        fclose( file ) ;
+        return( 0 ) ;
+    }
+
+    info_ptr = png_create_info_struct( png_ptr ) ;
+    if ( !info_ptr )
+    {
+        png_destroy_write_struct( &png_ptr, NULL ) ;
         free( rowpointers ) ;
         fclose( file ) ;
         return( 0 ) ;
@@ -347,9 +358,9 @@ int gr_save_png( GRAPH * gr, const char * filename )
 
     if ( setjmp( png_ptr->jmpbuf ) )
     {
-        fclose( file ) ;
         png_destroy_write_struct( &png_ptr, NULL ) ;
         free( rowpointers ) ;
+        fclose( file ) ;
         return( 0 ) ;
     }
 
@@ -366,9 +377,9 @@ int gr_save_png( GRAPH * gr, const char * filename )
         pal = ( png_colorp ) png_malloc( png_ptr, 256 * sizeof( png_color ) ) ;
         if ( !pal )
         {
-            fclose( file ) ;
             png_destroy_write_struct( &png_ptr, NULL ) ;
             free( rowpointers ) ;
+            fclose( file ) ;
             return( 0 ) ;
         }
 
@@ -409,9 +420,9 @@ int gr_save_png( GRAPH * gr, const char * filename )
         data = malloc( gr->width * gr->height * 4 ) ;
         if ( !data )
         {
-            fclose( file ) ;
             png_destroy_write_struct( &png_ptr, NULL ) ;
             free( rowpointers ) ;
+            fclose( file ) ;
             return( 0 ) ;
         }
 
@@ -475,11 +486,11 @@ int gr_save_png( GRAPH * gr, const char * filename )
         }
         png_write_image( png_ptr, rowpointers ) ;
         free( data ) ;
-        data = NULL ;
     }
 
     png_write_end( png_ptr, info_ptr ) ;
     fclose( file ) ;
+    png_destroy_write_struct( &png_ptr, NULL ) ;
     free( rowpointers ) ;
     return ( 1 ) ;
 }
