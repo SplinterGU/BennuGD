@@ -213,7 +213,7 @@ static int modtext_delete_text (INSTANCE * my, int * params)
 static int modtext_text_height (INSTANCE * my, int * params)
 {
     const char * str = string_get (params[1]) ;
-    int result = gr_text_height (params[0], str) ;
+    int result = gr_text_height (params[0], ( const unsigned char * ) str) ;
     string_discard (params[1]) ;
     return result ;
 }
@@ -223,7 +223,7 @@ static int modtext_text_height (INSTANCE * my, int * params)
 static int modtext_text_width (INSTANCE * my, int * params)
 {
     const char * str = string_get (params[1]) ;
-    int result = gr_text_width (params[0], str) ;
+    int result = gr_text_width (params[0], ( const unsigned char * ) str) ;
     string_discard (params[1]) ;
     return result ;
 }

@@ -21,7 +21,7 @@
  *
  */
 
-// Pending: no newline at end of file
+/* Pending: no newline at end of file */
 
 #include <ctype.h>
 #include <stdio.h>
@@ -38,7 +38,7 @@
 /* rellena la estructura global "token" con los datos del mismo.          */
 /* ---------------------------------------------------------------------- */
 
-int line_count = 0 ; // Se pone a 0, ya que lo incremente con cada \n, y hasta no obtener un \n no se procesa la linea (Splinter)
+int line_count = 0 ; /* Se pone a 0, ya que lo incremente con cada \n, y hasta no obtener un \n no se procesa la linea (Splinter) */
 int current_file = 0 ;
 
 static int prepro_sp = 0 ;
@@ -186,8 +186,8 @@ static int token_endfile();
 
 /* ---------------------------------------------------------------------- */
 
-int n_files = 0;                        // Includes
-char files[MAX_SOURCES][__MAX_PATH];    // Includes
+int n_files = 0;                        /* Includes */
+char files[MAX_SOURCES][__MAX_PATH];    /* Includes */
 
 /* ---------------------------------------------------------------------- */
 
@@ -1219,29 +1219,25 @@ void token_next()
                 {
                     num = num * base + ( *source_ptr - '0' );
                     token.code = token.code * base + ( *source_ptr - '0' );
-                    *source_ptr++;
+                    source_ptr++;
+                    continue;
                 }
                 if ( *source_ptr >= 'a' && *source_ptr <= 'f' && base > 10 )
                 {
                     num = num * base + ( *source_ptr - 'a' + 10 );
                     token.code = token.code * base + ( *source_ptr - 'a' + 10 );
-                    *source_ptr++;
+                    source_ptr++;
+                    continue;
                 }
                 if ( *source_ptr >= 'A' && *source_ptr <= 'F' && base > 10 )
                 {
                     num = num * base + ( *source_ptr - 'A' + 10 );
                     token.code = token.code * base + ( *source_ptr - 'A' + 10 );
-                    *source_ptr++;
+                    source_ptr++;
+                    continue;
                 }
             }
             token.type = NUMBER;
-            /*
-                        if ( base == 16 )
-                            token.code = ( unsigned int )num;
-                        else
-                            token.code = ( int )num;
-            */
-
             token.value = ( float )num;
 
             /* We have the integer part now - convert to int/float */

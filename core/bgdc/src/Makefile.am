@@ -5,7 +5,7 @@ bin_PROGRAMS = bgdc
 
 INCLUDES = $(COMMON_CFLAGS) -I../../include -I../include -D__BGDC__
 
-bgdc_LDADD = $(COMMON_LDFLAGS) 
+bgdc_LDADD = $(COMMON_LDFLAGS)
 
 bgdc_LDFLAGS = $(COMMON_LDFLAGS) --as-needed
 

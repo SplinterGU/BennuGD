@@ -151,19 +151,19 @@ int gr_save_map( GRAPH * gr, char * filename )
     switch ( gr->format->depth )
     {
         case    8:
-            strcpy( mh.magic, MAP_MAGIC );
+            strcpy( ( char * ) mh.magic, MAP_MAGIC );
             break;
 
         case    32:
-            strcpy( mh.magic, M32_MAGIC );
+            strcpy( ( char * ) mh.magic, M32_MAGIC );
             break;
 
         case    16:
-            strcpy( mh.magic, M16_MAGIC );
+            strcpy( ( char * ) mh.magic, M16_MAGIC );
             break;
 
         case    1:
-            strcpy( mh.magic, M01_MAGIC );
+            strcpy( ( char * ) mh.magic, M01_MAGIC );
             break;
     }
 
@@ -171,7 +171,7 @@ int gr_save_map( GRAPH * gr, char * filename )
     mh.width = gr->width;
     mh.height = gr->height;
     mh.code = gr->code ;
-    strncpy( mh.name, gr->name, 32 );
+    strncpy( ( char * ) mh.name, gr->name, 32 );
 
     file_write( fp, &mh, sizeof( MAP_HEADER ) ) ;
 
@@ -198,8 +198,8 @@ int gr_save_map( GRAPH * gr, char * filename )
 
     for ( c = 0 ; c < gr->ncpoints ; c++ )
     {
-        file_writeUint16( fp, &gr->cpoints[c].x ) ;
-        file_writeUint16( fp, &gr->cpoints[c].y ) ;
+        file_writeUint16( fp, ( uint16_t * ) &gr->cpoints[c].x ) ;
+        file_writeUint16( fp, ( uint16_t * ) &gr->cpoints[c].y ) ;
     }
 
     for ( c = 0 ; c < gr->height ; c++ )

@@ -27,8 +27,8 @@
 
 #include <time.h>
 
-#ifdef WIN32 
-// NEEDED FOR LOCALE DETECTION
+#ifdef WIN32
+/* NEEDED FOR LOCALE DETECTION */
 #include <windows.h>
 #include <windef.h>
 #include <winnls.h>
@@ -81,9 +81,9 @@ int main( int argc, char **argv )
             "Bennu Game Development comes with ABSOLUTELY NO WARRANTY;\n"
             "see COPYING for details\n\n" );
 
-    // Default lang to EN
+    /* Default lang to EN */
     strcpy( langinfo, "EN" );
-    // LANG detect
+    /* LANG detect */
 #ifdef WIN32
     GetLocaleInfo( LOCALE_USER_DEFAULT, LOCALE_SABBREVCTRYNAME, langinfo, 64 );
     strlwr( langinfo );
@@ -150,7 +150,7 @@ int main( int argc, char **argv )
 
                 if ( argv[i][j] == 's' )
                 {
-                    // -s "stub": Use a stub
+                    /* -s "stub": Use a stub */
 
                     if ( argv[i][j + 1] )
                         strncpy( stubname, &argv[i][j + 1], __MAX_PATH );
@@ -161,7 +161,7 @@ int main( int argc, char **argv )
 
                 if ( argv[i][j] == 'f' )
                 {
-                    // -f "file": Embed a file to the DCB
+                    /* -f "file": Embed a file to the DCB */
 
                     if ( argv[i][j + 1] )
                         dcb_add_file( argv[i + j] + 1 );
@@ -176,7 +176,7 @@ int main( int argc, char **argv )
 
                 if ( argv[i][j] == 'i' )
                 {
-                    // -i "path": add a file to the path for include files
+                    /* -i "path": add a file to the path for include files */
 
                     if ( argv[i][j + 1] == 0 )
                     {
@@ -195,7 +195,7 @@ int main( int argc, char **argv )
 
                 if ( argv[i][j] == 'l' )
                 {
-                    // -lLANG:  Set the language for errors and messages
+                    /* -lLANG:  Set the language for errors and messages */
 
                     if ( argv[i][j + 1] == 0 )
                     {
@@ -215,7 +215,7 @@ int main( int argc, char **argv )
                     char * macro = NULL ;
                     char * text = NULL ;
 
-                    // -D<macro>=<text>
+                    /* -D<macro>=<text> */
 
                     if ( argv[i][j + 1] )
                     {
@@ -285,29 +285,34 @@ int main( int argc, char **argv )
 
     if ( !sourcefile )
     {
-        printf( MSG_USING MSG_OPTION_D MSG_OPTIONS, argv[0] );
+        printf( MSG_USING
+                MSG_OPTION_D
+                MSG_OPTIONS
+                MSG_LICENSE, argv[0] );
         return 0;
     }
 
     add_simple_define( "COMPILER_VERSION", VERSION );
     add_simple_define( "__VERSION__", VERSION );
 
-    time_t curtime;
-    struct tm *loctime;
-    int value, code;
+    {
+        time_t curtime;
+        struct tm *loctime;
+        int value, code;
 
-    curtime = time( NULL ); /* Get the current time. */
-    loctime = localtime( &curtime ); /* Convert it to local time representation. */
+        curtime = time( NULL ); /* Get the current time. */
+        loctime = localtime( &curtime ); /* Convert it to local time representation. */
 
-    strftime( timebuff, sizeof( timebuff ), "%Y/%m/%d", loctime );
-    value = string_new( timebuff );
-    code = identifier_search_or_add( "__DATE__" ) ;
-    constants_add( code, typedef_new( TYPE_STRING ), value ) ;
+        strftime( timebuff, sizeof( timebuff ), "%Y/%m/%d", loctime );
+        value = string_new( timebuff );
+        code = identifier_search_or_add( "__DATE__" ) ;
+        constants_add( code, typedef_new( TYPE_STRING ), value ) ;
 
-    strftime( timebuff, sizeof( timebuff ), "%H:%M:%S", loctime );
-    value = string_new( timebuff );
-    code = identifier_search_or_add( "__TIME__" ) ;
-    constants_add( code, typedef_new( TYPE_STRING ), value ) ;
+        strftime( timebuff, sizeof( timebuff ), "%H:%M:%S", loctime );
+        value = string_new( timebuff );
+        code = identifier_search_or_add( "__TIME__" ) ;
+        constants_add( code, typedef_new( TYPE_STRING ), value ) ;
+    }
 
     memset( &dcb, 0, sizeof( dcb ) );
 

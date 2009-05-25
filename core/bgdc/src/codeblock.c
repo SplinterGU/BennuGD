@@ -65,7 +65,7 @@ void codeblock_postprocess (CODEBLOCK * code)
 			{
 				token.type = IDENTIFIER ;
 				token.code = ptr[1] ;
-				// Patch so linecount gets right
+				/* Patch so linecount gets right */
 				line_count = identifier_line(token.code) ;
 				current_file = identifier_file(token.code) ;
 				compile_error (MSG_UNDEFINED_PROC) ;
@@ -90,7 +90,7 @@ void codeblock_postprocess (CODEBLOCK * code)
 			{
 				token.type = LABEL ;
 				token.code = code->labelsextra[*ptr].name ;
-				// Patch so linecount gets right
+				/* Patch so linecount gets right */
 				line_count = code->labelsextra[*ptr].line ;
 				current_file = code->labelsextra[*ptr].file ;
 				compile_error ("Undefined label") ;

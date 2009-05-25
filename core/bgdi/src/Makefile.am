@@ -5,7 +5,7 @@ bin_PROGRAMS = bgdi
 
 INCLUDES = $(COMMON_CFLAGS) -I../../include -I../include -I../../bgdrtm/include -DDEBUG -D__BGDI__
 
-bgdi_LDADD = $(COMMON_LDFLAGS) -L../../bgdrtm/src/.libs -lbgdrtm 
+bgdi_LDADD = $(COMMON_LDFLAGS) -L../../bgdrtm/src/.libs -lbgdrtm
 
 bgdi_LDFLAGS = --as-needed
 

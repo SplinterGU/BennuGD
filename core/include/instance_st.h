@@ -24,6 +24,9 @@
 #ifndef __INSTANCE_ST_H
 #define __INSTANCE_ST_H
 
+#define FIRST_INSTANCE_ID   0x00010000
+#define LAST_INSTANCE_ID    0x0001ffff
+
 #define STACK_RETURN_VALUE  0x8000
 #define STACK_SIZE_MASK     0x7FFF
 #define STACK_SIZE          2048
@@ -57,25 +60,16 @@ typedef struct _instance
     struct _instance * next ;
     struct _instance * prev ;
 
-    /* Dirty instances list */
-
-    struct _instance * next_dirty ;
-    int                is_dirty ;
-
     /* Linked list by priority */
 
     struct _instance * next_by_priority ;
     struct _instance * prev_by_priority ;
+    int last_priority ;
 
     /* Linked list by process_type */
 
     struct _instance * next_by_type ;
     struct _instance * prev_by_type ;
-
-    /* Linked list by process_id */
-
-    struct _instance * next_by_id ;
-    struct _instance * prev_by_id ;
 
     /* Linked list by INSTANCE * */
 
@@ -155,8 +149,5 @@ INSTANCE ;
 #define GLOUINT32(b)    ( *(uint32_t *) ((uint8_t *)(globaldata)+b) )
 #define GLOUINT16(b)    ( *(uint16_t *) ((uint8_t *)(globaldata)+b) )
 #define GLOUINT8(b)     ( *(uint8_t  *) ((uint8_t *)(globaldata)+b) )
-
-
-#define FIRST_INSTANCE_ID 65536
 
 #endif

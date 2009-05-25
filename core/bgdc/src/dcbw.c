@@ -96,9 +96,9 @@ void dcb_add_file( const char * filename )
     /* Comprueba que el fichero no haya sido ya añadido */
 
     for ( i = 0; i < dcb_filecount; i++ )
-        if ( strcmp( filename, dcb_files[i].Name ) == 0 ) return;
+        if ( strcmp( filename, (const char *)dcb_files[i].Name ) == 0 ) return;
 
-    dcb_files[dcb_filecount].Name = strdup( filename );
+    dcb_files[dcb_filecount].Name = (uint8_t *)strdup( filename );
     dcb_files[dcb_filecount].SFile = size;
 
     for ( i = 0; dcb_files[dcb_filecount].Name[i]; i++ )
@@ -141,7 +141,7 @@ void dcb_settype( DCB_TYPEDEF * d, TYPEDEF * t )
 
     for ( n = 0; n < MAX_TYPECHUNKS; n++ )
     {
-        d->BaseType[n] = t->chunk[n].type;          // 8 bits
+        d->BaseType[n] = t->chunk[n].type;          /* 8 bits */
         d->Count   [n] = t->chunk[n].count;         ARRANGE_DWORD( &d->Count[n] );
     }
 
@@ -330,7 +330,7 @@ int dcb_save( const char * filename, int options, const char * stubname )
     for ( n = 0; n < identifier_count; n++ )
     {
         assert( id != 0 );
-        strncpy( dcb.id[n].Name, id->name, sizeof( dcb.id[n].Name ) );
+        strncpy( (char *)dcb.id[n].Name, id->name, sizeof( dcb.id[n].Name ) );
         dcb.id[n].Code = id->code;                                              ARRANGE_DWORD( &dcb.id[n].Code );
 
         id = identifier_next( id );
@@ -421,8 +421,8 @@ int dcb_save( const char * filename, int options, const char * stubname )
     /* Cada uno de los archivos incluidos */
     for ( n = 0; n < dcb_filecount; n++ )
     {
-        dcb_fullname[n] = dcb.file[n].Name;                 // Guardo el Name, porque lo destruyo en SName (es un union)
-        dcb.file[n].SName = strlen( dcb.file[n].Name ) + 1; // Todavia no hago el ARRANGE de este dato, lo hago luego cuando lo voy a grabar
+        dcb_fullname[n] = (char *)dcb.file[n].Name;                 /* Guardo el Name, porque lo destruyo en SName (es un union) */
+        dcb.file[n].SName = strlen( (const char *)dcb.file[n].Name ) + 1; /* Todavia no hago el ARRANGE de este dato, lo hago luego cuando lo voy a grabar */
         offset += sizeof( DCB_FILE ) + dcb.file[n].SName;
     }
 
@@ -444,16 +444,16 @@ int dcb_save( const char * filename, int options, const char * stubname )
     for ( n = 0; n < procdef_count; n++ )
         file_write( fp, &dcb.proc[n], sizeof( DCB_PROC_DATA ) );
 
-    file_writeUint32A( fp, string_offset, string_count );
-    file_write( fp, dcb.glovar, sizeof( DCB_VAR ) * global.count );         // Ya procesado el byteorder
-    file_write( fp, dcb.locvar, sizeof( DCB_VAR ) * local.count );          // Ya procesado el byteorder
-    file_writeUint32A( fp, local.stringvars, local.stringvar_count );
-    file_write( fp, dcb.id, sizeof( DCB_ID ) * identifier_count );          // Ya procesado el byteorder
-    file_write( fp, dcb.varspace, sizeof( DCB_VARSPACE ) * dcb_varspaces ); // Ya procesado el byteorder
-    file_write( fp, string_mem, string_used );                              // No necesita byteorder
-    file_writeUint32A( fp, imports, nimports );
-    file_write( fp, globaldata->bytes, globaldata->current );   // ******
-    file_write( fp, localdata->bytes, localdata->current );     // ******
+    file_writeUint32A( fp, (uint32_t *)string_offset, string_count );
+    file_write( fp, dcb.glovar, sizeof( DCB_VAR ) * global.count );         /* Ya procesado el byteorder */
+    file_write( fp, dcb.locvar, sizeof( DCB_VAR ) * local.count );          /* Ya procesado el byteorder */
+    file_writeUint32A( fp, (uint32_t *)local.stringvars, local.stringvar_count );
+    file_write( fp, dcb.id, sizeof( DCB_ID ) * identifier_count );          /* Ya procesado el byteorder */
+    file_write( fp, dcb.varspace, sizeof( DCB_VARSPACE ) * dcb_varspaces ); /* Ya procesado el byteorder */
+    file_write( fp, string_mem, string_used );                              /* No necesita byteorder */
+    file_writeUint32A( fp, (uint32_t *)imports, nimports );
+    file_write( fp, globaldata->bytes, globaldata->current );   /* ****** */
+    file_write( fp, localdata->bytes, localdata->current );     /* ****** */
 
     if ( dcb_options & DCB_DEBUG )
     {
@@ -495,20 +495,20 @@ int dcb_save( const char * filename, int options, const char * stubname )
 
     for ( n = 0; n < procdef_count; n++ )
     {
-        file_write( fp, dcb.proc[n].sentence, sizeof( DCB_SENTENCE ) * procs[n]->sentence_count );  // Ya procesado el byteorder
+        file_write( fp, dcb.proc[n].sentence, sizeof( DCB_SENTENCE ) * procs[n]->sentence_count );  /* Ya procesado el byteorder */
 
         /* Privadas */
-        file_write( fp, dcb.proc[n].privar, sizeof( DCB_VAR ) * procs[n]->privars->count );         // Ya procesado el byteorder
-        file_writeUint32A( fp, procs[n]->privars->stringvars, procs[n]->privars->stringvar_count );
-        file_write( fp, procs[n]->pridata->bytes, procs[n]->pridata->current );                     // *****
+        file_write( fp, dcb.proc[n].privar, sizeof( DCB_VAR ) * procs[n]->privars->count );         /* Ya procesado el byteorder */
+        file_writeUint32A( fp, (uint32_t *)procs[n]->privars->stringvars, procs[n]->privars->stringvar_count );
+        file_write( fp, procs[n]->pridata->bytes, procs[n]->pridata->current );                     /* ****** */
 
         /* Publicas */
-        file_write( fp, dcb.proc[n].pubvar, sizeof( DCB_VAR ) * procs[n]->pubvars->count );         // Ya procesado el byteorder
-        file_writeUint32A( fp, procs[n]->pubvars->stringvars, procs[n]->pubvars->stringvar_count );
-        file_write( fp, procs[n]->pubdata->bytes, procs[n]->pubdata->current );                     // *****
+        file_write( fp, dcb.proc[n].pubvar, sizeof( DCB_VAR ) * procs[n]->pubvars->count );         /* Ya procesado el byteorder */
+        file_writeUint32A( fp, (uint32_t *)procs[n]->pubvars->stringvars, procs[n]->pubvars->stringvar_count );
+        file_write( fp, procs[n]->pubdata->bytes, procs[n]->pubdata->current );                     /* ****** */
 
         /* Code */
-        file_writeUint32A( fp, procs[n]->code.data, procs[n]->code.current );
+        file_writeUint32A( fp, (uint32_t *)procs[n]->code.data, procs[n]->code.current );
     }
 
     /* Cada uno de los archivos incluidos */

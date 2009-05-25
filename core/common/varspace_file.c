@@ -191,14 +191,12 @@ int savetype( file * fp, void * data, DCB_TYPEDEF * var, int dcbformat )
             case TYPE_FLOAT:
             case TYPE_INT:
             case TYPE_DWORD:
-                result += file_writeUint32A( fp, data, count ) * 4;
-//    data = (uint8_t*)data + 4 * count;
+                result += file_writeUint32A( fp, data, count ) * sizeof( uint32_t );
                 break;
 
             case TYPE_SHORT:
             case TYPE_WORD:
-                result += file_writeUint16A( fp, data, count ) * 2;
-//    data = (uint8_t*)data + 2 * count;
+                result += file_writeUint16A( fp, data, count ) * sizeof( uint16_t );
                 break;
 
             case TYPE_BYTE:
@@ -210,8 +208,7 @@ int savetype( file * fp, void * data, DCB_TYPEDEF * var, int dcbformat )
             case TYPE_STRING:
                 if ( dcbformat )
                 {
-                    result += file_writeUint32A( fp, data, count ) * 4;
-//        data = (uint8_t*)data + 4 * count;
+                    result += file_writeUint32A( fp, data, count ) * sizeof( uint32_t );
                 }
                 else
                 {
@@ -219,10 +216,10 @@ int savetype( file * fp, void * data, DCB_TYPEDEF * var, int dcbformat )
                     {
                         str = string_get( *( uint32_t * )data );
                         len = strlen( str );
-                        file_writeUint32( fp, &len );
+                        file_writeUint32( fp, (uint32_t *)&len );
                         file_write( fp, ( void* )str, len );
-                        data = ( uint8_t* )data + 4;
-                        result += 4;
+                        data = ( uint8_t* )data + sizeof( uint32_t );
+                        result += sizeof( uint32_t );
                     }
                 }
                 break;
@@ -242,7 +239,7 @@ int savetype( file * fp, void * data, DCB_TYPEDEF * var, int dcbformat )
                 break;
 
             default:
-                printf( "No es posible grabar esta estructura\n" );
+                /* Can't be possible save this struct */
                 return -1;
                 break;
         }
@@ -285,14 +282,12 @@ int loadtype( file * fp, void * data, DCB_TYPEDEF * var, int dcbformat )
             case TYPE_FLOAT:
             case TYPE_INT:
             case TYPE_DWORD:
-                result += file_readUint32A( fp, data, count ) * 4;
-//    data = (uint8_t*)data + 4 * count;
+                result += file_readUint32A( fp, data, count ) * sizeof( uint32_t );
                 break;
 
             case TYPE_SHORT:
             case TYPE_WORD:
-                result += file_readUint16A( fp, data, count ) * 2;
-//    data = (uint8_t*)data + 2 * count;
+                result += file_readUint16A( fp, data, count ) * sizeof( uint16_t );
                 break;
 
             case TYPE_SBYTE:
@@ -304,15 +299,14 @@ int loadtype( file * fp, void * data, DCB_TYPEDEF * var, int dcbformat )
             case TYPE_STRING:
                 if ( dcbformat )
                 {
-                    result += file_readUint32A( fp, data, count ) * 4;
-//        data = (uint8_t*)data + 4 * count;
+                    result += file_readUint32A( fp, data, count ) * sizeof( uint32_t );
                 }
                 else
                 {
                     for ( ; count ; count-- )
                     {
                         string_discard( *( uint32_t* )data );
-                        file_readUint32( fp, &len );
+                        file_readUint32( fp, (uint32_t *)&len );
                         str = malloc( len + 1 );
                         if ( !str )
                         {
@@ -325,8 +319,8 @@ int loadtype( file * fp, void * data, DCB_TYPEDEF * var, int dcbformat )
                         *( uint32_t* )data = string_new( str );
                         string_use( *( uint32_t* )data );
                         free( str );
-                        data = ( uint8_t* )data + 4;
-                        result += 4;
+                        data = ( uint8_t* )data + sizeof( uint32_t );
+                        result += sizeof( uint32_t );
                     }
                 }
                 break;
@@ -346,7 +340,7 @@ int loadtype( file * fp, void * data, DCB_TYPEDEF * var, int dcbformat )
                 break;
 
             default:
-                printf( "No es posible recuperar esta estructura\n" );
+                /* Can't be possible load this struct */
                 return -1;
                 break;
         }

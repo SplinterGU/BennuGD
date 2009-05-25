@@ -63,7 +63,7 @@ static int gr_font_loadfrom( file * fp )
     char header[8];
     int bpp;
     int types, i, id;
-    Uint32 y;
+    uint32_t y;
     FONT * f;
     PALETTE * pal = NULL;
 
@@ -195,7 +195,7 @@ static int gr_font_loadfrom( file * fp )
     for ( i = 0 ; i < 256 ; i++ )
     {
         GRAPH * gr;
-        Uint8 * ptr;
+        uint8_t * ptr;
 
         f->glyph[i].xadvance = chardata[i].xadvance ;
         f->glyph[i].yadvance = chardata[i].yadvance ;
@@ -223,7 +223,7 @@ static int gr_font_loadfrom( file * fp )
 
             if ( gr->format->depth == 16 )
             {
-                gr_convert16_565ToScreen(( Uint16 * )ptr, gr->width );
+                gr_convert16_565ToScreen(( uint16_t * )ptr, gr->width );
                 ARRANGE_WORDS( ptr, ( int )gr->width );
             }
             else if ( gr->format->depth == 32 )
@@ -260,13 +260,13 @@ int gr_font_save( int fontid, const char * filename )
 {
     gzFile * file;
     int      n;
-    Uint32   y;
+    uint32_t y;
     long     offset;
-    Uint8 *  block = NULL ;
-    Uint8 *  lineptr;
+    uint8_t *  block = NULL ;
+    uint8_t *  lineptr;
 
     FONT *   font;
-    Uint8    header[8];
+    uint8_t    header[8];
     struct
     {
         int width;
@@ -291,7 +291,7 @@ int gr_font_save( int fontid, const char * filename )
 
     /* Write the header */
 
-    strcpy( header, FNX_MAGIC );
+    strcpy( ( char * ) header, FNX_MAGIC );
     header[7] = font->bpp;
     gzwrite( file, &header, 8 );
 
@@ -310,8 +310,8 @@ int gr_font_save( int fontid, const char * filename )
             /* Write the palette */
             if ( !palette_saved && font->bpp == 8 )
             {
-                Uint8   colors[256][3];
-                Uint8 * block = calloc( 576, 1 ) ;
+                uint8_t   colors[256][3];
+                uint8_t * block = calloc( 576, 1 ) ;
                 rgb_component * gpal = NULL;
                 int k;
 
@@ -395,7 +395,7 @@ int gr_font_save( int fontid, const char * filename )
                     if ( gr->format->depth == 16 )
                     {
                         ARRANGE_WORDS( block, ( int )gr->width );
-                        gr_convert16_ScreenTo565(( Uint16 * )block, gr->width );
+                        gr_convert16_ScreenTo565(( uint16_t * )block, gr->width );
                     }
                     else if ( gr->format->depth == 32 )
                     {
@@ -437,15 +437,14 @@ int gr_font_save( int fontid, const char * filename )
 int gr_load_bdf( const char * filename )
 {
     file * fp;
-    Uint8 line[2048];
-    Uint8 * ptr;
-    Uint8 * optr;
+    char line[2048];
+    uint8_t * ptr, * optr;
     FONT * font;
     int id, x, y, i;
     int error = 0;
 
-    Uint8 nibbleh[256];
-    Uint8 nibblel[256];
+    uint8_t nibbleh[256];
+    uint8_t nibblel[256];
 
     int default_xadvance = 0;
     int default_yadvance = 0;
@@ -503,8 +502,8 @@ int gr_load_bdf( const char * filename )
         if ( strncmp( line, "DWIDTH ", 7 ) == 0 && !in_char )
         {
             default_xadvance = atoi( line + 7 );
-            ptr = strchr( line + 7, ' ' );
-            if ( ptr ) default_yadvance = atoi( ptr + 1 );
+            ptr = ( uint8_t * ) strchr( line + 7, ' ' );
+            if ( ptr ) default_yadvance = atoi( ( char * ) ptr + 1 );
         }
         else if ( strncmp( line, "STARTCHAR", 9 ) == 0 )
         {
@@ -524,28 +523,28 @@ int gr_load_bdf( const char * filename )
         else if ( strncmp( line, "DWIDTH ", 7 ) == 0 && in_char )
         {
             xadvance = atoi( line + 7 );
-            ptr = strchr( line + 7, ' ' );
-            if ( ptr ) yadvance = atoi( ptr + 1 );
+            ptr = ( uint8_t * ) strchr( line + 7, ' ' );
+            if ( ptr ) yadvance = atoi( ( char * ) ptr + 1 );
         }
         else if ( strncmp( line, "ENCODING ", 9 ) == 0 && in_char )
         {
             encoding = atoi( line + 9 );
             if ( encoding == -1 )
             {
-                ptr = strchr( line + 7, ' ' );
-                if ( ptr ) encoding = atoi( ptr + 1 );
+                ptr = ( uint8_t * ) strchr( line + 7, ' ' );
+                if ( ptr ) encoding = atoi( ( char * ) ptr + 1 );
             }
         }
         else if ( strncmp( line, "BBX ", 4 ) == 0 && in_char )
         {
-            width = atoi( line + 4 );
+            width = atoi( ( char * ) line + 4 );
             if ( width & 7 ) width = ( width & ~7 ) + 8;
-            if (( ptr = strchr( line + 4, ' ' ) ) == NULL ) continue;
-            height = atoi( ptr + 1 );
-            if (( ptr = strchr( ptr + 1, ' ' ) ) == NULL ) continue;
-            xoffset = atoi( ptr + 1 );
-            if (( ptr = strchr( ptr + 1, ' ' ) ) == NULL ) continue;
-            yoffset = atoi( ptr + 1 );
+            if (( ptr = ( uint8_t * ) strchr( ( char * ) line + 4, ' ' ) ) == NULL ) continue;
+            height = atoi( ( char * ) ptr + 1 );
+            if (( ptr = ( uint8_t * ) strchr( ( char * ) ptr + 1, ' ' ) ) == NULL ) continue;
+            xoffset = atoi( ( char * ) ptr + 1 );
+            if (( ptr = ( uint8_t * ) strchr( ( char * ) ptr + 1, ' ' ) ) == NULL ) continue;
+            yoffset = atoi( ( char * ) ptr + 1 );
         }
         else if ( strncmp( line, "BITMAP", 6 ) == 0 )
         {
@@ -571,8 +570,8 @@ int gr_load_bdf( const char * filename )
                 {
                     if ( !( len = file_gets( fp, line, 2047 ) ) ) break;
                     if ( line[len-1] == '\n' ) line[len-1] = '\0';
-                    ptr  = line;
-                    optr = ( Uint8 * )font->glyph[encoding].bitmap->data + font->glyph[encoding].bitmap->pitch * y;
+                    ptr  = ( uint8_t * ) line;
+                    optr = ( uint8_t * ) font->glyph[encoding].bitmap->data + font->glyph[encoding].bitmap->pitch * y;
 
                     for ( x = 0 ; x < width ; x += 8 )
                     {

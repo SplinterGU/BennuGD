@@ -28,8 +28,8 @@ typedef struct _identifier
 {
 	const char * name ;
 	int    code ;
-	int	   line ;		// First USE for the identifier
-	int    f ;			// file where the id was found
+	int	   line ;		/* First USE for the identifier */
+	int    f ;			/* file where the id was found */
 	struct _identifier * next ;
 }
 identifier ;

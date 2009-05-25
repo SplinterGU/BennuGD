@@ -345,7 +345,7 @@ void bitmap_analize( GRAPH * bitmap )
     {
         case    8:
         {
-            uint8_t * ptr = ( int8_t * ) bitmap->data ;
+            uint8_t * ptr = ( uint8_t * ) bitmap->data ;
 
             for ( y = bitmap->height; y--; ptr += bitmap->pitch )
             {

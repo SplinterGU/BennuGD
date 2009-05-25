@@ -113,19 +113,14 @@ int check_for_valid_pathname( char * pathname )
     if ( !pathname || ( l = strlen( pathname ) ) > __MAX_PATH ) return 0;
 
 #if WIN32
-    // Only ':' with this sintax: "L:..."
+    /* Only ':' with this sintax: "L:..." */
     if ( pathname[ 0 ] == ':' || ( l > 2 && strchr( pathname + 2, ':' ) ) ) return 0;
 #endif
 
-    // Some invalid character?
+    /* Some invalid character? */
     for ( n = 0; n < strlen( invalidchars ); n++ )
         if ( strchr( pathname, invalidchars[ n ] ) ) return 0;
 
-    // Only include if string have a valid character
-    /*
-        for (n = 0; n < strlen(validchars); n++)
-            if (strchr(pathname, validchars[n])) return 1;
-    */
     return 1;
 }
 
@@ -149,30 +144,30 @@ int string_compile( const char ** source )
 
     while ( *( *source ) )
     {
-        if ( *( *source ) == c )   // Termina la string?
+        if ( *( *source ) == c )   /* Termina la string? */
         {
             ( *source ) ++ ;
-            if ( *( *source ) == c )  // Comienza una nueva? (esto es para strings divididas)
+            if ( *( *source ) == c )  /* Comienza una nueva? (esto es para strings divididas) */
             {
                 ( *source ) ++ ;
             }
             else
             {
-                // Elimino todos los espacios para buscar si hay otra string, esto es para strings divididas
+                /* Elimino todos los espacios para buscar si hay otra string, esto es para strings divididas */
                 ptr = ( *source ) ;
                 while ( ISSPACE( *ptr ) )
                 {
                     if ( *ptr == '\n' ) line_count++ ;
                     ptr++ ;
                 }
-                // Si despues de saltar todos los espacios, no tengo un delimitador de string, salgo
+                /* Si despues de saltar todos los espacios, no tengo un delimitador de string, salgo */
                 if ( *ptr != c )
                 {
-                    ( *source ) = ptr; // Fix: Splinter, por problema con numeracion de lineas
+                    ( *source ) = ptr; /* Fix: Splinter, por problema con numeracion de lineas */
                     break ;
                 }
 
-                // Obtengo delimitador de string, me posiciono en el caracter siguiente, dentro de la string
+                /* Obtengo delimitador de string, me posiciono en el caracter siguiente, dentro de la string */
                 ( *source ) = ptr + 1 ;
                 continue ;
             }

@@ -81,28 +81,28 @@ void _string_ptoa( char *t, void * ptr )
     int p = ( int ) ptr;
 
     c = ((( p ) & 0xf0000000 ) >> 28 );
-    *t++ = ( c > 9 ? '7' : '0' ) + c; // '7' + 10 = 'A'
+    *t++ = ( c > 9 ? '7' : '0' ) + c; /* '7' + 10 = 'A' */
 
     c = ((( p ) & 0x0f000000 ) >> 24 );
-    *t++ = ( c > 9 ? '7' : '0' ) + c; // '7' + 10 = 'A'
+    *t++ = ( c > 9 ? '7' : '0' ) + c; /* '7' + 10 = 'A' */
 
     c = ((( p ) & 0x00f00000 ) >> 20 );
-    *t++ = ( c > 9 ? '7' : '0' ) + c; // '7' + 10 = 'A'
+    *t++ = ( c > 9 ? '7' : '0' ) + c; /* '7' + 10 = 'A' */
 
     c = ((( p ) & 0x000f0000 ) >> 16 );
-    *t++ = ( c > 9 ? '7' : '0' ) + c; // '7' + 10 = 'A'
+    *t++ = ( c > 9 ? '7' : '0' ) + c; /* '7' + 10 = 'A' */
 
     c = ((( p ) & 0x0000f000 ) >> 12 );
-    *t++ = ( c > 9 ? '7' : '0' ) + c; // '7' + 10 = 'A'
+    *t++ = ( c > 9 ? '7' : '0' ) + c; /* '7' + 10 = 'A' */
 
     c = ((( p ) & 0x00000f00 ) >>  8 );
-    *t++ = ( c > 9 ? '7' : '0' ) + c; // '7' + 10 = 'A'
+    *t++ = ( c > 9 ? '7' : '0' ) + c; /* '7' + 10 = 'A' */
 
     c = ((( p ) & 0x000000f0 ) >>  4 );
-    *t++ = ( c > 9 ? '7' : '0' ) + c; // '7' + 10 = 'A'
+    *t++ = ( c > 9 ? '7' : '0' ) + c; /* '7' + 10 = 'A' */
 
     c = ( p ) & 0x0000000f;
-    *t++ = ( c > 9 ? '7' : '0' ) + c; // '7' + 10 = 'A'
+    *t++ = ( c > 9 ? '7' : '0' ) + c; /* '7' + 10 = 'A' */
 
     *t = '\0';
 }
@@ -228,7 +228,7 @@ void string_dump( void ( *wlog )( const char *fmt, ... ) )
                 if ( i >= string_reserved )
                 {
                     free( string_ptr[i] ) ;
-                    string_ptr[i] = NULL ; // Splinter
+                    string_ptr[i] = NULL ;
                     bit_clr( string_bmp, i );
                 }
                 continue ;
@@ -301,7 +301,7 @@ void string_load( void * fp, int ostroffs, int ostrdata, int nstrings, int total
     for ( n = 0 ; n < nstrings ; n++ )
     {
         string_ptr[string_last_id + n] = string_mem + string_offset[n] ;
-        string_uct[string_last_id + n] = 0 /*25*/ ; // -- Fix Splinter
+        string_uct[string_last_id + n] = 0 ;
         bit_set( string_bmp, string_last_id + n );
     }
 
@@ -327,7 +327,7 @@ void string_load( void * fp, int ostroffs, int ostrdata, int nstrings, int total
 void string_use( int code )
 {
     string_uct[code]++ ;
-//  printf( "[STRING] String %d used (count: %d)\n", code, string_uct[code] ) ;
+    /* printf( "[STRING] String %d used (count: %d)\n", code, string_uct[code] ) ; */
 }
 
 /****************************************************************************/
@@ -348,25 +348,24 @@ void string_discard( int code )
 
     if ( !string_uct[code] )
     {
-        // printf( "[STRING] string_discard: String %d already discarted\n", code ) ;
+        /* printf( "[STRING] string_discard: String %d already discarted\n", code ) ; */
         return ;
     }
 
     string_uct[code]-- ;
-
-    // printf( "[STRING] string_discard: String %d released (count: %d)\n", code, string_uct[code] ) ;
+    /* printf( "[STRING] string_discard: String %d released (count: %d)\n", code, string_uct[code] ) ; */
 
     if ( !string_uct[code] )
     {
         if ( code >= string_reserved )
         {
             free( string_ptr[code] ) ;
-            string_ptr[code] = NULL ; // Splinter
+            string_ptr[code] = NULL ;
             bit_clr( string_bmp, code );
-            // printf( "[STRING] string_discard: Memory for string %d freed\n", code ) ;
+            /* printf( "[STRING] string_discard: Memory for string %d freed\n", code ) ; */
         }
-//        else
-        // printf( "[STRING] string_discard: Memory for string %d don't freed, is a static string\n", code ) ;
+        /* else
+            printf( "[STRING] string_discard: Memory for string %d don't freed, is a static string\n", code ) ; */
     }
 }
 
@@ -381,7 +380,7 @@ static int string_getid()
 {
     int n, nb, lim, ini ;
 
-    // Si tengo suficientes alocados, retorno el siguiente segun string_last_id
+    /* Si tengo suficientes alocados, retorno el siguiente segun string_last_id */
     if ( string_last_id < string_allocated )
     {
         if ( !bit_tst( string_bmp, string_last_id ) )
@@ -391,7 +390,7 @@ static int string_getid()
         }
     }
 
-    // Ya no tengo mas espacio, entonces busco alguno libre entre ~+32 desde el ultimo fijo y ~-32 del ultimo asignado
+    /* Ya no tengo mas espacio, entonces busco alguno libre entre ~+32 desde el ultimo fijo y ~-32 del ultimo asignado */
 
     ini = ( string_last_id < string_allocated ) ? ( string_last_id >> 5 ) : string_reserved ;
     lim = ( string_allocated >> 5 ) ;
@@ -400,7 +399,7 @@ static int string_getid()
     {
         for ( n = ini; n < lim ; n++ )
         {
-            if ( string_bmp[n] != 0xFFFFFFFF ) // Aca hay 1 libre, busco cual es
+            if ( string_bmp[n] != 0xFFFFFFFF ) /* Aca hay 1 libre, busco cual es */
             {
                 for ( nb = 0; nb < 32; nb++ )
                 {
@@ -420,13 +419,13 @@ static int string_getid()
 
     string_last_id = string_allocated ;
 
-    // Incremento espacio, no habia libres
+    /* Incremento espacio, no habia libres */
     string_alloc( BLOCK_INCR ) ;
-//    printf( "[STRING] *PANIC Too many strings, allocating more space\n" ) ;
+    /* printf( "[STRING] *PANIC Too many strings, allocating more space\n" ) ; */
 
     assert( !bit_tst( string_bmp, string_last_id ) );
 
-    // Devuelvo string_last_id e incremento en 1, ya que ahora tengo BLOCK_INCR mas que antes
+    /* Devuelvo string_last_id e incremento en 1, ya que ahora tengo BLOCK_INCR mas que antes */
     bit_set( string_bmp, string_last_id );
     return string_last_id++ ;
 }
@@ -447,7 +446,7 @@ int string_new( const char * ptr )
 
     id = string_getid() ;
 
-    // printf( "[STRING] String %d created: \"%s\"\n", id, str ) ;
+    /* printf( "[STRING] String %d created: \"%s\"\n", id, str ) ; */
 
     string_ptr[id] = str ;
     string_uct[id] = 0 ;
@@ -481,7 +480,7 @@ int string_newa( const char * ptr, unsigned count )
     string_ptr[id] = str ;
     string_uct[id] = 0 ;
 
-    // printf( "[STRING] (newa) String %d created: \"%s\"\n", id, str ) ;
+    /* printf( "[STRING] (newa) String %d created: \"%s\"\n", id, str ) ; */
 
     return id ;
 }
@@ -548,7 +547,7 @@ int string_add( int code1, int code2 )
     string_ptr[id] = str3 ;
     string_uct[id] = 0 ;
 
-    // printf( "[STRING] (add) String %d created: \"%s\"\n", id, str3 ) ;
+    /* printf( "[STRING] (add) String %d created: \"%s\"\n", id, str3 ) ; */
 
     return id ;
 }
@@ -573,7 +572,7 @@ int string_ptoa( void * n )
     string_ptr[id] = str ;
     string_uct[id] = 0 ;
 
-    // printf( "[STRING] (ptoa) String %d created: \"%s\"\n", id, str ) ;
+    /* printf( "[STRING] (ptoa) String %d created: \"%s\"\n", id, str ) ; */
 
     return id ;
 }
@@ -609,7 +608,7 @@ int string_ftoa( float n )
     string_ptr[id] = str ;
     string_uct[id] = 0 ;
 
-    // printf( "[STRING] (ftoa) String %d created: \"%s\"\n", id, str ) ;
+    /* printf( "[STRING] (ftoa) String %d created: \"%s\"\n", id, str ) ; */
 
     return id ;
 }
@@ -634,7 +633,7 @@ int string_itoa( int n )
     string_ptr[id] = str ;
     string_uct[id] = 0 ;
 
-    // printf( "[STRING] (itoa) String %d created: \"%s\"\n", id, str ) ;
+    /* printf( "[STRING] (itoa) String %d created: \"%s\"\n", id, str ) ; */
 
     return id ;
 }
@@ -659,7 +658,7 @@ int string_uitoa( unsigned int n )
     string_ptr[id] = str ;
     string_uct[id] = 0 ;
 
-    // printf( "[STRING] (uitoa) String %d created: \"%s\"\n", id, str ) ;
+    /* printf( "[STRING] (uitoa) String %d created: \"%s\"\n", id, str ) ; */
 
     return id ;
 }
@@ -750,7 +749,7 @@ int string_substr( int code, int first, int len )
     string_ptr[n] = ptr ;
     string_uct[n] = 0 ;
 
-    // printf( "[STRING] (substr) String %d created: \"%s\"\n", n, ptr ) ;
+    /* printf( "[STRING] (substr) String %d created: \"%s\"\n", n, ptr ) ; */
 
     return n ;
 }
@@ -843,7 +842,7 @@ int string_ucase( int code )
     string_ptr[id] = base ;
     string_uct[id] = 0 ;
 
-    // printf( "[STRING] (ucase) String %d created: \"%s\"\n", id, base ) ;
+    /* printf( "[STRING] (ucase) String %d created: \"%s\"\n", id, base ) ; */
 
     return id ;
 }
@@ -879,7 +878,7 @@ int string_lcase( int code )
     string_ptr[id] = base ;
     string_uct[id] = 0 ;
 
-    // printf( "[STRING] (lcase) String %d created: \"%s\"\n", id, base ) ;
+    /* printf( "[STRING] (lcase) String %d created: \"%s\"\n", id, base ) ; */
 
     return id ;
 }
@@ -1063,7 +1062,7 @@ int string_pad( int code, int total, int align )
     string_ptr[id] = str ;
     string_uct[id] = 0 ;
 
-    // printf( "[STRING] (pad) String %d created: \"%s\"\n", id, str ) ;
+    /* printf( "[STRING] (pad) String %d created: \"%s\"\n", id, str ) ; */
 
     return id ;
 }

@@ -34,6 +34,7 @@
 #include "offsets.h"
 #include "dcb.h"
 #include "sysprocs_p.h"
+#include "xstrings.h"
 
 /* --------------------------------------------------------------------------- */
 
@@ -104,7 +105,7 @@ int strncmpi( char * str1, char * str2, int sz )
 void bgdrtm_entry( int argc, char * argv[] )
 {
     int i;
-    int * args = &GLODWORD( ARGV_TABLE );
+    int * args = (int *)&GLODWORD( ARGV_TABLE );
 
     GLODWORD( ARGC ) = argc ;
 

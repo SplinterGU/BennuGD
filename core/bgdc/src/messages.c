@@ -44,7 +44,8 @@
     "   -C options      Specify compiler options\n" \
     "                   Where options are:\n" \
     "                   a    Enable automatic declare functions\n" \
-    "\n" \
+    "\n"
+#define MSG_LICENSE                             \
     "This program is free software. You can distribute and/or modify it\n" \
     "under the terms of the GNU General Public License as published by the\n" \
     "Free Software Foundation; either the version 2 of the license or\n" \

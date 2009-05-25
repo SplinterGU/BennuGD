@@ -75,8 +75,8 @@ typedef int ( BLEND_FUNC )( int, int );
  * (a table that reduces all color components to half)
  */
 
-int16_t  * ghost1;
-int16_t  * ghost2;
+uint16_t  * ghost1;
+uint16_t  * ghost2;
 uint8_t   * ghost8;
 
 uint32_t * pcolorequiv = NULL ;
@@ -1992,8 +1992,8 @@ void gr_rotated_blit(
     if ( gr->blend_table )
     {
         if ( dest->format->depth == 32 ) return ;
-        ghost1 = gr->blend_table ;
-        ghost2 = gr->blend_table + 65536 ;
+        ghost1 = ( uint16_t * ) gr->blend_table ;
+        ghost2 = ( uint16_t * )( gr->blend_table + 65536 ) ;
         flags |= B_TRANSLUCENT ;
     }
     else if ( flags & B_ALPHA )
@@ -2587,8 +2587,8 @@ void gr_blit(
     if ( gr->blend_table )
     {
         if ( dest->format->depth == 32 ) return ;
-        ghost1 = gr->blend_table ;
-        ghost2 = gr->blend_table + 65536 ;
+        ghost1 = ( uint16_t * ) gr->blend_table ;
+        ghost2 = ( uint16_t * )( gr->blend_table + 65536 );
         flags |= B_TRANSLUCENT ;
     }
     else if ( flags & B_ALPHA )

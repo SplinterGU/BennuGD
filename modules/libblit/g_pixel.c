@@ -113,7 +113,7 @@ void gr_put_pixel( GRAPH * dest, int x, int y, int color )
 
         case 32:
             {
-                uint32_t * ptr = ( uint8_t * ) dest->data + dest->pitch * y + ( x << 2 ) ;
+                uint32_t * ptr = ( uint32_t * ) (( uint8_t * ) dest->data + dest->pitch * y + ( x << 2 )) ;
 
                 if ( pixel_alpha == 255 && ( color & 0xff000000 ) == 0xff000000 )
                 {

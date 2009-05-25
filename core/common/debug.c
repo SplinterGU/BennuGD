@@ -145,7 +145,7 @@ mnemonics[] =
     { "STR2FLOAT", MN_STR2FLOAT, 1 },
     { "FLOAT2STR", MN_FLOAT2STR, 1 },
     { "POINTER2STR", MN_POINTER2STR, 1 },
-// { "POINTER2BOL", MN_POINTER2BOL, 1 },
+/*    { "POINTER2BOL", MN_POINTER2BOL, 1 }, */
 
     { "A2STR", MN_A2STR, 0 },
     { "STR2A", MN_STR2A, 0 },
@@ -174,76 +174,96 @@ mnemonics[] =
 
 /* ---------------------------------------------------------------------- */
 
+static int mnemonics_inited = 0;
+
+struct
+{
+    char * name;
+    int    params ;
+}
+mnemonics_sorted[256];
+
+/* ---------------------------------------------------------------------- */
+
 void mnemonic_dump( int i, int param )
 {
     int n = 0 ;
+
+    if ( !mnemonics_inited )
+    {
+        while ( mnemonics[n].name )
+        {
+            mnemonics_sorted[mnemonics[n].code & MN_MASK].name      = mnemonics[n].name;
+            mnemonics_sorted[mnemonics[n].code & MN_MASK].params    = mnemonics[n].params;
+            n++ ;
+        }
+        mnemonics_inited = 1;
+    }
+
+    n = i & MN_MASK ;
 
     if ( MN_PARAMS( i ) )
         printf( "%08X %08X "    , i, param );
     else
         printf( "%08X          ", i );
 
-    while ( mnemonics[n].name )
+    if ( mnemonics_sorted[ n ].name )
     {
-        if ( mnemonics[n].code == ( i & MN_MASK ) )
+        switch ( MN_TYPEOF( i ) )
         {
-            switch ( MN_TYPEOF( i ) )
-            {
-                case MN_UNSIGNED:
-                    printf( "UNSIGNED " ) ;
-                    break ;
-                case MN_WORD:
-                    printf( "SHORT    " ) ;
-                    break ;
-                case MN_WORD | MN_UNSIGNED:
-                    printf( "WORD     " ) ;
-                    break ;
-                case MN_BYTE:
-                    printf( "CHAR     " ) ;
-                    break ;
-                case MN_BYTE | MN_UNSIGNED:
-                    printf( "BYTE     " ) ;
-                    break ;
-                case MN_FLOAT:
-                    printf( "FLOAT    " ) ;
-                    break ;
-                case MN_STRING:
-                    printf( "STRING   " ) ;
-                    break ;
-                default:
-                    printf( "         " ) ;
-                    break ;
-            }
-
-            printf( "%-20s", mnemonics[n].name ) ;
-            if ( i == MN_SYSCALL || i == MN_SYSPROC )
-            {
-                printf( "%-8s (%d)", sysproc_name( param ), param ) ;
-            }
-            else if ( i == MN_SENTENCE )
-            {
-#ifdef __BGDRTM__
-                if ( dcb.sourcecount[param >> 24] )
-                    printf( "%s:%d -> %s", dcb.sourcefiles[param >> 24], param & 0xFFFFFF, dcb.sourcelines[param >> 24] [( param & 0xFFFFFF )-1] ) ;
-#else
-                printf( "%s:%d", files[param>>24], param&(( 1 << 24 ) - 1 ) ) ;
-#endif
-            }
-            else if ( i == ( MN_PUSH | MN_FLOAT ) )
-            {
-                printf( "%-8f", *(( float * )&param ) ) ;
-            }
-            else
-            {
-                switch ( MN_PARAMS( i ) )
-                {
-                    case    1:
-                        printf( "%-8d", param ) ;
-                        break;
-                }
-            }
-            printf( "\n" ) ;
+            case MN_UNSIGNED:
+                printf( "UNSIGNED " ) ;
+                break ;
+            case MN_WORD:
+                printf( "SHORT    " ) ;
+                break ;
+            case MN_WORD | MN_UNSIGNED:
+                printf( "WORD     " ) ;
+                break ;
+            case MN_BYTE:
+                printf( "CHAR     " ) ;
+                break ;
+            case MN_BYTE | MN_UNSIGNED:
+                printf( "BYTE     " ) ;
+                break ;
+            case MN_FLOAT:
+                printf( "FLOAT    " ) ;
+                break ;
+            case MN_STRING:
+                printf( "STRING   " ) ;
+                break ;
+            default:
+                printf( "         " ) ;
+                break ;
         }
-        n++ ;
+
+        printf( "%-20s", mnemonics_sorted[n].name ) ;
+        if ( i == MN_SYSCALL || i == MN_SYSPROC )
+        {
+            printf( "%-8s (%d)", sysproc_name( param ), param ) ;
+        }
+        else if ( i == MN_SENTENCE )
+        {
+#ifdef __BGDRTM__
+            if ( dcb.sourcecount[param >> 24] )
+                printf( "%s:%d -> %s", dcb.sourcefiles[param >> 24], param & 0xFFFFFF, dcb.sourcelines[param >> 24] [( param & 0xFFFFFF )-1] ) ;
+#else
+            printf( "%s:%d", files[param>>24], param&(( 1 << 24 ) - 1 ) ) ;
+#endif
+        }
+        else if ( i == ( MN_PUSH | MN_FLOAT ) )
+        {
+            printf( "%-8f", *(( float * )&param ) ) ;
+        }
+        else
+        {
+            switch ( MN_PARAMS( i ) )
+            {
+                case    1:
+                    printf( "%-8d", param ) ;
+                    break;
+            }
+        }
+        printf( "\n" ) ;
     }
 }

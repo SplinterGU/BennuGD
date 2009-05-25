@@ -159,7 +159,7 @@ GRAPH * gr_read_png( const char * filename )
             file_close( png ) ;
             return NULL;
         }
-        png_get_PLTE( png_ptr, info_ptr, &png_palette, &n ) ;
+        png_get_PLTE( png_ptr, info_ptr, &png_palette, ( int * ) &n ) ;
 
         uint8_t * p = colors;
 
@@ -189,7 +189,7 @@ GRAPH * gr_read_png( const char * filename )
             for ( n =  0; n < height; n++ )
             {
                 char * orig, * dest;
-                orig = rowpointers[n];
+                orig = ( char *  ) ( rowpointers[n] );
                 dest = orig + width - 1;
                 orig += ( width - 1 ) / 2;
 
@@ -205,7 +205,7 @@ GRAPH * gr_read_png( const char * filename )
             for ( n = 0; n < height; n++ )
             {
                 char * orig, * dest;
-                orig = rowpointers[n];
+                orig = ( char * ) rowpointers[n];
                 dest = orig + width - 1;
                 orig += ( width - 1 ) / 4;
 
@@ -221,7 +221,7 @@ GRAPH * gr_read_png( const char * filename )
             for ( n = 0; n < height; n++ )
             {
                 char * orig, * dest;
-                orig = rowpointers[n];
+                orig = ( char * ) rowpointers[n];
                 dest = orig + width - 1;
                 orig += ( width - 1 ) / 8;
 

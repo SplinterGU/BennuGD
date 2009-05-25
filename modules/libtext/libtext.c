@@ -77,6 +77,7 @@ int text_count  = 0 ;
 /* --------------------------------------------------------------------------- */
 
 int gr_text_height_no_margin( int fontid, const unsigned char * text );
+int gr_text_widthn( int fontid, const unsigned char * text, int n );
 
 /* --------------------------------------------------------------------------- */
 
@@ -230,8 +231,8 @@ static int info_text( TEXT * text, REGION * bbox, int * z, int * drawme )
 
     text->_x = text->x;
     text->_y = text->y;
-    text->_width = gr_text_width( text->fontid, str );
-    text->_height = gr_text_height_no_margin( text->fontid, str );
+    text->_width = gr_text_width( text->fontid, ( const unsigned char * ) str );
+    text->_height = gr_text_height_no_margin( text->fontid, ( const unsigned char * ) str );
 
     /* Update the font's maxheight (if needed) */
 
@@ -367,7 +368,7 @@ void draw_text( TEXT * text, REGION * clip )
     fntcolor16 = text->color16;
     fntcolor32 = text->color32;
 
-    if ( !gr_text_put( 0, clip, text->fontid, text->_x, text->_y, str ) ) gr_text_destroy( text->id );
+    if ( !gr_text_put( 0, clip, text->fontid, text->_x, text->_y, ( const unsigned char * ) str ) ) gr_text_destroy( text->id );
 
     fntcolor8 = save8;
     fntcolor16 = save16;
@@ -483,7 +484,7 @@ void gr_text_destroy( int textid )
 
 int gr_text_width( int fontid, const unsigned char * text )
 {
-    return gr_text_widthn( fontid, text, strlen( text ) );
+    return gr_text_widthn( fontid, text, strlen( ( char * ) text ) );
 }
 
 /* --------------------------------------------------------------------------- */
@@ -679,11 +680,11 @@ GRAPH * gr_text_bitmap( int fontid, const char * text, int alignment )
 
     if ( palette_changed ) gr_refresh_palette() ;
 
-    gr = bitmap_new_syslib( gr_text_width( fontid, text ), gr_text_height( fontid, text ), sys_pixel_format->depth ) ;
+    gr = bitmap_new_syslib( gr_text_width( fontid, ( const unsigned char * ) text ), gr_text_height( fontid, ( const unsigned char * ) text ), sys_pixel_format->depth ) ;
     if ( !gr ) return NULL;
 
     gr_clear( gr ) ;
-    if ( !gr_text_put( gr, 0, fontid, 0, -gr_text_margintop( fontid, text ), text ) )
+    if ( !gr_text_put( gr, 0, fontid, 0, -gr_text_margintop( fontid, ( const unsigned char * ) text ), ( const unsigned char * ) text ) )
     {
         bitmap_destroy( gr );
         return NULL;
@@ -793,6 +794,8 @@ int gr_text_getcolor()
             return fntcolor32 ;
         }
     }
+
+    return 0;
 }
 
 /* --------------------------------------------------------------------------- */

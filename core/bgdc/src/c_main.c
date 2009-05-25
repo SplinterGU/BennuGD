@@ -42,9 +42,9 @@ extern void token_dump() ;
 static char * import_filename = NULL;
 static int import_line = 0;
 
-int imports_aux[512] ;  // Modules
+int imports_aux[512] ;  /* Modules */
 int nimports_aux = 0 ;
-int imports[512] ;      // Modules
+int imports[512] ;      /* Modules */
 int nimports = 0 ;
 
 /* ---------------------------------------------------------------------- */
@@ -325,7 +325,7 @@ void compile_init()
 
     reserved_words          = identifier_next_code() ;
 
-    identifier_mouse        = identifier_add( "MOUSE" ) ; // Hack
+    identifier_mouse        = identifier_add( "MOUSE" ) ; /* Hack */
 
     varspace_init( &global ) ;
     varspace_init( &local ) ;
@@ -690,13 +690,13 @@ void compile_process()
         token_next() ;
     }
 
-    // Check if the process name is valid
+    /* Check if the process name is valid */
 
     if ( token.type != IDENTIFIER || token.code < reserved_words ) compile_error( MSG_PROCNAME_EXP ) ;
 
     code = token.code ;
 
-    // Create the process if it is not defined already
+    /* Create the process if it is not defined already */
     proc = procdef_search( code ) ;
     if ( !proc )
     {
@@ -707,7 +707,7 @@ void compile_process()
         compile_error( MSG_PROC_ALREADY_DEFINED );
     }
 
-    // Parse the process parameters
+    /* Parse the process parameters */
 
     token_next() ;
     if ( token.type != IDENTIFIER || token.code != identifier_leftp )
@@ -909,7 +909,7 @@ void compile_process()
             external_proc = NULL;
             token_next() ;
         }
-        else if ( !external_proc && ( external_proc = procdef_search( token.code ) ) )    // Variables tipo proceso, Splinter
+        else if ( !external_proc && ( external_proc = procdef_search( token.code ) ) )    /* Variables tipo proceso, Splinter */
         {
             type_implicit = 0;
             type = TYPE_INT ;
@@ -1174,7 +1174,7 @@ void compile_process()
                 printf( "\n" ) ;
             }
 
-            //segment_dump  (proc->pridata) ;
+            /* segment_dump  (proc->pridata) ; */
             codeblock_dump( &proc->code ) ;
         }
     }
@@ -1318,7 +1318,7 @@ void compile_program()
     {
         printf( "\n----- Main procedure\n\n" ) ;
         varspace_dump( mainproc->privars, 0 ) ;
-        //segment_dump  (mainproc->pridata) ;
+        /* segment_dump  (mainproc->pridata) ; */
         printf( "\n" );
         codeblock_dump( &mainproc->code ) ;
         printf( "\n" ) ;
@@ -1334,7 +1334,7 @@ void compile_program()
     {
         printf( "\n---- Local variables\n\n" ) ;
         varspace_dump( &local, 0 ) ;
-        //segment_dump (localdata) ;
+        /* segment_dump (localdata) ; */
     }
 
     if ( token.type != NOTOKEN )

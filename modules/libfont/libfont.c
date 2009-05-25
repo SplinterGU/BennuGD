@@ -378,7 +378,7 @@ int gr_font_newfrombitmap( char * chardata, int width, int height, int options )
 
     for ( charptr = chardata, i = 0 ; i < 256 ; i++, charptr += charsize )
     {
-        if ( options != NFB_FIXEDWIDTH ) align_bitmap_char_left( charptr, width, height ) ;
+        if ( options != NFB_FIXEDWIDTH ) align_bitmap_char_left( ( unsigned char * ) charptr, width, height ) ;
 
         bitmap = bitmap_new( i, width, height, 1 );
         if ( bitmap == NULL ) return -1; // No memory
@@ -388,7 +388,7 @@ int gr_font_newfrombitmap( char * chardata, int width, int height, int options )
         f->glyph[i].yoffset = 0;
 
         if ( options != NFB_FIXEDWIDTH )
-            f->glyph[i].xadvance = get_bitmap_char_width( charptr, width, height );
+            f->glyph[i].xadvance = get_bitmap_char_width( ( unsigned char * ) charptr, width, height );
         else
             f->glyph[i].xadvance = width + 1;
 
@@ -554,7 +554,7 @@ FONT * gr_font_get( int id )
 
 void __bgdexport( libfont, module_initialize )()
 {
-    gr_font_systemfont( default_font );
+    gr_font_systemfont( ( char * ) default_font );
 }
 
 /* --------------------------------------------------------------------------- */

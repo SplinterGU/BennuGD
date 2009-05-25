@@ -70,7 +70,7 @@ segment * segment_new ()
 	s->current = 0 ;
 	s->reserved = 128 ;
 
-	s->bytes = (int *) calloc(s->reserved, sizeof(char)) ; // Tamaño en bytes
+	s->bytes = (int *) calloc(s->reserved, sizeof(char)) ; /* Tamaño en bytes */
 	if (!s->bytes) compile_error ("segment_new: out of memory\n") ;
 
 	segment_register (s) ;
@@ -90,7 +90,7 @@ segment * segment_duplicate (segment * b)
 	s->current = b->current ;
 	s->reserved = b->reserved ;
 
-	s->bytes = (int *) calloc(s->reserved, sizeof(char)) ; // Tamaño en bytes
+	s->bytes = (int *) calloc(s->reserved, sizeof(char)) ; /* Tamaño en bytes */
 	if (!s->bytes) compile_error ("segment_new: out of memory\n") ;
 	memcpy (s->bytes, b->bytes, s->current) ;
 

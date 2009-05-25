@@ -78,7 +78,7 @@ static void _advance_timers( void )
     static int ltimer[10] = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1} ; // -1 to force initial_ticktimer update
 
     /* TODO: Here add checking for console_mode, don't advance in this mode */
-    timer = &GLODWORD( mod_timers, TIMER ) ;
+    timer = ( int * ) ( &GLODWORD( mod_timers, TIMER ) );
     for ( i = 0 ; i < 10 ; i++ )
     {
         if ( timer[i] != ltimer[i] ) initial_ticktimer[i] = curr_ticktimer - ( timer[i] * 10 ) ;

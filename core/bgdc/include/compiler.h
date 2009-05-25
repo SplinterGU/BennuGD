@@ -40,7 +40,7 @@ typedef struct _expresion_result
     int constant ;
     TYPEDEF type ;
 
-    int count; // Usados para array genericos
+    int count; /* Usados para array genericos */
 
     int32_t value ;
     float  fvalue ;

@@ -80,25 +80,28 @@ static dlibhandle * dlibopen( const char * fname )
 #endif
         return NULL;
     }
-    dlibhandle * dlib = malloc( sizeof( dlibhandle ) );
-    if ( !dlib )
-    {
-        __dliberr = "Could not load library." ;
-        dlclose( hnd );
-        return NULL;
-    }
 
-    dlib->fname = strdup( fname );
-    if ( !dlib->fname )
     {
-        __dliberr = "Could not load library." ;
-        free( dlib );
-        dlclose( hnd );
-        return NULL;
-    }
-    dlib->hnd = hnd;
+        dlibhandle * dlib = (dlibhandle*) malloc( sizeof( dlibhandle ) );
+        if ( !dlib )
+        {
+            __dliberr = "Could not load library." ;
+            dlclose( hnd );
+            return NULL;
+        }
 
-    return ( dlib );
+        dlib->fname = strdup( fname );
+        if ( !dlib->fname )
+        {
+            __dliberr = "Could not load library." ;
+            free( dlib );
+            dlclose( hnd );
+            return NULL;
+        }
+        dlib->hnd = hnd;
+
+        return ( dlib );
+    }
 }
 
 static void * dlibaddr( dlibhandle * handle, const char * symbol )
@@ -106,7 +109,7 @@ static void * dlibaddr( dlibhandle * handle, const char * symbol )
     char * ptr, * f;
 
 #ifdef _WIN32
-    void * addr = GetProcAddress( handle->hnd, symbol );
+    void * addr = GetProcAddress( (HMODULE)handle->hnd, symbol );
     if ( !addr )
     {
         __dliberr = "Symbol not found." ;
@@ -120,18 +123,18 @@ static void * dlibaddr( dlibhandle * handle, const char * symbol )
         __dliberr = dlerror() ;
         return NULL;
     }
+    {
+        Dl_info dli;
+        dladdr( addr, &dli );
 
-    Dl_info dli;
-    dladdr( addr, &dli );
-
-    /*
-        printf( "dli_fname=%s\n", dli.dli_fname );
-        printf( "dli_fbase=%p\n", dli.dli_fbase );
-        printf( "dli_sname=%s\n", dli.dli_sname );
-        printf( "dli_saddr=%p\n", dli.dli_saddr );
-    */
-
-    ptr = ( char * ) dli.dli_fname; f = NULL;
+        ptr = ( char * ) dli.dli_fname; f = NULL;
+        /*
+            printf( "dli_fname=%s\n", dli.dli_fname );
+            printf( "dli_fbase=%p\n", dli.dli_fbase );
+            printf( "dli_sname=%s\n", dli.dli_sname );
+            printf( "dli_saddr=%p\n", dli.dli_saddr );
+        */
+    }
     while ( *ptr )
     {
         if ( *ptr == '/' || *ptr == '\\' ) f = ptr ;
@@ -145,7 +148,9 @@ static void * dlibaddr( dlibhandle * handle, const char * symbol )
         return NULL;
     }
 #endif
-//    printf( "[%s:%s]->%p\n", handle->fname, symbol, addr );fflush( stdout );
+/*
+    printf( "[%s:%s]->%p\n", handle->fname, symbol, addr );fflush( stdout );
+*/
 
     return addr;
 }
@@ -153,7 +158,7 @@ static void * dlibaddr( dlibhandle * handle, const char * symbol )
 static void * _dlibaddr( dlibhandle * handle, const char * symbol )
 {
     char * ptr, * f;
-    char * sym = malloc( strlen( handle->fname ) + strlen( symbol ) + 2 );
+    char * sym = (char*)malloc( strlen( handle->fname ) + strlen( symbol ) + 2 );
     if ( !sym )
     {
         __dliberr = "Can't load symbol." ;
@@ -167,14 +172,15 @@ static void * _dlibaddr( dlibhandle * handle, const char * symbol )
         if ( *ptr == '.' ) f = ptr ;
         ptr++;
     }
+
     if ( f ) *f = '\0';
     strcat( sym, "_" ); strcat( sym, symbol );
 
-    void * addr = dlibaddr( handle, sym );
-
-    free( sym );
-
-    return addr;
+    {
+        void * addr = dlibaddr( handle, sym );
+        free( sym );
+        return addr;
+    }
 }
 
 #endif

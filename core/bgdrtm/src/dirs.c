@@ -54,7 +54,7 @@ char * dir_path_convert( const char * dir )
 
     p = strdup( dir ) ;
     c = p ;
-    // Convert characters
+    /* Convert characters */
     while ( *p )
     {
         if ( *p == PATH_CHAR_ISEP ) *p = PATH_CHAR_SEP ;

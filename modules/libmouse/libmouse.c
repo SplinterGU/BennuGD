@@ -251,10 +251,12 @@ static int mouse_info( INSTANCE * i, REGION * clip, int * z, int * drawme )
         last_mousesize   != mousesize   ||
         last_mouseflags  != mouseflags  ||
         last_mouseregion != mouseregion ||
-        mouse_map->ncpoints &&
         (
-            last_mousecenterx != mouse_map->cpoints[0].x ||
-            last_mousecentery != mouse_map->cpoints[0].y
+            mouse_map->ncpoints &&
+            (
+                last_mousecenterx != mouse_map->cpoints[0].x ||
+                last_mousecentery != mouse_map->cpoints[0].y
+            )
         )
         ;
 

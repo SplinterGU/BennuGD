@@ -26,7 +26,7 @@
 
 #include "instance_st.h"
 
-/* Definiciones de procesos, mucho más simple que en el compilador */
+/* Process definitions, more simple that in the compiler */
 
 typedef struct _procdef
 {
@@ -64,7 +64,7 @@ PROCDEF ;
 #define PROC_FUNCTION   	0x04
 #define PROC_USES_PUBLICS   0x08
 
-/* Funciones del sistema */
+/* System functions */
 
 typedef int SYSFUNC (INSTANCE *, int *) ;
 typedef struct _sysproc

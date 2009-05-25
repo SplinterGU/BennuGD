@@ -66,7 +66,7 @@ void varspace_dump( VARSPACE * n, int indent )
         typedef_describe( buffer, n->vars[i].type ) ;
         printf( "%s %s", buffer, identifier_name( n->vars[i].code ) ) ;
 
-        // Describe arrays of structs
+        /* Describe arrays of structs */
 
         if ( typedef_is_array( n->vars[i].type ) )
         {
@@ -82,7 +82,7 @@ void varspace_dump( VARSPACE * n, int indent )
                 printf( "\n" );
         }
 
-        // Describe structs
+        /* Describe structs */
 
         else if ( typedef_is_struct( n->vars[i].type ) )
         {

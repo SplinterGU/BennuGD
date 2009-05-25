@@ -65,10 +65,10 @@ void err_buildErrorTable()
             len = file_qgets( fp, line, 1024 );
             if ( file_eof( fp ) ) break;
             if ( !len ) continue;
-            // Check for multiline...
+            /* Check for multiline... */
             if ( line[0] == '_' )
             {
-                // must resize the string and concatenate
+                /* must resize the string and concatenate */
                 if ( err )
                 {
                     size = strlen( err->msg ) + strlen( line ) ;
@@ -82,7 +82,7 @@ void err_buildErrorTable()
             }
             else
             {
-                // Check for comment
+                /* Check for comment */
                 token = strtok( line, "#" ) ;
                 code = 0 ;
                 while ( token != NULL )

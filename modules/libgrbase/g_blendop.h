@@ -29,8 +29,8 @@
 
 extern void blend_apply( GRAPH * bitmap, int16_t * blend ) ;
 extern void blend_assign( GRAPH * bitmap, int16_t * blend ) ;
-extern int16_t * blend_create() ;
-extern void blend_free() ;
+extern int16_t * blend_create( void ) ;
+extern void blend_free( int16_t * blend );
 extern void blend_grayscale( int16_t * blend, int method ) ;
 extern void blend_init( int16_t * blend ) ;
 extern void blend_intensity( int16_t * blend, float ammount ) ;

@@ -52,7 +52,8 @@ _inline void _HLine8_nostipple( uint8_t * ptr, uint32_t length )
     else
     {
         register int n;
-        for ( n = length; n; n-- >= 0, ptr++ ) *ptr = pixel_alpha8[( pixel_color8 << 8 ) + *ptr ];
+        for ( n = length; n >= 0; n--, ptr++ )
+            *ptr = pixel_alpha8[( pixel_color8 << 8 ) + *ptr ];
     }
 }
 

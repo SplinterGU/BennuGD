@@ -42,29 +42,30 @@
 
 /* Locals */
 
-#define PM_TYPE_SCAN    0
-#define PM_ID_SCAN      1
-#define PROCESS_ID      2
-#define PROCESS_TYPE    3
-#define STATUS          4
-#define CTYPE           5
-#define CNUMBER         6
-#define COORDX          7
-#define COORDY          8
-#define ANGLE           9
-#define GRAPHSIZE       10
-#define GRAPHSIZEX      11
-#define GRAPHSIZEY      12
-#define FLAGS           13
-#define REGIONID        14
-#define RESOLUTION      15
-#define XGRAPH          16
+#define GRPROC_TYPE_SCAN    0
+#define GRPROC_ID_SCAN      1
+#define GRPROC_CONTEXT      2
+#define PROCESS_ID          3
+#define PROCESS_TYPE        4
+#define STATUS              5
+#define CTYPE               6
+#define CNUMBER             7
+#define COORDX              8
+#define COORDY              9
+#define ANGLE               10
+#define GRAPHSIZE           11
+#define GRAPHSIZEX          12
+#define GRAPHSIZEY          13
+#define FLAGS               14
+#define REGIONID            15
+#define RESOLUTION          16
+#define XGRAPH              17
 
 /* Globals */
 
-#define MOUSEX          0
-#define MOUSEY          1
-#define SCROLLS         2
+#define MOUSEX              0
+#define MOUSEY              1
+#define SCROLLS             2
 
 /* ----------------------------------------------------------------- */
 
@@ -72,6 +73,7 @@ char * __bgdexport( mod_grproc, locals_def ) =
     "STRUCT _mod_grproc_reserved\n"
     "int type_scan;\n"
     "int id_scan;\n"
+    "int context;\n"
     "END\n";
 
 /* ----------------------------------------------------------------- */
@@ -81,6 +83,7 @@ DLVARFIXUP __bgdexport( mod_grproc, locals_fixup )[]  =
     /* Nombre de variable local, offset al dato, tamaño del elemento, cantidad de elementos */
     { "_mod_grproc_reserved.type_scan"  , NULL, -1, -1 },
     { "_mod_grproc_reserved.id_scan"    , NULL, -1, -1 },
+    { "_mod_grproc_reserved.context"    , NULL, -1, -1 },
 
     { "id"                              , NULL, -1, -1 },
     { "reserved.process_type"           , NULL, -1, -1 },
@@ -649,7 +652,7 @@ static int check_collision( INSTANCE * proc1, INSTANCE * proc2 )
 
 static int grproc_collision( INSTANCE * my, int * params )
 {
-    INSTANCE * ptr = instance_get( params[0] ) ;
+    INSTANCE * ptr = instance_get( params[0] ), ** ctx ;
     int status;
 
     if ( params[0] == -1 ) return ( check_collision_with_mouse( my ) ) ? 1 : 0 ;
@@ -662,27 +665,24 @@ static int grproc_collision( INSTANCE * my, int * params )
 
     if ( !params[0] )
     {
-        LOCDWORD( mod_grproc, my, PM_TYPE_SCAN ) = 0 ;
-        if ( LOCDWORD( mod_grproc, my, PM_ID_SCAN ) )
+        LOCDWORD( mod_grproc, my, GRPROC_TYPE_SCAN ) = 0 ;
+        if ( LOCDWORD( mod_grproc, my, GRPROC_ID_SCAN ) )
         {
-            ptr = instance_get( LOCDWORD( mod_grproc, my, PM_ID_SCAN ) ) ;
+            ptr = instance_get( LOCDWORD( mod_grproc, my, GRPROC_ID_SCAN ) ) ;
             if ( ptr ) ptr = ptr->next ;
         }
+
         while ( ptr )
         {
-            if ( ptr == my )
-            {
-                ptr = ptr->next ;
-                continue ;
-            }
-            if (
-                (
-                    (( status = LOCDWORD( mod_grproc, ptr, STATUS ) ) & ~STATUS_WAITING_MASK ) == STATUS_RUNNING ||
-                    ( status & ~STATUS_WAITING_MASK ) == STATUS_FROZEN
+            if ( ptr != my &&
+                  (
+                    ( status = ( LOCDWORD( mod_grproc, ptr, STATUS ) & ~STATUS_WAITING_MASK ) ) == STATUS_RUNNING ||
+                    status == STATUS_FROZEN
+                  ) &&
+                  check_collision( my, ptr )
                 )
-                && check_collision( my, ptr ) )
             {
-                LOCDWORD( mod_grproc, my, PM_ID_SCAN ) = LOCDWORD( mod_grproc, ptr, PROCESS_ID ) ;
+                LOCDWORD( mod_grproc, my, GRPROC_ID_SCAN ) = LOCDWORD( mod_grproc, ptr, PROCESS_ID ) ;
                 return LOCDWORD( mod_grproc, ptr, PROCESS_ID ) ;
             }
             ptr = ptr->next ;
@@ -690,32 +690,36 @@ static int grproc_collision( INSTANCE * my, int * params )
         return 0 ;
     }
 
-    LOCDWORD( mod_grproc, my, PM_ID_SCAN ) = 0 ;
-    if ( LOCDWORD( mod_grproc, my, PM_TYPE_SCAN ) )
+    LOCDWORD( mod_grproc, my, GRPROC_ID_SCAN ) = 0 ;
+    /* Check if already in scan by type and we reach limit */
+    ctx = ( INSTANCE ** ) LOCADDR( mod_grproc, my, GRPROC_CONTEXT );
+/*
+    if ( !*ctx && LOCDWORD( mod_grproc, my, GRPROC_TYPE_SCAN ) )
     {
-        ptr = instance_get( LOCDWORD( mod_grproc, my, PM_TYPE_SCAN ) ) ;
-        if ( ptr && LOCDWORD( mod_grproc, ptr, PROCESS_TYPE ) != params[0] )
-            ptr = first_instance ;
-        else if ( ptr )
-            ptr = ptr->next ;
+        LOCDWORD( mod_grproc, my, GRPROC_TYPE_SCAN ) = 0;
+        return 0;
     }
-    while ( ptr )
+*/
+    if ( LOCDWORD( mod_grproc, my, GRPROC_TYPE_SCAN ) != params[0] ) /* Check if type change from last call */
     {
-        if ( LOCDWORD( mod_grproc, ptr, PROCESS_TYPE ) == params[0] && ptr != my )
+        *ctx = NULL;
+        LOCDWORD( mod_grproc, my, GRPROC_TYPE_SCAN ) = params[0];
+    }
+
+    while ( ( ptr = instance_get_by_type( params[0], ctx ) ) )
+    {
+        if ( ptr != my &&
+             (
+                ( status = ( LOCDWORD( mod_grproc, ptr, STATUS ) & ~STATUS_WAITING_MASK ) ) == STATUS_RUNNING ||
+                  status == STATUS_FROZEN
+             ) &&
+             check_collision( my, ptr )
+           )
         {
-            if (
-                (
-                    (( status = LOCDWORD( mod_grproc, ptr, STATUS ) ) & ~STATUS_WAITING_MASK ) == STATUS_RUNNING ||
-                    ( status & ~STATUS_WAITING_MASK ) == STATUS_FROZEN
-                )
-                && check_collision( my, ptr ) )
-            {
-                LOCDWORD( mod_grproc, my, PM_TYPE_SCAN ) = LOCDWORD( mod_grproc, ptr, PROCESS_ID ) ;
-                return LOCDWORD( mod_grproc, ptr, PROCESS_ID ) ;
-            }
+            return LOCDWORD( mod_grproc, ptr, PROCESS_ID ) ;
         }
-        ptr = ptr->next ;
     }
+
     return 0 ;
 }
 
@@ -723,8 +727,9 @@ static int grproc_collision( INSTANCE * my, int * params )
 
 void __bgdexport( mod_grproc, process_exec_hook )( INSTANCE * r )
 {
-    LOCDWORD( mod_grproc, r, PM_ID_SCAN ) = 0;
-    LOCDWORD( mod_grproc, r, PM_TYPE_SCAN ) = 0;
+    LOCDWORD( mod_grproc, r, GRPROC_ID_SCAN ) = 0;
+    LOCDWORD( mod_grproc, r, GRPROC_TYPE_SCAN ) = 0;
+    LOCDWORD( mod_grproc, r, GRPROC_CONTEXT ) = 0;
 }
 
 /* ---------------------------------------------------------------------- */

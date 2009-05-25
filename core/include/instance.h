@@ -24,6 +24,7 @@
 #ifndef __INSTANCE_H
 #define __INSTANCE_H
 
+#include <stdint.h>
 #include <instance_st.h>
 #include "i_procdef_st.h"
 
@@ -42,6 +43,7 @@ extern INSTANCE     * last_instance ;
 
 extern int          instance_getid() ;
 extern INSTANCE     * instance_get( int id ) ;
+extern INSTANCE     * instance_get_by_type( uint32_t type, INSTANCE ** context ) ;
 extern INSTANCE     * instance_getfather( INSTANCE * i ) ;
 extern INSTANCE     * instance_getson( INSTANCE * i ) ;
 extern INSTANCE     * instance_getbigbro( INSTANCE * i ) ;

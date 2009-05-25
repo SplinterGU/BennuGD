@@ -147,7 +147,7 @@ int gr_load_pal( const char * filename )
     file * fp = file_open( filename, "rb" ) ;
     char header[8] ;
     PALETTE * r = NULL ;
-    int old_sys_pal = sys_pixel_format->palette ;
+    int old_sys_pal = ( sys_pixel_format->palette != NULL ) ;
 
     if ( !fp ) return 0 ;
 

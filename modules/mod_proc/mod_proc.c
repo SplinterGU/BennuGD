@@ -79,6 +79,7 @@ enum
     STATUS,
     ID_SCAN,
     TYPE_SCAN,
+    CONTEXT,
     SIGNAL_ACTION
 } ;
 
@@ -120,6 +121,7 @@ char * __bgdexport( mod_proc, locals_def ) =
     "STRUCT mod_proc_reserved\n"
     "   int type_scan;\n"
     "   int id_scan;\n"
+    "   int context;\n"
     "   dword signal_action;\n"
     "END\n";
 
@@ -135,6 +137,7 @@ DLVARFIXUP __bgdexport( mod_proc, locals_fixup )[]  =
     { "reserved.status", NULL, -1, -1 },
     { "mod_proc_reserved.id_scan", NULL, -1, -1 },
     { "mod_proc_reserved.type_scan", NULL, -1, -1 },
+    { "mod_proc_reserved.context", NULL, -1, -1 },
     { "mod_proc_reserved.signal_action", NULL, -1, -1 },
     { NULL, NULL, -1, -1 }
 };
@@ -145,6 +148,7 @@ void __bgdexport( mod_proc, process_exec_hook )( INSTANCE * r )
 {
     LOCDWORD( mod_proc, r, TYPE_SCAN ) = 0;
     LOCDWORD( mod_proc, r, ID_SCAN ) = 0;
+    LOCDWORD( mod_proc, r, CONTEXT ) = 0;
 }
 
 /* ----------------------------------------------------------------- */
@@ -179,7 +183,9 @@ static int modproc_exit_0( INSTANCE * my, int * params )
 
 static int modproc_exit_1( INSTANCE * my, int * params )
 {
-    printf( string_get( params[0] ) ); fflush( stdout );
+    printf( string_get( params[0] ) );
+    printf( "\n" );
+    fflush( stdout );
     string_discard( params[0] );
 
     exit_value = 0;
@@ -194,7 +200,9 @@ static int modproc_exit( INSTANCE * my, int * params )
 {
     _modproc_kill_all();
 
-    printf( string_get( params[0] ) ); fflush( stdout );
+    printf( string_get( params[0] ) );
+    printf( "\n" );
+    fflush( stdout );
     string_discard( params[0] );
 
     exit_value = params[1];
@@ -207,7 +215,7 @@ static int modproc_exit( INSTANCE * my, int * params )
 
 static int modproc_running( INSTANCE * my, int * params )
 {
-    INSTANCE * i;
+    INSTANCE * i, * ctx;
 
     if ( params[0] == 0 ) return 0;
 
@@ -218,13 +226,12 @@ static int modproc_running( INSTANCE * my, int * params )
         return 0;
     }
 
-    i = first_instance ;
-    while ( i )
+    ctx = NULL;
+    while ( ( i = instance_get_by_type( params[0], &ctx ) ) )
     {
-        if ( LOCDWORD( mod_proc, i, PROCESS_TYPE ) == params[0] && ( LOCDWORD( mod_proc, i, STATUS ) & ~STATUS_WAITING_MASK ) >= STATUS_RUNNING )
-            return 1;
-        i = i->next ;
+        if ( ( LOCDWORD( mod_proc, i, STATUS ) & ~STATUS_WAITING_MASK ) >= STATUS_RUNNING ) return 1;
     }
+
     return 0;
 }
 
@@ -232,7 +239,7 @@ static int modproc_running( INSTANCE * my, int * params )
 
 static int modproc_signal( INSTANCE * my, int * params )
 {
-    INSTANCE * i ;
+    INSTANCE * i, * ctx;
     int fake_params[2] ;
 
     if ( params[0] == ALL_PROCESS )
@@ -255,15 +262,12 @@ static int modproc_signal( INSTANCE * my, int * params )
     {
         /* Signal by type */
         fake_params[1] = params[1] ;
-        i = first_instance ;
-        while ( i )
+
+        ctx = NULL;
+        while ( ( i = instance_get_by_type( params[0], &ctx ) ) )
         {
-            if ( LOCDWORD( mod_proc, i, PROCESS_TYPE ) == params[0] )
-            {
-                fake_params[0] = LOCDWORD( mod_proc, i, PROCESS_ID ) ;
-                modproc_signal( my, fake_params ) ;
-            }
-            i = i->next ;
+            fake_params[0] = LOCDWORD( mod_proc, i, PROCESS_ID ) ;
+            modproc_signal( my, fake_params ) ;
         }
         return 0 ;
     }
@@ -273,16 +277,12 @@ static int modproc_signal( INSTANCE * my, int * params )
     {
         if (( LOCDWORD( mod_proc, i, STATUS ) & ~STATUS_WAITING_MASK ) != STATUS_DEAD )
         {
-//            object_list_dirty = 1;
-//            if (instance_visible(i)) gr_mark_instance(i);
-
             switch ( params[1] )
             {
                 case S_KILL:
                 case S_KILL_FORCE:
                     if ( params[1] == S_KILL_FORCE || !( LOCDWORD( mod_proc, i, SIGNAL_ACTION ) & SMASK_KILL ) )
                         LOCDWORD( mod_proc, i, STATUS ) = STATUS_KILLED ;
-//                        LOCDWORD(i, STATUS) = (LOCDWORD(i, STATUS) & STATUS_WAITING_MASK) | STATUS_KILLED ;
                     break ;
 
                 case S_WAKEUP:
@@ -331,13 +331,6 @@ static int modproc_signal( INSTANCE * my, int * params )
                     printf( "Tipo de señal desconocida" ) ;
                     return 1 ;
             }
-            /*
-                        if (instance_visible(i))
-                        {
-                            instance_update_bbox(i);
-                            gr_mark_instance(i);
-                        }
-            */
         }
 
         if ( params[1] >= S_TREE )
@@ -477,7 +470,7 @@ static int modproc_signal_action( INSTANCE * my, int * params )
 
 static int modproc_signal_action3( INSTANCE * my, int * params )
 {
-    INSTANCE * i ;
+    INSTANCE * i, * ctx ;
 
     if ( params[0] == ALL_PROCESS )
     {
@@ -491,11 +484,10 @@ static int modproc_signal_action3( INSTANCE * my, int * params )
     }
     else if ( params[0] < FIRST_INSTANCE_ID )
     {
-        i = first_instance ;
-        while ( i )
+        ctx = NULL;
+        while ( ( i = instance_get_by_type( params[0], &ctx ) ) )
         {
-            if ( LOCDWORD( mod_proc, i, PROCESS_TYPE ) == params[0] ) modproc_signal_action( i, &params[1] ) ;
-            i = i->next ;
+            modproc_signal_action( i, &params[1] ) ;
         }
         return 0 ;
     }
@@ -526,7 +518,7 @@ static int modproc_let_me_alone( INSTANCE * my, int * params )
 
 static int modproc_get_id( INSTANCE * my, int * params )
 {
-    INSTANCE * ptr = first_instance ;
+    INSTANCE * ptr = first_instance, ** ctx ;
 
     if ( !params[0] )
     {
@@ -536,6 +528,7 @@ static int modproc_get_id( INSTANCE * my, int * params )
             ptr = instance_get( LOCDWORD( mod_proc, my, ID_SCAN ) ) ;
             if ( ptr ) ptr = ptr->next ;
         }
+
         while ( ptr )
         {
             if (( LOCDWORD( mod_proc, ptr, STATUS ) & ~STATUS_WAITING_MASK ) >= STATUS_RUNNING )
@@ -549,27 +542,30 @@ static int modproc_get_id( INSTANCE * my, int * params )
     }
 
     LOCDWORD( mod_proc, my, ID_SCAN ) = 0 ;
-    if ( LOCDWORD( mod_proc, my, TYPE_SCAN ) )
+    /* Check if already in scan by type and we reach limit */
+    ctx = ( INSTANCE ** ) LOCADDR( mod_proc, my, CONTEXT );
+/*
+    if ( !*ctx && LOCDWORD( mod_proc, my, TYPE_SCAN ) )
     {
-        ptr = instance_get( LOCDWORD( mod_proc, my, TYPE_SCAN ) ) ;
-        if ( LOCDWORD( mod_proc, ptr, PROCESS_TYPE ) != params[0] )
-            ptr = first_instance ;
-        else if ( ptr )
-            ptr = ptr->next ;
+        LOCDWORD( mod_proc, my, TYPE_SCAN ) = 0;
+        return 0;
+    }
+*/
+    /* Check if type change from last call */
+    if ( LOCDWORD( mod_proc, my, TYPE_SCAN ) != params[0] )
+    {
+        *ctx = NULL;
+        LOCDWORD( mod_proc, my, TYPE_SCAN ) = params[0];
     }
 
-    while ( ptr )
+    while ( ( ptr = instance_get_by_type( params[0], ctx ) ) )
     {
-        if ( LOCDWORD( mod_proc, ptr, PROCESS_TYPE ) == params[0] )
+        if ( /*ptr != my &&*/ ( LOCDWORD( mod_proc, ptr, STATUS ) & ~STATUS_WAITING_MASK ) >= STATUS_RUNNING )
         {
-            if (( LOCDWORD( mod_proc, ptr, STATUS ) & ~STATUS_WAITING_MASK ) >= STATUS_RUNNING )
-            {
-                LOCDWORD( mod_proc, my, TYPE_SCAN ) = LOCDWORD( mod_proc, ptr, PROCESS_ID );
-                return LOCDWORD( mod_proc, ptr, PROCESS_ID ) ;
-            }
+            return LOCDWORD( mod_proc, ptr, PROCESS_ID ) ;
         }
-        ptr = ptr->next ;
     }
+
     return 0 ;
 }
 

@@ -139,23 +139,23 @@ void init_c_type ()
         for (c = 0 ; c < 256 ; c++)
             c_lower[c] = c_upper[c] = c ;
 
-    set_c_upper  ("abcdefghijklmnopqrstuvwxyz",
-                  "ABCDEFGHIJKLMNOPQRSTUVWXYZ") ;
-    set_c_lower  ("ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-                  "abcdefghijklmnopqrstuvwxyz") ;
+    set_c_upper  ((const unsigned char *)"abcdefghijklmnopqrstuvwxyz",
+                  (const unsigned char *)"ABCDEFGHIJKLMNOPQRSTUVWXYZ") ;
+    set_c_lower  ((const unsigned char *)"ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+                  (const unsigned char *)"abcdefghijklmnopqrstuvwxyz") ;
 #ifdef RESPETAR_ACENTOS
-    set_c_upper  ("áéíóúñçàèìòùäëïöüýâêîôûæãåõ",
-                  "ÁÉÍÓÚÑÇÀÈÌÒÙÄËÏÖÜÝÂÊÎÔÛÆÃÅÕ") ;
-    set_c_lower  ("ÁÉÍÓÚÑÇÀÈÌÒÙÄËÏÖÜÝÂÊÎÔÛÆÃÅÕ",
-                  "áéíóúñçàèìòùäëïöüýâêîôûæãåõ") ;
+    set_c_upper  ((const unsigned char *)"áéíóúñçàèìòùäëïöüýâêîôûæãåõ",
+                  (const unsigned char *)"ÁÉÍÓÚÑÇÀÈÌÒÙÄËÏÖÜÝÂÊÎÔÛÆÃÅÕ") ;
+    set_c_lower  ((const unsigned char *)"ÁÉÍÓÚÑÇÀÈÌÒÙÄËÏÖÜÝÂÊÎÔÛÆÃÅÕ",
+                  (const unsigned char *)"áéíóúñçàèìòùäëïöüýâêîôûæãåõ") ;
 #else
-    set_c_upper  ("áéíóúñÑçÇàèìòùäëïöüýâêîôûæãåõÁÉÍÓÚ",
-                  "AEIOUNNCCAEIOUAEIOUYAEIOUÆAAOAEIOU") ;
-    set_c_lower  ("áéíóúñÑçÇàèìòùäëïöüýâêîôûæãåõÁÉÍÓÚ",
-                  "aeiounnccaeiouaeiouyaeiouÆaaoaeiou") ;
+    set_c_upper  ((const unsigned char *)"áéíóúñÑçÇàèìòùäëïöüýâêîôûæãåõÁÉÍÓÚ",
+                  (const unsigned char *)"AEIOUNNCCAEIOUAEIOUYAEIOUÆAAOAEIOU") ;
+    set_c_lower  ((const unsigned char *)"áéíóúñÑçÇàèìòùäëïöüýâêîôûæãåõÁÉÍÓÚ",
+                  (const unsigned char *)"aeiounnccaeiouaeiouyaeiouÆaaoaeiou") ;
 #endif
 
-    set_c_from  (" \t\n\r", CTYPE_SPACE) ;
+    set_c_from  ((const unsigned char *)" \t\n\r", CTYPE_SPACE) ;
 
     set_c_range ('0', '9', CTYPE_NUM) ;
 
@@ -165,11 +165,11 @@ void init_c_type ()
 
     set_c_range ('A', 'Z', CTYPE_ALPHA) ;
     set_c_range ('a', 'z', CTYPE_ALPHA) ;
-    set_c_from  ("áéíóúÁÉÍÓÚñÑçÇàèìòùÀÈÌÒÙäëïöüÄËÏÖÜÿýâêîôûÂÊÎÔÛ"
+    set_c_from  ((const unsigned char *)"áéíóúÁÉÍÓÚñÑçÇàèìòùÀÈÌÒÙäëïöüÄËÏÖÜÿýâêîôûÂÊÎÔÛ"
                  "æÆãåðõªºÃÅÐÕØ", CTYPE_ALPHA) ;
 
     set_c_as    (CTYPE_ALPHA, CTYPE_WORDCHAR) ;
-    set_c_from  ("_",         CTYPE_WORDCHAR) ;
+    set_c_from  ((const unsigned char *)"_",         CTYPE_WORDCHAR) ;
     set_c_as    (CTYPE_WORDCHAR, CTYPE_WORDFIRST) ;
 
     set_c_range ('0', '9', CTYPE_WORDCHAR) ;

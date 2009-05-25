@@ -53,7 +53,7 @@
 /* --------------------------------------------------------------------------- */
 
 extern void systext_color( int cfg, int cbg );
-extern void systext_puts( GRAPH * map, int x, int y, uint8_t * str, int len );
+extern void systext_puts( GRAPH * map, int x, int y, char * str, int len );
 
 /* --------------------------------------------------------------------------- */
 
@@ -658,7 +658,7 @@ static void show_var( DCB_VAR var, char * name, void * data, char * title, int i
         {
             if ( dcb.id[code].Code == var.ID )
             {
-                name = dcb.id[code].Name ;
+                name = ( char * ) dcb.id[code].Name ;
                 break ;
             }
         }
@@ -726,19 +726,19 @@ static void get_token()
             {
                 num = num * base + ( *token_ptr - '0' );
                 token.code = token.code * base + ( *token_ptr - '0' );
-                *token_ptr++;
+                token_ptr++;
             }
             if ( *token_ptr >= 'a' && *token_ptr <= 'f' && base > 10 )
             {
                 num = num * base + ( *token_ptr - 'a' + 10 );
                 token.code = token.code * base + ( *token_ptr - 'a' + 10 );
-                *token_ptr++;
+                token_ptr++;
             }
             if ( *token_ptr >= 'A' && *token_ptr <= 'F' && base > 10 )
             {
                 num = num * base + ( *token_ptr - 'A' + 10 );
                 token.code = token.code * base + ( *token_ptr - 'A' + 10 );
-                *token_ptr++;
+                token_ptr++;
             }
         }
         token.type = NUMBER;
@@ -798,11 +798,11 @@ static void get_token()
 
     for ( n = 0 ; n < dcb.data.NID ; n++ )
     {
-        if ( strcmp( dcb.id[n].Name, token.name ) == 0 )
+        if ( strcmp( ( char * )dcb.id[n].Name, token.name ) == 0 )
         {
             token.type = IDENTIFIER ;
             token.code = dcb.id[n].Code ;
-            strcpy( token.name, dcb.id[n].Name ) ;
+/*            strcpy( token.name, (char *)dcb.id[n].Name ) ; */
             return ;
         }
     }
@@ -1663,7 +1663,7 @@ static INSTANCE * findproc( INSTANCE * last, char * action, char * ptr )
 {
     INSTANCE * i = NULL;
     char * aptr;
-    int procno;
+    int procno = 0;
     int n;
 
     if ( *ptr )
@@ -1691,7 +1691,7 @@ static INSTANCE * findproc( INSTANCE * last, char * action, char * ptr )
             *aptr = 0;
 
             for ( n = 0 ; n < ( int )dcb.data.NID ; n++ )
-                if ( strcmp( dcb.id[n].Name, action ) == 0 )
+                if ( strcmp( ( char * )dcb.id[n].Name, action ) == 0 )
                     break;
             for ( procno = 0 ; procno < ( int )dcb.data.NProcs ; procno++ )
                 if ( dcb.proc[procno].data.ID == dcb.id[n].Code )
@@ -1719,16 +1719,14 @@ static INSTANCE * findproc( INSTANCE * last, char * action, char * ptr )
 
 static void console_do( const char * command )
 {
-    const char * ptr ;
-    char * aptr ;
+    char * ptr, * aptr ;
     char action[256] ;
     unsigned int var ;
-    int n ;
-    int procno ;
+    int n, procno = 0;
     PROCDEF * p = NULL ;
     INSTANCE * i = NULL ;
 
-    ptr = command ;
+    ptr = ( char * ) command ;
     while ( *ptr && *ptr != ' ' ) ptr++ ;
     strncpy( action, command, ptr - command ) ;
     action[ptr - command] = 0 ;

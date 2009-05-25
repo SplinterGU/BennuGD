@@ -34,6 +34,8 @@
 #include "offsets.h"
 #include "xstrings.h"
 
+#include <assert.h>
+
 /* ---------------------------------------------------------------------- */
 /* Interpreter's main module                                              */
 /* ---------------------------------------------------------------------- */
@@ -125,14 +127,16 @@ int instance_go_all()
             while ( i )
             {
                 status = LOCDWORD( i, STATUS );
-                // Si la instancia esta KILLED o DEAD o salio de algun comando debug, entonces vuelvo a ejecutarla
+                /* If instance is KILLED or DEAD or return from some debug command, then execute it again.
+                   No exec_hook is executed.
+                 */
                 if ( status == STATUS_KILLED || status == STATUS_DEAD || last_instance_run )
                 {
-                    // Run instance
+                    /* Run instance */
                 }
                 else if ( status == STATUS_RUNNING && LOCINT32( i, FRAME_PERCENT ) < 100 )
                 {
-                    // Run instance
+                    /* Run instance */
                     /* Hook */
                     if ( process_exec_hook_count )
                         for ( n = 0; n < process_exec_hook_count; n++ )
@@ -166,7 +170,7 @@ int instance_go_all()
 
             if ( must_exit ) break ;
 
-            /* Si ya se completo un frame: Dibujar, actualizar variables, etc. */
+            /* If frame is complete, then update internal vars and execute main hooks. */
 
             if ( !i_count && !force_debug )
             {
@@ -179,7 +183,6 @@ int instance_go_all()
                 {
                     status = LOCDWORD( i, STATUS );
                     if ( status == STATUS_RUNNING ) LOCINT32( i, FRAME_PERCENT ) -= 100 ;
-
                     LOCDWORD( i, SAVED_STATUS ) = status ;
 
                     if ( LOCINT32( i, SAVED_PRIORITY ) != LOCINT32( i, PRIORITY ) )
@@ -201,8 +204,6 @@ int instance_go_all()
 
                 continue ;
             }
-
-            /* NOTA: los procesos pueden haberse autodestruido tras su ejecución */
         }
     }
 
@@ -234,7 +235,7 @@ int instance_go( INSTANCE * r )
 
     if ( debug )
     {
-        printf( "***** INSTANCE %s(%d) ENTRY StackBase=%p StackPTR=%p\n", r->proc->name, LOCDWORD( r, PROCESS_ID ), r->stack, r->stack_ptr ) ;
+        printf( "***** INSTANCE %s(%d) ENTRY StackBase=%p StackPTR=%p\n", r->proc->name, LOCDWORD( r, PROCESS_ID ), (void *)r->stack, (void *)r->stack_ptr ) ;
         fflush( stdout );
     }
 
@@ -294,7 +295,7 @@ int instance_go( INSTANCE * r )
                 break ;
 
             case MN_PUSH:
-//            case MN_PUSH | MN_FLOAT:
+/*            case MN_PUSH | MN_FLOAT: */
                 *r->stack_ptr++ = ptr[1] ;
                 ptr += 2 ;
                 break ;
@@ -344,6 +345,8 @@ int instance_go( INSTANCE * r )
                 /* Process uses FRAME or locals, must create an instance */
                 i = instance_new( proc, r ) ;
 
+                assert ( i ) ;
+
                 for ( n = 0; n < proc->params; n++ )
                     PRIDWORD( i, 4 * n ) = r->stack_ptr[-proc->params+n] ;
 
@@ -353,7 +356,7 @@ int instance_go( INSTANCE * r )
                 LOCDWORD( r, STATUS ) |= STATUS_WAITING_MASK;
                 i->called_by   = r;
 
-                // Ejecuto la funcion/processo...
+                /* Ejecuto la funcion/processo... */
                 if ( *ptr == MN_CALL )
                 {
                     r->stack[0] |= STACK_RETURN_VALUE;
@@ -1987,8 +1990,8 @@ int instance_go( INSTANCE * r )
                 break ;
 
             case MN_NCALL:
-                *r->stack_ptr++ = ptr - r->code + 2 ; // Push next address
-                ptr = r->code + ptr[1] ; // Call function
+                *r->stack_ptr++ = ptr - r->code + 2 ; /* Push next address */
+                ptr = r->code + ptr[1] ; /* Call function */
                 r->call_level++;
                 break ;
 
@@ -2148,7 +2151,7 @@ int instance_go( INSTANCE * r )
 
         if ( r->stack_ptr < r->stack )
         {
-            fprintf( stderr, "ERROR: Runtime error in %s(%d) - Critical Stack Problem StackBase=%p StackPTR=%p\n", r->proc->name, LOCDWORD( r, PROCESS_ID ), r->stack, r->stack_ptr ) ;
+            fprintf( stderr, "ERROR: Runtime error in %s(%d) - Critical Stack Problem StackBase=%p StackPTR=%p\n", r->proc->name, LOCDWORD( r, PROCESS_ID ), (void *)r->stack, (void *)r->stack_ptr ) ;
             exit( 0 );
         }
 
@@ -2192,10 +2195,6 @@ break_all:
             instance_destroy( r );
             r = NULL ;
         }
-
-        /* Hook from */
-//        if (was_visible) object_list_dirty = 1;
-        /* Hook to */
     }
 
     /* Hook */

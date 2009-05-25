@@ -258,8 +258,6 @@ typedef struct          /* Cabecera general del fichero */
 __PACKED
 DCB_HEADER ;
 
-extern DCB_HEADER dcb ;
-
 typedef struct
 {
     char    magic[12];
@@ -268,10 +266,11 @@ typedef struct
 __PACKED
 dcb_signature;
 
-
 #ifdef _MSC_VER
 #pragma pack(pop)
 #endif
+
+extern DCB_HEADER dcb ;
 
 extern void sysprocs_fixup( void );
 extern int getid( char * name );

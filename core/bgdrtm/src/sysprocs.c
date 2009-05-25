@@ -155,11 +155,11 @@ static void get_token()
 
     for ( n = 0; n < dcb.data.NID; n++ )
     {
-        if ( strcmp( dcb.id[n].Name, token.name ) == 0 )
+        if ( strcmp( (const char *)dcb.id[n].Name, token.name ) == 0 )
         {
             token.type = IDENTIFIER ;
             token.code = dcb.id[n].Code ;
-            strcpy( token.name, dcb.id[n].Name ) ;
+            strcpy( token.name, (char *)dcb.id[n].Name ) ;
             return ;
         }
     }
@@ -234,7 +234,7 @@ static void get_var_info( DLVARFIXUP * varfixup, DCB_VAR * basevar, int nvars, c
     varfixup->elements = -1;
 
     get_token() ;
-    if ( token.type != IDENTIFIER ) return ; // Not a valid expression
+    if ( token.type != IDENTIFIER ) return ; /* Not a valid expression */
 
     /* Busca variable */
     for ( n = 0; n < nvars; n++ )
@@ -249,7 +249,7 @@ static void get_var_info( DLVARFIXUP * varfixup, DCB_VAR * basevar, int nvars, c
         }
     }
 
-    if ( n == nvars ) return ; // Error, no es variable
+    if ( n == nvars ) return ; /* Error, no es variable */
 
     for ( ;; )
     {
@@ -258,16 +258,16 @@ static void get_var_info( DLVARFIXUP * varfixup, DCB_VAR * basevar, int nvars, c
             DCB_VARSPACE * v ;
             DCB_VAR * var ;
 
-            if ( rvar.Type.BaseType[0] != TYPE_STRUCT ) return ; // not an struct
+            if ( rvar.Type.BaseType[0] != TYPE_STRUCT ) return ; /* not an struct */
 
             get_token() ;
-            if ( token.type != IDENTIFIER ) return ; // not a member
+            if ( token.type != IDENTIFIER ) return ; /* not a member */
 
             v = &dcb.varspace[rvar.Type.Members] ;
             var = dcb.varspace_vars[rvar.Type.Members] ;
             for ( n = 0; n < v->NVars; n++ ) if ( var[n].ID == token.code ) break ;
 
-            if ( n == v->NVars ) return ; // not a member
+            if ( n == v->NVars ) return ; /* not a member */
 
             rvar = var[n] ;
             rdata = ((uint8_t *)rdata) + var[n].Offset ;
@@ -280,20 +280,20 @@ static void get_var_info( DLVARFIXUP * varfixup, DCB_VAR * basevar, int nvars, c
         {
             int index;
 
-            if ( rvar.Type.BaseType[0] != TYPE_ARRAY ) return ; // not an array
+            if ( rvar.Type.BaseType[0] != TYPE_ARRAY ) return ; /* not an array */
 
             get_token() ;
-            if ( token.type != NUMBER ) return ; // not an integer
+            if ( token.type != NUMBER ) return ; /* not an integer */
             index = token.code;
 
-            if ( index < 0 ) return ; // Index less than zero
-            if ( index >= rvar.Type.Count[0] ) return ; // Index out of bounds
+            if ( index < 0 ) return ; /* Index less than zero */
+            if ( index >= rvar.Type.Count[0] ) return ; /* Index out of bounds */
 
             rvar.Type = treduce( rvar.Type ) ;
             rdata = ((uint8_t *) rdata ) + index * tsize( rvar.Type ) ;
 
             get_token() ;
-            if ( token.name[0] == ']' ) get_token() ; // Skip ]
+            if ( token.name[0] == ']' ) get_token() ; /* Skip ] */
 
             continue ;
         }
@@ -301,7 +301,9 @@ static void get_var_info( DLVARFIXUP * varfixup, DCB_VAR * basevar, int nvars, c
         varfixup->data_offset = ( void * ) rdata;
         varfixup->elements = rvar.Type.BaseType[0] == TYPE_ARRAY ? rvar.Type.Count[0] : 1;
         varfixup->size = tsize( rvar.Type ) / varfixup->elements;
-//        printf ("varfixup: %p var: %s offset: %p elements: %d size: %d\n", varfixup, varfixup->var, varfixup->data_offset, varfixup->elements, varfixup->size);
+/*
+        printf ("varfixup: %p var: %s offset: %p elements: %d size: %d\n", varfixup, varfixup->var, varfixup->data_offset, varfixup->elements, varfixup->size);
+*/
         break ;
     }
 }
@@ -341,7 +343,7 @@ int sysproc_add( char * name, char * paramtypes, int type, void * func )
     sysproc_new->paramtypes = paramtypes ;
     sysproc_new->params = strlen( paramtypes ) ;
     sysproc_new->type = type ;
-    sysproc_new->func = func ;
+    sysproc_new->func = ( SYSFUNC * ) func ;
     sysproc_new->id = getid( name ) ;
 
     sysproc_new++ ;
@@ -396,7 +398,7 @@ void sysproc_init()
 
     int             maxcode = 0 ;
 
-    char soname[1024] ;
+    char soname[__MAX_PATH] ;
 
 #if defined( WIN32 )
 #define DLLEXT      ".dll"
@@ -413,7 +415,7 @@ void sysproc_init()
     {
         filename = string_get( dcb.imports[n] ) ;
 
-        snprintf( soname, 1024, "%s" DLLEXT, filename );
+        snprintf( soname, __MAX_PATH, "%s" DLLEXT, filename );
 
         filename = soname ;
 

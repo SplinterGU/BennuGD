@@ -71,7 +71,7 @@ void sysprocs_fixup( void )
         {
             if (
                 proc->type == s->Type && proc->params == s->Params &&
-                s->Id == getid( proc->name ) && !strcmp( s->ParamTypes, proc->paramtypes ) )
+                s->Id == getid( proc->name ) && !strcmp( (const char *)s->ParamTypes, proc->paramtypes ) )
             {
                 proc->code = s->Code ;
                 break ;
@@ -159,7 +159,7 @@ static int load_file( const char * filename, int n )
     }
     file_close( fp ) ;
 
-    dcb.sourcefiles[n] = strdup( filename );
+    dcb.sourcefiles[n] = ( uint8_t * ) strdup( filename );
     dcb.sourcelines[n] = ( uint8_t ** ) lines ;
     dcb.sourcecount[n] = count ;
     return 1 ;
@@ -293,15 +293,15 @@ int dcb_load_from( file * fp, int offset )
     /* Recupera las zonas de datos globales */
 
     file_seek( fp, offset + dcb.data.OGlobal, SEEK_SET ) ;
-    file_read( fp, globaldata, dcb.data.SGlobal ) ;         // ****
+    file_read( fp, globaldata, dcb.data.SGlobal ) ;         /* **** */
 
     file_seek( fp, offset + dcb.data.OLocal, SEEK_SET ) ;
-    file_read( fp, localdata, dcb.data.SLocal ) ;           // ****
+    file_read( fp, localdata, dcb.data.SLocal ) ;           /* **** */
 
     if ( dcb.data.NLocStrings )
     {
         file_seek( fp, offset + dcb.data.OLocStrings, SEEK_SET ) ;
-        file_readUint32A( fp, localstr, dcb.data.NLocStrings ) ;
+        file_readUint32A( fp, (uint32_t *)localstr, dcb.data.NLocStrings ) ;
     }
 
     file_seek( fp, offset + dcb.data.OProcsTab, SEEK_SET ) ;
@@ -432,7 +432,7 @@ int dcb_load_from( file * fp, int offset )
     {
         char filename[__MAX_PATH] ;
 
-        dcb.sourcecount = ( int* )calloc( dcb.data.NSourceFiles, sizeof( int ) ) ;
+        dcb.sourcecount = ( uint32_t * ) calloc( dcb.data.NSourceFiles, sizeof( uint32_t ) ) ;
         dcb.sourcelines = ( uint8_t *** ) calloc( dcb.data.NSourceFiles, sizeof( char ** ) ) ;
         dcb.sourcefiles = ( uint8_t ** ) calloc( dcb.data.NSourceFiles, sizeof( char * ) ) ;
         file_seek( fp, offset + dcb.data.OSourceFiles, SEEK_SET ) ;
@@ -464,23 +464,23 @@ int dcb_load_from( file * fp, int offset )
 
         if ( dcb.proc[n].data.SPrivate )
         {
-            procs[n].pridata = ( int * )calloc( dcb.proc[n].data.SPrivate, sizeof( char ) ) ; // El size ya esta calculado en bytes
+            procs[n].pridata = ( int * )calloc( dcb.proc[n].data.SPrivate, sizeof( char ) ) ; /* El size ya esta calculado en bytes */
             file_seek( fp, offset + dcb.proc[n].data.OPrivate, SEEK_SET ) ;
-            file_read( fp, procs[n].pridata, dcb.proc[n].data.SPrivate ) ;      // ***
+            file_read( fp, procs[n].pridata, dcb.proc[n].data.SPrivate ) ;      /* *** */
         }
 
         if ( dcb.proc[n].data.SPublic )
         {
-            procs[n].pubdata = ( int * )calloc( dcb.proc[n].data.SPublic, sizeof( char ) ) ; // El size ya esta calculado en bytes
+            procs[n].pubdata = ( int * )calloc( dcb.proc[n].data.SPublic, sizeof( char ) ) ; /* El size ya esta calculado en bytes */
             file_seek( fp, offset + dcb.proc[n].data.OPublic, SEEK_SET ) ;
-            file_read( fp, procs[n].pubdata, dcb.proc[n].data.SPublic ) ;       // ***
+            file_read( fp, procs[n].pubdata, dcb.proc[n].data.SPublic ) ;       /* *** */
         }
 
         if ( dcb.proc[n].data.SCode )
         {
-            procs[n].code = ( int * ) calloc( dcb.proc[n].data.SCode, sizeof( char ) ) ; // El size ya esta calculado en bytes
+            procs[n].code = ( int * ) calloc( dcb.proc[n].data.SCode, sizeof( char ) ) ; /* El size ya esta calculado en bytes */
             file_seek( fp, offset + dcb.proc[n].data.OCode, SEEK_SET ) ;
-            file_readUint32A( fp, procs[n].code, dcb.proc[n].data.SCode / 4 ) ;
+            file_readUint32A( fp, (uint32_t *)procs[n].code, dcb.proc[n].data.SCode / sizeof(uint32_t) ) ;
 
             if ( dcb.proc[n].data.OExitCode )
                 procs[n].exitcode = dcb.proc[n].data.OExitCode ;
@@ -497,14 +497,14 @@ int dcb_load_from( file * fp, int offset )
         {
             procs[n].strings = ( int * )calloc( dcb.proc[n].data.NPriStrings, sizeof( int ) ) ;
             file_seek( fp, offset + dcb.proc[n].data.OPriStrings, SEEK_SET ) ;
-            file_readUint32A( fp, procs[n].strings, dcb.proc[n].data.NPriStrings ) ;
+            file_readUint32A( fp, (uint32_t *)procs[n].strings, dcb.proc[n].data.NPriStrings ) ;
         }
 
         if ( dcb.proc[n].data.NPubStrings )
         {
             procs[n].pubstrings = ( int * )calloc( dcb.proc[n].data.NPubStrings, sizeof( int ) ) ;
             file_seek( fp, offset + dcb.proc[n].data.OPubStrings, SEEK_SET ) ;
-            file_readUint32A( fp, procs[n].pubstrings, dcb.proc[n].data.NPubStrings ) ;
+            file_readUint32A( fp, (uint32_t *)procs[n].pubstrings, dcb.proc[n].data.NPubStrings ) ;
         }
 
         if ( dcb.proc[n].data.NPriVars )
@@ -538,7 +538,7 @@ int dcb_load_from( file * fp, int offset )
         sysproc_code_ref[n].Type = sdcb.Type ;
         sysproc_code_ref[n].Params = sdcb.Params ;
         sysproc_code_ref[n].Code = sdcb.Code ;
-        sysproc_code_ref[n].ParamTypes  = calloc( sdcb.Params + 1, sizeof( char ) );
+        sysproc_code_ref[n].ParamTypes = ( uint8_t * ) calloc( sdcb.Params + 1, sizeof( char ) );
         if ( sdcb.Params ) file_read( fp, sysproc_code_ref[n].ParamTypes, sdcb.Params ) ;
     }
 
@@ -554,7 +554,7 @@ char * getid_name( unsigned int code )
     unsigned int n ;
     for ( n = 0 ; n < dcb.data.NID ; n++ )
         if ( dcb.id[n].Code == code )
-            return dcb.id[n].Name ;
+            return (char *)dcb.id[n].Name ;
     return "(?)" ;
 }
 
@@ -564,7 +564,7 @@ int getid( char * name )
 {
     unsigned int n ;
     for ( n = 0 ; n < dcb.data.NID ; n++ )
-        if ( strcmp( dcb.id[n].Name, name ) == 0 )
+        if ( strcmp( (const char *)dcb.id[n].Name, name ) == 0 )
             return dcb.id[n].Code ;
     return -1 ;
 }

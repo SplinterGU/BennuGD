@@ -42,75 +42,63 @@
 
 /* ---------------------------------------------------------------------- */
 
-#define INSTANCE_MIN_PRIORITY    -2048
-#define INSTANCE_MAX_PRIORITY     2048
-#define PRIORITIES              (INSTANCE_MAX_PRIORITY - INSTANCE_MIN_PRIORITY + 1)
+#define INSTANCE_MIN_PRIORITY       -32768
+#define INSTANCE_MAX_PRIORITY       32767
+#define INSTANCE_NORMALIZE_PRIORITY 32768
 
 /* ---------------------------------------------------------------------- */
 /* Módulo de gestión de instancias, con las funciones de incialización y  */
 /* destrucción, duplicado, etc.                                           */
 /* ---------------------------------------------------------------------- */
 
-//#define HASH8(id)   ((((id)>>24)&0x000000ff)^(((id)>>16)&0x000000ff)^(((id)>>8)&0x000000ff)^((id)&0x000000ff))
-#define HASH8(id)   ((id)&0x000000ff)
+#define HASH(id)            (unsigned int)((id)&0x0000ffff)
+#define HASH_PRIORITY(id)   (unsigned int)(((id) + INSTANCE_NORMALIZE_PRIORITY) & 0x0000ffff)
+#define HASH_INSTANCE(id)   (unsigned int)(((( uint32_t )(id)) >> 2 ) & 0x0000ffff)
+#define HASH_SIZE           65536
 
 INSTANCE ** hashed_by_id = NULL;
 INSTANCE ** hashed_by_instance = NULL;
-
-/*
-INSTANCE ** hashed_by_priority = NULL;
 INSTANCE ** hashed_by_type = NULL;
-*/
+INSTANCE ** hashed_by_priority = NULL;
+
 INSTANCE * first_instance = NULL ;
-INSTANCE * last_instance  = NULL ;
 
 /* Priority lists */
 
-static INSTANCE * first_by_priority     = NULL ;
 static INSTANCE * iterator_by_priority  = NULL ;
-static int        iterator_reset        = 1;
-
-/* Dirty list: a list of all instances that need an update because
- * they changed its priority since the last execution
- */
-
-INSTANCE * dirty_list = NULL;
+static int        iterator_pos          = HASH_SIZE;
 
 static int instance_maxid =  FIRST_INSTANCE_ID ;
 
+static int instance_min_actual_prio = INSTANCE_MAX_PRIORITY ;
+static int instance_max_actual_prio = INSTANCE_MIN_PRIORITY ;
+
+/* ---------------------------------------------------------------------- */
+/* By id                                                                  */
 /* ---------------------------------------------------------------------- */
 
-void instance_add_to_list_by_id( INSTANCE * r )
+void instance_add_to_list_by_id( INSTANCE * r, uint32_t id )
 {
-    int hash = HASH8( LOCDWORD( r, PROCESS_ID ) );
-
-    if ( !hashed_by_id ) hashed_by_id = calloc( 256, sizeof( INSTANCE * ) );
-
-    r->prev_by_id = NULL ;
-    r->next_by_id = hashed_by_id[hash];
-    if ( r->next_by_id ) r->next_by_id->prev_by_id = r ;
-    hashed_by_id[hash] = r;
+    if ( !hashed_by_id ) hashed_by_id = calloc( HASH_SIZE, sizeof( INSTANCE * ) );
+    hashed_by_id[HASH( id )] = r;
 }
 
 /* ---------------------------------------------------------------------- */
 
-void instance_remove_from_list_by_id( INSTANCE * r )
+void instance_remove_from_list_by_id( INSTANCE * r, uint32_t id )
 {
-    int hash = HASH8( LOCDWORD( r, PROCESS_ID ) );
-
-    if ( r->prev_by_id ) r->prev_by_id->next_by_id = r->next_by_id ;
-    if ( r->next_by_id ) r->next_by_id->prev_by_id = r->prev_by_id ;
-
-    if ( hashed_by_id[hash] == r ) hashed_by_id[hash] = r->next_by_id ;
+    hashed_by_id[HASH( id )] = NULL;
 }
 
+/* ---------------------------------------------------------------------- */
+/* By instance                                                            */
 /* ---------------------------------------------------------------------- */
 
 void instance_add_to_list_by_instance( INSTANCE * r )
 {
-    int hash = HASH8((( uint32_t )r ) >> 2 );
+    unsigned int hash = HASH_INSTANCE( r );
 
-    if ( !hashed_by_instance ) hashed_by_instance = calloc( 256, sizeof( INSTANCE * ) );
+    if ( !hashed_by_instance ) hashed_by_instance = calloc( HASH_SIZE, sizeof( INSTANCE * ) );
 
     r->prev_by_instance = NULL ;
     r->next_by_instance = hashed_by_instance[hash];
@@ -122,7 +110,7 @@ void instance_add_to_list_by_instance( INSTANCE * r )
 
 void instance_remove_from_list_by_instance( INSTANCE * r )
 {
-    int hash = HASH8((( uint32_t )r ) >> 2 );
+    unsigned int hash = HASH_INSTANCE( r );
 
     if ( r->prev_by_instance ) r->prev_by_instance->next_by_instance = r->next_by_instance ;
     if ( r->next_by_instance ) r->next_by_instance->prev_by_instance = r->prev_by_instance ;
@@ -131,13 +119,117 @@ void instance_remove_from_list_by_instance( INSTANCE * r )
 }
 
 /* ---------------------------------------------------------------------- */
+/* By type                                                                */
+/* ---------------------------------------------------------------------- */
+
+void instance_add_to_list_by_type( INSTANCE * r, uint32_t type )
+{
+    unsigned int hash = HASH( type );
+
+    if ( !hashed_by_type ) hashed_by_type = calloc( HASH_SIZE, sizeof( INSTANCE * ) );
+
+    r->prev_by_type = NULL ;
+    r->next_by_type = hashed_by_type[hash];
+    if ( r->next_by_type ) r->next_by_type->prev_by_type = r ;
+    hashed_by_type[hash] = r;
+}
+
+/* ---------------------------------------------------------------------- */
+
+void instance_remove_from_list_by_type( INSTANCE * r, uint32_t type )
+{
+    unsigned int hash = HASH( type );
+
+    if ( r->prev_by_type ) r->prev_by_type->next_by_type = r->next_by_type ;
+    if ( r->next_by_type ) r->next_by_type->prev_by_type = r->prev_by_type ;
+
+    if ( hashed_by_type[hash] == r ) hashed_by_type[hash] = r->next_by_type ;
+}
+
+/* ---------------------------------------------------------------------- */
+/* By priority                                                            */
+/* ---------------------------------------------------------------------- */
+
+void instance_add_to_list_by_priority( INSTANCE * r, int32_t priority )
+{
+    unsigned int hash = HASH_PRIORITY( priority );
+
+    if ( !hashed_by_priority ) hashed_by_priority = calloc( HASH_SIZE, sizeof( INSTANCE * ) );
+
+    r->prev_by_priority = NULL ;
+    r->next_by_priority = hashed_by_priority[hash];
+    if ( r->next_by_priority ) r->next_by_priority->prev_by_priority = r ;
+    hashed_by_priority[hash] = r;
+    r->last_priority = priority ;
+
+    if ( priority < instance_min_actual_prio ) instance_min_actual_prio = priority ;
+    if ( priority > instance_max_actual_prio ) instance_max_actual_prio = priority ;
+}
+
+/* ---------------------------------------------------------------------- */
+
+void instance_remove_from_list_by_priority( INSTANCE * r )
+{
+    unsigned int hash = HASH_PRIORITY( r->last_priority );
+
+    /* Update iterator_by_priority if necessary */
+
+    if ( iterator_by_priority == r ) instance_next_by_priority() ;
+
+    if ( r->prev_by_priority ) r->prev_by_priority->next_by_priority = r->next_by_priority ;
+    if ( r->next_by_priority ) r->next_by_priority->prev_by_priority = r->prev_by_priority ;
+
+    if ( hashed_by_priority[hash] == r ) hashed_by_priority[hash] = r->next_by_priority ;
+
+    if ( !hashed_by_priority[hash] )
+    {
+        if ( r->last_priority == instance_min_actual_prio )
+        {
+            while ( instance_min_actual_prio < instance_max_actual_prio && !hashed_by_priority[ instance_min_actual_prio + INSTANCE_NORMALIZE_PRIORITY ] )
+                    instance_min_actual_prio++;
+        }
+
+        if ( r->last_priority == instance_max_actual_prio )
+        {
+            while ( instance_max_actual_prio > instance_min_actual_prio && !hashed_by_priority[ instance_max_actual_prio + INSTANCE_NORMALIZE_PRIORITY ] )
+                    instance_max_actual_prio--;
+        }
+    }
+}
+
+/* ---------------------------------------------------------------------- */
+
+/*
+ *  FUNCTION : instance_dirty
+ *
+ *  Adds an instance to the dirty instances list. This is a list of all
+ *  instances which priority changed since the last execution.
+ *
+ *  PARAMS :
+ *      i               Pointer to the instance
+ *
+ *  RETURN VALUE :
+ *      None
+ */
+
+void instance_dirty( INSTANCE * i )
+{
+    int32_t priority = LOCINT32( i, PRIORITY );
+
+    if ( priority < INSTANCE_MIN_PRIORITY ) priority = LOCINT32( i, PRIORITY ) = INSTANCE_MIN_PRIORITY;
+    if ( priority > INSTANCE_MAX_PRIORITY ) priority = LOCINT32( i, PRIORITY ) = INSTANCE_MAX_PRIORITY;
+
+    instance_remove_from_list_by_priority( i );
+    instance_add_to_list_by_priority( i, priority );
+}
+
+/* ---------------------------------------------------------------------- */
 
 /*
  *  FUNCTION : instance_get
  *
- *  Returns a instance, given its ID. This is actually
- *  slow, it should use a better search method.
- *
+ *  Returns a instance, given its ID.
+  *
  *  PARAMS :
  *      id              Integer ID of the instance
  *
@@ -147,17 +239,8 @@ void instance_remove_from_list_by_instance( INSTANCE * r )
 
 INSTANCE * instance_get( int id )
 {
-    INSTANCE * i ;
-
-    if ( !hashed_by_id || !id ) return NULL;
-    i = hashed_by_id[HASH8( id )];
-    while ( i )
-    {
-        if ( LOCDWORD( i, PROCESS_ID ) == ( uint32_t ) id ) return i ;
-        i = i->next_by_id ;
-    }
-
-    return NULL ;
+/*    if ( !hashed_by_id || !id ) return NULL; */
+    return ( hashed_by_id[HASH( id )] );
 }
 
 /* ---------------------------------------------------------------------- */
@@ -166,20 +249,42 @@ INSTANCE * instance_get( int id )
  *  FUNCTION : instance_getid
  *
  *  Allocate and return a free instance identifier code.
- *  It must be an even number. It should reuse already freed
- *  identifiers, but there is little point currently because
- *  an array is not used to access them.
  *
  *  PARAMS :
  *      None
  *
  *  RETURN VALUE :
  *      A new, unused instance identifier
+ *      -1 if error
  */
 
 int instance_getid()
 {
-    return instance_maxid++ ;
+    int id = instance_maxid++ ;
+
+    if ( !hashed_by_id ) hashed_by_id = calloc( HASH_SIZE, sizeof( INSTANCE * ) );
+
+    if ( id <= LAST_INSTANCE_ID && !hashed_by_id[ HASH( id ) ] ) return id;
+
+    if ( instance_maxid > LAST_INSTANCE_ID )
+    {
+        for ( instance_maxid = FIRST_INSTANCE_ID; instance_maxid <= LAST_INSTANCE_ID; instance_maxid++ )
+        {
+            if ( !hashed_by_id[HASH( instance_maxid )] ) return instance_maxid++;
+        }
+    }
+    else
+    {
+        for ( ; instance_maxid <= LAST_INSTANCE_ID; instance_maxid++ )
+        {
+            if ( !hashed_by_id[HASH( instance_maxid )] ) return instance_maxid++;
+        }
+        for ( instance_maxid = FIRST_INSTANCE_ID; instance_maxid < id; instance_maxid++ )
+        {
+            if ( !hashed_by_id[HASH( instance_maxid )] ) return instance_maxid++;
+        }
+    }
+    return -1;
 }
 
 /* ---------------------------------------------------------------------- */
@@ -206,15 +311,18 @@ INSTANCE * instance_duplicate( INSTANCE * father )
 {
     INSTANCE * r, * brother ;
     int n, pid ;
+    uint32_t type ;
+
+    if ( ( pid = instance_getid() ) == -1 ) return NULL;
 
     r = ( INSTANCE * ) calloc( 1, sizeof( INSTANCE ) ) ;
-    assert( r != 0 ) ;
+    assert( r ) ;
 
     r->pridata          = ( int * ) malloc( father->private_size + 4 ) ;
     r->pubdata          = ( int * ) malloc( father->public_size + 4 ) ;
     r->locdata          = ( int * ) malloc( local_size + 4 ) ;
     r->code             = father->code ;
-    r->codeptr          = father->code ; // Chequear si no es necesario duplicar el stack
+    r->codeptr          = father->codeptr ;
     r->exitcode         = father->exitcode ;
     r->errorcode        = father->errorcode ;
     r->proc             = father->proc ;
@@ -234,14 +342,12 @@ INSTANCE * instance_duplicate( INSTANCE * father )
     if ( father->public_size > 0 ) memcpy( r->pubdata, father->pubdata, r->public_size ) ;
     if ( local_size > 0 ) memcpy( r->locdata, father->locdata, local_size ) ;
 
-    /* Crea el proceso clónico como si lo hubiera llamado el padre */
-
     /* Inicializa datos de jerarquia */
 
-    pid = instance_getid() ;
+    /* Crea el proceso clónico como si lo hubiera llamado el padre */
 
+    type = LOCDWORD( father, PROCESS_TYPE ) ;
     LOCDWORD( r, PROCESS_ID )   = pid ;
-    LOCDWORD( r, PROCESS_TYPE ) = LOCDWORD( father, PROCESS_TYPE ) ;
     LOCDWORD( r, SON )          = 0 ;
     LOCDWORD( r, SMALLBRO )     = 0 ;
 
@@ -264,40 +370,26 @@ INSTANCE * instance_duplicate( INSTANCE * father )
     for ( n = 0; n < r->proc->pubstring_count; n++ ) string_use( PUBDWORD( r, r->proc->pubstrings[n] ) ) ; /* Strings publicas */
     for ( n = 0; n < local_strings; n++ ) string_use( LOCDWORD( r, localstr[n] ) ) ; /* Strings locales */
 
-    /* Añade la instancia al final de la lista */
+    r->prev = NULL ;
+    r->next = first_instance ;
+    if ( first_instance ) first_instance->prev = r;
+    first_instance = r ;
 
-    r->next    = 0 ;
-    r->prev    = last_instance ;
-    if ( r->prev ) r->prev->next = r ;
-
-    r->next_by_priority = NULL;
-    r->prev_by_priority = NULL;
-
-    last_instance = r ;
-    if ( !first_instance )
-    {
-        first_instance      = r ;
-        LOCDWORD( r, FATHER ) = 0 ;
-    }
-
-    instance_add_to_list_by_id( r );
+    instance_add_to_list_by_id( r, pid );
     instance_add_to_list_by_instance( r );
+    instance_add_to_list_by_type( r, type );
+    instance_add_to_list_by_priority( r, LOCINT32( r, PRIORITY ) );
 
     /* The called_by pointer should be set only when the caller
      * is waiting for this process to return */
 
     r->called_by = NULL;
 
-    r->stack = malloc( STACK_SIZE );
-//    memmove(r->stack, father->stack, (int)father->stack_ptr - (int)father->stack);
+    r->stack = malloc( father->stack[0] );
+    memmove(r->stack, father->stack, (int)father->stack_ptr - (int)father->stack);
     r->stack_ptr = &r->stack[1];
-    r->stack[0] = STACK_SIZE;
 
     /* Initialize list pointers */
-
-    r->next_dirty = dirty_list;
-    dirty_list    = r;
-    r->is_dirty   = 1;
 
     LOCDWORD( r, STATUS ) = STATUS_RUNNING;
 
@@ -331,8 +423,10 @@ INSTANCE * instance_new( PROCDEF * proc, INSTANCE * father )
     INSTANCE * r, * brother;
     int n, pid;
 
+    if ( ( pid = instance_getid() ) == -1 ) return NULL;
+
     r = ( INSTANCE * ) calloc( 1, sizeof( INSTANCE ) ) ;
-    assert( r != 0 ) ;
+    assert( r ) ;
 
     r->pridata          = ( int * ) malloc( proc->private_size + 4 ) ;
     r->pubdata          = ( int * ) malloc( proc->public_size + 4 ) ;
@@ -360,10 +454,8 @@ INSTANCE * instance_new( PROCDEF * proc, INSTANCE * father )
 
     /* Inicializa datos de jerarquia */
 
-    pid = instance_getid() ;
-
-    LOCDWORD( r, PROCESS_ID )   = pid ;
     LOCDWORD( r, PROCESS_TYPE ) = proc->type ;
+    LOCDWORD( r, PROCESS_ID )   = pid ;
     LOCDWORD( r, SON )          = 0 ;
     LOCDWORD( r, SMALLBRO )     = 0 ;
 
@@ -394,24 +486,15 @@ INSTANCE * instance_new( PROCDEF * proc, INSTANCE * father )
     for ( n = 0; n < proc->pubstring_count; n++ ) string_use( PUBDWORD( r, proc->pubstrings[n] ) ) ; /* Strings publicas */
     for ( n = 0; n < local_strings; n++ ) string_use( LOCDWORD( r, localstr[n] ) ) ; /* Strings locales */
 
-    /* Añade la instancia al final de la lista */
+    r->prev = NULL ;
+    r->next = first_instance ;
+    if ( first_instance ) first_instance->prev = r;
+    first_instance = r ;
 
-    r->next    = 0 ;
-    r->prev    = last_instance ;
-    if ( r->prev ) r->prev->next = r ;
-
-    r->next_by_priority = NULL;
-    r->prev_by_priority = NULL;
-
-    last_instance = r ;
-    if ( !first_instance )
-    {
-        first_instance      = r ;
-        LOCDWORD( r, FATHER ) = 0 ;
-    }
-
-    instance_add_to_list_by_id( r );
+    instance_add_to_list_by_id( r, pid );
     instance_add_to_list_by_instance( r );
+    instance_add_to_list_by_type( r, proc->type );
+    instance_add_to_list_by_priority( r, 0 );
 
     /* The called_by pointer should be set only when the caller
      * is waiting for this process to return */
@@ -423,10 +506,6 @@ INSTANCE * instance_new( PROCDEF * proc, INSTANCE * father )
     r->stack[0] = STACK_SIZE;
 
     /* Initialize list pointers */
-
-    r->next_dirty = dirty_list;
-    dirty_list    = r;
-    r->is_dirty   = 1;
 
     LOCDWORD( r, STATUS ) = STATUS_RUNNING;
 
@@ -513,7 +592,7 @@ void instance_destroy_all( INSTANCE * except )
 
 void instance_destroy( INSTANCE * r )
 {
-    INSTANCE * father = NULL, * bigbro = NULL, * smallbro = NULL;
+    INSTANCE * father, * bigbro, * smallbro;
     int n ;
 
     LOCDWORD( r, STATUS ) = STATUS_RUNNING;
@@ -528,7 +607,7 @@ void instance_destroy( INSTANCE * r )
     for ( n = 0 ; n < r->proc->pubstring_count ; n++ ) string_discard( PUBDWORD( r, r->proc->pubstrings[n] ) ) ; /* Strings publicas */
     for ( n = 0 ; n < local_strings ; n++ ) string_discard( LOCDWORD( r, localstr[n] ) ) ; /* Strings locales */
 
-    /* Actualiza árbol DIV */
+    /* Actualiza árbol de jerarquias */
 
     bigbro = instance_get( LOCDWORD( r, BIGBRO ) ) ; /* Tengo hermano mayor? */
     if ( bigbro ) LOCDWORD( bigbro, SMALLBRO ) = LOCDWORD( r, SMALLBRO ) ; /* El hermano menor de mi hermano mayor es mi hermano menor */
@@ -541,44 +620,17 @@ void instance_destroy( INSTANCE * r )
 
     /* Quita la instancia de la lista */
 
-    if ( r->prev ) r->prev->next  = r->next ;
+    if ( r->prev ) r->prev->next = r->next ;
     if ( r->next ) r->next->prev = r->prev ;
 
     if ( first_instance == r ) first_instance = r->next ;
-    if ( last_instance == r ) last_instance = r->prev ;
 
-    /* Remove the instance from the priority list */
+    /* Remove the instance from all hash lists */
 
-    if ( first_by_priority == r ) first_by_priority = r->next_by_priority;
-    if ( r->prev_by_priority ) r->prev_by_priority->next_by_priority = r->next_by_priority;
-    if ( r->next_by_priority ) r->next_by_priority->prev_by_priority = r->prev_by_priority;
-
-    instance_remove_from_list_by_id( r );
+    instance_remove_from_list_by_id( r, LOCDWORD( r, PROCESS_ID ) );
     instance_remove_from_list_by_instance( r );
-
-    /* Update iterator_by_priority if necessary */
-
-    if ( iterator_by_priority == r ) iterator_by_priority = r->next_by_priority;
-
-    /* Remove the instance from the dirty list */
-
-    if ( dirty_list == r )
-    {
-        dirty_list = r->next_dirty;
-    }
-    else if ( r->is_dirty )
-    {
-        INSTANCE * i = dirty_list;
-        while ( i )
-        {
-            if ( i->next_dirty == r )
-            {
-                i->next_dirty = r->next_dirty;
-                break;
-            }
-            i = i->next_dirty;
-        }
-    }
+    instance_remove_from_list_by_type( r, LOCDWORD( r, PROCESS_TYPE ) );
+    instance_remove_from_list_by_priority( r );
 
     if ( r->stack ) free( r->stack ) ;
 
@@ -607,7 +659,8 @@ int instance_exists( INSTANCE * r )
     INSTANCE * i ;
 
     if ( !hashed_by_instance || !r ) return 0;
-    i = hashed_by_instance[HASH8((( uint32_t )r )>>2 )];
+
+    i = hashed_by_instance[HASH_INSTANCE( r )];
     while ( i )
     {
         if ( r == i ) return 1 ;
@@ -637,122 +690,69 @@ int instance_exists( INSTANCE * r )
 
 INSTANCE * instance_next_by_priority()
 {
-    INSTANCE * i = NULL ;
-    INSTANCE * j = NULL ;
-    INSTANCE * l = NULL ;
-
-    if ( !iterator_by_priority )
-    {
-        // NULL will be returned once and then the list will be reset
-
-        if ( !iterator_reset )
-        {
-            iterator_reset = 1;
-            return NULL;
-        }
-        iterator_reset = 0;
-
-        // Add all dirty instances to its place at the list
-        i = dirty_list;
-
-        while ( i )
-        {
-            int prio = LOCINT32( i, PRIORITY );
-            // Check the priority value
-
-            if ( prio < INSTANCE_MIN_PRIORITY ) LOCINT32( i, PRIORITY ) = INSTANCE_MIN_PRIORITY;
-            if ( prio > INSTANCE_MAX_PRIORITY ) LOCINT32( i, PRIORITY ) = INSTANCE_MAX_PRIORITY;
-
-            // Remove the instance from the list
-
-            if ( i->prev_by_priority ) i->prev_by_priority->next_by_priority = i->next_by_priority;
-            if ( i->next_by_priority ) i->next_by_priority->prev_by_priority = i->prev_by_priority;
-
-            if ( first_by_priority == i ) first_by_priority = i->next_by_priority;
-
-            // Add the instance to the list. The easy case is when there is
-            // already some instance with the same priority.
-
-            i->prev_by_priority = NULL;
-            i->next_by_priority = NULL;
-
-            j = first_by_priority;
-
-            if ( !j )
-            {
-                // There are no instances in the list
-                first_by_priority   = i;
-            }
-            else
-            {
-                l = NULL;
-                while ( j )
-                {
-                    if ( !j->is_dirty && prio >= LOCINT32( j, PRIORITY ) )
-                    {
-                        i->prev_by_priority = j->prev_by_priority ;
-                        i->next_by_priority = j;
-                        if ( j->prev_by_priority ) j->prev_by_priority->next_by_priority = i;
-                        j->prev_by_priority = i;
-                        if ( first_by_priority == j ) first_by_priority = i;
-                        break;
-                    }
-                    l = j;
-                    j = j->next_by_priority ;
-                }
-
-                if ( !j )
-                {
-                    l->next_by_priority = i;
-                    i->prev_by_priority = l;
-                }
-            }
-            i->is_dirty = 0;
-            i = i->next_dirty;
-        }
-
-        // Reset the dirty list
-
-        dirty_list = NULL;
-
-        if ( first_by_priority )
-            iterator_by_priority = first_by_priority->next_by_priority;
-        else
-            iterator_by_priority = NULL;
-
-        return first_by_priority;
-    }
-
-    i = iterator_by_priority;
+    INSTANCE * r = iterator_by_priority ;
 
     if ( iterator_by_priority ) iterator_by_priority = iterator_by_priority->next_by_priority;
 
-    return i;
+    if ( !iterator_by_priority )
+    {
+        if ( !hashed_by_priority ) return NULL;
+
+        if ( iterator_pos < ( instance_min_actual_prio + INSTANCE_NORMALIZE_PRIORITY ) ||
+             iterator_pos > ( instance_max_actual_prio + INSTANCE_NORMALIZE_PRIORITY )
+           )
+            iterator_pos = instance_max_actual_prio + INSTANCE_NORMALIZE_PRIORITY + 1;
+
+        while ( --iterator_pos >= ( instance_min_actual_prio + INSTANCE_NORMALIZE_PRIORITY ) && !( iterator_by_priority = hashed_by_priority[iterator_pos] ) );
+    }
+
+    return ( r ) ;
 }
 
 /* ---------------------------------------------------------------------- */
 
 /*
- *  FUNCTION : instance_dirty
+ *  FUNCTION : instance_get_by_type
  *
- *  Adds an instance to the dirty instances list. This is a list of all
- *  instances which priority changed since the last execution.
+ *  Returns a instance, given its type.
  *
  *  PARAMS :
- *      i               Pointer to the instance
+ *      type            Integer type of the first instance
+ *      context         Pointer to an INSTANCE * use as context (internal use)
  *
  *  RETURN VALUE :
- *      None
+ *      Pointer to the found instance or NULL if not found
  */
 
-void instance_dirty( INSTANCE * i )
+/*
+context = NULL = start scan
+context = pointer = continue scan
+context = -1 = end scan
+*/
+
+INSTANCE * instance_get_by_type( uint32_t type, INSTANCE ** context )
 {
-    if ( !i->is_dirty )
+    INSTANCE * i;
+
+    if ( !context || !hashed_by_type || !type /* || type >= FIRST_INSTANCE_ID */ ) return NULL;
+
+    if ( !*context ) /* start scan */
+        i = hashed_by_type[HASH( type )];
+    else if ( ( i = *context ) == ( INSTANCE * ) -1 ) /* End scan */
+        return ( *context = NULL );
+
+    if ( i ) /* Valid instance, continue scan */
     {
-        i->next_dirty = dirty_list;
-        dirty_list = i;
-        i->is_dirty = 1;
+        if ( i->next_by_type )
+            *context = i->next_by_type ;
+        else
+            *context = ( INSTANCE * ) -1 ; /* Next call will be "end scan" */
+
+        return i;
     }
+
+    /* Here only if hashed_by_type[HASH( type )] is NULL */
+    return ( *context = NULL ) ; /* return is null, then end scan */
 }
 
 /* ---------------------------------------------------------------------- */

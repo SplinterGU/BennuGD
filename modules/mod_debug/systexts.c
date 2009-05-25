@@ -985,7 +985,7 @@ static char sysfont[][8][16] =
 /* --------------------------------------------------------------------------- */
 
 void systext_color( int cfg, int cbg );
-void systext_puts( GRAPH * map, int x, int y, uint8_t * str, int len );
+void systext_puts( GRAPH * map, int x, int y, char * str, int len );
 
 /* --------------------------------------------------------------------------- */
 
@@ -1068,11 +1068,11 @@ static int text_colors[] =
 
 /* --------------------------------------------------------------------------- */
 
-void systext_puts( GRAPH * map, int x, int y, uint8_t * str, int len )
+void systext_puts( GRAPH * map, int x, int y, char * str, int len )
 {
     while ( *str && len )
     {
-        if ( *str == ( uint8_t )'¬' )
+        if ( *str == '¬' )
         {
             uint8_t color = 0 ;
             str++ ;

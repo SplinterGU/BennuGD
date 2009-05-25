@@ -118,8 +118,7 @@ int compile_array_data( VARSPACE * n, segment * data, int size, int subsize, BAS
                 total_length = data->current - base_offset ;
                 if ( size && block * base > remaining )
                 {
-                    break;
-                    //compile_error (MSG_TOO_MANY_INIT) ;
+                    break; /* MSG_TOO_MANY_INIT */
                 }
                 count += block * base ;
                 if ( size ) remaining -= block * base ;
@@ -693,7 +692,7 @@ int compile_varspace( VARSPACE * n, segment * data, int additive, int copies, in
             }
             token_back() ;
 
-            // Da la vuelta a los índices ([3][2] -> [2][3])
+            /* Da la vuelta a los índices ([3][2] -> [2][3]) */
 
             for ( i = 0 ; i < type.depth ; i++ )
                 if ( type.chunk[i].type != TYPE_ARRAY ) break ;
@@ -775,7 +774,7 @@ int compile_varspace( VARSPACE * n, segment * data, int additive, int copies, in
                 token_next() ;
             }
 
-            // Da la vuelta a los índices [10][5] -> [5][10]
+            /* Da la vuelta a los índices [10][5] -> [5][10] */
 
             for ( i = 0 ; i < type.depth ; i++ )
                 if ( type.chunk[i].type != TYPE_ARRAY ) break ;
@@ -947,7 +946,7 @@ int compile_varspace( VARSPACE * n, segment * data, int additive, int copies, in
     n->last_offset = data->current ;
     total_length = data->current - base_offset ;
 
-    //n->size *= copies ;
+    /* n->size *= copies ; */
     while ( copies-- > 1 )
     {
         int i ;

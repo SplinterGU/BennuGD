@@ -239,10 +239,10 @@ int gr_save_fpg( int libid, const char * filename )
         }
     }
 
-    if ( bpp == 32 ) strcpy( header, F32_MAGIC );
-    else if ( bpp == 16 ) strcpy( header, F16_MAGIC );
-    else if ( bpp == 8 ) strcpy( header, FPG_MAGIC );
-    else if ( bpp == 1 ) strcpy( header, F01_MAGIC );
+    if ( bpp == 32 ) strcpy( ( char * ) header, F32_MAGIC );
+    else if ( bpp == 16 ) strcpy( ( char * ) header, F16_MAGIC );
+    else if ( bpp == 8 ) strcpy( ( char * ) header, FPG_MAGIC );
+    else if ( bpp == 1 ) strcpy( ( char * ) header, F01_MAGIC );
     else return 0; /* No maps for save */
 
     /* Create fpg */
@@ -263,10 +263,12 @@ int gr_save_fpg( int libid, const char * filename )
         uint8_t gamma[576];
 
         if ( !palette )
+        {
             if ( sys_pixel_format->palette )
                 palette = sys_pixel_format->palette->rgb;
             else
                 palette = ( rgb_component * ) default_palette;
+        }
 
         for ( n = 0 ; n < 256 ; n++ )
         {

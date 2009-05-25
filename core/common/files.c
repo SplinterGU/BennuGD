@@ -35,7 +35,9 @@
 
 #include "files.h"
 
-char * possible_paths[32] = { "", 0 } ;
+#define MAX_POSSIBLE_PATHS  32
+
+char * possible_paths[MAX_POSSIBLE_PATHS] = { "", 0 } ;
 
 int opened_files = 0;
 
@@ -53,11 +55,11 @@ int max_x_files = 0;
 
 int x_files_count = 0 ;
 
-/* Añade un nuevo archivo al PATH */
+/* Add new file to PATH */
 
 void xfile_init( int maxfiles )
 {
-    x_file = calloc( sizeof( XFILE ), maxfiles );
+    x_file = ( XFILE * ) calloc( sizeof( XFILE ), maxfiles );
     max_x_files = maxfiles;
 }
 
@@ -75,14 +77,14 @@ void file_add_xfile( file * fp, long offset, char * name, int size )
     ptr = x_file[x_files_count].name;
     while ( *ptr )
     {
-        if ( *ptr == '\\' ) *ptr = '/'; // Unix style
+        if ( *ptr == '\\' ) *ptr = '/'; /* Unix style */
         ptr++;
     }
 
     x_files_count++ ;
 }
 
-/* Lee un bloque de datos del fichero */
+/* Read a datablock from file */
 
 int file_read( file * fp, void * buffer, int len )
 {
@@ -112,7 +114,6 @@ int file_read( file * fp, void * buffer, int len )
     {
         int result = gzread( fp->gz, buffer, len ) ;
         fp->error = ( result < len );
-//        if (( fp->error = ( result < len ) ) != 0 ) result = 0 ;
         if ( result < 0 ) result = 0;
         return result ;
     }
@@ -120,7 +121,7 @@ int file_read( file * fp, void * buffer, int len )
     return fread( buffer, 1, len, fp->fp ) ;
 }
 
-/* Guarda una cadena "cuoteada" al disco */
+/* Save a unquoted string to a file */
 
 int file_qputs( file * fp, char * buffer )
 {
@@ -158,7 +159,7 @@ int file_qputs( file * fp, char * buffer )
     return file_write( fp, dest, optr - dest ) ;
 }
 
-/* Recupera una cadena de un fichero y la "descuotea" */
+/* Load a string from a file and unquoted it */
 
 int file_qgets( file * fp, char * buffer, int len )
 {
@@ -226,14 +227,14 @@ int file_qgets( file * fp, char * buffer, int len )
     return strlen( buffer ) ;
 }
 
-/* Guarda una cadena al disco */
+/* Save a string to file */
 
 int file_puts( file * fp, char * buffer )
 {
     return file_write( fp, buffer, strlen( buffer ) ) ;
 }
 
-/* Recupera una cadena de un fichero y la "descuotea" */
+/* Load a string from a file and unquoted it */
 
 int file_gets( file * fp, char * buffer, int len )
 {
@@ -283,42 +284,42 @@ int file_gets( file * fp, char * buffer, int len )
     return strlen( buffer ) ;
 }
 
-/* Escribe en un fichero binario un dato de tipo entero */
+/* Save an int data to a binary file */
 
 int file_writeSint8( file * fp, int8_t * buffer )
 {
-    return file_write( fp, buffer, 1 );
+    return file_write( fp, buffer, sizeof( uint8_t ) );
 }
 
 int file_writeUint8( file * fp, uint8_t * buffer )
 {
-    return file_write( fp, buffer, 1 );
+    return file_write( fp, buffer, sizeof( uint8_t ) );
 }
 
 int file_writeSint16( file * fp, int16_t * buffer )
 {
 #if __BYTEORDER == __LIL_ENDIAN
-    return file_write( fp, buffer, 2 );
+    return file_write( fp, buffer, sizeof( int16_t ) );
 #else
     file_write( fp, ( uint8_t * )buffer + 1, 1 );
-    return file_write( fp, ( uint8_t * )buffer + 0, 1 );
+    return file_write( fp, ( uint8_t * )buffer, 1 );
 #endif
 }
 
 int file_writeUint16( file * fp, uint16_t * buffer )
 {
-    return file_writeSint16( fp, buffer );
+    return file_writeSint16( fp, ( int16_t * ) buffer );
 }
 
 int file_writeSint32( file * fp, int32_t * buffer )
 {
 #if __BYTEORDER == __LIL_ENDIAN
-    return file_write( fp, buffer, 4 );
+    return file_write( fp, buffer, sizeof( int32_t ) );
 #else
     file_write( fp, ( uint8_t * )buffer + 3, 1 );
     file_write( fp, ( uint8_t * )buffer + 2, 1 );
     file_write( fp, ( uint8_t * )buffer + 1, 1 );
-    return file_write( fp, ( uint8_t * )buffer + 0, 1 );
+    return file_write( fp, ( uint8_t * )buffer, 1 );
 #endif
 }
 
@@ -327,7 +328,7 @@ int file_writeUint32( file * fp, uint32_t * buffer )
     return file_writeSint32( fp, ( int32_t * )buffer );
 }
 
-/* Escribe en un fichero binario un array de datos de tipo entero */
+/* Save an array to a binary file */
 
 int file_writeSint8A( file * fp, int8_t * buffer, int n )
 {
@@ -373,43 +374,42 @@ int file_writeUint32A( file * fp, uint32_t * buffer, int n )
     return file_writeSint32A( fp, ( int32_t * )buffer, n );
 }
 
-
-/* Lee de un fichero binario un dato de tipo entero */
+/* Read an int data from a binary file */
 
 int file_readSint8( file * fp, int8_t * buffer )
 {
-    return file_read( fp, buffer, 1 );
+    return file_read( fp, buffer, sizeof( int8_t ) );
 }
 
 int file_readUint8( file * fp, uint8_t * buffer )
 {
-    return file_read( fp, buffer, 1 );
+    return file_read( fp, buffer, sizeof( int8_t ) );
 }
 
 int file_readSint16( file * fp, int16_t * buffer )
 {
 #if __BYTEORDER == __LIL_ENDIAN
-    return file_read( fp, buffer, 2 );
+    return file_read( fp, buffer, sizeof( int16_t ) );
 #else
     file_read( fp, ( uint8_t * )buffer + 1, 1 );
-    return file_read( fp, ( uint8_t * )buffer + 0, 1 );
+    return file_read( fp, ( uint8_t * )buffer, 1 );
 #endif
 }
 
 int file_readUint16( file * fp, uint16_t * buffer )
 {
-    return file_readSint16( fp, buffer );
+    return file_readSint16( fp, (int16_t *)buffer );
 }
 
 int file_readSint32( file * fp, int32_t * buffer )
 {
 #if __BYTEORDER == __LIL_ENDIAN
-    return file_read( fp, buffer, 4 );
+    return file_read( fp, buffer, sizeof( int32_t ) );
 #else
     file_read( fp, ( uint8_t * )buffer + 3, 1 );
     file_read( fp, ( uint8_t * )buffer + 2, 1 );
     file_read( fp, ( uint8_t * )buffer + 1, 1 );
-    return file_read( fp, ( uint8_t * )buffer + 0, 1 );
+    return file_read( fp, ( uint8_t * )buffer, 1 );
 #endif
 }
 
@@ -418,7 +418,7 @@ int file_readUint32( file * fp, uint32_t * buffer )
     return file_readSint32( fp, ( int32_t * )buffer );
 }
 
-/* Lee de un fichero binario un array de datos de tipo entero */
+/* Read an array from a binary file */
 
 int file_readSint8A( file * fp, int8_t * buffer, int n )
 {
@@ -465,7 +465,7 @@ int file_readUint32A( file * fp, uint32_t * buffer, int n )
 }
 
 
-/* Escribe un bloque de datos en el fichero */
+/* Write a datablock to a file */
 
 int file_write( file * fp, void * buffer, int len )
 {
@@ -498,7 +498,7 @@ int file_write( file * fp, void * buffer, int len )
     return fwrite( buffer, 1, len, fp->fp ) ;
 }
 
-/* Devuelve el tamaño de un fichero */
+/* Return file size */
 
 int file_size( file * fp )
 {
@@ -511,7 +511,7 @@ int file_size( file * fp )
     {
         char buffer[8192];
         size = pos;
-        while ( !file_eof( fp ) ) size += file_read( fp, buffer, 8192 );
+        while ( !file_eof( fp ) ) size += file_read( fp, buffer, sizeof(buffer) );
     }
     else
     {
@@ -519,22 +519,11 @@ int file_size( file * fp )
         size = file_pos( fp ) ;
     }
     file_seek(fp, pos, SEEK_SET ) ;
-/*
-    if ( fp->type == F_GZFILE )
-    {
-        fprintf( stderr, "file_size: inválida en ficheros comprimidos\n" ) ;
-        return 0 ;
-    }
 
-    pos = ftell( fp->fp ) ;
-    fseek( fp->fp, 0, SEEK_END ) ;
-    size = ftell( fp->fp ) ;
-    fseek( fp->fp, pos, SEEK_SET ) ;
-*/
     return size ;
 }
 
-/* Devuelve la posición actual de un fichero */
+/* Get current file pointer position */
 
 int file_pos( file * fp )
 {
@@ -547,7 +536,7 @@ int file_pos( file * fp )
     return ftell( fp->fp ) ;
 }
 
-/* Posiciona el puntero de lectura/escritura dentro de un fichero */
+/* Set current file pointer position */
 
 int file_seek( file * fp, int pos, int where )
 {
@@ -577,7 +566,7 @@ int file_seek( file * fp, int pos, int where )
     return fseek( fp->fp, pos, where ) ;
 }
 
-/* Abre un fichero */
+/* Open file */
 
 static int open_raw( file * f, const char * filename, const char * mode )
 {
@@ -629,7 +618,7 @@ file * file_open( const char * filename, char * mode )
     while ( *filename )
     {
         *p++ = *filename++;
-        if ( p[-1] == '\\' ) p[-1] = '/'; // Unix style
+        if ( p[-1] == '\\' ) p[-1] = '/'; /* Unix style */
     }
     p[0] = '\0';
 
@@ -641,8 +630,8 @@ file * file_open( const char * filename, char * mode )
         return f ;
     }
 
-    /* Si archivo real no existe en disco */
-    if ( strchr( mode, 'r' ) && strchr( mode, 'b' ) &&  // Solo archivos read-only
+    /* if real file don't exists in disk */
+    if (  strchr( mode, 'r' ) &&  strchr( mode, 'b' ) &&  /* Only read-only files */
          !strchr( mode, '+' ) && !strchr( mode, 'w' ) )
     {
         for ( i = 0 ; i < x_files_count ; i++ )
@@ -672,7 +661,7 @@ file * file_open( const char * filename, char * mode )
     }
     *p = '\0';
 
-    /* Busca por el directorio de la extensión (directorio FPG para FPG) */
+    /* Use file extension for search in a directory named as it (for example: FPG dir for .FPG files) */
     if ( strchr( name, '.' ) )
     {
         strcpy( here, strrchr( name, '.' ) + 1 ) ;
@@ -700,19 +689,18 @@ file * file_open( const char * filename, char * mode )
     return 0 ;
 }
 
-/* Cierra un fichero */
+/* Close file */
 
 void file_close( file * fp )
 {
     if ( fp == NULL ) return;
-    /* if (fp->type == F_XFILE) fp->pos = x_file[fp->n].offset ; */
     if ( fp->type == F_FILE ) fclose( fp->fp ) ;
     if ( fp->type == F_GZFILE ) gzclose( fp->gz ) ;
     opened_files--;
     free( fp ) ;
 }
 
-/* Añade un nuevo directorio al PATH */
+/* Add a new dir to PATH */
 
 void file_addp( const char * path )
 {
@@ -724,13 +712,13 @@ void file_addp( const char * path )
     for ( n = 0 ; truepath[n] ; n++ ) if ( truepath[n] == '\\' ) truepath[n] = '/' ;
     if ( truepath[strlen( truepath )-1] != '/' ) strcat( truepath, "/" ) ;
 
-    for ( n = 0 ; n < 31 && possible_paths[n] ; n++ ) ;
+    for ( n = 0 ; n < MAX_POSSIBLE_PATHS - 1 && possible_paths[n] ; n++ ) ;
 
     possible_paths[n] = strdup( truepath ) ;
     possible_paths[n+1] = 0 ;
 }
 
-/* Devuelve cierto si existe el fichero */
+/* Check for file exists */
 
 int file_exists( const char * filename )
 {
@@ -745,7 +733,7 @@ int file_exists( const char * filename )
     return 0 ;
 }
 
-/* Devuelve cierto si se leyó más allá del fin del fichero */
+/* Check for file end is reached */
 
 int file_eof( file * fp )
 {
@@ -763,7 +751,7 @@ int file_eof( file * fp )
     return feof( fp->fp ) ? 1 : 0;
 }
 
-/* Devuelve el FILE * correspondiente al fichero */
+/* Get the FILE * of the file */
 
 FILE * file_fp( file * f )
 {

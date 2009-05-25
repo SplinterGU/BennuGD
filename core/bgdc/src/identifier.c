@@ -121,8 +121,8 @@ int identifier_add_as (const char * string, int code)
 		fprintf (stdout, "identifier_add: out of memory\n") ;
 		exit(1);
 	}
-	w->line = line_count ; // Save First appearance
-	w->f = current_file ;  // Save File info
+	w->line = line_count ; /* Save First appearance */
+	w->f = current_file ;  /* Save File info */
 	w->code = code ;
 	w->next = identifier_hash[hash] ;
 	identifier_hash[hash] = w ;
@@ -155,7 +155,7 @@ int identifier_search (const char * string)
 	return ptr ? ptr->code : 0 ;
 }
 
-// Return line for the identifier
+/* Return line for the identifier */
 int identifier_line (int code)
 {
 int i ;
@@ -175,7 +175,7 @@ int i ;
 	return 0 ;
 }
 
-// Return file for the identifier
+/* Return file for the identifier */
 int identifier_file (int code)
 {
     int i ;

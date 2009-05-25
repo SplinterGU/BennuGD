@@ -239,7 +239,6 @@ int gr_set_mode( int width, int height, int depth )
 {
     int n ;
     int sdl_flags = 0;
-    SDL_Surface *ico = NULL;
     int surface_width = width;
     int surface_height = height;
 
@@ -405,7 +404,9 @@ void __bgdexport( libvideo, module_initialize )()
 #endif
     apptitle = appname;
 
-    gr_init( 320, 200 ) ;
+    GLODWORD( libvideo, GRAPH_MODE ) = MODE_32BITS;
+
+    gr_init( scr_width, scr_height ) ;
 }
 
 /* --------------------------------------------------------------------------- */
