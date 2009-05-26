@@ -196,7 +196,7 @@ DCB_VAR * read_and_arrange_varspace( file * fp, int count )
         file_read( fp, &vars[n], sizeof( DCB_VAR ) ) ;
         ARRANGE_DWORD( &vars[n].ID );
         ARRANGE_DWORD( &vars[n].Offset );
-        for ( n1 = 0; n1 < MAX_TYPECHUNKS; n1++ ) ARRANGE_DWORD( &vars[n]->Type.Count[n1] );
+        for ( n1 = 0; n1 < MAX_TYPECHUNKS; n1++ ) ARRANGE_DWORD( &vars[n].Type.Count[n1] );
         ARRANGE_DWORD( &vars[n].Type.Members );
     }
 
