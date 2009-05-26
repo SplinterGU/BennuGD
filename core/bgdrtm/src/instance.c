@@ -152,7 +152,12 @@ void instance_remove_from_list_by_type( INSTANCE * r, uint32_t type )
 
 void instance_add_to_list_by_priority( INSTANCE * r, int32_t priority )
 {
-    unsigned int hash = HASH_PRIORITY( priority );
+    unsigned int hash ;
+
+    if ( priority < INSTANCE_MIN_PRIORITY ) priority = LOCINT32( r, PRIORITY ) = INSTANCE_MIN_PRIORITY;
+    if ( priority > INSTANCE_MAX_PRIORITY ) priority = LOCINT32( r, PRIORITY ) = INSTANCE_MAX_PRIORITY;
+
+    hash = HASH_PRIORITY( priority );
 
     if ( !hashed_by_priority ) hashed_by_priority = calloc( HASH_SIZE, sizeof( INSTANCE * ) );
 
@@ -214,13 +219,8 @@ void instance_remove_from_list_by_priority( INSTANCE * r )
 
 void instance_dirty( INSTANCE * i )
 {
-    int32_t priority = LOCINT32( i, PRIORITY );
-
-    if ( priority < INSTANCE_MIN_PRIORITY ) priority = LOCINT32( i, PRIORITY ) = INSTANCE_MIN_PRIORITY;
-    if ( priority > INSTANCE_MAX_PRIORITY ) priority = LOCINT32( i, PRIORITY ) = INSTANCE_MAX_PRIORITY;
-
     instance_remove_from_list_by_priority( i );
-    instance_add_to_list_by_priority( i, priority );
+    instance_add_to_list_by_priority( i, LOCINT32( i, PRIORITY ) );
 }
 
 /* ---------------------------------------------------------------------- */
