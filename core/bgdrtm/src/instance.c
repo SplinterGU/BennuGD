@@ -239,7 +239,7 @@ void instance_dirty( INSTANCE * i )
 
 INSTANCE * instance_get( int id )
 {
-/*    if ( !hashed_by_id || !id ) return NULL; */
+    if ( !hashed_by_id || !id ) return NULL;
     return ( hashed_by_id[HASH( id )] );
 }
 

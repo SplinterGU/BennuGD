@@ -1389,7 +1389,7 @@ static void console_instance_dump( INSTANCE * father, int indent )
     DCB_PROC * dcbproc ;
     char buffer[128] ;
     char line[128] ;
-    int n, nid ;
+    int n, nid, bigbro, son ;
 
     i = father ;
     if ( !father ) i = first_instance ;
@@ -1424,10 +1424,11 @@ static void console_instance_dump( INSTANCE * father, int indent )
 
     console_printf( "¬07%s", line ) ;
 
-    if ( !LOCDWORD( mod_debug, i, SON ) ) return ;
+    if ( !( son = LOCDWORD( mod_debug, i, SON ) ) ) return ;
 
-    next = instance_get( LOCDWORD( mod_debug, i, SON ) ) ;
-    if ( !next ) console_printf( "¬02\12**PANIC**\7 SON %d does not exist¬07", LOCDWORD( mod_debug, i, SON ) ) ;
+    next = instance_get( son ) ;
+    if ( !next ) console_printf( "¬02\12**PANIC**\7 SON %d does not exist¬07", son ) ;
+
     i = next ;
 
     while ( i )
@@ -1472,10 +1473,10 @@ static void console_instance_dump( INSTANCE * father, int indent )
             console_printf( "¬07%s", line ) ;
         }
 
-        if ( LOCDWORD( mod_debug, i, BIGBRO ) )
+        if ( ( bigbro = LOCDWORD( mod_debug, i, BIGBRO ) ) )
         {
-            next = instance_get( LOCDWORD( mod_debug, i, BIGBRO ) ) ;
-            if ( !next ) console_printf( "¬02\12**PANIC**\7 BIGBRO %d does not exist¬07", LOCDWORD( mod_debug, i, BIGBRO ) ) ;
+            next = instance_get( bigbro ) ;
+            if ( !next ) console_printf( "¬02\12**PANIC**\7 BIGBRO %d does not exist¬07", bigbro ) ;
             i = next ;
         }
         else
@@ -1489,12 +1490,13 @@ static void console_instance_dump( INSTANCE * father, int indent )
 static void console_instance_dump_all()
 {
     INSTANCE * i ;
+    int father;
 
     console_printf( "¬04INSTANCES TREE¬07\n\n" );
 
     for ( i = first_instance ; i ; i = i->next )
     {
-        if ( !LOCDWORD( mod_debug, i, FATHER ) || !instance_get( LOCDWORD( mod_debug, i, FATHER ) ) )
+        if ( !( father = LOCDWORD( mod_debug, i, FATHER )) || !instance_get( father ) )
         {
             console_instance_dump( i, 1 ) ;
         }
@@ -1513,6 +1515,7 @@ static void console_instance_dump_all_brief()
 
     console_printf( "¬04INSTANCES BRIEF LIST¬07\n\n" );
     console_printf( "¬04Id         Father     Status        Name¬07\n" );
+
 
     for ( i = first_instance ; i ; i = i->next )
     {
