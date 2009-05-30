@@ -301,7 +301,7 @@ int draw_instance_info( INSTANCE * i, REGION * region, int * z, int * drawme )
 
     int changed;
     int status;
-    int coordz;
+    int coordz, coordx, coordy;
 
     status = ( LOCDWORD( librender, i, STATUS ) & ~STATUS_WAITING_MASK ) ;
 
@@ -312,10 +312,16 @@ int draw_instance_info( INSTANCE * i, REGION * region, int * z, int * drawme )
     if ( LOCDWORD( librender, i, CTYPE ) == C_SCREEN && ( status == STATUS_RUNNING || status == STATUS_FROZEN ) )
         * drawme = 1;
 
+
+    coordx = LOCINT32( librender, i, COORDX );
+    coordy = LOCINT32( librender, i, COORDY );
+
+    RESOLXY( librender, i, coordx, coordy );
+
     changed =
         graph->modified                                                                           ||
-        LOCINT32( librender, i, SAVED_COORDX )        != LOCINT32( librender, i, COORDX )         ||
-        LOCINT32( librender, i, SAVED_COORDY )        != LOCINT32( librender, i, COORDY )         ||
+        LOCINT32( librender, i, SAVED_COORDX )        != coordx                                   ||
+        LOCINT32( librender, i, SAVED_COORDY )        != coordy                                   ||
         LOCINT32( librender, i, SAVED_COORDZ )        != coordz                                   ||
         LOCDWORD( librender, i, SAVED_GRAPHID )       != LOCDWORD( librender, i, GRAPHID )        ||
         LOCINT32( librender, i, SAVED_ANGLE )         != LOCINT32( librender, i, ANGLE )          ||
@@ -342,9 +348,9 @@ int draw_instance_info( INSTANCE * i, REGION * region, int * z, int * drawme )
 
         * z = coordz;
 
-        LOCINT32( librender, i, SAVED_COORDX )       = LOCINT32( librender, i, COORDX );
-        LOCINT32( librender, i, SAVED_COORDY )       = LOCINT32( librender, i, COORDY );
-        LOCINT32( librender, i, SAVED_COORDZ )       = coordz ;
+        LOCINT32( librender, i, SAVED_COORDX )       = coordx;
+        LOCINT32( librender, i, SAVED_COORDY )       = coordy;
+        LOCINT32( librender, i, SAVED_COORDZ )       = coordz;
         LOCDWORD( librender, i, SAVED_GRAPHID )      = LOCDWORD( librender, i, GRAPHID );
         LOCINT32( librender, i, SAVED_ANGLE )        = LOCINT32( librender, i, ANGLE );
         LOCDWORD( librender, i, SAVED_ALPHA )        = LOCDWORD( librender, i, ALPHA );

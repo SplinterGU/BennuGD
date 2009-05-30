@@ -629,9 +629,9 @@ int gr_rgb( int r, int g, int b )
             (( g >> sys_pixel_format->Gloss ) << sys_pixel_format->Gshift ) |
             (( b >> sys_pixel_format->Bloss ) << sys_pixel_format->Bshift ) ;
 
-    if ( !color ) return 1 ;
-
     if ( sys_pixel_format->depth == 32 ) return 0xff000000 | color ;
+
+    if ( !color ) return 1 ;
 
     return color ;
 }
