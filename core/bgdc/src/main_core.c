@@ -77,6 +77,9 @@ constants_def[] =
     { "MIN_BYTE"        , TYPE_BYTE , 0                   },
     { "MAX_BYTE"        , TYPE_BYTE , 0xff                },
 
+    { "MIN_CHAR"        , TYPE_BYTE , 0                   },
+    { "MAX_CHAR"        , TYPE_BYTE , 0xff                },
+
     { NULL              , 0         , 0                   }
 } ;
 
