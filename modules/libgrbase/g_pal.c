@@ -351,7 +351,14 @@ int find_nearest_color( PALETTE * pal, int first, int last, int r, int g, int b 
 
 int gr_map_rgb( PIXEL_FORMAT * format, int r, int g, int b )
 {
-    if ( format->depth > 8 )
+    if ( format->depth == 32 )
+    {
+        return  0xff000000                  |
+                (( r << 16 ) & 0x00ff0000 ) |
+                (( g <<  8 ) & 0x0000ff00 ) |
+                (( b       ) & 0x000000ff ) ;
+    }
+    else if ( format->depth == 16 )
     {
         return
             (( r >> format->Rloss ) << format->Rshift ) |
@@ -371,11 +378,10 @@ int gr_map_rgba( PIXEL_FORMAT * format, int r, int g, int b, int a )
 {
     if ( format->depth == 32 )
     {
-        return
-            (( r >> format->Rloss ) << format->Rshift ) |
-            (( g >> format->Gloss ) << format->Gshift ) |
-            (( b >> format->Bloss ) << format->Bshift ) |
-            (( a >> format->Aloss ) << format->Ashift ) ;
+        return  (( a << 24 ) & 0x00ff0000 ) |
+                (( r << 16 ) & 0x00ff0000 ) |
+                (( g <<  8 ) & 0x0000ff00 ) |
+                (( b       ) & 0x000000ff ) ;
     }
     else if ( format->depth == 16 )
     {
@@ -620,16 +626,24 @@ void gr_roll_palette( int color0, int num, int inc )
 }
 
 /* --------------------------------------------------------------------------- */
+/* This functions is used only for 16 and 32 bits                              */
 
 int gr_rgb( int r, int g, int b )
 {
     int color ;
 
+    if ( sys_pixel_format->depth == 32 )
+    {
+        return  0xff000000                  |
+                (( r << 16 ) & 0x00ff0000 ) |
+                (( g <<  8 ) & 0x0000ff00 ) |
+                (( b       ) & 0x000000ff ) ;
+    }
+
+    /* 16 bits */
     color = (( r >> sys_pixel_format->Rloss ) << sys_pixel_format->Rshift ) |
             (( g >> sys_pixel_format->Gloss ) << sys_pixel_format->Gshift ) |
             (( b >> sys_pixel_format->Bloss ) << sys_pixel_format->Bshift ) ;
-
-    if ( sys_pixel_format->depth == 32 ) return 0xff000000 | color ;
 
     if ( !color ) return 1 ;
 
@@ -637,6 +651,7 @@ int gr_rgb( int r, int g, int b )
 }
 
 /* --------------------------------------------------------------------------- */
+/* This functions is used only for 16 and 32 bits                              */
 
 int gr_rgba( int r, int g, int b, int a )
 {
@@ -644,17 +659,16 @@ int gr_rgba( int r, int g, int b, int a )
 
     if ( sys_pixel_format->depth == 32 )
     {
-        color = (( r >> sys_pixel_format->Rloss ) << sys_pixel_format->Rshift ) |
-                (( g >> sys_pixel_format->Gloss ) << sys_pixel_format->Gshift ) |
-                (( b >> sys_pixel_format->Bloss ) << sys_pixel_format->Bshift ) |
-                (( a >> sys_pixel_format->Aloss ) << sys_pixel_format->Ashift ) ;
+        return  (( a << 24 ) & 0x00ff0000 ) |
+                (( r << 16 ) & 0x00ff0000 ) |
+                (( g <<  8 ) & 0x0000ff00 ) |
+                (( b       ) & 0x000000ff ) ;
     }
-    else if ( sys_pixel_format->depth == 16 )
-    {
-        color = (( r >> sys_pixel_format->Rloss ) << sys_pixel_format->Rshift ) |
-                (( g >> sys_pixel_format->Gloss ) << sys_pixel_format->Gshift ) |
-                (( b >> sys_pixel_format->Bloss ) << sys_pixel_format->Bshift ) ;
-    }
+
+    /* 16 bits */
+    color = (( r >> sys_pixel_format->Rloss ) << sys_pixel_format->Rshift ) |
+            (( g >> sys_pixel_format->Gloss ) << sys_pixel_format->Gshift ) |
+            (( b >> sys_pixel_format->Bloss ) << sys_pixel_format->Bshift ) ;
 
     if ( !color ) return 1 ;
 

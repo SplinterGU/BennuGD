@@ -426,7 +426,7 @@ static void process_key_events()
         GLODWORD( libkey,  SCANCODE )  = 0 ;
     }
 
-    while ( SDL_PeepEvents( &e, 1, SDL_GETEVENT, SDL_KEYEVENTMASK ) > 0 )
+    while ( SDL_PeepEvents( &e, 1, SDL_GETEVENT, SDL_EVENTMASK(SDL_KEYDOWN)|SDL_EVENTMASK(SDL_KEYUP) ) > 0 )
     {
         switch ( e.type )
         {
@@ -449,7 +449,6 @@ static void process_key_events()
                 /* Almacena la pulsación de la tecla */
 
                 k = sdl_equiv[e.key.keysym.sym];
-//                if (!k) gr_con_printf ("Warning: symbol %d not defined", e.key.keysym.sym);
 
                 m = e.key.keysym.mod ;
 
