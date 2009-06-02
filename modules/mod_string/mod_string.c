@@ -205,8 +205,8 @@ static int modstring_stof( INSTANCE * my, int * params )
 
 static int modstring_asc( INSTANCE * my, int * params )
 {
-    const char * str = string_get( params[0] ) ;
-    int r = str ? *str : 0 ;
+    const unsigned char * str = ( unsigned char * ) string_get( params[0] ) ;
+    int r = str ? *str : '\0' ;
     string_discard( params[0] ) ;
     return r ;
 }
@@ -217,9 +217,9 @@ static int modstring_asc( INSTANCE * my, int * params )
 
 static int modstring_chr( INSTANCE * my, int * params )
 {
-    char buffer[2] = " " ; int r ;
-    buffer[0] = params[0] ;
-    r = string_new( buffer ) ;
+    unsigned char buffer[2] = " " ; int r ;
+    buffer[0] = ( unsigned char ) params[0] ;
+    r = string_new( ( char * ) buffer ) ;
     string_use( r ) ;
     return r ;
 }
