@@ -1410,9 +1410,8 @@ int instance_go( INSTANCE * r )
                 ptr += 2 ;
                 break ;
 
-            case MN_CHRSTR:
+            case MN_STRI2CHR:
                 n = string_char( r->stack_ptr[-2], r->stack_ptr[-1] ) ;
-                string_use( n ) ;
                 string_discard( r->stack_ptr[-2] );
                 r->stack_ptr-- ;
                 r->stack_ptr[-1] = n ;

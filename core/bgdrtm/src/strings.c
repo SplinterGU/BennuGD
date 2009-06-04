@@ -690,20 +690,16 @@ int string_comp( int code1, int code2 )
 int string_char( int n, int nchar )
 {
     const char * str = string_get( n ) ;
-    char buffer[2] ;
 
     assert( str ) ;
 
     if ( nchar < 0 )
     {
         nchar = strlen( str ) + nchar ;
-        if ( nchar < 0 ) return string_new( "" ) ;
+        if ( nchar < 0 ) return 0 ;
     }
 
-    buffer[0] = str[nchar] ;
-    buffer[1] = '\0' ;
-
-    return string_new( buffer ) ;
+    return str[nchar] ;
 }
 
 /****************************************************************************/

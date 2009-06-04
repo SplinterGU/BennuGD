@@ -1796,11 +1796,12 @@ expresion_result compile_factor()
                 if ( !typedef_is_integer( res.type ) ) compile_error( MSG_INTEGER_REQUIRED ) ;
                 if ( res.lvalue ) codeblock_add( code, mntype( res.type, 0 ) | MN_PTR, 0 ) ;
 
-                codeblock_add( code, MN_CHRSTR, 0 ) ;
+                codeblock_add( code, MN_STRI2CHR, 0 ) ;
 
                 token_next() ;
                 if ( token.type != IDENTIFIER || token.code != identifier_rightb ) compile_error( MSG_EXPECTED, "]" ) ; /* "]" */
-                part.type   = typedef_new( TYPE_STRING ) ;
+/*                part.type   = typedef_new( TYPE_STRING ) ; */
+                part.type   = typedef_new( TYPE_CHAR ) ;
                 part.lvalue = 0 ;
             }
             continue ;

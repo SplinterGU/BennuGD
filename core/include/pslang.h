@@ -159,7 +159,7 @@
 /* Funciones de cadena */
 
 #define MN_SUBSTR               (0x42| MN_0_PARAMS)
-#define MN_CHRSTR               (0x43| MN_0_PARAMS)
+#define MN_STRI2CHR             (0x43| MN_0_PARAMS)
 #define MN_INT2STR              (0x44| MN_1_PARAMS)
 #define MN_FLOAT2STR            (0x45| MN_1_PARAMS)
 #define MN_CHR2STR              (0x46| MN_1_PARAMS)
