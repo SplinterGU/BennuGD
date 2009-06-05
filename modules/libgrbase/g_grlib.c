@@ -167,7 +167,7 @@ static GRLIB * grlib_create()
 
 GRLIB * grlib_get( int libid )
 {
-    if ( libid < 0 || libid >= libs_last ) return 0 ;
+    if ( libid < 0 || libid >= libs_allocated ) return 0 ;
     return libs[ libid ] ;
 }
 
