@@ -378,7 +378,7 @@ int gr_map_rgba( PIXEL_FORMAT * format, int r, int g, int b, int a )
 {
     if ( format->depth == 32 )
     {
-        return  (( a << 24 ) & 0x00ff0000 ) |
+        return  (( a << 24 ) & 0xff000000 ) |
                 (( r << 16 ) & 0x00ff0000 ) |
                 (( g <<  8 ) & 0x0000ff00 ) |
                 (( b       ) & 0x000000ff ) ;
@@ -659,7 +659,7 @@ int gr_rgba( int r, int g, int b, int a )
 
     if ( sys_pixel_format->depth == 32 )
     {
-        return  (( a << 24 ) & 0x00ff0000 ) |
+        return  (( a << 24 ) & 0xff000000 ) |
                 (( r << 16 ) & 0x00ff0000 ) |
                 (( g <<  8 ) & 0x0000ff00 ) |
                 (( b       ) & 0x000000ff ) ;
