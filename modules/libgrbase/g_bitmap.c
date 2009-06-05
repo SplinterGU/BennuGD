@@ -23,11 +23,11 @@
 
 /* --------------------------------------------------------------------------- */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "libgrbase.h"
+#include "bitwise_map.h"
 
 /* --------------------------------------------------------------------------- */
 
@@ -35,13 +35,11 @@ uint32_t * map_code_bmp = NULL ;
 int map_code_allocated = 0 ;
 int map_code_last = 0;
 
+/*
 GRAPH * map_first = NULL;
+*/
 
 /* static int free_map_code = 1000 ; */
-
-#define bit_set(m,b)    (((uint32_t *)(m))[(b)>>5] |=   1<<((b)&0x1F))
-#define bit_clr(m,b)    (((uint32_t *)(m))[(b)>>5] &= ~(1<<((b)&0x1F)))
-#define bit_tst(m,b)    (((uint32_t *)(m))[(b)>>5] &   (1<<((b)&0x1F)))
 
 /* --------------------------------------------------------------------------- */
 
@@ -156,14 +154,14 @@ GRAPH * bitmap_new_ex( int code, int w, int h, int depth, void * data, int pitch
 
     gr->modified = 0;
     gr->info_flags = GI_EXTERNAL_DATA ;
-
+/*
     gr->next = map_first;
     gr->prev = NULL;
 
     if ( map_first ) map_first->prev = gr;
 
     map_first = gr;
-
+*/
     return gr ;
 }
 
@@ -216,14 +214,14 @@ GRAPH * bitmap_new( int code, int w, int h, int depth )
 
     gr->modified = 0;
     gr->info_flags = 0;
-
+/*
     gr->next = map_first;
     gr->prev = NULL;
 
     if ( map_first ) map_first->prev = gr;
 
     map_first = gr;
-
+*/
     return gr ;
 }
 
@@ -312,11 +310,11 @@ void bitmap_set_cpoint( GRAPH * map, uint32_t point, int x, int y )
 void bitmap_destroy( GRAPH * map )
 {
     if ( !map ) return ;
-
+/*
     if ( map->prev ) map->prev->next = map->next;
     if ( map->next ) map->next->prev = map->prev;
     if ( map_first == map ) map_first = map->next;
-
+*/
     if ( map->cpoints ) free( map->cpoints ) ;
 
     pal_destroy( map->format->palette );
@@ -324,6 +322,9 @@ void bitmap_destroy( GRAPH * map )
     if ( map->code > 999 ) bit_clr( map_code_bmp, map->code - 1000 );
 
     if ( map->data && !( map->info_flags & GI_EXTERNAL_DATA ) ) free( map->data ) ;
+
+    if ( map->format ) free ( map->format );
+
     free( map ) ;
 }
 
@@ -395,7 +396,7 @@ void bitmap_analize( GRAPH * bitmap )
  *      None
  *
  */
-
+/*
 void bitmap_16bits_conversion()
 {
     GRAPH * map = map_first;
@@ -408,7 +409,7 @@ void bitmap_16bits_conversion()
         map = map->next;
     }
 }
-
+*/
 /* --------------------------------------------------------------------------- */
 /* Returns the code of a new system library graph (1000+). Searchs
    for free slots if the program creates too many system maps */
@@ -436,7 +437,7 @@ int bitmap_next_code()
     {
         for ( n = ini; n < lim ; n++ )
         {
-            if ( map_code_bmp[n] != 0xFFFFFFFF ) // Aca hay 1 libre, busco cual es
+            if ( map_code_bmp[n] != ( uint32_t ) 0xFFFFFFFF ) // Aca hay 1 libre, busco cual es
             {
                 for ( nb = 0; nb < 32; nb++ )
                 {
@@ -462,7 +463,7 @@ int bitmap_next_code()
     map_code_allocated += 256 ;
     map_code_bmp = ( uint32_t * ) realloc( map_code_bmp, sizeof( uint32_t ) * ( map_code_allocated >> 5 ) );
 
-    memset( &map_code_bmp[( map_code_last >> 5 )], 0, 8 );  // 256 >> 5 = 8
+    memset( &map_code_bmp[( map_code_last >> 5 )], 0, 32 );  /* 256 >> 5 = 8 * sizeof ( uint32_t ) = 8 * 4 = 32 */
 
     // Devuelvo map_code_last e incremento en 1, ya que ahora tengo BLOCK_INCR mas que antes
     bit_set( map_code_bmp, map_code_last );

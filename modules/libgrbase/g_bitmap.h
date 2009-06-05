@@ -98,9 +98,10 @@ typedef struct _bitmap
     int16_t * blend_table;   /* Pointer to 16 bits blend table if any */
 
     /* Linked list of all bitmaps in memory */
-
+/*
     struct _bitmap * next;
     struct _bitmap * prev;
+*/
 }
 GRAPH;
 

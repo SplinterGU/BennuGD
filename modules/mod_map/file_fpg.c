@@ -57,7 +57,11 @@ static int gr_read_lib( file * fp )
     if ( libid < 0 ) return 0 ;
 
     lib = grlib_get( libid );
-    if ( !lib ) return 0 ;
+    if ( !lib )
+    {
+        grlib_destroy( libid ) ;
+        return 0 ;
+    }
 
     file_read( fp, header, 8 ) ;
 
@@ -65,9 +69,17 @@ static int gr_read_lib( file * fp )
     else if ( strcmp( header, F16_MAGIC ) == 0 ) bpp = 16 ;
     else if ( strcmp( header, FPG_MAGIC ) == 0 ) bpp = 8 ;
     else if ( strcmp( header, F01_MAGIC ) == 0 ) bpp = 1 ;
-    else return 0 ;
+    else
+    {
+        grlib_destroy( libid ) ;
+        return 0 ;
+    }
 
-    if ( bpp == 8 && !( pal = gr_read_pal_with_gamma( fp ) ) ) return 0 ;
+    if ( bpp == 8 && !( pal = gr_read_pal_with_gamma( fp ) ) )
+    {
+        grlib_destroy( libid ) ;
+        return 0 ;
+    }
 
     while ( !file_eof( fp ) )
     {

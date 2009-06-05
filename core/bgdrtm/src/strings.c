@@ -179,7 +179,7 @@ static void string_alloc( int count )
         exit( 0 );
     }
 
-    memset( &string_bmp[ lim ], '\0', count >> 5 );
+    memset( &string_bmp[ lim ], '\0', ( count >> 5 ) * sizeof ( uint32_t ) );
 }
 
 /****************************************************************************/
@@ -399,7 +399,7 @@ static int string_getid()
     {
         for ( n = ini; n < lim ; n++ )
         {
-            if ( string_bmp[n] != 0xFFFFFFFF ) /* Aca hay 1 libre, busco cual es */
+            if ( string_bmp[n] != ( uint32_t ) 0xFFFFFFFF ) /* Aca hay 1 libre, busco cual es */
             {
                 for ( nb = 0; nb < 32; nb++ )
                 {

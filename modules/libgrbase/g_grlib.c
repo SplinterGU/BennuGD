@@ -25,19 +25,83 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "libgrbase.h"
 
-#include <assert.h>
+#include "libgrbase.h"
+#include "bitwise_map.h"
 
 /* --------------------------------------------------------------------------- */
 
-int lib_count = 0 ;
 GRLIB * syslib = 0 ;
 
-static GRLIB * libs[ MAXLIBS ] ;
-static int lib_nextid = 0 ;
+static uint32_t * libs_bmp = NULL ;
+static int libs_allocated = 0 ;
+static int libs_last = 0;
+static GRLIB ** libs = NULL;
+
+/* --------------------------------------------------------------------------- */
 
 static GRLIB * grlib_create() ;
+
+/* --------------------------------------------------------------------------- */
+
+int grlib_newid()
+{
+    int n, nb, lim, ini ;
+
+    // Si tengo suficientes alocados, retorno el siguiente segun libs_last
+    if ( libs_last < libs_allocated )
+    {
+        if ( !bit_tst( libs_bmp, libs_last ) )
+        {
+            bit_set( libs_bmp, libs_last );
+            return libs_last++ ;
+        }
+    }
+
+    // Ya no tengo mas espacio, entonces busco alguno libre entre ~+32 desde el ultimo fijo y ~-32 del ultimo asignado
+
+    ini = ( libs_last < libs_allocated ) ? ( libs_last >> 5 ) : 0 ;
+    lim = ( libs_allocated >> 5 ) ;
+
+    while ( 1 )
+    {
+        for ( n = ini; n < lim ; n++ )
+        {
+            if ( libs_bmp[n] != ( uint32_t ) 0xFFFFFFFF ) // Aca hay 1 libre, busco cual es
+            {
+                for ( nb = 0; nb < 32; nb++ )
+                {
+                    if ( !bit_tst( libs_bmp + n, nb ) )
+                    {
+                        libs_last = ( n << 5 ) + nb ;
+                        bit_set( libs_bmp, libs_last );
+                        return libs_last++ ;
+                    }
+                }
+            }
+        }
+        if ( !ini ) break;
+        lim = ini;
+        ini = 0;
+    }
+
+    libs_last = libs_allocated ;
+
+    /* Increment space, no more slots availables
+       256 new maps available for alloc */
+
+    libs_allocated += 256 ;
+    libs_bmp = ( uint32_t * ) realloc( libs_bmp, sizeof( uint32_t ) * ( libs_allocated >> 5 ) );
+    memset( &libs_bmp[( libs_last >> 5 )], 0, 32 );  /* 256 >> 5 = 8 * sizeof ( uint32_t ) = 8 * 4 = 32 */
+
+    libs = ( GRAPH ** ) realloc( libs, sizeof( GRAPH * ) * libs_allocated );
+    memset( &libs[ libs_last ], 0, sizeof( GRAPH * ) * 256 );
+
+    /* Devuelvo libs_last e incremento en 1, ya que ahora tengo BLOCK_INCR mas que antes */
+    bit_set( libs_bmp, libs_last );
+
+    return libs_last++ ;
+}
 
 /* --------------------------------------------------------------------------- */
 /*
@@ -56,38 +120,13 @@ int grlib_new()
 {
     GRLIB * lib = grlib_create() ;
     int i ;
+
     if ( !lib ) return -1;
 
-    if ( lib_nextid == MAXLIBS && lib_count == lib_nextid )
-    {
-        free( lib->maps );
-        free( lib );
-        return -1 ;
-    }
+    i = grlib_newid();
+    libs[ i ] = lib;
 
-    lib_count++ ;
-
-    if ( lib_nextid < MAXLIBS && !libs[ lib_nextid ] )
-    {
-        libs[ lib_nextid ] = lib ;
-        return lib_nextid++ ;
-    }
-
-    for ( i = lib_nextid + 1; i < MAXLIBS && libs[ i ]; i++ );
-
-    if ( lib_nextid == MAXLIBS ) for ( i = 0; i < lib_nextid && libs[ i ]; i++ ) ;
-
-    if ( i != MAXLIBS && !libs[ i ] )
-    {
-        libs[ i ] = lib ;
-        lib_nextid = i + 1;
-        return i ;
-    }
-
-    free( lib->maps );
-    free( lib );
-
-    return -1 ; // No memory
+    return ( i );
 }
 
 /* --------------------------------------------------------------------------- */
@@ -128,7 +167,7 @@ static GRLIB * grlib_create()
 
 GRLIB * grlib_get( int libid )
 {
-    if ( libid < 0 || libid >= lib_nextid ) return 0 ;
+    if ( libid < 0 || libid >= libs_last ) return 0 ;
     return libs[ libid ] ;
 }
 
@@ -149,7 +188,6 @@ void grlib_destroy( int libid )
 {
     int i ;
     GRLIB * lib = grlib_get( libid ) ;
-
     if ( !lib ) return ;
 
     libs[ libid ] = 0 ;
@@ -159,9 +197,7 @@ void grlib_destroy( int libid )
     free( lib->maps ) ;
     free( lib ) ;
 
-    if ( lib_nextid == libid + 1 ) lib_nextid-- ;
-    lib_count-- ;
-    if ( !lib_count ) lib_nextid = 0 ;
+    bit_clr( libs_bmp, libid );
 }
 
 /* --------------------------------------------------------------------------- */
