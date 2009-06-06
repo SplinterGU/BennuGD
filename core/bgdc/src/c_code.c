@@ -2753,6 +2753,10 @@ expresion_result compile_subexpresion()
                 {
                     codeblock_add( code, MN_FLOAT2STR, 0 ) ;
                 }
+                else if ( typedef_base( right.type ) == TYPE_CHAR )
+                {
+                    codeblock_add( code, MN_CHR2STR, 0 );
+                }
                 else if ( !typedef_is_string( right.type ) )
                 {
                     compile_error( MSG_INCOMP_TYPE ) ;
@@ -2774,6 +2778,10 @@ expresion_result compile_subexpresion()
                 else if ( typedef_is_float( right.type ) )
                 {
                     codeblock_add( code, MN_FLOAT2STR, 0 ) ;
+                }
+                else if ( typedef_base( right.type ) == TYPE_CHAR )
+                {
+                    codeblock_add( code, MN_CHR2STR, 0 );
                 }
                 else if ( !typedef_is_string( right.type ) )
                 {
