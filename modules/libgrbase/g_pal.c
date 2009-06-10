@@ -634,7 +634,7 @@ int gr_rgb( int r, int g, int b )
 
     if ( sys_pixel_format->depth == 32 )
     {
-        return  0xff000000                  |
+        return                 0xff000000   |
                 (( r << 16 ) & 0x00ff0000 ) |
                 (( g <<  8 ) & 0x0000ff00 ) |
                 (( b       ) & 0x000000ff ) ;

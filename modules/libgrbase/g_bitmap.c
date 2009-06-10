@@ -317,13 +317,15 @@ void bitmap_destroy( GRAPH * map )
 */
     if ( map->cpoints ) free( map->cpoints ) ;
 
-    pal_destroy( map->format->palette );
-
     if ( map->code > 999 ) bit_clr( map_code_bmp, map->code - 1000 );
 
     if ( map->data && !( map->info_flags & GI_EXTERNAL_DATA ) ) free( map->data ) ;
 
-    if ( map->format ) free ( map->format );
+    if ( map->format )
+    {
+        if ( map->format->palette ) pal_destroy( map->format->palette ) ;
+        free ( map->format );
+    }
 
     free( map ) ;
 }

@@ -46,6 +46,7 @@ PALETTE * gr_read_pal( file * fp )
     if ( !sys_pixel_format->palette )
     {
         sys_pixel_format->palette = pal_new( pal );
+        pal_use( sys_pixel_format->palette );
         palette_changed = 1 ;
     }
 
@@ -147,20 +148,20 @@ int gr_load_pal( const char * filename )
     file * fp = file_open( filename, "rb" ) ;
     char header[8] ;
     PALETTE * r = NULL ;
-    int old_sys_pal = ( sys_pixel_format->palette != NULL ) ;
+    PALETTE * old_sys_pal = sys_pixel_format->palette ;
 
     if ( !fp ) return 0 ;
 
     file_read( fp, header, 8 ) ;
-    if ( strcmp( header, MAP_MAGIC ) == 0 )
+    if ( !strcmp( header, MAP_MAGIC ) )
     {
         file_seek( fp, 48, SEEK_SET ) ;
         r = gr_read_pal_with_gamma( fp ) ;
     }
     else if (
-        strcmp( header, FPG_MAGIC ) == 0 ||
-        strcmp( header, FNT_MAGIC ) == 0 ||
-        strcmp( header, PAL_MAGIC ) == 0 )
+        !strcmp( header, FPG_MAGIC ) ||
+        !strcmp( header, FNT_MAGIC ) ||
+        !strcmp( header, PAL_MAGIC ) )
     {
         r = gr_read_pal_with_gamma( fp ) ;
     }
@@ -172,18 +173,22 @@ int gr_load_pal( const char * filename )
         graph = gr_read_png( filename );
         if ( graph )
         {
-            r = graph->format->palette;
-            pal_use( graph->format->palette );
+            r = pal_new( graph->format->palette );
             bitmap_destroy( graph );
         }
     }
 
     if ( r )
     {
-        if ( old_sys_pal ) pal_destroy( sys_pixel_format->palette );
+        pal_use( r );
+        if ( old_sys_pal )
+        {
+            pal_destroy( old_sys_pal );
 
-        sys_pixel_format->palette = pal_new( r );
-        palette_changed = 1 ;
+            sys_pixel_format->palette = pal_new( r );
+            pal_use( sys_pixel_format->palette );
+            palette_changed = 1 ;
+        }
     }
 
     if ( fp ) file_close( fp ) ;
