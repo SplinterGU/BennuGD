@@ -106,7 +106,7 @@ static void dcb_typedef_enlarge( DCB_TYPEDEF * type )
     }
     if ( i >= MAX_TYPECHUNKS - 1 )
     {
-        printf( "Tipo de dato demasiado complejo\n" );
+        /* Datatype too much complex */
         return;
     }
     for ( i = MAX_TYPECHUNKS - 1 ; i > 0 ; i-- )
@@ -201,7 +201,7 @@ static int dcb_typedef_size( const DCB_TYPEDEF * type )
             }
             if ( maxvar == NULL )
             {
-                printf( "Estructura vacía\n" );
+                /* Void struct */
                 return 0;
             }
 
@@ -209,7 +209,7 @@ static int dcb_typedef_size( const DCB_TYPEDEF * type )
         }
 
         default:
-            printf( "Tipo desconocido\n" );
+            /* Unknow datatype */
             return 0;
     }
 }
@@ -276,7 +276,7 @@ static int sort_variables( void * data, int key_offset, int key_type, int elemen
             break;
 
         default:
-            printf( "Tipo de dato usado como clave de ordenación inválido\n" );
+            /* key error, invalid datatype */
             return 0;
     }
 
@@ -292,7 +292,7 @@ static int sort_variables( void * data, int key_offset, int key_type, int elemen
 
 static int modsort_sort( INSTANCE * my, int * params )
 {
-    // Get the description of the data to be sorted
+    /* Get the description of the data to be sorted */
 
     void *          data = ( void * )params[0];
     DCB_TYPEDEF *   type = ( DCB_TYPEDEF * )params[1];
@@ -300,30 +300,30 @@ static int modsort_sort( INSTANCE * my, int * params )
     int             vars = params[2];
     int             element_size;
 
-    // Is it valid?
+    /* Is it valid? */
 
     if ( type->BaseType[0] != TYPE_ARRAY )
     {
-        printf( "Sólo se permite ordenar un array de estructuras o valores\n" );
+        /* Only struct or value arrays are allowed */
         return 0;
     }
     if ( vars > 1 )
     {
-        printf( "Intento de ordenar una estructura con un sólo elemento\n" );
+        /* Sort of a 1 element struct */
         return 0;
     }
     if ( type->Count[0] < 2 )
     {
-        printf( "Intento de ordenar un array con un sólo elemento\n" );
+        /* Sort of a 1 element array */
         return 0;
     }
 
-    // Get the key type
+    /* Get the key type */
 
     dcb_typedef_reduce( &copy );
     element_size = dcb_typedef_size( &copy );
 
-    // If an struct or array, get its first element
+    /* If an struct or array, get its first element */
 
     for ( ;; )
     {
@@ -335,7 +335,7 @@ static int modsort_sort( INSTANCE * my, int * params )
             break;
     }
 
-    // Do the sorting
+    /* Do the sorting */
 
     return sort_variables( data, 0, copy.BaseType[0], element_size, type->Count[0] );
 }
@@ -347,7 +347,7 @@ static int modsort_sort( INSTANCE * my, int * params )
 
 static int modsort_ksort( INSTANCE * my, int * params )
 {
-    // Get the description of the data to be sorted
+    /* Get the description of the data to be sorted */
 
     void *          data = ( void * )params[0];
     DCB_TYPEDEF *   type = ( DCB_TYPEDEF * )params[1];
@@ -357,40 +357,39 @@ static int modsort_ksort( INSTANCE * my, int * params )
 
     void *          key_data = ( void * )params[3];
     DCB_TYPEDEF *   key_type = ( DCB_TYPEDEF * )params[4];
-/*    int             key_vars = params[5]; */
 
-    // Is it valid?
+    /* Is it valid? */
 
     if ( type->BaseType[0] != TYPE_ARRAY )
     {
-        printf( "Sólo se permite ordenar un array de estructuras o valores\n" );
+        /* Only struct or value arrays are allowed */
         return 0;
     }
     if ( vars > 1 )
     {
-        printf( "Intento de ordenar una estructura con un sólo elemento\n" );
+        /* Sort of a 1 element struct */
         return 0;
     }
     if ( type->Count[0] < 2 )
     {
-        printf( "Intento de ordenar un array con un sólo elemento\n" );
+        /* Sort of a 1 element array */
         return 0;
     }
 
-    // Check the key given
+    /* Check the key given */
 
     dcb_typedef_reduce( &copy );
     element_size = dcb_typedef_size( &copy );
 
     if (( uint8_t * )key_data > ( uint8_t* )data + element_size || key_data < data )
     {
-        printf( "Intento de ordenar usando una clave externa al primer elemento\n" );
+        /* Sort using an external key to first element */
         return 0;
     }
 
     copy = *key_type;
 
-    // If an struct or array, get its first element
+    /* If an struct or array, get its first element */
 
     for ( ;; )
     {
@@ -402,7 +401,7 @@ static int modsort_ksort( INSTANCE * my, int * params )
             break;
     }
 
-    // Do the sorting
+    /* Do the sorting */
 
     return sort_variables( data, ( uint8_t* )key_data - ( uint8_t* )data, copy.BaseType[0], element_size, type->Count[0] );
 }
@@ -416,7 +415,7 @@ static int modsort_ksort( INSTANCE * my, int * params )
 
 static int modsort_sort_n( INSTANCE * my, int * params )
 {
-    // Get the description of the data to be sorted
+    /* Get the description of the data to be sorted */
 
     void *          data = ( void * )params[0];
     DCB_TYPEDEF *   type = ( DCB_TYPEDEF * )params[1];
@@ -424,7 +423,7 @@ static int modsort_sort_n( INSTANCE * my, int * params )
     int             vars = params[2];
     int             element_size;
 
-    // Is it valid?
+    /* Is it valid? */
 
     if ( type->BaseType[0] == TYPE_POINTER )
     {
@@ -439,16 +438,16 @@ static int modsort_sort_n( INSTANCE * my, int * params )
     }
     if ( vars > 1 )
     {
-        printf( "Intento de ordenar una estructura con un sólo elemento\n" );
+        /* Sort of a 1 element struct */
         return 0;
     }
 
-    // Get the key type
+    /* Get the key type */
 
     dcb_typedef_reduce( &copy );
     element_size = dcb_typedef_size( &copy );
 
-    // If an struct or array, get its first element
+    /* If an struct or array, get its first element */
 
     for ( ;; )
     {
@@ -460,7 +459,7 @@ static int modsort_sort_n( INSTANCE * my, int * params )
             break;
     }
 
-    // Do the sorting
+    /* Do the sorting */
 
     return sort_variables( data, 0, copy.BaseType[0], element_size, params[3] );
 }
@@ -474,7 +473,7 @@ static int modsort_sort_n( INSTANCE * my, int * params )
 
 static int modsort_ksort_n( INSTANCE * my, int * params )
 {
-    // Get the description of the data to be sorted
+    /* Get the description of the data to be sorted */
 
     void *          data = ( void * )params[0];
     DCB_TYPEDEF *   type = ( DCB_TYPEDEF * )params[1];
@@ -484,9 +483,8 @@ static int modsort_ksort_n( INSTANCE * my, int * params )
 
     void *          key_data = ( void * )params[3];
     DCB_TYPEDEF *   key_type = ( DCB_TYPEDEF * )params[4];
-/*    int             key_vars = params[5]; */
 
-    // Is it valid?
+    /* Is it valid? */
 
     if ( type->BaseType[0] == TYPE_POINTER )
     {
@@ -495,8 +493,8 @@ static int modsort_ksort_n( INSTANCE * my, int * params )
     }
     if ( copy.BaseType[0] != TYPE_ARRAY )
     {
-        // If the type is not an array or a pointer, it is a
-        // pointer value already reduced by the bytecode
+        /* If the type is not an array or a pointer, it is a
+           pointer value already reduced by the bytecode */
 
         dcb_typedef_enlarge( &copy );
         copy.BaseType[0] = TYPE_ARRAY;
@@ -504,24 +502,24 @@ static int modsort_ksort_n( INSTANCE * my, int * params )
     }
     if ( vars > 1 )
     {
-        printf( "Intento de ordenar una estructura con un sólo elemento\n" );
+        /* Sort of a 1 element struct */
         return 0;
     }
 
-    // Check the key given
+    /* Check the key given */
 
     dcb_typedef_reduce( &copy );
     element_size = dcb_typedef_size( &copy );
 
     if (( uint8_t * )key_data > ( uint8_t* )data + element_size || key_data < data )
     {
-        printf( "Intento de ordenar usando una clave externa al primer elemento\n" );
+        /* Sort using an external key to first element */
         return 0;
     }
 
     copy = *key_type;
 
-    // If an struct or array, get its first element
+    /* If an struct or array, get its first element */
 
     for ( ;; )
     {
@@ -533,7 +531,7 @@ static int modsort_ksort_n( INSTANCE * my, int * params )
             break;
     }
 
-    // Do the sorting
+    /* Do the sorting */
 
     return sort_variables( data, ( uint8_t* )key_data - ( uint8_t* )data, copy.BaseType[0], element_size, params[6] );
 }
@@ -554,38 +552,45 @@ static double GetData( uint8_t *Data, int pos, int *params )
 
 static void QuickSort( uint8_t *Data, int inf, int sup, int *params )
 {
-    register int izq, der;
-    double mitad;
+    register int left, rigth;
+    double middle;
     uint8_t* x = ( uint8_t* )malloc( params[1] );
-    izq = inf;
-    der = sup;
-    mitad = GetData( Data, ( izq + der ) >> 1, params );
+    left = inf;
+    rigth = sup;
+    middle = GetData( Data, ( left + rigth ) >> 1, params );
     do
     {
-        while ( GetData( Data, izq, params ) < mitad && izq < sup ) izq++;
-        while ( mitad < GetData( Data, der, params ) && der > inf ) der--;
+        while ( GetData( Data, left, params ) < middle && left < sup ) left++;
+        while ( middle < GetData( Data, rigth, params ) && rigth > inf ) rigth--;
 
-        if ( izq <= der )
+        if ( left <= rigth )
         {
-            memcpy( x, &Data[izq*params[1]], params[1] );
-            memcpy( &Data[izq*params[1]], &Data[der*params[1]], params[1] );
-            memcpy( &Data[der*params[1]], x, params[1] );
-            izq++;
-            der--;
+            memcpy( x, &Data[left*params[1]], params[1] );
+            memcpy( &Data[left*params[1]], &Data[rigth*params[1]], params[1] );
+            memcpy( &Data[rigth*params[1]], x, params[1] );
+            left++;
+            rigth--;
         }
     }
-    while ( izq <= der );
+    while ( left <= rigth );
 
-    if ( inf < der ) QuickSort( Data, inf, der, params );
-    if ( izq < sup ) QuickSort( Data, izq, sup, params );
+    if ( inf < rigth ) QuickSort( Data, inf, rigth, params );
+    if ( left < sup ) QuickSort( Data, left, sup, params );
 }
 
 /*
  *  QSort:
+ *      pointer to array,
+ *      sizeof data,
+ *      numbers of data,
+ *      offset key,
+ *      sizeof key,
+ *      datatype (int=0, float=1)
  */
 
 static int modsort_quicksort( INSTANCE *my, int *params )
-{ //punteroalarray,tamañodato,numdatos,offsetadatoordenador,tamañodatoaordenar,tipodato(int=0,float=1)
+{
+
     uint8_t *Data = ( uint8_t * )params[0];
     QuickSort( Data, 0, params[2] - 1, params );
     return 1 ;

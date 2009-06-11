@@ -328,7 +328,6 @@ static int modproc_signal( INSTANCE * my, int * params )
                     break ;
 
                 default:
-                    printf( "Tipo de señal desconocida" ) ;
                     return 1 ;
             }
         }

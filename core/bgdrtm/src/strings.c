@@ -175,7 +175,7 @@ static void string_alloc( int count )
 
     if ( !string_ptr || !string_uct || !string_bmp )
     {
-        printf( "[CRITICAL] string_alloc: sin memoria\n" ) ;
+        fprintf( stderr, "ERROR: Runtime error - string_alloc: out of memory\n" ) ;
         exit( 0 );
     }
 
@@ -327,7 +327,6 @@ void string_load( void * fp, int ostroffs, int ostrdata, int nstrings, int total
 void string_use( int code )
 {
     string_uct[code]++ ;
-    /* printf( "[STRING] String %d used (count: %d)\n", code, string_uct[code] ) ; */
 }
 
 /****************************************************************************/
@@ -346,14 +345,9 @@ void string_discard( int code )
 {
     if ( code < 0 || code > string_allocated || !string_ptr[code] ) return;
 
-    if ( !string_uct[code] )
-    {
-        /* printf( "[STRING] string_discard: String %d already discarted\n", code ) ; */
-        return ;
-    }
+    if ( !string_uct[code] ) return ;
 
     string_uct[code]-- ;
-    /* printf( "[STRING] string_discard: String %d released (count: %d)\n", code, string_uct[code] ) ; */
 
     if ( !string_uct[code] )
     {
@@ -362,10 +356,7 @@ void string_discard( int code )
             free( string_ptr[code] ) ;
             string_ptr[code] = NULL ;
             bit_clr( string_bmp, code );
-            /* printf( "[STRING] string_discard: Memory for string %d freed\n", code ) ; */
         }
-        /* else
-            printf( "[STRING] string_discard: Memory for string %d don't freed, is a static string\n", code ) ; */
     }
 }
 
@@ -421,7 +412,6 @@ static int string_getid()
 
     /* Incremento espacio, no habia libres */
     string_alloc( BLOCK_INCR ) ;
-    /* printf( "[STRING] *PANIC Too many strings, allocating more space\n" ) ; */
 
     assert( !bit_tst( string_bmp, string_last_id ) );
 
@@ -445,8 +435,6 @@ int string_new( const char * ptr )
     assert( str ) ;
 
     id = string_getid() ;
-
-    /* printf( "[STRING] String %d created: \"%s\"\n", id, str ) ; */
 
     string_ptr[id] = str ;
     string_uct[id] = 0 ;
@@ -479,8 +467,6 @@ int string_newa( const char * ptr, unsigned count )
     str[count] = '\0';
     string_ptr[id] = str ;
     string_uct[id] = 0 ;
-
-    /* printf( "[STRING] (newa) String %d created: \"%s\"\n", id, str ) ; */
 
     return id ;
 }
@@ -547,8 +533,6 @@ int string_add( int code1, int code2 )
     string_ptr[id] = str3 ;
     string_uct[id] = 0 ;
 
-    /* printf( "[STRING] (add) String %d created: \"%s\"\n", id, str3 ) ; */
-
     return id ;
 }
 
@@ -571,8 +555,6 @@ int string_ptoa( void * n )
     id = string_getid() ;
     string_ptr[id] = str ;
     string_uct[id] = 0 ;
-
-    /* printf( "[STRING] (ptoa) String %d created: \"%s\"\n", id, str ) ; */
 
     return id ;
 }
@@ -608,8 +590,6 @@ int string_ftoa( float n )
     string_ptr[id] = str ;
     string_uct[id] = 0 ;
 
-    /* printf( "[STRING] (ftoa) String %d created: \"%s\"\n", id, str ) ; */
-
     return id ;
 }
 
@@ -633,8 +613,6 @@ int string_itoa( int n )
     string_ptr[id] = str ;
     string_uct[id] = 0 ;
 
-    /* printf( "[STRING] (itoa) String %d created: \"%s\"\n", id, str ) ; */
-
     return id ;
 }
 
@@ -657,8 +635,6 @@ int string_uitoa( unsigned int n )
     id = string_getid() ;
     string_ptr[id] = str ;
     string_uct[id] = 0 ;
-
-    /* printf( "[STRING] (uitoa) String %d created: \"%s\"\n", id, str ) ; */
 
     return id ;
 }
@@ -744,8 +720,6 @@ int string_substr( int code, int first, int len )
     n = string_getid() ;
     string_ptr[n] = ptr ;
     string_uct[n] = 0 ;
-
-    /* printf( "[STRING] (substr) String %d created: \"%s\"\n", n, ptr ) ; */
 
     return n ;
 }
@@ -838,8 +812,6 @@ int string_ucase( int code )
     string_ptr[id] = base ;
     string_uct[id] = 0 ;
 
-    /* printf( "[STRING] (ucase) String %d created: \"%s\"\n", id, base ) ; */
-
     return id ;
 }
 
@@ -873,8 +845,6 @@ int string_lcase( int code )
     id = string_getid() ;
     string_ptr[id] = base ;
     string_uct[id] = 0 ;
-
-    /* printf( "[STRING] (lcase) String %d created: \"%s\"\n", id, base ) ; */
 
     return id ;
 }
@@ -1057,8 +1027,6 @@ int string_pad( int code, int total, int align )
     id = string_getid() ;
     string_ptr[id] = str ;
     string_uct[id] = 0 ;
-
-    /* printf( "[STRING] (pad) String %d created: \"%s\"\n", id, str ) ; */
 
     return id ;
 }

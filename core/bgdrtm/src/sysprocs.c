@@ -334,7 +334,7 @@ int sysproc_add( char * name, char * paramtypes, int type, void * func )
 
     if ( sysproc_count >= MAX_SYSPROCS )
     {
-        printf( "Demasiadas funciones del sistema\n" ) ;
+        fprintf( stderr, "ERROR: Runtime error - too many system functions\n" ) ;
         return -1;
     }
 

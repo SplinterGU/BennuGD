@@ -312,7 +312,7 @@ int loadtype( file * fp, void * data, DCB_TYPEDEF * var, int dcbformat )
                         str = malloc( len + 1 );
                         if ( !str )
                         {
-                            printf( "loadtype: Sin memoria\n" );
+                            fprintf( stderr, "loadtype: out of memory\n" ) ;
                             return -1;
                         }
 

@@ -182,7 +182,7 @@ static int copytype( void * dst, void * src, DCB_TYPEDEF * var )
                 break;
 
             default:
-                fprintf( stderr, "ERROR: Runtime error - Can't possible copy this struct\n" ) ;
+                fprintf( stderr, "ERROR: Runtime error - Could not copy datatype\n" ) ;
                 exit( 1 );
                 break;
         }

@@ -177,7 +177,7 @@ int dcb_load( const char * filename )
     fp = file_open( filename, "rb0" ) ;
     if ( !fp )
     {
-        printf( "Error al abrir %s\n", filename ) ;
+        fprintf( stderr, "ERROR: Runtime error - Could not open file (%s)\n", filename ) ;
         exit( 1 );
     }
 
@@ -440,7 +440,7 @@ int dcb_load_from( file * fp, int offset )
         {
             file_readUint32( fp, &size ) ;
             file_read( fp, filename, size ) ;
-            if ( !load_file( filename, n ) ) printf( "[ENGINE] File %s not found", filename ) ;
+            if ( !load_file( filename, n ) ) fprintf( stdout, "WARNING: Runtime warning - file not found (%s)\n", filename ) ;
         }
     }
 
