@@ -139,6 +139,7 @@ static int copytype( void * dst, void * src, DCB_TYPEDEF * var )
             case TYPE_FLOAT:
             case TYPE_INT:
             case TYPE_DWORD:
+            case TYPE_POINTER:
                 memcpy( dst, src, 4 * count );
                 return 4 * count;
 
@@ -181,7 +182,7 @@ static int copytype( void * dst, void * src, DCB_TYPEDEF * var )
                 break;
 
             default:
-                printf( "No es posible copiar esta estructura\n" );
+                fprintf( stderr, "ERROR: Runtime error - Can't possible copy this struct\n" ) ;
                 exit( 1 );
                 break;
         }

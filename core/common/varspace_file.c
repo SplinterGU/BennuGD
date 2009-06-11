@@ -191,6 +191,7 @@ int savetype( file * fp, void * data, DCB_TYPEDEF * var, int dcbformat )
             case TYPE_FLOAT:
             case TYPE_INT:
             case TYPE_DWORD:
+            case TYPE_POINTER:
                 result += file_writeUint32A( fp, data, count ) * sizeof( uint32_t );
                 break;
 
@@ -282,6 +283,7 @@ int loadtype( file * fp, void * data, DCB_TYPEDEF * var, int dcbformat )
             case TYPE_FLOAT:
             case TYPE_INT:
             case TYPE_DWORD:
+            case TYPE_POINTER:
                 result += file_readUint32A( fp, data, count ) * sizeof( uint32_t );
                 break;
 
