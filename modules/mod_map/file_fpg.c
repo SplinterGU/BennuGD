@@ -54,13 +54,13 @@ static int gr_read_lib( file * fp )
     int st = 0;
 
     libid = grlib_new() ;
-    if ( libid < 0 ) return 0 ;
+    if ( libid < 0 ) return -1 ;
 
     lib = grlib_get( libid );
     if ( !lib )
     {
         grlib_destroy( libid ) ;
-        return 0 ;
+        return -1 ;
     }
 
     file_read( fp, header, 8 ) ;
@@ -72,13 +72,13 @@ static int gr_read_lib( file * fp )
     else
     {
         grlib_destroy( libid ) ;
-        return 0 ;
+        return -1 ;
     }
 
     if ( bpp == 8 && !( pal = gr_read_pal_with_gamma( fp ) ) )
     {
         grlib_destroy( libid ) ;
-        return 0 ;
+        return -1 ;
     }
 
     while ( !file_eof( fp ) )
@@ -98,7 +98,7 @@ static int gr_read_lib( file * fp )
         {
             grlib_destroy( libid ) ;
             if ( bpp == 8 ) pal_destroy( pal ) ; // Elimino la instancia inicial
-            return 0 ;
+            return -1 ;
         }
         memcpy( gr->name, chunk.name, 32 ) ;
         gr->name[31] = 0 ;
@@ -116,7 +116,7 @@ static int gr_read_lib( file * fp )
                 bitmap_destroy( gr ) ;
                 grlib_destroy( libid ) ;
                 if ( bpp == 8 ) pal_destroy( pal ) ;
-                return 0 ;
+                return -1 ;
             }
             for ( c = 0 ; c < gr->ncpoints ; c++ )
             {
@@ -154,7 +154,7 @@ static int gr_read_lib( file * fp )
 
                 case    8:
                 case    1:
-                    st = file_read( fp, line, gr->width );
+                    st = file_read( fp, line, gr->widthb );
                     break;
             }
 
@@ -163,7 +163,7 @@ static int gr_read_lib( file * fp )
                 bitmap_destroy( gr );
                 grlib_destroy( libid ) ;
                 if ( bpp == 8 ) pal_destroy( pal );
-                return 0 ;
+                return -1 ;
             }
         }
 
