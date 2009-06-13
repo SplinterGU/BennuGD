@@ -2115,7 +2115,10 @@ expresion_result compile_comparison_1()
             t = check_numeric_or_string_types( &left, &right ) ;
             if ( t != MN_FLOAT && t != MN_STRING ) t = MN_DWORD ;
 
-            if ( typedef_is_unsigned( left.type ) || typedef_is_unsigned( right.type ) )
+            if (
+                ( typedef_is_unsigned( left.type ) || typedef_is_unsigned( right.type ) ) &&
+                ( typedef_is_integer( left.type ) && typedef_is_integer( right.type ) )
+               )
                 is_unsigned = MN_UNSIGNED;
 
             res.value = 0 ;
