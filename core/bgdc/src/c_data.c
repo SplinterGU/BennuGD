@@ -32,7 +32,6 @@
 
 #include "bgdc.h"
 #include "xctype.h"
-#include "messages.c"
 
 /* ---------------------------------------------------------------------- */
 /* Este módulo contiene las funciones que compilan definiciones de datos: */

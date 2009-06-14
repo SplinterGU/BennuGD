@@ -26,7 +26,6 @@
 #include <string.h>
 
 #include "bgdc.h"
-#include "messages.c"
 
 static int max_id = 0 ;
 static int free_id[1024] ;

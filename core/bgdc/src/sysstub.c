@@ -26,7 +26,6 @@
 #include <string.h>
 
 #include "bgdc.h"
-#include "messages.c"
 
 /* Fast access sysproc list, by identifier code */
 

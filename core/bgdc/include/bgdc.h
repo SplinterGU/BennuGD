@@ -43,6 +43,7 @@
  *  HEADER FILES
  */
 
+#include <messages.h>
 #include <commons_defs.h>
 
 #include "files.h"

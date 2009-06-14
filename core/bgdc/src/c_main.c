@@ -33,8 +33,6 @@
 
 #include <bgddl.h>
 
-#include "messages.c"
-
 /* ---------------------------------------------------------------------- */
 
 extern void token_dump() ;

@@ -26,7 +26,6 @@
 #include <stdlib.h>
 
 #include "bgdc.h"
-#include "messages.c"
 
 /*
  *  FUNCTION : codeblock_postprocess

@@ -27,7 +27,6 @@
 #include "bgdc.h"
 
 #include "varspace.h"
-#include "messages.c"
 
 /* ---------------------------------------------------------------------- */
 /* Gestor de constantes                                                   */

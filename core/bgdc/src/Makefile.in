@@ -49,16 +49,15 @@ PROGRAMS = $(bin_PROGRAMS)
 am__bgdc_SOURCES_DIST = main.c main_core.c token.c identifier.c \
 	segment.c constants.c strings.c varspace.c procedure.c \
 	codeblock.c c_main.c c_data.c c_code.c c_debug.c dcbw.c \
-	messages.c error.c sysstub.c typedef.c ../../common/debug.c \
+	error.c sysstub.c typedef.c ../../common/debug.c \
 	../../common/files.c ../../common/xctype.c bgdc.rc
 am__objects_1 = main.$(OBJEXT) main_core.$(OBJEXT) token.$(OBJEXT) \
 	identifier.$(OBJEXT) segment.$(OBJEXT) constants.$(OBJEXT) \
 	strings.$(OBJEXT) varspace.$(OBJEXT) procedure.$(OBJEXT) \
 	codeblock.$(OBJEXT) c_main.$(OBJEXT) c_data.$(OBJEXT) \
 	c_code.$(OBJEXT) c_debug.$(OBJEXT) dcbw.$(OBJEXT) \
-	messages.$(OBJEXT) error.$(OBJEXT) sysstub.$(OBJEXT) \
-	typedef.$(OBJEXT) debug.$(OBJEXT) files.$(OBJEXT) \
-	xctype.$(OBJEXT)
+	error.$(OBJEXT) sysstub.$(OBJEXT) typedef.$(OBJEXT) \
+	debug.$(OBJEXT) files.$(OBJEXT) xctype.$(OBJEXT)
 @HAVE_WINDRES_FALSE@am_bgdc_OBJECTS = $(am__objects_1)
 @HAVE_WINDRES_TRUE@am_bgdc_OBJECTS = $(am__objects_1) bgdc.$(OBJEXT)
 bgdc_OBJECTS = $(am_bgdc_OBJECTS)
@@ -206,7 +205,7 @@ bgdc_LDFLAGS = $(COMMON_LDFLAGS) --as-needed
 SOURCE_FILES = main.c main_core.c token.c identifier.c segment.c \
               constants.c strings.c varspace.c procedure.c codeblock.c \
               c_main.c c_data.c c_code.c c_debug.c dcbw.c \
-              messages.c error.c \
+              error.c \
               sysstub.c typedef.c \
               ../../common/debug.c \
               ../../common/files.c ../../common/xctype.c
@@ -297,7 +296,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/identifier.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main_core.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/messages.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/procedure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/segment.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strings.Po@am__quote@

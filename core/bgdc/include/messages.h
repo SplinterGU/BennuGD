@@ -20,6 +20,8 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
  */
+#ifndef __MESSAGES_H
+#define __MESSAGES_H
 
 #define MSG_LIBRARY_NOT_FOUND                   "Library \"%s\" not found"
 #define MSG_FILE_NOT_FOUND                      "%s: file not found"
@@ -125,4 +127,6 @@
 
 #define MSG_ON_PARAM_ERR                        "ERROR/EXIT expected"
 #define MSG_GOTO_EXP                            "GOTO/JMP expected"
+
+#endif
 

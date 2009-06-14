@@ -26,7 +26,6 @@
 #include <string.h>
 
 #include "bgdc.h"
-#include "messages.c"
 
 extern int autodeclare ;
 

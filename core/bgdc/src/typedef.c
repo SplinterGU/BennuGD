@@ -26,7 +26,6 @@
 #include <string.h>
 
 #include "bgdc.h"
-#include "messages.c"
 
 TYPEDEF typedef_new( BASETYPE type )
 {

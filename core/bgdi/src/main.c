@@ -163,6 +163,7 @@ int main( int argc, char **argv )
                     "see COPYING for details\n\n"
                     "Usage: %s [options] <data code block file>[.dcb]\n\n"
                     "   -d       Activate DEBUG mode\n"
+                    "   -i dir   Adds the directory to the PATH\n"
                     "\nThis program is free software distributed under.\n\n"
                     "GNU General Public License published by Free Software Foundation.\n"
                     "Permission granted to distribute and/or modify as stated in the license\n"
