@@ -251,7 +251,8 @@ void include_file( int bprepro )
                 SKIP_ALL_UNTIL_LF_AND_COUNT_LINES;
                 if ( *source_ptr == '\n' ) line_count--;
             }
-            token_next();
+            else
+                token_next();
         }
 
         load_file( buffer );
