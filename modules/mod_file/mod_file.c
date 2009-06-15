@@ -135,6 +135,12 @@ static int modfile_fseek( INSTANCE * my, int * params )
     return file_seek(( file * )params[0], params[1], params[2] ) ;
 }
 
+static int modfile_frewind( INSTANCE * my, int * params )
+{
+    file_rewind(( file * )params[0] ) ;
+    return 1;
+}
+
 static int modfile_ftell( INSTANCE * my, int * params )
 {
     return file_pos(( file * )params[0] ) ;
@@ -218,8 +224,22 @@ static int modfile_feof( INSTANCE * my, int * params )
 
 static int modfile_exists( INSTANCE * my, int * params )
 {
-    int r ;
-    r = file_exists( string_get( params[0] ) ) ;
+    int r = file_exists( string_get( params[0] ) ) ;
+    string_discard( params[0] ) ;
+    return r ;
+}
+
+static int modfile_remove( INSTANCE * my, int * params )
+{
+    int r = file_remove( string_get( params[0] ) ) ;
+    string_discard( params[0] ) ;
+    return r ;
+}
+
+static int modfile_move( INSTANCE * my, int * params )
+{
+    int r = file_move( string_get( params[0] ), string_get( params[1] ) ) ;
+    string_discard( params[1] ) ;
     string_discard( params[0] ) ;
     return r ;
 }
@@ -230,22 +250,25 @@ static int modfile_exists( INSTANCE * my, int * params )
 DLSYSFUNCS  __bgdexport( mod_file, functions_exports)[] =
 {
     /* Ficheros */
-    { "SAVE"        , "SV++" , TYPE_INT   , modfile_save        },
-    { "LOAD"        , "SV++" , TYPE_INT   , modfile_load        },
-    { "FOPEN"       , "SI"   , TYPE_INT   , modfile_fopen       },
-    { "FCLOSE"      , "I"    , TYPE_INT   , modfile_fclose      },
-    { "FREAD"       , "IV++" , TYPE_INT   , modfile_fread       },
-    { "FREAD"       , "PII"  , TYPE_INT   , modfile_freadC      },
-    { "FWRITE"      , "IV++" , TYPE_INT   , modfile_fwrite      },
-    { "FWRITE"      , "PII"  , TYPE_INT   , modfile_fwriteC     },
-    { "FSEEK"       , "III"  , TYPE_INT   , modfile_fseek       },
-    { "FTELL"       , "I"    , TYPE_INT   , modfile_ftell       },
-    { "FLENGTH"     , "I"    , TYPE_INT   , modfile_filelength  },
-    { "FPUTS"       , "IS"   , TYPE_INT   , modfile_fputs       },
-    { "FGETS"       , "I"    , TYPE_STRING, modfile_fgets       },
-    { "FEOF"        , "I"    , TYPE_INT   , modfile_feof        },
-    { "FILE"        , "S"    , TYPE_STRING, modfile_file        },
-    { "FEXISTS"     , "S"    , TYPE_INT   , modfile_exists      } ,
-    { "FILE_EXISTS" , "S"    , TYPE_INT   , modfile_exists      } ,
-    { 0             , 0      , 0          , 0                   }
+    { "SAVE"        , "SV++" , TYPE_INT         , modfile_save        },
+    { "LOAD"        , "SV++" , TYPE_INT         , modfile_load        },
+    { "FOPEN"       , "SI"   , TYPE_INT         , modfile_fopen       },
+    { "FCLOSE"      , "I"    , TYPE_INT         , modfile_fclose      },
+    { "FREAD"       , "IV++" , TYPE_INT         , modfile_fread       },
+    { "FREAD"       , "PII"  , TYPE_INT         , modfile_freadC      },
+    { "FWRITE"      , "IV++" , TYPE_INT         , modfile_fwrite      },
+    { "FWRITE"      , "PII"  , TYPE_INT         , modfile_fwriteC     },
+    { "FSEEK"       , "III"  , TYPE_INT         , modfile_fseek       },
+    { "FREWIND"     , "I"    , TYPE_UNDEFINED   , modfile_frewind     },
+    { "FTELL"       , "I"    , TYPE_INT         , modfile_ftell       },
+    { "FLENGTH"     , "I"    , TYPE_INT         , modfile_filelength  },
+    { "FPUTS"       , "IS"   , TYPE_INT         , modfile_fputs       },
+    { "FGETS"       , "I"    , TYPE_STRING      , modfile_fgets       },
+    { "FEOF"        , "I"    , TYPE_INT         , modfile_feof        },
+    { "FILE"        , "S"    , TYPE_STRING      , modfile_file        },
+    { "FEXISTS"     , "S"    , TYPE_INT         , modfile_exists      } ,
+    { "FILE_EXISTS" , "S"    , TYPE_INT         , modfile_exists      } ,
+    { "FREMOVE"     , "S"    , TYPE_INT         , modfile_remove      } ,
+    { "FMOVE"       , "SS"   , TYPE_INT         , modfile_move        } ,
+    { 0             , 0      , 0                , 0                   }
 };

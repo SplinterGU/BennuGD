@@ -490,8 +490,7 @@ int file_write( file * fp, void * buffer, int len )
     if ( fp->type == F_GZFILE )
     {
         int result = gzwrite( fp->gz, buffer, len ) ;
-        if (( fp->error = ( result < 0 ) ) != 0 )
-            result = 0 ;
+        if (( fp->error = ( result < 0 ) ) != 0 ) result = 0 ;
         return ( result < len ) ? 0 : len ;
     }
 
@@ -564,6 +563,25 @@ int file_seek( file * fp, int pos, int where )
 
     assert( fp->fp );
     return fseek( fp->fp, pos, where ) ;
+}
+
+void file_rewind( file * fp )
+{
+    fp->error = 0;
+
+    switch ( fp->type )
+    {
+        case F_XFILE:
+            fp->pos = x_file[fp->n].offset ;
+            break;
+
+        case F_GZFILE:
+            gzrewind( fp->gz ) ;
+            break;
+
+        default:
+            rewind( fp->fp ) ;
+    }
 }
 
 /* Open file */
@@ -716,6 +734,20 @@ void file_addp( const char * path )
 
     possible_paths[n] = strdup( truepath ) ;
     possible_paths[n+1] = 0 ;
+}
+
+/* --- */
+
+int file_remove( const char * filename )
+{
+    return ( remove( filename ) );
+}
+
+/* --- */
+
+int file_move( const char * source_file, const char * target_file )
+{
+    return ( rename( source_file, target_file ) );
 }
 
 /* Check for file exists */

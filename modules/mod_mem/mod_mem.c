@@ -231,6 +231,11 @@ static int modmem_memseti( INSTANCE * my, int * params )
     return 1 ;
 }
 
+static int modmem_calloc( INSTANCE * my, int * params )
+{
+    return (( int ) calloc( params[0], params[1] ) ) ;
+}
+
 static int modmem_alloc( INSTANCE * my, int * params )
 {
     return (( int ) malloc( params[0] ) ) ;
@@ -252,6 +257,7 @@ static int modmem_free( INSTANCE * my, int * params )
 DLSYSFUNCS __bgdexport( mod_mem, functions_exports )[] =
 {
     /* Manipulacion de Memoria */
+    { "MEM_CALLOC"      , "II"    , TYPE_POINTER, modmem_calloc         },
     { "MEM_ALLOC"       , "I"     , TYPE_POINTER, modmem_alloc          },
     { "MEM_FREE"        , "P"     , TYPE_INT    , modmem_free           },
     { "MEM_REALLOC"     , "PI"    , TYPE_POINTER, modmem_realloc        },
@@ -264,6 +270,7 @@ DLSYSFUNCS __bgdexport( mod_mem, functions_exports )[] =
     { "MEM_AVAILABLE"   , ""      , TYPE_INT    , modmem_memory_free    },
     { "MEM_TOTAL"       , ""      , TYPE_INT    , modmem_memory_total   },
 
+    { "CALLOC"          , "II"    , TYPE_POINTER, modmem_calloc         },
     { "ALLOC"           , "I"     , TYPE_POINTER, modmem_alloc          },
     { "FREE"            , "P"     , TYPE_INT    , modmem_free           },
     { "REALLOC"         , "PI"    , TYPE_POINTER, modmem_realloc        },
