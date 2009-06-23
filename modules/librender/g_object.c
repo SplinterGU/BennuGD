@@ -220,7 +220,7 @@ void gr_update_objects_mark_rects( int restore, int dump )
 {
     CONTAINER * ctr = NULL, * next_ctr, * fix_ctr;
     OBJECT * object, * next_object ;
-    int ready;
+    int ready, key;
 
     if ( !sorted_object_list ) return ;
 
@@ -231,6 +231,8 @@ void gr_update_objects_mark_rects( int restore, int dump )
     {
         /* Get Next Container */
         next_ctr = ctr->next ;
+
+        key = ctr->key;
 
         next_object = ctr->first_in_key;
         while (( object = next_object ) )
@@ -244,11 +246,12 @@ void gr_update_objects_mark_rects( int restore, int dump )
 
                 /* Update key & get_info */
                 ready = object->ready;
+
                 /* NOTE: Returned bbox must be ordered !!! */
                 object->changed = ( *object->info )( object->what, &object->bbox, &object->z, &object->ready );
 
                 /* Move to correct container */
-                if ( object->z != ctr->key )
+                if ( object->z != key )
                 {
                     /* Remove from list */
                     if ( object->next ) object->next->prev = object->prev;
@@ -259,7 +262,7 @@ void gr_update_objects_mark_rects( int restore, int dump )
 
                     /* Get new or exist container */
                     fix_ctr = get_container( object->z );
-                    if ( !fix_ctr ) continue; // Error
+                    if ( !fix_ctr ) continue; /* Error */
 
                     /* Put new object first */
                     if ( fix_ctr->first_in_key ) fix_ctr->first_in_key->prev = object;
@@ -271,7 +274,7 @@ void gr_update_objects_mark_rects( int restore, int dump )
                 }
 
                 if (
-                    ( object->z != ctr->key ) ||
+                    ( object->z != key ) ||
                     ( object->ready ^ ready ) ||
                     object->changed ||
                     object->bbox.x2 != object->bbox_saved.x2 || object->bbox.x != object->bbox_saved.x ||
