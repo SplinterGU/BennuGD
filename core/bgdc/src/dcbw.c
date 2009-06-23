@@ -481,6 +481,8 @@ int dcb_save( const char * filename, int options, const char * stubname )
         VARIABLE * var;
         DCB_VAR v;
 
+        memset (&v, '\0', sizeof(v));
+
         var = &dcb_orig_varspace[n]->vars[0];
 
         for ( i = 0; i < dcb_orig_varspace[n]->count; i++, var++ )

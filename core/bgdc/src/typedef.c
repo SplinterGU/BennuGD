@@ -31,6 +31,8 @@ TYPEDEF typedef_new( BASETYPE type )
 {
     TYPEDEF t ;
 
+    memset (&t, '\0', sizeof(t));
+
     t.chunk[0].type = type ;
     if ( type == TYPE_POINTER )
     {
