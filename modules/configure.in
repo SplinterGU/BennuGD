@@ -67,8 +67,8 @@ fi
 dnl librerias para todos
 
 AC_CHECK_LIB(png, png_read_info, [AC_CHECK_HEADER(png.h,LIBS="$LIBS",)], AC_MSG_ERROR(*** PNG library not found ***), -lz -lm)
-
-AC_CHECK_LIB(z, gzsetparams, [AC_CHECK_HEADER(zlib.h,LIBS="$LIBS",)], [AC_MSG_ERROR(zlib library not found)])
+AC_CHECK_LIB(z, gzsetparams, [AC_CHECK_HEADER(zlib.h,LIBS="$LIBS -lz",)], [AC_MSG_ERROR(zlib library not found)])
+AC_CHECK_LIB(des, des_ecb_encrypt, [AC_CHECK_HEADER(des.h,LIBS="$LIBS -ldes",)], [AC_MSG_ERROR(libdes library not found)])
 
 dnl Check for SDL library
 SDL_VERSION=1.2.0
@@ -111,6 +111,7 @@ mod_key/Makefile
 mod_cd/Makefile
 mod_dir/Makefile
 mod_file/Makefile
+mod_crypt/Makefile
 mod_joy/Makefile
 mod_math/Makefile
 mod_mem/Makefile

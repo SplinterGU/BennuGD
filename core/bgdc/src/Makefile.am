@@ -15,7 +15,9 @@ SOURCE_FILES = main.c main_core.c token.c identifier.c segment.c \
               error.c \
               sysstub.c typedef.c \
               ../../common/debug.c \
-              ../../common/files.c ../../common/xctype.c
+              ../../common/crypt.c \
+              ../../common/files.c \
+              ../../common/xctype.c
 
 if HAVE_WINDRES
 bgdc_SOURCES = $(SOURCE_FILES) bgdc.rc

@@ -21240,7 +21240,6 @@ echo "$as_me: error: *** PNG library not found ***" >&2;}
    { (exit 1); exit 1; }; }
 fi
 
-
 { echo "$as_me:$LINENO: checking for gzsetparams in -lz" >&5
 echo $ECHO_N "checking for gzsetparams in -lz... $ECHO_C" >&6; }
 if test "${ac_cv_lib_z_gzsetparams+set}" = set; then
@@ -21429,13 +21428,211 @@ echo "${ECHO_T}$ac_cv_header_zlib_h" >&6; }
 
 fi
 if test $ac_cv_header_zlib_h = yes; then
-  LIBS="$LIBS"
+  LIBS="$LIBS -lz"
 fi
 
 
 else
   { { echo "$as_me:$LINENO: error: zlib library not found" >&5
 echo "$as_me: error: zlib library not found" >&2;}
+   { (exit 1); exit 1; }; }
+fi
+
+{ echo "$as_me:$LINENO: checking for des_ecb_encrypt in -ldes" >&5
+echo $ECHO_N "checking for des_ecb_encrypt in -ldes... $ECHO_C" >&6; }
+if test "${ac_cv_lib_des_des_ecb_encrypt+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-ldes  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char des_ecb_encrypt ();
+int
+main ()
+{
+return des_ecb_encrypt ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_c_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  ac_cv_lib_des_des_ecb_encrypt=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_cv_lib_des_des_ecb_encrypt=no
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ echo "$as_me:$LINENO: result: $ac_cv_lib_des_des_ecb_encrypt" >&5
+echo "${ECHO_T}$ac_cv_lib_des_des_ecb_encrypt" >&6; }
+if test $ac_cv_lib_des_des_ecb_encrypt = yes; then
+  if test "${ac_cv_header_des_h+set}" = set; then
+  { echo "$as_me:$LINENO: checking for des.h" >&5
+echo $ECHO_N "checking for des.h... $ECHO_C" >&6; }
+if test "${ac_cv_header_des_h+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+fi
+{ echo "$as_me:$LINENO: result: $ac_cv_header_des_h" >&5
+echo "${ECHO_T}$ac_cv_header_des_h" >&6; }
+else
+  # Is the header compilable?
+{ echo "$as_me:$LINENO: checking des.h usability" >&5
+echo $ECHO_N "checking des.h usability... $ECHO_C" >&6; }
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+$ac_includes_default
+#include <des.h>
+_ACEOF
+rm -f conftest.$ac_objext
+if { (ac_try="$ac_compile"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_compile") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_c_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest.$ac_objext; then
+  ac_header_compiler=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_header_compiler=no
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+{ echo "$as_me:$LINENO: result: $ac_header_compiler" >&5
+echo "${ECHO_T}$ac_header_compiler" >&6; }
+
+# Is the header present?
+{ echo "$as_me:$LINENO: checking des.h presence" >&5
+echo $ECHO_N "checking des.h presence... $ECHO_C" >&6; }
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <des.h>
+_ACEOF
+if { (ac_try="$ac_cpp conftest.$ac_ext"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_cpp conftest.$ac_ext") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } >/dev/null && {
+	 test -z "$ac_c_preproc_warn_flag$ac_c_werror_flag" ||
+	 test ! -s conftest.err
+       }; then
+  ac_header_preproc=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+  ac_header_preproc=no
+fi
+
+rm -f conftest.err conftest.$ac_ext
+{ echo "$as_me:$LINENO: result: $ac_header_preproc" >&5
+echo "${ECHO_T}$ac_header_preproc" >&6; }
+
+# So?  What about this header?
+case $ac_header_compiler:$ac_header_preproc:$ac_c_preproc_warn_flag in
+  yes:no: )
+    { echo "$as_me:$LINENO: WARNING: des.h: accepted by the compiler, rejected by the preprocessor!" >&5
+echo "$as_me: WARNING: des.h: accepted by the compiler, rejected by the preprocessor!" >&2;}
+    { echo "$as_me:$LINENO: WARNING: des.h: proceeding with the compiler's result" >&5
+echo "$as_me: WARNING: des.h: proceeding with the compiler's result" >&2;}
+    ac_header_preproc=yes
+    ;;
+  no:yes:* )
+    { echo "$as_me:$LINENO: WARNING: des.h: present but cannot be compiled" >&5
+echo "$as_me: WARNING: des.h: present but cannot be compiled" >&2;}
+    { echo "$as_me:$LINENO: WARNING: des.h:     check for missing prerequisite headers?" >&5
+echo "$as_me: WARNING: des.h:     check for missing prerequisite headers?" >&2;}
+    { echo "$as_me:$LINENO: WARNING: des.h: see the Autoconf documentation" >&5
+echo "$as_me: WARNING: des.h: see the Autoconf documentation" >&2;}
+    { echo "$as_me:$LINENO: WARNING: des.h:     section \"Present But Cannot Be Compiled\"" >&5
+echo "$as_me: WARNING: des.h:     section \"Present But Cannot Be Compiled\"" >&2;}
+    { echo "$as_me:$LINENO: WARNING: des.h: proceeding with the preprocessor's result" >&5
+echo "$as_me: WARNING: des.h: proceeding with the preprocessor's result" >&2;}
+    { echo "$as_me:$LINENO: WARNING: des.h: in the future, the compiler will take precedence" >&5
+echo "$as_me: WARNING: des.h: in the future, the compiler will take precedence" >&2;}
+
+    ;;
+esac
+{ echo "$as_me:$LINENO: checking for des.h" >&5
+echo $ECHO_N "checking for des.h... $ECHO_C" >&6; }
+if test "${ac_cv_header_des_h+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_header_des_h=$ac_header_preproc
+fi
+{ echo "$as_me:$LINENO: result: $ac_cv_header_des_h" >&5
+echo "${ECHO_T}$ac_cv_header_des_h" >&6; }
+
+fi
+if test $ac_cv_header_des_h = yes; then
+  LIBS="$LIBS -ldes"
+fi
+
+
+else
+  { { echo "$as_me:$LINENO: error: libdes library not found" >&5
+echo "$as_me: error: libdes library not found" >&2;}
    { (exit 1); exit 1; }; }
 fi
 
@@ -21896,7 +22093,7 @@ fi
 
 
 
-ac_config_files="$ac_config_files Makefile libgrbase/Makefile libvideo/Makefile libblit/Makefile librender/Makefile libdraw/Makefile libfont/Makefile libtext/Makefile libsdlhandler/Makefile libwm/Makefile libkey/Makefile libmouse/Makefile libjoy/Makefile libscroll/Makefile mod_scroll/Makefile mod_mouse/Makefile mod_map/Makefile mod_video/Makefile mod_screen/Makefile mod_blendop/Makefile mod_text/Makefile mod_draw/Makefile mod_grproc/Makefile mod_effects/Makefile mod_key/Makefile mod_cd/Makefile mod_dir/Makefile mod_file/Makefile mod_joy/Makefile mod_math/Makefile mod_mem/Makefile mod_proc/Makefile mod_rand/Makefile mod_regex/Makefile mod_say/Makefile mod_sort/Makefile mod_sound/Makefile mod_string/Makefile mod_sys/Makefile mod_time/Makefile mod_timers/Makefile mod_path/Makefile mod_wm/Makefile mod_debug/Makefile mod_flic/Makefile mod_m7/Makefile"
+ac_config_files="$ac_config_files Makefile libgrbase/Makefile libvideo/Makefile libblit/Makefile librender/Makefile libdraw/Makefile libfont/Makefile libtext/Makefile libsdlhandler/Makefile libwm/Makefile libkey/Makefile libmouse/Makefile libjoy/Makefile libscroll/Makefile mod_scroll/Makefile mod_mouse/Makefile mod_map/Makefile mod_video/Makefile mod_screen/Makefile mod_blendop/Makefile mod_text/Makefile mod_draw/Makefile mod_grproc/Makefile mod_effects/Makefile mod_key/Makefile mod_cd/Makefile mod_dir/Makefile mod_file/Makefile mod_crypt/Makefile mod_joy/Makefile mod_math/Makefile mod_mem/Makefile mod_proc/Makefile mod_rand/Makefile mod_regex/Makefile mod_say/Makefile mod_sort/Makefile mod_sound/Makefile mod_string/Makefile mod_sys/Makefile mod_time/Makefile mod_timers/Makefile mod_path/Makefile mod_wm/Makefile mod_debug/Makefile mod_flic/Makefile mod_m7/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -22540,6 +22737,7 @@ do
     "mod_cd/Makefile") CONFIG_FILES="$CONFIG_FILES mod_cd/Makefile" ;;
     "mod_dir/Makefile") CONFIG_FILES="$CONFIG_FILES mod_dir/Makefile" ;;
     "mod_file/Makefile") CONFIG_FILES="$CONFIG_FILES mod_file/Makefile" ;;
+    "mod_crypt/Makefile") CONFIG_FILES="$CONFIG_FILES mod_crypt/Makefile" ;;
     "mod_joy/Makefile") CONFIG_FILES="$CONFIG_FILES mod_joy/Makefile" ;;
     "mod_math/Makefile") CONFIG_FILES="$CONFIG_FILES mod_math/Makefile" ;;
     "mod_mem/Makefile") CONFIG_FILES="$CONFIG_FILES mod_mem/Makefile" ;;

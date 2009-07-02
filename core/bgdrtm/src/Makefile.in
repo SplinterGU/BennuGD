@@ -59,8 +59,9 @@ am_libbgdrtm_la_OBJECTS = libbgdrtm_la-dcbr.lo \
 	libbgdrtm_la-sysprocs.lo libbgdrtm_la-strings.lo \
 	libbgdrtm_la-dirs.lo libbgdrtm_la-copy.lo libbgdrtm_la-misc.lo \
 	libbgdrtm_la-instance.lo libbgdrtm_la-interpreter.lo \
-	libbgdrtm_la-debug.lo libbgdrtm_la-files.lo \
-	libbgdrtm_la-varspace_file.lo libbgdrtm_la-xctype.lo
+	libbgdrtm_la-debug.lo libbgdrtm_la-crypt.lo \
+	libbgdrtm_la-files.lo libbgdrtm_la-varspace_file.lo \
+	libbgdrtm_la-xctype.lo
 libbgdrtm_la_OBJECTS = $(am_libbgdrtm_la_OBJECTS)
 libbgdrtm_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libbgdrtm_la_CFLAGS) \
@@ -199,7 +200,7 @@ target_vendor = @target_vendor@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_LTLIBRARIES = libbgdrtm.la
-libbgdrtm_la_SOURCES = dcbr.c sysprocs.c strings.c dirs.c copy.c misc.c instance.c interpreter.c ../../common/debug.c ../../common/files.c ../../common/varspace_file.c ../../common/xctype.c
+libbgdrtm_la_SOURCES = dcbr.c sysprocs.c strings.c dirs.c copy.c misc.c instance.c interpreter.c ../../common/debug.c ../../common/crypt.c ../../common/files.c ../../common/varspace_file.c ../../common/xctype.c
 libbgdrtm_la_CFLAGS = $(COMMON_CFLAGS) -I../../include -I../include -D__BGDRTM__ -DDEBUG
 libbgdrtm_la_LDFLAGS = -s -module -no-undefined -avoid-version -export-all-symbols
 libbgdrtm_la_LIBADD = $(LIBADD_DL) $(COMMON_LDFLAGS)
@@ -274,6 +275,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libbgdrtm_la-copy.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libbgdrtm_la-crypt.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libbgdrtm_la-dcbr.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libbgdrtm_la-debug.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libbgdrtm_la-dirs.Plo@am__quote@
@@ -369,6 +371,13 @@ libbgdrtm_la-debug.lo: ../../common/debug.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../../common/debug.c' object='libbgdrtm_la-debug.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libbgdrtm_la_CFLAGS) $(CFLAGS) -c -o libbgdrtm_la-debug.lo `test -f '../../common/debug.c' || echo '$(srcdir)/'`../../common/debug.c
+
+libbgdrtm_la-crypt.lo: ../../common/crypt.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libbgdrtm_la_CFLAGS) $(CFLAGS) -MT libbgdrtm_la-crypt.lo -MD -MP -MF $(DEPDIR)/libbgdrtm_la-crypt.Tpo -c -o libbgdrtm_la-crypt.lo `test -f '../../common/crypt.c' || echo '$(srcdir)/'`../../common/crypt.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libbgdrtm_la-crypt.Tpo $(DEPDIR)/libbgdrtm_la-crypt.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../../common/crypt.c' object='libbgdrtm_la-crypt.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libbgdrtm_la_CFLAGS) $(CFLAGS) -c -o libbgdrtm_la-crypt.lo `test -f '../../common/crypt.c' || echo '$(srcdir)/'`../../common/crypt.c
 
 libbgdrtm_la-files.lo: ../../common/files.c
 @am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libbgdrtm_la_CFLAGS) $(CFLAGS) -MT libbgdrtm_la-files.lo -MD -MP -MF $(DEPDIR)/libbgdrtm_la-files.Tpo -c -o libbgdrtm_la-files.lo `test -f '../../common/files.c' || echo '$(srcdir)/'`../../common/files.c

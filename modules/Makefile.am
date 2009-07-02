@@ -26,6 +26,7 @@ SUBDIRS = \
     mod_cd          \
     mod_dir         \
     mod_file        \
+    mod_crypt       \
     mod_joy         \
     mod_math        \
     mod_mem         \

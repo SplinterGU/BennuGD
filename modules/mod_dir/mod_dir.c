@@ -142,6 +142,47 @@ static int moddir_rm( INSTANCE * my, int * params )
     return ( ret ) ;
 }
 
+static int __moddir_read(__DIR_ST * dh )
+{
+    __DIR_FILEINFO_ST * dif;
+    char buffer[ 20 ];
+    int result;
+
+    dif = dir_read( dh );
+    if ( !dif )
+    {
+        result = string_new( "" );
+        string_use( result );
+        return ( result );
+    }
+
+    /* discard previous strings values */
+    string_discard( GLODWORD( mod_dir, FILE_NAME ) );
+    string_discard( GLODWORD( mod_dir, FILE_PATH ) );
+    string_discard( GLODWORD( mod_dir, FILE_CREATED ) );
+    string_discard( GLODWORD( mod_dir, FILE_MODIFIED ) );
+
+    GLODWORD( mod_dir, FILE_NAME        ) = string_new( dif->filename ); string_use( GLODWORD( mod_dir, FILE_NAME ) );
+    GLODWORD( mod_dir, FILE_PATH        ) = string_new( dif->fullpath ); string_use( GLODWORD( mod_dir, FILE_PATH ) );
+
+    GLODWORD( mod_dir, FILE_DIRECTORY   ) = dif->attributes & DIR_FI_ATTR_DIRECTORY ? 1 : 0;
+    GLODWORD( mod_dir, FILE_HIDDEN      ) = dif->attributes & DIR_FI_ATTR_HIDDEN    ? 1 : 0;
+    GLODWORD( mod_dir, FILE_READONLY    ) = dif->attributes & DIR_FI_ATTR_READONLY  ? 1 : 0;
+    GLODWORD( mod_dir, FILE_SIZE        ) = dif->size;
+
+    /* Store file times */
+    strftime( buffer, 20, "%d/%m/%Y %H:%M:S", &dif->modified_time );
+    GLODWORD( mod_dir, FILE_CREATED     ) = string_new( buffer ); string_use( GLODWORD( mod_dir, FILE_CREATED  ) );
+
+    strftime( buffer, 20, "%d/%m/%Y %H:%M:S", &dif->creation_time );
+    GLODWORD( mod_dir, FILE_MODIFIED    ) = string_new( buffer ); string_use( GLODWORD( mod_dir, FILE_MODIFIED ) );
+
+    /* Return */
+    result = GLODWORD( mod_dir, FILE_NAME );
+    string_use( result );
+    return result;
+}
+
 /*  string GLOB (STRING path)
  *
  *  Given a path with wildcards ('*' or '?' characters), returns the first
@@ -151,249 +192,62 @@ static int moddir_rm( INSTANCE * my, int * params )
 
 static int moddir_glob( INSTANCE * my, int * params )
 {
-#ifdef _WIN32
-    static char * last_path = NULL;
-    static HANDLE handle;
     const char * path = string_get( params[ 0 ] );
-    WIN32_FIND_DATA data;
-    SYSTEMTIME time;
+    static __DIR_ST * dh = NULL;
     int result;
-    char realpath[ __MAX_PATH ];
-    char fullname[ __MAX_PATH ];
-    char buffer[ 128 ];
-    char * ptr;
 
-    if ( !path )
+    if ( dh && strcmp( dh->path, path ) )
     {
-        if ( handle ) FindClose( handle );
-        string_discard( params[ 0 ] );
-        if ( last_path ) free( last_path );
-        last_path = NULL;
-        handle = NULL;
+        dir_close( dh );
+        dh = NULL;
+    }
+
+    if ( !dh ) dh = dir_open( path );
+
+    string_discard( params[ 0 ] );
+
+    if ( !dh )
+    {
         result = string_new( "" );
         string_use( result );
         return ( result );
     }
 
-    if ( handle && ( last_path && strcmp( last_path, path ) == 0 ) )
-    {
-        /* Continue last search */
-        if ( !FindNextFile( handle, &data ) )
-        {
-            FindClose( handle );
-            /* No more matches found */
-            string_discard( params[ 0 ] );
-            if ( last_path ) free( last_path );
-            last_path = NULL;
-            handle = NULL;
-            result = string_new( "" );
-            string_use( result );
-            return ( result );
-        }
-    }
-    else
-    {
-        if ( handle ) FindClose( handle );
+    return ( __moddir_read( dh ) ) ;
+}
 
-        /* New search */
-        handle = FindFirstFile( path, &data );
-        if ( handle == INVALID_HANDLE_VALUE )
-        {
-            /* No matches found */
-            string_discard( params[ 0 ] );
-            if ( last_path ) free( last_path );
-            last_path = NULL;
-            result = string_new( "" );
-            string_use( result );
-            return ( result );
-        }
-        last_path = strdup( path );
-    }
+/*  int DIROPEN (STRING path)
+ *
+ *  Open a dir for read it, returns handle id.
+ *  return 0 if fail.
+ */
 
-    /* Fill the FILEINFO struct */
-    strcpy( fullname, path );
-    ptr = fullname + strlen( fullname );
-    while ( ptr >= fullname )
-    {
-        if ( *ptr == '\\' || *ptr == '/' )
-        {
-            ptr[ 1 ] = 0;
-            break;
-        }
-        ptr--;
-    }
-
-    strcat( fullname, data.cFileName );
-    GetFullPathName( fullname, __MAX_PATH, realpath, &ptr );
-    if ( ptr ) * ptr = '\0';
-
-    /* Store the file path */
-    if ( GLODWORD( mod_dir, FILE_PATH ) ) string_discard( GLODWORD( mod_dir, FILE_PATH ) );
-    GLODWORD( mod_dir, FILE_PATH ) = string_new( realpath );
-    string_use( GLODWORD( mod_dir, FILE_PATH ) );
-
-    /* Store the file name */
-    if ( GLODWORD( mod_dir, FILE_NAME ) ) string_discard( GLODWORD( mod_dir, FILE_NAME ) );
-    GLODWORD( mod_dir, FILE_NAME ) = string_new( data.cFileName );
-    result = GLODWORD( mod_dir, FILE_NAME );
-    string_use( result );  // 1 Por la variable de la estructura global
-
-    /* Store integer and boolean variables */
-    GLODWORD( mod_dir, FILE_DIRECTORY ) = (( data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) ? 1 : 0 );
-    GLODWORD( mod_dir, FILE_HIDDEN ) = (( data.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN ) ? 1 : 0 );
-    GLODWORD( mod_dir, FILE_READONLY ) = (( data.dwFileAttributes & FILE_ATTRIBUTE_READONLY ) ? 1 : 0 );
-    GLODWORD( mod_dir, FILE_SIZE ) = data.nFileSizeLow;
-
-    /* Format and store the creation time */
-    FileTimeToSystemTime( &data.ftCreationTime, &time );
-    sprintf( buffer, "%02d/%02d/%4d %02d:%02d", time.wDay, time.wMonth, time.wYear, time.wHour, time.wMinute );
-    if ( GLODWORD( mod_dir, FILE_CREATED ) ) string_discard( GLODWORD( mod_dir, FILE_CREATED ) );
-    GLODWORD( mod_dir, FILE_CREATED ) = string_new( buffer );
-    string_use( GLODWORD( mod_dir, FILE_CREATED ) );
-
-    /* Format and store the last write time */
-    FileTimeToSystemTime( &data.ftLastWriteTime, &time );
-    sprintf( buffer, "%02d/%02d/%4d %02d:%02d", time.wDay, time.wMonth, time.wYear, time.wHour, time.wMinute );
-    if ( GLODWORD( mod_dir, FILE_MODIFIED ) ) string_discard( GLODWORD( mod_dir, FILE_MODIFIED ) );
-    GLODWORD( mod_dir, FILE_MODIFIED ) = string_new( buffer );
-    string_use( GLODWORD( mod_dir, FILE_MODIFIED ) );
-
+static int moddir_open( INSTANCE * my, int * params )
+{
+    int result = ( int ) dir_open( string_get( params[ 0 ] ) );
     string_discard( params[ 0 ] );
-
-    string_use( result );  // 1 Por el return
     return result;
+}
 
-#else
+/*  int DIRCLOSE (INT handle)
+ */
 
-    const char * path = string_get( params[ 0 ] );
-    char * path_final;
-    const char * ptr;
-    char * fptr;
-    static char * last_path = NULL;
-    static int currentFile = 0;
-    static glob_t globd;
-    struct stat s;
-    int result;
-    char buffer[ 128 ];
-    char realpath[ __MAX_PATH ];
+static int moddir_close( INSTANCE * my, int * params )
+{
+    if ( params[ 0 ] ) dir_close ( ( __DIR_ST * ) params[ 0 ] ) ;
+    return 1;
+}
 
-    /* Clean the path creating a case-insensitive match pattern */
-    path_final = malloc( strlen( path ) * 4 );
-    fptr = path_final;
-    ptr = path;
-    while ( *ptr )
-    {
-        if ( *ptr == '\\' )
-            * fptr++ = '/';
-        else if ( *ptr >= 'a' && *ptr <= 'z' )
-        {
-            *fptr++ = '[';
-            *fptr++ = *ptr;
-            *fptr++ = toupper( *ptr );
-            *fptr++ = ']';
-        }
-        else if ( *ptr >= 'A' && *ptr <= 'Z' )
-        {
-            *fptr++ = '[';
-            *fptr++ = tolower( *ptr );
-            *fptr++ = *ptr;
-            *fptr++ = ']';
-        }
-        else
-            *fptr++ = *ptr;
-        ptr++;
-    }
-    *fptr = 0;
+/*  string DIRREAD (INT handle)
+ *
+ *  Given a path with wildcards ('*' or '?' characters), returns the first
+ *  file that matches and, in every next call, all matching files found
+ *  until no more files exists. It then returns NIL.
+ */
 
-    if ( !last_path || ( last_path && strcasecmp( last_path, path_final ) != 0 ) )
-    {
-        /* Using a different path */
-        if ( last_path )
-        {
-            free( last_path );
-            last_path = NULL;
-            globfree( &globd );
-        }
-
-        last_path = strdup( path_final );
-
-        // Convert *.* to *
-        if ( fptr > path_final + 2 && fptr[ -1 ] == '*' && fptr[ -2 ] == '.' && fptr[ -3 ] == '*' )
-            fptr[ -2 ] = 0;
-
-#if defined(TARGET_MAC)
-        glob( path_final, GLOB_ERR | GLOB_NOSORT, NULL, &globd );
-#elif defined(TARGET_BEOS)
-    glob( path_final, GLOB_ERR | GLOB_NOSORT, NULL, &globd );
-#else
-    glob( path_final, GLOB_ERR | GLOB_PERIOD | GLOB_NOSORT, NULL, &globd );
-#endif
-        currentFile = 0;
-    }
-
-    if ( currentFile == globd.gl_pathc )
-    {
-        /* Last file reached */
-        if ( last_path ) free( last_path );
-        last_path = NULL;
-        string_discard( params[ 0 ] );
-        free( path_final );
-        result = string_new( "" );
-        string_use( result );
-        return ( result );
-    }
-
-    stat( globd.gl_pathv[ currentFile ], &s );
-
-    /* Store the file name and path */
-    if ( GLODWORD( mod_dir, FILE_NAME ) ) string_discard( GLODWORD( mod_dir, FILE_NAME ) );
-    if ( GLODWORD( mod_dir, FILE_PATH ) ) string_discard( GLODWORD( mod_dir, FILE_PATH ) );
-
-    ptr = strrchr( globd.gl_pathv[ currentFile ], '/' );
-    if ( !ptr )
-    {
-        result = string_new( ptr = globd.gl_pathv[ currentFile ] );
-        GLODWORD( mod_dir, FILE_NAME ) = result;
-        string_use( result );
-
-        GLODWORD( mod_dir, FILE_PATH ) = string_new( getcwd( realpath, sizeof( realpath ) ) );
-        string_use( GLODWORD( mod_dir, FILE_PATH ) );
-    }
-    else
-    {
-        GLODWORD( mod_dir, FILE_NAME ) = result = string_new( ptr + 1 );
-        string_use( GLODWORD( mod_dir, FILE_NAME ) );
-
-        fptr = globd.gl_pathv[ currentFile ];
-        GLODWORD( mod_dir, FILE_PATH ) = string_newa( fptr, ( ptr - fptr ) + 1 );
-        string_use( GLODWORD( mod_dir, FILE_PATH ) );
-        ptr++;
-    }
-
-    /* Store integer and boolean variables */
-    GLODWORD( mod_dir, FILE_DIRECTORY ) = (( S_ISDIR( s.st_mode ) ) ? 1 : 0 );
-    GLODWORD( mod_dir, FILE_HIDDEN ) = ( *ptr == '.' );
-    GLODWORD( mod_dir, FILE_READONLY ) = !( s.st_mode & 0444 );
-    GLODWORD( mod_dir, FILE_SIZE ) = s.st_size;
-
-    /* Store file times */
-    strftime( buffer, 100, "%d/%m/%Y %H:%M", localtime( &s.st_mtime ) );
-    if ( GLODWORD( mod_dir, FILE_MODIFIED ) ) string_discard( GLODWORD( mod_dir, FILE_MODIFIED ) );
-    GLODWORD( mod_dir, FILE_MODIFIED ) = string_new( buffer );
-    string_use( GLODWORD( mod_dir, FILE_MODIFIED ) );
-
-    strftime( buffer, 100, "%d/%m/%Y %H:%M", localtime( &s.st_ctime ) );
-    if ( GLODWORD( mod_dir, FILE_CREATED ) ) string_discard( GLODWORD( mod_dir, FILE_CREATED ) );
-    GLODWORD( mod_dir, FILE_CREATED ) = string_new( buffer );
-    string_use( GLODWORD( mod_dir, FILE_CREATED ) );
-
-    /* Return */
-    currentFile++;
-    string_use( result );
-    string_discard( params[ 0 ] );
-    free( path_final );
-    return result;
-#endif
+static int moddir_read( INSTANCE * my, int * params )
+{
+    return ( __moddir_read((__DIR_ST *) params[ 0 ] ) ) ;
 }
 
 /* ---------------------------------------------------------------------- */
@@ -401,14 +255,19 @@ static int moddir_glob( INSTANCE * my, int * params )
 DLSYSFUNCS __bgdexport( mod_dir, functions_exports)[] =
     {
         /* Archivos y directorios */
-        { "CD" , "" , TYPE_STRING , moddir_cd },
-        { "CHDIR" , "S" , TYPE_INT , moddir_chdir },
-        { "MKDIR" , "S" , TYPE_INT , moddir_mkdir },
-        { "RMDIR" , "S" , TYPE_INT , moddir_rmdir },
-        { "GLOB" , "S" , TYPE_STRING , moddir_glob },
-        { "CD" , "S" , TYPE_STRING , moddir_chdir },
-        { "RM" , "S" , TYPE_INT , moddir_rm },
-        { 0 , 0 , 0 , 0 }
+        { "CD"      , ""  , TYPE_STRING , moddir_cd     },
+        { "CHDIR"   , "S" , TYPE_INT    , moddir_chdir  },
+        { "MKDIR"   , "S" , TYPE_INT    , moddir_mkdir  },
+        { "RMDIR"   , "S" , TYPE_INT    , moddir_rmdir  },
+        { "GLOB"    , "S" , TYPE_STRING , moddir_glob   },
+        { "CD"      , "S" , TYPE_STRING , moddir_chdir  },
+        { "RM"      , "S" , TYPE_INT    , moddir_rm     },
+
+        { "DIROPEN" , "S" , TYPE_INT    , moddir_open   },
+        { "DIRCLOSE", "I" , TYPE_INT    , moddir_close  },
+        { "DIRREAD" , "I" , TYPE_STRING , moddir_read   },
+
+        { 0         , 0   , 0           , 0             }
     };
 
 /* ---------------------------------------------------------------------- */

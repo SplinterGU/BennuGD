@@ -19,7 +19,7 @@ AM_CONDITIONAL(HAVE_WINDRES, test "$WINDRES" != "")
 dnl Aqui es donde se chequeara el SO, pero solo hay una opcion xD
 case "$target_os" in
     linux-gnu*)
-	LIBS="-ldl -lz"
+	LIBS="-ldl"
         COMMON_CFLAGS="-Wall -DTARGET_LINUX"
         COMMON_LDFLAGS="$COMMON_LDFLAGS -lc $LIBS"
 
@@ -34,13 +34,13 @@ case "$target_os" in
     mingw32)
         INCLUDES="-I/usr/local/include"
 	    COMMON_CFLAGS="$INCLUDES -DTARGET_WIN32 -DWIN32 -D_WIN32"
-	    COMMON_LDFLAGS="-L/usr/local/lib -lz -lshlwapi"
+	    COMMON_LDFLAGS="-L/usr/local/lib -lshlwapi"
 	    ;;
 
     mingw32msvc)
         INCLUDES="-I/usr/i586-mingw32msvc/include"
 	    COMMON_CFLAGS="$INCLUDES -DTARGET_WIN32 -DWIN32 -D_WIN32"
-	    COMMON_LDFLAGS="-L/usr/i586-mingw32msvc/lib -lz -lshlwapi"
+	    COMMON_LDFLAGS="-L/usr/i586-mingw32msvc/lib -lshlwapi"
 	    ;;
 
     dragonfly*)
@@ -74,7 +74,8 @@ fi
 
 dnl librerias para todos
 
-AC_CHECK_LIB(z, gzsetparams, [AC_CHECK_HEADER(zlib.h,LIBS="$LIBS",)], [AC_MSG_ERROR(zlib library not found)])
+AC_CHECK_LIB(z, gzsetparams, [AC_CHECK_HEADER(zlib.h,LIBS="$LIBS -lz",)], [AC_MSG_ERROR(zlib library not found)])
+AC_CHECK_LIB(des, des_ecb_encrypt, [AC_CHECK_HEADER(des.h,LIBS="$LIBS -ldes",)], [AC_MSG_ERROR(libdes library not found)])
 
 dnl make these visible to all Makefiles
 

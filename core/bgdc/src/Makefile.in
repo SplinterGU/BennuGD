@@ -50,14 +50,16 @@ am__bgdc_SOURCES_DIST = main.c main_core.c token.c identifier.c \
 	segment.c constants.c strings.c varspace.c procedure.c \
 	codeblock.c c_main.c c_data.c c_code.c c_debug.c dcbw.c \
 	error.c sysstub.c typedef.c ../../common/debug.c \
-	../../common/files.c ../../common/xctype.c bgdc.rc
+	../../common/crypt.c ../../common/files.c \
+	../../common/xctype.c bgdc.rc
 am__objects_1 = main.$(OBJEXT) main_core.$(OBJEXT) token.$(OBJEXT) \
 	identifier.$(OBJEXT) segment.$(OBJEXT) constants.$(OBJEXT) \
 	strings.$(OBJEXT) varspace.$(OBJEXT) procedure.$(OBJEXT) \
 	codeblock.$(OBJEXT) c_main.$(OBJEXT) c_data.$(OBJEXT) \
 	c_code.$(OBJEXT) c_debug.$(OBJEXT) dcbw.$(OBJEXT) \
 	error.$(OBJEXT) sysstub.$(OBJEXT) typedef.$(OBJEXT) \
-	debug.$(OBJEXT) files.$(OBJEXT) xctype.$(OBJEXT)
+	debug.$(OBJEXT) crypt.$(OBJEXT) files.$(OBJEXT) \
+	xctype.$(OBJEXT)
 @HAVE_WINDRES_FALSE@am_bgdc_OBJECTS = $(am__objects_1)
 @HAVE_WINDRES_TRUE@am_bgdc_OBJECTS = $(am__objects_1) bgdc.$(OBJEXT)
 bgdc_OBJECTS = $(am_bgdc_OBJECTS)
@@ -208,7 +210,9 @@ SOURCE_FILES = main.c main_core.c token.c identifier.c segment.c \
               error.c \
               sysstub.c typedef.c \
               ../../common/debug.c \
-              ../../common/files.c ../../common/xctype.c
+              ../../common/crypt.c \
+              ../../common/files.c \
+              ../../common/xctype.c
 
 @HAVE_WINDRES_FALSE@bgdc_SOURCES = $(SOURCE_FILES)
 @HAVE_WINDRES_TRUE@bgdc_SOURCES = $(SOURCE_FILES) bgdc.rc
@@ -289,6 +293,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/c_main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/codeblock.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/constants.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crypt.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dcbw.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/debug.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/error.Po@am__quote@
@@ -339,6 +344,20 @@ debug.obj: ../../common/debug.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../../common/debug.c' object='debug.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o debug.obj `if test -f '../../common/debug.c'; then $(CYGPATH_W) '../../common/debug.c'; else $(CYGPATH_W) '$(srcdir)/../../common/debug.c'; fi`
+
+crypt.o: ../../common/crypt.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT crypt.o -MD -MP -MF $(DEPDIR)/crypt.Tpo -c -o crypt.o `test -f '../../common/crypt.c' || echo '$(srcdir)/'`../../common/crypt.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/crypt.Tpo $(DEPDIR)/crypt.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../../common/crypt.c' object='crypt.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o crypt.o `test -f '../../common/crypt.c' || echo '$(srcdir)/'`../../common/crypt.c
+
+crypt.obj: ../../common/crypt.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT crypt.obj -MD -MP -MF $(DEPDIR)/crypt.Tpo -c -o crypt.obj `if test -f '../../common/crypt.c'; then $(CYGPATH_W) '../../common/crypt.c'; else $(CYGPATH_W) '$(srcdir)/../../common/crypt.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/crypt.Tpo $(DEPDIR)/crypt.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../../common/crypt.c' object='crypt.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o crypt.obj `if test -f '../../common/crypt.c'; then $(CYGPATH_W) '../../common/crypt.c'; else $(CYGPATH_W) '$(srcdir)/../../common/crypt.c'; fi`
 
 files.o: ../../common/files.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT files.o -MD -MP -MF $(DEPDIR)/files.Tpo -c -o files.o `test -f '../../common/files.c' || echo '$(srcdir)/'`../../common/files.c
