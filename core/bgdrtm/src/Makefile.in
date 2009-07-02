@@ -54,7 +54,8 @@ am__installdirs = "$(DESTDIR)$(libdir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-libbgdrtm_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
+libbgdrtm_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am_libbgdrtm_la_OBJECTS = libbgdrtm_la-dcbr.lo \
 	libbgdrtm_la-sysprocs.lo libbgdrtm_la-strings.lo \
 	libbgdrtm_la-dirs.lo libbgdrtm_la-copy.lo libbgdrtm_la-misc.lo \
@@ -105,6 +106,7 @@ CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
+DESLIBS = @DESLIBS@
 DLLTOOL = @DLLTOOL@
 ECHO = @ECHO@
 ECHO_C = @ECHO_C@
@@ -144,6 +146,7 @@ SHELL = @SHELL@
 STRIP = @STRIP@
 VERSION = @VERSION@
 WINDRES = @WINDRES@
+ZLIBS = @ZLIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -203,7 +206,7 @@ lib_LTLIBRARIES = libbgdrtm.la
 libbgdrtm_la_SOURCES = dcbr.c sysprocs.c strings.c dirs.c copy.c misc.c instance.c interpreter.c ../../common/debug.c ../../common/crypt.c ../../common/files.c ../../common/varspace_file.c ../../common/xctype.c
 libbgdrtm_la_CFLAGS = $(COMMON_CFLAGS) -I../../include -I../include -D__BGDRTM__ -DDEBUG
 libbgdrtm_la_LDFLAGS = -s -module -no-undefined -avoid-version -export-all-symbols
-libbgdrtm_la_LIBADD = $(LIBADD_DL) $(COMMON_LDFLAGS)
+libbgdrtm_la_LIBADD = $(COMMON_LDFLAGS) $(ZLIBS) $(DESLIBS)
 CLEANFILES = libbgdrtm.la
 all: all-am
 

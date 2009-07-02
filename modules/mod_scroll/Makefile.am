@@ -7,7 +7,7 @@ lib_LTLIBRARIES = mod_scroll.la
 mod_scroll_la_SOURCES = mod_scroll.c
 mod_scroll_la_CFLAGS = $(COMMON_CFLAGS) $(SDL_CFLAGS) -I$(BGD_PATH)/include -I$(BGD_PATH)/bgdrtm/include -I../libscroll -I../libvideo -I../libgrbase/
 mod_scroll_la_LDFLAGS = -s -module -no-undefined -avoid-version
-mod_scroll_la_LIBADD = $(LIBADD_DL) -L../libscroll/.libs -lscroll
+mod_scroll_la_LIBADD = $(COMMON_LDFLAGS) -L../libscroll/.libs -lscroll
 
 ## Make sure these will be cleaned even when they're not built by
 ## default.

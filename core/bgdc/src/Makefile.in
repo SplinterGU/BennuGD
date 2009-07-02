@@ -107,6 +107,7 @@ CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
+DESLIBS = @DESLIBS@
 DLLTOOL = @DLLTOOL@
 ECHO = @ECHO@
 ECHO_C = @ECHO_C@
@@ -146,6 +147,7 @@ SHELL = @SHELL@
 STRIP = @STRIP@
 VERSION = @VERSION@
 WINDRES = @WINDRES@
+ZLIBS = @ZLIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -203,7 +205,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 INCLUDES = $(COMMON_CFLAGS) -I../../include -I../include -D__BGDC__
 bgdc_LDADD = $(COMMON_LDFLAGS)
-bgdc_LDFLAGS = $(COMMON_LDFLAGS) --as-needed
+bgdc_LDFLAGS = $(COMMON_LDFLAGS) $(ZLIBS) $(DESLIBS) --as-needed
 SOURCE_FILES = main.c main_core.c token.c identifier.c segment.c \
               constants.c strings.c varspace.c procedure.c codeblock.c \
               c_main.c c_data.c c_code.c c_debug.c dcbw.c \

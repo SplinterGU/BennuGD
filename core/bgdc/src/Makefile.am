@@ -7,7 +7,7 @@ INCLUDES = $(COMMON_CFLAGS) -I../../include -I../include -D__BGDC__
 
 bgdc_LDADD = $(COMMON_LDFLAGS)
 
-bgdc_LDFLAGS = $(COMMON_LDFLAGS) --as-needed
+bgdc_LDFLAGS = $(COMMON_LDFLAGS) $(ZLIBS) $(DESLIBS) --as-needed
 
 SOURCE_FILES = main.c main_core.c token.c identifier.c segment.c \
               constants.c strings.c varspace.c procedure.c codeblock.c \
