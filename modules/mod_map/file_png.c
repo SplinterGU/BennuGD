@@ -272,7 +272,6 @@ GRAPH * gr_read_png( const char * filename )
             {
                 ARRANGE_DWORD( orig );
 
-//                if (( *orig ) & 0xff000000 )
                 if (( *orig ) & 0x80000000 )
                 {
                     *ptr = (( *orig & Rmask ) >> Rshift ) | (( *orig & Gmask ) >> Gshift ) | (( *orig & Bmask ) >> Bshift )  ;
@@ -462,6 +461,7 @@ int gr_save_png( GRAPH * gr, const char * filename )
                 rowpointers[k] = ( uint8_t * )ptr ;
                 for ( i = 0 ; i < ( unsigned )gr->width ; i++ )
                 {
+/*
                     if ( !*orig32 && !( gr->info_flags & GI_NOCOLORKEY ) )
                         *ptr = 0 ;
                     else if ( !( *orig32 & 0xff000000 ) )
@@ -471,6 +471,7 @@ int gr_save_png( GRAPH * gr, const char * filename )
                             (( *orig32 & 0x0000ff00 ) ) |
                             (( *orig32 & 0x000000ff ) << 16 ) ;
                     else
+*/
                         *ptr =
                             (( *orig32 & 0xff000000 ) ) |
                             (( *orig32 & 0x00ff0000 ) >> 16 ) |
