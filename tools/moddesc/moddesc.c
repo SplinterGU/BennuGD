@@ -157,6 +157,7 @@ void describe_module( char *filename )
 {
     void * library = NULL;
 
+    char ** types_def = NULL;
     char ** globals_def = NULL;
     char ** locals_def = NULL;
     DLCONSTANT * constants_def = NULL;
@@ -233,6 +234,13 @@ void describe_module( char *filename )
         }
         printf( "\n\n" );
     }
+
+    types_def = ( char ** ) _dlibaddr( library, "types_def" ) ;
+    if ( types_def && *types_def )
+    {
+        printf( "Types:\n\n%s\n\n", *types_def );
+    }
+
     globals_def = ( char ** ) _dlibaddr( library, "globals_def" ) ;
     if ( globals_def && *globals_def )
     {
