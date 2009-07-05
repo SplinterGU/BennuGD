@@ -403,6 +403,35 @@ static int import_exists( char * libname )
 
 /* ---------------------------------------------------------------------- */
 
+void compile_type()
+{
+    int code;
+    segment  * s = segment_new() ;
+    VARSPACE * v = varspace_new() ;
+    TYPEDEF    t = typedef_new( TYPE_STRUCT );
+
+    t.chunk[0].count = 1 ;
+
+    token_next() ;
+    if (( code = token.code ) < reserved_words || token.type != IDENTIFIER )
+    {
+        compile_error( MSG_INVALID_TYPE ) ;
+    }
+
+    t.varspace = v ;
+    typedef_name( t, code ) ;
+    segment_name( s, code ) ;
+
+    /* (2006/11/19 19:34 GMT-03:00, Splinter - jj_arg@yahoo.com) */
+    compile_varspace( v, s, 0, 1, 0, NULL, 0, 0 ) ;
+    if ( token.code != identifier_end )
+    {
+        compile_error( MSG_NO_END ) ;
+    }
+}
+
+/* ---------------------------------------------------------------------- */
+
 static char * modules_exts[] =
 {
     ".dll",
@@ -410,7 +439,6 @@ static char * modules_exts[] =
     ".so",
     NULL
 } ;
-
 
 static void import_module( const char * filename )
 {
@@ -422,6 +450,7 @@ static void import_module( const char * filename )
     DLCONSTANT  * constants_def = NULL;
     DLSYSFUNCS  * functions_exports = NULL;
     char        ** modules_dependency = NULL;
+    char        ** types_def = NULL;
 
     char        soname[1024];
     char        * ptr;
@@ -504,6 +533,18 @@ static void import_module( const char * filename )
             int code = identifier_search_or_add( constants_def->name ) ;
             constants_add( code, typedef_new( constants_def->type ), constants_def->code ) ;
             constants_def++ ;
+        }
+    }
+
+    types_def = ( char ** ) _dlibaddr( library, "types_def" ) ;
+    if ( types_def && *types_def )
+    {
+        token_init( *types_def, -1 ) ;
+        token_next();
+        while ( token.type == IDENTIFIER && token.code == identifier_type )
+        {
+            compile_type() ;
+            token_next();
         }
     }
 
@@ -1185,8 +1226,6 @@ void compile_process()
 
 void compile_program()
 {
-    int code ;
-
     /* Ahora lo del program es opcional :-P */
 
     token_next() ;
@@ -1266,28 +1305,7 @@ void compile_program()
         }
         else if ( token.type == IDENTIFIER && token.code == identifier_type ) /* Tipo de dato definido por el usuario */
         {
-            segment  * s = segment_new() ;
-            VARSPACE * v = varspace_new() ;
-            TYPEDEF    t = typedef_new( TYPE_STRUCT );
-
-            t.chunk[0].count = 1 ;
-
-            token_next() ;
-            if (( code = token.code ) < reserved_words || token.type != IDENTIFIER )
-            {
-                compile_error( MSG_INVALID_TYPE ) ;
-            }
-
-            t.varspace = v ;
-            typedef_name( t, code ) ;
-            segment_name( s, code ) ;
-
-            /* (2006/11/19 19:34 GMT-03:00, Splinter - jj_arg@yahoo.com) */
-            compile_varspace( v, s, 0, 1, 0, NULL, 0, 0 ) ;
-            if ( token.code != identifier_end )
-            {
-                compile_error( MSG_NO_END ) ;
-            }
+            compile_type();
         }
         else if ( token.type == IDENTIFIER &&
                 (
