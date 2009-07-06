@@ -193,7 +193,7 @@ __DIR_ST * dir_open( const char * path )
 
 #ifdef _WIN32
     hDir->handle = FindFirstFile( hDir->path, &hDir->data );
-    hDir->eod = ( hDir->handle == NULL ) ;
+    hDir->eod = ( hDir->handle == INVALID_HANDLE_VALUE ) ;
 #else
     char * path_final = malloc( strlen( path ) * 4 );
     const char * ptr = hDir->path ;
