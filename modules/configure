@@ -22014,7 +22014,7 @@ fi
 { echo "$as_me:$LINENO: result: $ac_cv_lib_SDL_mixer_Mix_AllocateChannels" >&5
 echo "${ECHO_T}$ac_cv_lib_SDL_mixer_Mix_AllocateChannels" >&6; }
 if test $ac_cv_lib_SDL_mixer_Mix_AllocateChannels = yes; then
-  LIBS=$(LIBS)
+  LIBS=$LIBS
 else
   { { echo "$as_me:$LINENO: error: *** SDL_mixer library not found!" >&5
 echo "$as_me: error: *** SDL_mixer library not found!" >&2;}
