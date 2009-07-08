@@ -357,7 +357,7 @@ int libjoy_get_ball_specific( int joy, int ball, int * dx, int * dy )
 /* --------------------------------------------------------------------------- */
 /* Funciones de inicializacion del modulo/plugin                               */
 
-DLCONSTANT __bgdexport( mod_joy, constants_def )[] =
+DLCONSTANT __bgdexport( libjoy, constants_def )[] =
 {
     { "JOY_HAT_CENTERED"    , TYPE_DWORD, SDL_HAT_CENTERED  },
     { "JOY_HAT_UP"          , TYPE_DWORD, SDL_HAT_UP        },
