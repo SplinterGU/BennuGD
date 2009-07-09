@@ -340,9 +340,19 @@ __DIR_FILEINFO_ST * dir_read( __DIR_ST * hDir )
     else
     {
         strcpy ( hDir->info.filename, ptr + 1 );
-        strcpy ( hDir->info.fullpath, hDir->globd.gl_pathv[ hDir->currFile ] );
-        hDir->info.fullpath[ ptr - hDir->globd.gl_pathv[ hDir->currFile ] + 1 ] = '\0';
-        ptr++;
+        if ( hDir->globd.gl_pathv[ hDir->currFile ][0] == '/' )
+        {
+            strcpy ( hDir->info.fullpath, hDir->globd.gl_pathv[ hDir->currFile ] );
+            hDir->info.fullpath[ ptr - hDir->globd.gl_pathv[ hDir->currFile ] + 1 ] = '\0';
+        }
+        else
+        {
+            strcpy ( hDir->info.fullpath, getcwd( realpath, sizeof( realpath ) ) );
+            strcat ( hDir->info.fullpath, "/" );
+            strcat ( hDir->info.fullpath, hDir->globd.gl_pathv[ hDir->currFile ] );
+            ptr = strrchr( hDir->info.fullpath, '/' );
+            *(ptr + 1) = '\0';
+        }
     }
 
     hDir->info.attributes    = (( S_ISDIR( s.st_mode )          ) ? DIR_FI_ATTR_DIRECTORY : 0 ) |
