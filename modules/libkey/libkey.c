@@ -37,6 +37,17 @@
 #include "dlvaracc.h"
 #include "libkey.h"
 
+/* ----------------------------------------------------------------- */
+
+#define SHIFTSTATUS             0
+#define ASCII                   1
+#define SCANCODE                2
+
+#define STAT_RSHIFT             0x0000001
+#define STAT_LSHIFT             0x0000002
+#define STAT_CTRL               0x0000004
+#define STAT_ALT                0x0000008
+
 /* ---------------------------------------------------------------------- */
 
 typedef struct
@@ -49,6 +60,12 @@ typedef struct
 static hotkey * hotkey_list = NULL ;
 static int hotkey_allocated = 0 ;
 static int hotkey_count = 0 ;
+
+/* ----------------------------------------------------------------- */
+
+/* Publicas */
+key_equiv key_table[127] ;              /* Now we have a search table with equivs */
+unsigned char * keystate = NULL;        /* Pointer to key states */
 
 /* ----------------------------------------------------------------- */
 
@@ -291,20 +308,14 @@ DLCONSTANT  __bgdexport( libkey, constants_def )[] =
     { "_MENU",        TYPE_DWORD,  97 },
     { "_L_WINDOWS",   TYPE_DWORD,  98 },
     { "_R_WINDOWS",   TYPE_DWORD,  99 },
+
+    { "STAT_RSHIFT",  TYPE_DWORD,  STAT_RSHIFT },
+    { "STAT_LSHIFT",  TYPE_DWORD,  STAT_LSHIFT },
+    { "STAT_CTRL",    TYPE_DWORD,  STAT_CTRL   },
+    { "STAT_ALT",     TYPE_DWORD,  STAT_ALT    },
+
     { NULL          , 0         ,  0  }
 } ;
-
-/* ----------------------------------------------------------------- */
-
-/* Publicas */
-key_equiv key_table[127] ;              /* Now we have a search table with equivs */
-unsigned char * keystate = NULL;        /* Pointer to key states */
-
-/* ----------------------------------------------------------------- */
-
-#define SHIFTSTATUS             0
-#define ASCII                   1
-#define SCANCODE                2
 
 /* ----------------------------------------------------------------- */
 /* Definicion de variables globales (usada en tiempo de compilacion) */
@@ -507,10 +518,10 @@ static void process_key_events()
 
     /* Now actualized every frame... */
     GLODWORD( libkey,  SHIFTSTATUS ) =
-        (( m & KMOD_LSHIFT )                         ? 1 : 0 ) +
-        (( m & KMOD_RSHIFT )                         ? 2 : 0 ) +
-        ((( m & KMOD_RCTRL ) || ( m & KMOD_LCTRL ) ) ? 4 : 0 ) +
-        ((( m & KMOD_LALT )  || ( m & KMOD_RALT ) )  ? 8 : 0 ) ;
+        (( m & KMOD_RSHIFT )                         ? STAT_RSHIFT : 0 ) |
+        (( m & KMOD_LSHIFT )                         ? STAT_LSHIFT : 0 ) |
+        ((( m & KMOD_RCTRL ) || ( m & KMOD_LCTRL ) ) ? STAT_CTRL   : 0 ) |
+        ((( m & KMOD_LALT )  || ( m & KMOD_RALT ) )  ? STAT_ALT    : 0 ) ;
 }
 
 /* ----------------------------------------------------------------- */
