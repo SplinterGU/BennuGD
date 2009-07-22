@@ -750,29 +750,6 @@ int gr_get_color( int r, int g, int b )
     return find_nearest_color( sys_pixel_format->palette, 0, 255, r, g, b ) ;
 }
 
-/* ---------------------------------------------------------------------------
- * Rellena el contenido de la tabla de transparencias
- * --------------------------------------------------------------------------- */
-/*
-static int compare_colors( const void * p1, const void * p2 )
-{
-    rgb_component * c1 ;
-    rgb_component * c2 ;
-
-    if ( !sys_pixel_format->palette )
-    {
-        c1 = ( rgb_component * ) &default_palette[( *( int * ) p1 ) * 3 ] ;
-        c2 = ( rgb_component * ) &default_palette[( *( int * ) p2 ) * 3 ] ;
-    }
-    else
-    {
-        c1 = ( rgb_component * ) &sys_pixel_format->palette->rgb[ *( int * ) p1 ] ;
-        c2 = ( rgb_component * ) &sys_pixel_format->palette->rgb[ *( int * ) p2 ] ;
-    }
-
-    return ( c1->r + c1->g + c1->b ) - ( c2->r + c2->g + c2->b ) ;
-}
-*/
 /* --------------------------------------------------------------------------- */
 
 void gr_make_trans_table()

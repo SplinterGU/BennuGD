@@ -56,7 +56,7 @@ static int _selected_joystick = -1;
 
 /* --------------------------------------------------------------------------- */
 /**
- * NUM_JOY ()
+ * libjoy_num ()
  * Returns the number of joysticks present in the system
  **/
 
@@ -67,7 +67,7 @@ int libjoy_num( void )
 
 /* --------------------------------------------------------------------------- */
 /**
- * JOY_NAME (int JOY)
+ * libjoy_name (int JOY)
  * Returns the name for a given joystick present in the system
  **/
 
@@ -81,7 +81,7 @@ int libjoy_name( int joy )
 
 /* --------------------------------------------------------------------------- */
 /**
- * JOY_SELECT (int JOY)
+ * libjoy_select (int JOY)
  * Returns the selected joystick number
  **/
 
@@ -92,7 +92,7 @@ int libjoy_select( int joy )
 
 /* --------------------------------------------------------------------------- */
 /**
- * JOY_BUTTONS ()
+ * libjoy_buttons ()
  * Returns the selected joystick total buttons
  **/
 
@@ -107,7 +107,7 @@ int libjoy_buttons( void )
 
 /* --------------------------------------------------------------------------- */
 /**
- * JOY_AXIS ()
+ * libjoy_axes ()
  * Returns the selected joystick total axes
  **/
 
@@ -122,7 +122,7 @@ int libjoy_axes( void )
 
 /* --------------------------------------------------------------------------- */
 /**
- * JOY_GET_BUTTON ( int button )
+ * libjoy_get_button ( int button )
  * Returns the selected joystick state for the given button
  **/
 
@@ -137,7 +137,7 @@ int libjoy_get_button( int button )
 
 /* --------------------------------------------------------------------------- */
 /**
- * JOY_GET_POSITION ( int axis )
+ * libjoy_get_position ( int axis )
  * Returns the selected joystick state for the given axis
  **/
 
@@ -152,7 +152,7 @@ int libjoy_get_position( int axis )
 
 /* --------------------------------------------------------------------------- */
 /**
- * JOY_NUMHATS ()
+ * libjoy_hats ()
  * Returns the total number of POV hats of the current selected joystick
  **/
 
@@ -167,7 +167,7 @@ int libjoy_hats( void )
 
 /* --------------------------------------------------------------------------- */
 /**
- * JOY_NUMBALLS ()
+ * libjoy_balls ()
  * Returns the total number of balls of the current selected joystick
  **/
 
@@ -182,7 +182,7 @@ int libjoy_balls( void )
 
 /* --------------------------------------------------------------------------- */
 /**
- * JOY_GETHAT (int HAT)
+ * libjoy_get_hat (int HAT)
  * Returns the state of the specfied hat on the current selected joystick
  **/
 
@@ -200,7 +200,7 @@ int libjoy_get_hat( int hat )
 
 /* --------------------------------------------------------------------------- */
 /**
- * JOY_GETBALL (int BALL, int* dx, int* dy)
+ * libjoy_get_ball (int BALL, int* dx, int* dy)
  * Returns the state of the specfied ball on the current selected joystick
  **/
 
@@ -222,7 +222,7 @@ int libjoy_get_ball( int ball, int * dx, int * dy )
 
 /* --------------------------------------------------------------------------- */
 /**
- * JOY_BUTTONS (int JOY)
+ * libjoy_buttons_specific (int JOY)
  * Returns the selected joystick total buttons
  **/
 
@@ -237,7 +237,7 @@ int libjoy_buttons_specific( int joy )
 
 /* --------------------------------------------------------------------------- */
 /**
- * JOY_AXIS (int JOY)
+ * libjoy_axes_specific (int JOY)
  * Returns the selected joystick total axes
  **/
 
@@ -252,7 +252,7 @@ int libjoy_axes_specific( int joy )
 
 /* --------------------------------------------------------------------------- */
 /**
- * JOY_GET_BUTTON (int JOY, int button)
+ * libjoy_get_button_specific (int JOY, int button)
  * Returns the selected joystick state for the given button
  **/
 
@@ -270,7 +270,7 @@ int libjoy_get_button_specific( int joy, int button )
 
 /* --------------------------------------------------------------------------- */
 /**
- * JOY_GET_POSITION (int JOY, int axis)
+ * libjoy_get_position_specific (int JOY, int axis)
  * Returns the selected joystick state for the given axis
  **/
 
@@ -290,7 +290,7 @@ int libjoy_get_position_specific( int joy, int axis )
 /* Added by Sandman */
 /* --------------------------------------------------------------------------- */
 /**
- * JOY_NUMHATS (int JOY)
+ * libjoy_hats_specific (int JOY)
  * Returns the total number of POV hats of the specified joystick
  **/
 
@@ -305,7 +305,7 @@ int libjoy_hats_specific( int joy )
 
 /* --------------------------------------------------------------------------- */
 /**
- * JOY_NUMBALLS (int JOY)
+ * libjoy_balls_specific (int JOY)
  * Returns the total number of balls of the specified joystick
  **/
 
@@ -320,7 +320,7 @@ int libjoy_balls_specific( int joy )
 
 /* --------------------------------------------------------------------------- */
 /**
- * JOY_GETHAT (int JOY, int HAT)
+ * libjoy_get_hat_specific (int JOY, int HAT)
  * Returns the state of the specfied hat on the specified joystick
  **/
 
@@ -338,7 +338,7 @@ int libjoy_get_hat_specific( int joy, int hat )
 
 /* --------------------------------------------------------------------------- */
 /**
- * JOY_GETBALL (int JOY, int BALL, int* dx, int* dy)
+ * libjoy_get_ball_specific (int JOY, int BALL, int* dx, int* dy)
  * Returns the state of the specfied ball on the specified joystick
  **/
 

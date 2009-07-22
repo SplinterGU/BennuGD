@@ -30,16 +30,24 @@
 
 /* --------------------------------------------------------------------------- */
 
+#define FPS_INTIAL_VALUE    25
+#define FPS_INTIAL_SKIP     2
+
+/* --------------------------------------------------------------------------- */
+
+int fps_value = FPS_INTIAL_VALUE ;
+int max_jump = FPS_INTIAL_SKIP ;
+float frame_ms = 1000.0 / FPS_INTIAL_VALUE ; /* 40.0 ; */
+
 uint32_t frame_count = 0 ;
-int last_ticks_ok = 0 ;
 int last_frame_ticks = 0 ;
-int next_frame_ticks = 0 ;
-int fps_value = 25 ;
-int max_jump = 2 ;
-float frame_ms = 40.0 ;
 int jump = 0 ;
 int FPS_count = 0 ;
 int FPS_init = 0 ;
+
+int ticks_totals = 0;
+int ticks_per_frame = 0;
+int fps_partial = 0;
 
 /* --------------------------------------------------------------------------- */
 /* Inicialización y controles de tiempo                                        */
@@ -63,8 +71,8 @@ void gr_set_fps( int fps, int jump )
     frame_ms = fps ? 1000.0 / fps : 0.0 ;
     max_jump = jump ;
     fps_value = fps;
-
-    next_frame_ticks = SDL_GetTicks() + frame_ms ;
+    FPS_init = 0 ;
+    FPS_count = 0 ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -84,8 +92,16 @@ void gr_wait_frame()
 {
     int frame_ticks, delay ;
 
+    frame_count++ ;
+
     /* Tomo Tick actual */
     frame_ticks = SDL_GetTicks() ;
+
+    if ( !FPS_init )
+    {
+        FPS_count = 0 ;
+        FPS_init = frame_ticks ;
+    }
 
     /* Tiempo transcurrido total del ejecucion del ultimo frame (Frame time en ms) */
     * ( float * ) & GLODWORD( librender, FRAME_TIME ) = ( frame_ticks - last_frame_ticks ) / 1000.0f;
@@ -94,57 +110,54 @@ void gr_wait_frame()
 
     FPS_count++ ;
 
+    ticks_totals = frame_ticks - FPS_init ;
+    ticks_per_frame = ticks_totals / FPS_count ;
+    fps_partial = 1000.0 / ticks_per_frame ;
+
     /* Si paso 1 segundo o mas desde la ultima lectura */
     if ( FPS_init + 1000 < frame_ticks )
     {
         if ( fps_value )
-            GLODWORD( librender, SPEED_GAUGE ) = FPS_count * 100 / fps_value ;
+        {
+            GLODWORD( librender, SPEED_GAUGE ) = fps_partial * 100 / fps_value ;
+            GLODWORD( librender, FPS ) = fps_partial ;
+        }
         else
+        {
             GLODWORD( librender, SPEED_GAUGE ) = 100;
+            GLODWORD( librender, FPS ) = FPS_count ;
+        }
 
-        GLODWORD( librender, FPS ) = FPS_count ;
         FPS_count = 0 ;
         FPS_init = frame_ticks ;
     }
 
     /* -------------- */
 
-    frame_count++ ;
-
-    #ifdef DEBUG_FRAMES
-    printf ( "%s:%d-> tiempo_esperado de frame: %g / saltos: %d / tiempo consumido: %d / tiempo esperado: %g\n", __FILE__, __LINE__, frame_ms, jump, ( frame_ticks - last_ticks_ok ), frame_ms * (1 + jump) ) ; fflush ( stdout ) ;
-    #endif
-
-    /* Si supere el tiempo previsto de ejecucion del frame */
-    if ( frame_ms && ( frame_ticks - last_ticks_ok ) > frame_ms * ( 1 + jump ) )
+    if ( fps_value )
     {
-        /* Como no me alcanza el tiempo, voy a hacer skip */
-        if ( jump < max_jump )
-            jump++ ; /* No dibujar el frame */
-        else
+        if ( fps_partial > fps_value )
+        {
+            int delay = FPS_count * frame_ms - ticks_totals ;
+            if ( delay > 0 ) SDL_Delay( delay ) ;
             jump = 0 ;
+        }
+        else
+        {
+            /* Como no me alcanza el tiempo, voy a hacer skip */
+            if ( jump < max_jump )
+                jump++ ; /* No dibujar el frame */
+            else
+                jump = 0 ;
+        }
     }
     else
     {
-        /* Estoy dentro del tiempo esperado, ejecuto un delay, para no superar los fps */
-        delay = next_frame_ticks - frame_ticks ;
-        if ( delay > 0 ) SDL_Delay( delay ) ;
         jump = 0 ;
-
-        /* Restauro frame_ticks */
-        frame_ticks = SDL_GetTicks();
-    }
-
-    /* Calculo el proximo frame */
-    if ( !jump )
-    {
-        last_ticks_ok = frame_ticks;
-//        next_frame_ticks += frame_ms ;
-        next_frame_ticks = frame_ticks + frame_ms ;
     }
 
     /* Tiempo inicial del nuevo frame */
-    last_frame_ticks = frame_ticks;
+    last_frame_ticks = frame_ticks ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -158,7 +171,9 @@ void gr_refresh_palette()
     if ( sys_pixel_format->depth > 8 )
     {
         if ( sys_pixel_format->palette )
+        {
             for ( n = 0 ; n < 256 ; n++ )
+            {
                 sys_pixel_format->palette->colorequiv[ n ] = gr_map_rgb
                         (
                             sys_pixel_format,
@@ -166,6 +181,8 @@ void gr_refresh_palette()
                             sys_pixel_format->palette->rgb[ n ].g,
                             sys_pixel_format->palette->rgb[ n ].b
                         ) ;
+            }
+        }
     }
     else if ( sys_pixel_format->depth == 8 )
     {

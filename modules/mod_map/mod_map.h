@@ -67,8 +67,8 @@ typedef struct
     uint32_t code ;
     int8_t name[32] ;
 }
-#ifdef __GNU_C__
-__attribute__(( packed ) )
+#ifdef __GNUC__
+__attribute__ ((packed))
 #endif
 MAP_HEADER ;
 

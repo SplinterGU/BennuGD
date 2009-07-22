@@ -45,6 +45,7 @@
 #define OS_DC                   5
 #define OS_BSD                  6
 #define OS_GP2X                 7
+#define OS_GP2X_WIZ             8
 
 #endif
 

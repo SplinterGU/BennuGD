@@ -46,7 +46,7 @@ PALETTE * gr_read_pal( file * fp )
     if ( !sys_pixel_format->palette )
     {
         sys_pixel_format->palette = pal_new( pal );
-        pal_use( sys_pixel_format->palette );
+/*        pal_use( sys_pixel_format->palette ); */
         palette_changed = 1 ;
     }
 
@@ -186,7 +186,7 @@ int gr_load_pal( const char * filename )
             pal_destroy( old_sys_pal );
 
             sys_pixel_format->palette = pal_new( r );
-            pal_use( sys_pixel_format->palette );
+/*            pal_use( sys_pixel_format->palette ); */
             palette_changed = 1 ;
         }
     }

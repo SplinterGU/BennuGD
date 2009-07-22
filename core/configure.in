@@ -1,5 +1,7 @@
 AC_INIT(bennu,1.0.0)
 
+AC_CONFIG_MACRO_DIR([m4])
+
 AC_CANONICAL_SYSTEM
 AC_ARG_PROGRAM
 
@@ -27,6 +29,12 @@ case "$target_os" in
                 COMMON_CFLAGS="$COMMON_CFLAGS -m32"
                 COMMON_LDFLAGS="$COMMON_LDFLAGS -m32 -L/lib32"
                 ;;
+
+            arm)
+                COMMON_CFLAGS="$COMMON_CFLAGS $CFLAGS"
+                COMMON_LDFLAGS="$COMMON_LDFLAGS $LDFLAGS"
+                ;;
+
         esac
         ;;
 
@@ -65,9 +73,9 @@ dnl Check for compilers
 AC_PROG_CC
 
 if test "x$enable_debug" = "xyes"; then
-    CFLAGS=" -g $INCLUDES"
+    CFLAGS+=" -g $INCLUDES"
 else
-    CFLAGS=" -O2 -finline-functions -fno-strict-aliasing $INCLUDES"
+    CFLAGS+=" -O2 -finline-functions -fno-strict-aliasing $INCLUDES"
 fi
 
 dnl librerias para todos

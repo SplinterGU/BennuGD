@@ -25,6 +25,9 @@
 #define __PAL_H
 
 /* --------------------------------------------------------------------------- */
+#ifdef _MSC_VER
+#pragma pack(push, 1)
+#endif
 
 typedef struct _rgb_component
 {
@@ -32,6 +35,9 @@ typedef struct _rgb_component
     uint8_t     g ;
     uint8_t     b ;
 }
+#ifdef __GNUC__
+__attribute__ ((packed))
+#endif
 rgb_component ;
 
 typedef struct _palette
@@ -45,7 +51,14 @@ typedef struct _palette
     struct _palette     * next ;
     struct _palette     * prev ;
 }
+#ifdef __GNUC__
+__attribute__ ((packed))
+#endif
 PALETTE ;
+
+#ifdef _MSC_VER
+#pragma pack(pop)
+#endif
 
 /* --------------------------------------------------------------------------- */
 

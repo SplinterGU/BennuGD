@@ -152,7 +152,7 @@ GRAPH * gr_read_pcx( const char * filename )
                 if ( !sys_pixel_format->palette )
                 {
                     sys_pixel_format->palette = pal_new( bitmap->format->palette );
-                    pal_use( bitmap->format->palette );
+/*                    pal_use( bitmap->format->palette ); */
                     palette_changed = 1 ;
                 }
             }

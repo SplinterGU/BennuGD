@@ -47,7 +47,7 @@ SDL_Surface * screen = NULL ;
 char * apptitle = NULL ;
 
 int scr_width = 320 ;
-int scr_height = 200 ;
+int scr_height = 240 ;
 
 int scr_initialized = 0 ;
 
@@ -397,6 +397,8 @@ int gr_init( int width, int height )
 
 void __bgdexport( libvideo, module_initialize )()
 {
+    char * e;
+
     if ( !SDL_WasInit( SDL_INIT_VIDEO ) ) SDL_InitSubSystem( SDL_INIT_VIDEO );
 
 #ifdef _WIN32
@@ -404,7 +406,21 @@ void __bgdexport( libvideo, module_initialize )()
 #endif
     apptitle = appname;
 
-    GLODWORD( libvideo, GRAPH_MODE ) = MODE_32BITS;
+    e = getenv("VIDEO_WIDTH");
+    if ( e ) scr_width = atoi(e);
+
+    e = getenv("VIDEO_HEIGHT");
+    if ( e ) scr_height = atoi(e);
+
+    e = getenv("VIDEO_DEPTH");
+    if ( e )
+        GLODWORD( libvideo, GRAPH_MODE ) = atoi(e);
+    else
+#ifdef TARGET_GP2X_WIZ
+        GLODWORD( libvideo, GRAPH_MODE ) = MODE_16BITS;
+#else
+        GLODWORD( libvideo, GRAPH_MODE ) = MODE_32BITS;
+#endif
 
     gr_init( scr_width, scr_height ) ;
 }
