@@ -28,6 +28,18 @@
 
 /* --------------------------------------------------------------------------- */
 
+typedef struct _chardata
+{
+    int width;
+    int height;
+    int xadvance;
+    int yadvance;
+    int xoffset;
+    int yoffset;
+    int fileoffset ;
+}
+_chardata ;
+
 static int gr_font_loadfrom( file * fp );
 
 /* --------------------------------------------------------------------------- */
@@ -76,17 +88,7 @@ static int gr_font_loadfrom( file * fp )
     }
     oldchardata[256];
 
-    struct
-    {
-        int width;
-        int height;
-        int xadvance;
-        int yadvance;
-        int xoffset;
-        int yoffset;
-        int fileoffset ;
-    }
-    chardata[256] ;
+    _chardata chardata[256] ;
 
     if ( font_count == MAX_FONTS ) return -1 ;
 
@@ -258,26 +260,16 @@ static int gr_font_loadfrom( file * fp )
 
 int gr_font_save( int fontid, const char * filename )
 {
-    gzFile * file;
-    int      n;
+    file * file;
+    int n;
     uint32_t y;
-    long     offset;
-    uint8_t *  block = NULL ;
-    uint8_t *  lineptr;
+    long offset;
+    uint8_t * block = NULL ;
+    uint8_t * lineptr;
 
-    FONT *   font;
-    uint8_t    header[8];
-    struct
-    {
-        int width;
-        int height;
-        int xadvance;
-        int yadvance;
-        int xoffset;
-        int yoffset;
-        int fileoffset ;
-    }
-    chardata[256] ;
+    FONT * font;
+    uint8_t header[8];
+    _chardata chardata[256] ;
     int palette_saved = 0;
 
     if ( fontid < 0 || fontid > MAX_FONTS || !fonts[fontid] ) return 0;
@@ -286,14 +278,14 @@ int gr_font_save( int fontid, const char * filename )
 
     /* Open the file */
 
-    file = gzopen( filename, "wb" );
+    file = file_open( filename, "wb0" );
     if ( !file ) return 0;
 
     /* Write the header */
 
     strcpy( ( char * ) header, FNX_MAGIC );
     header[7] = font->bpp;
-    gzwrite( file, &header, 8 );
+    file_write( file, &header, 8 );
 
     /* Write the character information */
 
@@ -330,8 +322,8 @@ int gr_font_save( int fontid, const char * filename )
                     colors[k][2] = gpal[k].b >> 2 ;
                 }
 
-                gzwrite( file, &colors, 768 ) ;
-                gzwrite( file, block, 576 ) ;
+                file_write( file, &colors, sizeof(colors) ) ;
+                file_write( file, block, 576 ) ;
                 free( block ) ;
                 palette_saved = 1;
             }
@@ -356,11 +348,9 @@ int gr_font_save( int fontid, const char * filename )
         ARRANGE_DWORD( &chardata[n].fileoffset );
     }
 
-    ARRANGE_DWORD( &font->charset );
-    gzwrite( file, &font->charset, 4 );
-    ARRANGE_DWORD( &font->charset );
+    file_writeSint32( file, &font->charset );
 
-    gzwrite( file, &chardata, sizeof( chardata ) );
+    file_write( file, &chardata, sizeof( chardata ) );
 
     /* Write the character bitmaps */
 
@@ -372,7 +362,7 @@ int gr_font_save( int fontid, const char * filename )
 
             if ( gr->format->depth != font->bpp )
             {
-                gzclose( file );
+                file_close( file );
                 return 0;
             }
 
@@ -380,7 +370,7 @@ int gr_font_save( int fontid, const char * filename )
             {
                 if (( block = malloc( gr->widthb ) ) == NULL )
                 {
-                    gzclose( file );
+                    file_close( file );
                     return 0;
                 }
             }
@@ -396,16 +386,16 @@ int gr_font_save( int fontid, const char * filename )
                     {
                         ARRANGE_WORDS( block, ( int )gr->width );
                         gr_convert16_ScreenTo565(( uint16_t * )block, gr->width );
+                        file_write( file, block, gr->widthb );
                     }
                     else if ( gr->format->depth == 32 )
                     {
-                        ARRANGE_DWORDS( block, ( int )gr->width );
+                        file_writeUint32A( file, block, gr->width );
                     }
-                    gzwrite( file, block, gr->widthb );
                 }
                 else
                 {
-                    gzwrite( file, lineptr, gr->widthb );
+                    file_write( file, lineptr, gr->widthb );
                 }
             }
 
@@ -413,7 +403,7 @@ int gr_font_save( int fontid, const char * filename )
         }
     }
 
-    gzclose( file );
+    file_close( file );
 
     return 1;
 }
