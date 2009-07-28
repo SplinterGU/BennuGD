@@ -346,7 +346,7 @@ int gr_save_fpg( int libid, const char * filename )
                     memcpy( block, ( uint8_t * )gr->data + gr->pitch*y, gr->widthb );
                     if ( bpp == 16 )
                     {
-//                        gr_convert16_ScreenTo565(( uint16_t * )block, gr->width );
+/*                        gr_convert16_ScreenTo565(( uint16_t * )block, gr->width ); */
                         file_writeUint16A( fp, ( uint16_t * ) block, gr->width );
                     }
                     else

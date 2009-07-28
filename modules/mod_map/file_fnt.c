@@ -225,7 +225,7 @@ static int gr_font_loadfrom( file * fp )
 
             if ( gr->format->depth == 16 )
             {
-                gr_convert16_565ToScreen(( uint16_t * )ptr, gr->width );
+/*                gr_convert16_565ToScreen(( uint16_t * )ptr, gr->width ); */
                 ARRANGE_WORDS( ptr, ( int )gr->width );
             }
             else if ( gr->format->depth == 32 )
@@ -385,7 +385,7 @@ int gr_font_save( int fontid, const char * filename )
                     if ( gr->format->depth == 16 )
                     {
                         ARRANGE_WORDS( block, ( int )gr->width );
-                        gr_convert16_ScreenTo565(( uint16_t * )block, gr->width );
+/*                        gr_convert16_ScreenTo565(( uint16_t * )block, gr->width ); */
                         file_write( file, block, gr->widthb );
                     }
                     else if ( gr->format->depth == 32 )

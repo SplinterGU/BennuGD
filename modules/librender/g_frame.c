@@ -46,8 +46,8 @@ int FPS_count = 0 ;
 int FPS_init = 0 ;
 
 int ticks_totals = 0;
-int ticks_per_frame = 0;
-int fps_partial = 0;
+float ticks_per_frame = 0;
+float fps_partial = 0;
 
 /* --------------------------------------------------------------------------- */
 /* Inicialización y controles de tiempo                                        */
@@ -68,7 +68,7 @@ int fps_partial = 0;
 
 void gr_set_fps( int fps, int jump )
 {
-    frame_ms = fps ? 1000.0 / fps : 0.0 ;
+    frame_ms = fps ? 1000.0 / ( float ) fps : 0.0 ;
     max_jump = jump ;
     fps_value = fps;
     FPS_init = 0 ;
@@ -90,7 +90,7 @@ void gr_set_fps( int fps, int jump )
 
 void gr_wait_frame()
 {
-    int frame_ticks, delay ;
+    int frame_ticks, ticks, delay ;
 
     frame_count++ ;
 
@@ -104,42 +104,31 @@ void gr_wait_frame()
     }
 
     /* Tiempo transcurrido total del ejecucion del ultimo frame (Frame time en ms) */
-    * ( float * ) & GLODWORD( librender, FRAME_TIME ) = ( frame_ticks - last_frame_ticks ) / 1000.0f;
+    * ( float * ) & GLODWORD( librender, FRAME_TIME ) = ( frame_ticks - last_frame_ticks ) / 1000.0f ;
 
     /* -------------- */
 
     FPS_count++ ;
 
     ticks_totals = frame_ticks - FPS_init ;
-    ticks_per_frame = ticks_totals / FPS_count ;
-    fps_partial = 1000.0 / ticks_per_frame ;
-
-    /* Si paso 1 segundo o mas desde la ultima lectura */
-    if ( FPS_init + 1000 < frame_ticks )
-    {
-        if ( fps_value )
-        {
-            GLODWORD( librender, SPEED_GAUGE ) = fps_partial * 100 / fps_value ;
-            GLODWORD( librender, FPS ) = fps_partial ;
-        }
-        else
-        {
-            GLODWORD( librender, SPEED_GAUGE ) = 100;
-            GLODWORD( librender, FPS ) = FPS_count ;
-        }
-
-        FPS_count = 0 ;
-        FPS_init = frame_ticks ;
-    }
-
-    /* -------------- */
+    ticks_per_frame = ( float ) ticks_totals / ( float ) FPS_count ;
+    fps_partial = 1000.0 / ( int ) ticks_per_frame ;
 
     if ( fps_value )
     {
-        if ( fps_partial > fps_value )
+        if ( ( int ) fps_partial > fps_value )
         {
             int delay = FPS_count * frame_ms - ticks_totals ;
-            if ( delay > 0 ) SDL_Delay( delay ) ;
+
+            if ( delay > 0 ) 
+            {
+                SDL_Delay( delay ) ;
+
+                /* Readjust info */
+                ticks_totals = frame_ticks - FPS_init ;
+                ticks_per_frame = ( float ) ticks_totals / ( float ) FPS_count ;
+                fps_partial = 1000.0 / ticks_per_frame ;
+            }
             jump = 0 ;
         }
         else
@@ -154,6 +143,28 @@ void gr_wait_frame()
     else
     {
         jump = 0 ;
+    }
+
+    /* Si paso 1 segundo o mas desde la ultima lectura */
+    if ( ( ticks = ticks_totals - 1000 ) >= 0 )
+    {
+        if ( fps_value )
+        {
+            GLODWORD( librender, SPEED_GAUGE ) = fps_partial * 100.0 / fps_value ;
+            GLODWORD( librender, FPS ) = fps_partial ;
+
+            FPS_count = ticks / ( int ) ticks_per_frame + 1;
+            FPS_init = frame_ticks - ticks ;
+        }
+        else
+        {
+            GLODWORD( librender, SPEED_GAUGE ) = 100 ;
+            GLODWORD( librender, FPS ) = FPS_count ;
+
+            FPS_count = 0 ;
+            FPS_init = frame_ticks ;
+        }
+
     }
 
     /* Tiempo inicial del nuevo frame */
