@@ -68,6 +68,8 @@ float fps_partial = 0;
 
 void gr_set_fps( int fps, int jump )
 {
+    if ( fps == fps_value && jump == max_jump ) return ;
+
     frame_ms = fps ? 1000.0 / ( float ) fps : 0.0 ;
     max_jump = jump ;
     fps_value = fps;
@@ -94,69 +96,80 @@ void gr_wait_frame()
 
     frame_count++ ;
 
+    /* -------------- */
+
     /* Tomo Tick actual */
     frame_ticks = SDL_GetTicks() ;
-
-    if ( !FPS_init )
-    {
-        FPS_count = 0 ;
-        FPS_init = frame_ticks ;
-    }
 
     /* Tiempo transcurrido total del ejecucion del ultimo frame (Frame time en ms) */
     * ( float * ) & GLODWORD( librender, FRAME_TIME ) = ( frame_ticks - last_frame_ticks ) / 1000.0f ;
 
-    /* -------------- */
-
     FPS_count++ ;
 
+    /* -------------- */
+
+    if ( !FPS_init )
+    {
+        FPS_count = 1 ;
+        FPS_init = frame_ticks - frame_ms ;
+        jump = 0;
+    }
+
+    /* -------------- */
+
     ticks_totals = frame_ticks - FPS_init ;
-    ticks_per_frame = ( float ) ticks_totals / ( float ) FPS_count ;
-    fps_partial = 1000.0 / ( int ) ticks_per_frame ;
 
     if ( fps_value )
     {
-        if ( ( int ) fps_partial > fps_value )
+        if ( FPS_count )
         {
-            int delay = FPS_count * frame_ms - ticks_totals ;
+            ticks_per_frame = ( float ) ticks_totals / ( float ) FPS_count ;
+            fps_partial = 1000.0 / ticks_per_frame ;
 
-            if ( delay > 0 ) 
+            if ( ( int ) fps_partial == fps_value )
             {
-                SDL_Delay( delay ) ;
-
-                /* Readjust info */
-                ticks_totals = frame_ticks - FPS_init ;
-                ticks_per_frame = ( float ) ticks_totals / ( float ) FPS_count ;
-                fps_partial = 1000.0 / ticks_per_frame ;
+                jump = 0;
             }
-            jump = 0 ;
+            else if ( ( int ) fps_partial > fps_value )
+            {
+                int delay = FPS_count * frame_ms - ticks_totals ;
+                if ( delay > 0 ) SDL_Delay( delay ) ;
+                jump = 0 ;
+            }
+            else
+            {
+                /* Como no me alcanza el tiempo, voy a hacer skip */
+                if ( jump < max_jump )
+                    jump++ ; /* No dibujar el frame */
+                else
+                    jump = 0 ;
+            }
         }
         else
         {
-            /* Como no me alcanza el tiempo, voy a hacer skip */
-            if ( jump < max_jump )
-                jump++ ; /* No dibujar el frame */
-            else
-                jump = 0 ;
+            jump = 0 ;
+        }
+
+        if ( ( ticks = ticks_totals - 1000 ) >= 0 )
+        {
+            int fps_count = ticks / ticks_per_frame, fps_init = frame_ticks - ticks;
+            
+            /* Recalc all values after delay */
+            ticks_totals = SDL_GetTicks() - FPS_init ;
+            ticks_per_frame = ( float ) ticks_totals / ( float ) FPS_count ;
+            fps_partial = 1000.0 / ticks_per_frame ;
+
+            GLODWORD( librender, SPEED_GAUGE ) = fps_partial * 100.0 / fps_value ;
+            GLODWORD( librender, FPS ) = fps_partial ;
+
+            FPS_count = fps_count ;
+            FPS_init = fps_init ;
         }
     }
     else
     {
-        jump = 0 ;
-    }
-
-    /* Si paso 1 segundo o mas desde la ultima lectura */
-    if ( ( ticks = ticks_totals - 1000 ) >= 0 )
-    {
-        if ( fps_value )
-        {
-            GLODWORD( librender, SPEED_GAUGE ) = fps_partial * 100.0 / fps_value ;
-            GLODWORD( librender, FPS ) = fps_partial ;
-
-            FPS_count = ticks / ( int ) ticks_per_frame + 1;
-            FPS_init = frame_ticks - ticks ;
-        }
-        else
+        /* Si paso 1 segundo o mas desde la ultima lectura */
+        if ( ( ticks = ticks_totals - 1000 ) >= 0 )
         {
             GLODWORD( librender, SPEED_GAUGE ) = 100 ;
             GLODWORD( librender, FPS ) = FPS_count ;
@@ -164,7 +177,6 @@ void gr_wait_frame()
             FPS_count = 0 ;
             FPS_init = frame_ticks ;
         }
-
     }
 
     /* Tiempo inicial del nuevo frame */
