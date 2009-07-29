@@ -139,11 +139,11 @@ void gr_wait_frame()
 
         fps_partial = 1000.0 / ticks_per_frame ;
 
-        if ( ( ( int ) fps_partial ) == fps_value )
+        if ( ( /*( int )*/ fps_partial ) == fps_value )
         {
             jump = 0;
         }
-        else if ( ( ( int ) fps_partial ) > fps_value )
+        else if ( ( /*( int )*/ fps_partial ) > fps_value )
         {
             int delay = fps_partial * frame_ms - fps_value * frame_ms ;
 
