@@ -82,7 +82,7 @@ void gr_set_fps( int fps, int skip )
 
     FPS_total_init = 0 ;
     FPS_total_count = 0 ;
-    
+
     jump = 0;
 }
 
@@ -147,7 +147,7 @@ void gr_wait_frame()
         {
             int delay = fps_partial * frame_ms - fps_value * frame_ms ;
 
-            if ( delay > 0 ) 
+            if ( delay > 0 )
             {
                 if ( delay > frame_ms ) delay = frame_ms ;
 
@@ -234,7 +234,10 @@ void gr_refresh_palette()
                 palette[ n ].b = *pal++;
             }
         }
-        SDL_SetColors( screen, palette, 0, 256 ) ;
+        if ( scale_screen )
+            SDL_SetColors( scale_screen, palette, 0, 256 ) ;
+        else
+            SDL_SetColors( screen, palette, 0, 256 ) ;
     }
 
     palette_changed = 0;

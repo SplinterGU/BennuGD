@@ -54,6 +54,7 @@
 extern GRAPH * icon ;
 
 extern SDL_Surface * screen ;
+extern SDL_Surface * scale_screen ;
 
 extern char * apptitle ;
 
@@ -72,6 +73,8 @@ extern int frameless ;
 extern int scale_mode ;
 
 extern int waitvsync ;
+
+extern int scale_resolution ;
 
 /* --------------------------------------------------------------------------- */
 

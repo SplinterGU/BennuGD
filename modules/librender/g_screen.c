@@ -151,7 +151,14 @@ int gr_lock_screen()
 
     screen_locked = 1 ;
 
-    if ( SDL_MUSTLOCK( screen ) ) SDL_LockSurface( screen ) ;
+    if ( scale_resolution != 0 )
+    {
+        if ( SDL_MUSTLOCK( scale_screen ) ) SDL_LockSurface( scale_screen ) ;
+    }
+    else
+    {
+        if ( SDL_MUSTLOCK( screen ) ) SDL_LockSurface( screen ) ;
+    }
 
     if ( enable_scale || scale_mode != SCALE_NONE )
     {
@@ -188,7 +195,76 @@ void gr_unlock_screen()
 
     screen_locked = 0 ;
 
-    if ( enable_scale )
+    if ( scale_resolution )
+    {
+        uint8_t  * src8  = screen->pixels, * dst8  = scale_screen->pixels , * pdst = scale_screen->pixels ;
+        uint16_t * src16 = screen->pixels, * dst16 = scale_screen->pixels ;
+        uint32_t * src32 = screen->pixels, * dst32 = scale_screen->pixels ;
+
+        double  fw = (double)screen->w / (double)scale_screen->w,
+                fh = (double)screen->h / (double)scale_screen->h,
+                fx, fy = 0.0 ;
+        int     h, w;
+
+        switch ( scale_screen->format->BitsPerPixel )
+        {
+            case    8:
+                    for ( h = 0; h < scale_screen->h; h++ )
+                    {
+                        src8 = screen->pixels + screen->pitch * ( int ) fy ;
+
+                        fx = 0.0;
+                        for ( w = 0; w < scale_screen->w; w++ )
+                        {
+                            *dst8 = src8[( int ) fx];
+                            dst8++;
+                            fx += fw;
+                        }
+                        fy += fh;
+                        dst8 = pdst += scale_screen->pitch ;
+                    }
+                    break;
+
+            case    16:
+                    for ( h = 0; h < scale_screen->h; h++ )
+                    {
+                        src16 = screen->pixels + screen->pitch * ( int ) fy ;
+
+                        fx = 0.0;
+                        for ( w = 0; w < scale_screen->w; w++ )
+                        {
+                            *dst16 = src16[( int ) fx];
+                            dst16++;
+                            fx += fw;
+                        }
+                        fy += fh;
+                        dst16 = ( uint16_t * ) ( pdst += scale_screen->pitch ) ;
+                    }
+                    break;
+
+            case    32:
+                    for ( h = 0; h < scale_screen->h; h++ )
+                    {
+                        src32 = screen->pixels + screen->pitch * ( int ) fy ;
+
+                        fx = 0.0;
+                        for ( w = 0; w < scale_screen->w; w++ )
+                        {
+                            *dst32 = src32[( int ) fx];
+                            dst32++;
+                            fx += fw;
+                        }
+                        fy += fh;
+                        dst32 = ( uint32_t * ) ( pdst += scale_screen->pitch ) ;
+                    }
+                    break;
+        }
+
+        if ( SDL_MUSTLOCK( scale_screen ) ) SDL_UnlockSurface( scale_screen ) ;
+        if ( waitvsync ) gr_wait_vsync();
+        SDL_Flip( scale_screen ) ;
+    }
+    else if ( enable_scale )
     {
         GRAPH * scr;
 
