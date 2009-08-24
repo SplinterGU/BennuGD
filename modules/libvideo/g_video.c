@@ -454,11 +454,11 @@ void __bgdexport( libvideo, module_initialize )()
     if ( e )
         GLODWORD( libvideo, GRAPH_MODE ) = atoi(e);
     else
-#ifdef TARGET_GP2X_WIZ
+/*#ifdef TARGET_GP2X_WIZ*/
         GLODWORD( libvideo, GRAPH_MODE ) = MODE_16BITS;
-#else
+/*#else
         GLODWORD( libvideo, GRAPH_MODE ) = MODE_32BITS;
-#endif
+#endif*/
 
     gr_init( scr_width, scr_height ) ;
 }
