@@ -77,7 +77,7 @@ void gr_set_fps( int fps, int skip )
     max_jump = skip ;
     fps_value = ( int ) fps;
 
-    FPS_init_sync = FPS_init = SDL_GetTicks() ;
+    FPS_init_sync = FPS_init = 0 ;
     FPS_count_sync = FPS_count = 0 ;
 
     jump = 0;
@@ -107,33 +107,46 @@ void gr_wait_frame()
     /* Tomo Tick actual */
     frame_ticks = SDL_GetTicks() ;
 
+    if ( !FPS_init_sync )
+    {
+        FPS_init_sync = FPS_init = SDL_GetTicks() ;
+        FPS_count_sync = FPS_count = 0 ;
+        jump = 0;
+
+        /* Tiempo inicial del nuevo frame */
+        last_frame_ticks = frame_ticks ;
+
+        return;
+    }
+
     /* Tiempo transcurrido total del ejecucion del ultimo frame (Frame time en ms) */
     * ( float * ) &GLODWORD( librender, FRAME_TIME ) = ( frame_ticks - last_frame_ticks ) / 1000.0f ;
 
     /* -------------- */
 
     FPS_count++ ;
-    FPS_count_sync++ ;
 
     /* -------------- */
 
     if ( fps_value )
     {
+        FPS_count_sync++ ;
+
         ticks_per_frame = ( ( float ) ( frame_ticks - FPS_init_sync ) ) / ( float ) FPS_count_sync ;
         fps_partial = 1000.0 / ticks_per_frame ;
 
         if ( fps_partial == fps_value )
         {
+            FPS_init_sync = frame_ticks ;
+            FPS_count_sync = 0 ;
             jump = 0;
         }
         else if ( fps_partial > fps_value )
         {
-            int delay = fps_partial / ( ( float ) fps_value ) * frame_ms ;
+            int delay = FPS_count_sync * frame_ms - ( frame_ticks - FPS_init_sync ) ;
 
             if ( delay > 0 )
             {
-                if ( delay > frame_ms ) delay = frame_ms ;
-
                 SDL_Delay( delay ) ;
 
                 /* Reajust after delay */
@@ -150,7 +163,11 @@ void gr_wait_frame()
             if ( jump < max_jump ) /* Como no me alcanza el tiempo, voy a hacer skip */
                 jump++ ; /* No dibujar el frame */
             else
+            {
+                FPS_init_sync = frame_ticks ;
+                FPS_count_sync = 0 ;
                 jump = 0 ;
+            }
         }
     }
 
