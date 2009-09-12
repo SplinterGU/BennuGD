@@ -141,7 +141,14 @@ static void do_mouse_events()
         ( last_mouse_x != -1 && GLOINT32( libmouse, MOUSEX ) != last_mouse_x ) ||
         ( last_mouse_y != -1 && GLOINT32( libmouse, MOUSEY ) != last_mouse_y ) )
     {
-        SDL_WarpMouse( GLOINT32( libmouse, MOUSEX ), GLOINT32( libmouse, MOUSEY ) ) ;
+        if ( scale_resolution != 0 )
+        {
+            SDL_WarpMouse( GLOINT32( libmouse, MOUSEX ) / ( (double)screen->w / (double)scale_screen->w ), GLOINT32( libmouse, MOUSEY ) / ( (double)screen->h / (double)scale_screen->h ) ) ;
+        }
+        else
+        {
+            SDL_WarpMouse( GLOINT32( libmouse, MOUSEX ), GLOINT32( libmouse, MOUSEY ) ) ;
+        }
     }
 
     /* Procesa los eventos de mouse pendientes */
