@@ -980,8 +980,9 @@ void compile_process()
             ctype = typedef_pointer( ctype ) ;
         }
 
-        if ( token.type != IDENTIFIER || token.code < reserved_words )
-            compile_error( MSG_INVALID_PARAM ) ;
+        if ( token.type != IDENTIFIER || token.code < reserved_words ) compile_error( MSG_INVALID_PARAM ) ;
+
+        if ( constants_search( token.code ) ) compile_error( MSG_CONSTANT_REDECLARED_AS_VARIABLE ) ;
 
         /* Check if the process was used before declared */
         if ( !proc->declared )
