@@ -75,6 +75,8 @@ extern int scale_mode ;
 extern int waitvsync ;
 
 extern int scale_resolution ;
+extern int * scale_resolution_table_w;
+extern int * scale_resolution_table_h;
 
 /* --------------------------------------------------------------------------- */
 

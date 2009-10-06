@@ -55,7 +55,6 @@ int scr_initialized = 0 ;
 int enable_16bits = 0 ;
 int enable_32bits = 0 ;
 int enable_scale = 0 ;
-int scale_resolution = 0 ;
 int full_screen = 0 ;
 int double_buffer = 0 ;
 int hardware_scr = 0 ;
@@ -63,6 +62,10 @@ int grab_input = 0 ;
 int frameless = 0 ;
 int scale_mode = SCALE_NONE ;
 int waitvsync = 0 ;
+
+int scale_resolution = 0 ;
+int * scale_resolution_table_w = NULL;
+int * scale_resolution_table_h = NULL;
 
 /* --------------------------------------------------------------------------- */
 
@@ -278,6 +281,18 @@ int gr_set_mode( int width, int height, int depth )
         enable_32bits = 1;
     }
 
+    if ( scale_resolution_table_w )
+    {
+        free( scale_resolution_table_w );
+        scale_resolution_table_w = NULL;
+    }
+
+    if ( scale_resolution_table_h )
+    {
+        free( scale_resolution_table_h );
+        scale_resolution_table_h = NULL;
+    }
+
     if ( scale_resolution != 0                  &&
          ( scale_resolution / 10000 ) < width    &&
          ( scale_resolution % 10000 ) < height
@@ -336,6 +351,31 @@ int gr_set_mode( int width, int height, int depth )
                                        scale_screen->format->Bmask,
                                        scale_screen->format->Amask
                                      );
+
+        /* scale tables */
+        {
+            double  fw = (double)screen->w / (double)scale_screen->w,
+                    fh = (double)screen->h / (double)scale_screen->h,
+                    fx, fy = 0.0 ;
+            int     h, w;
+
+            if ( !( scale_resolution_table_w = malloc( surface_width  * sizeof( int ) ) ) ) return -1;
+            if ( !( scale_resolution_table_h = malloc( surface_height * sizeof( int ) ) ) ) return -1;
+
+            fx = 0.0;
+            for ( w = 0; w < scale_screen->w; w++ )
+            {
+                scale_resolution_table_w[w] = ( int ) fx;
+                fx += fw;
+            }
+
+            fy = 0.0;
+            for ( h = 0; h < scale_screen->h; h++ )
+            {
+                scale_resolution_table_h[h] = screen->pitch * ( int ) fy ;
+                fy += fh;
+            }
+        }
     }
     else
     {
