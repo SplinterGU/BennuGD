@@ -66,7 +66,7 @@ int compile_array_data( VARSPACE * n, segment * data, int size, int subsize, BAS
             const char * str = string_get( token.code ) ;
             int subcount = 0 ;
 
-            if ( subsize == 0 ) subsize = strlen( str );
+            if ( subsize == 0 ) subsize = strlen( str ) + 1;
 
             if (( int )strlen( str ) > subsize ) compile_error( MSG_TOO_MANY_INIT ) ;
             while ( *str )

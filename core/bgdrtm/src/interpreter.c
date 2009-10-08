@@ -1475,8 +1475,8 @@ int instance_go( INSTANCE * r )
 
             case MN_STRACAT:
                 n = r->stack_ptr[-1];
-                strncat( *( char ** )( &r->stack_ptr[-2] ), string_get( n ), ptr[1] - strlen( *( char ** )( &r->stack_ptr[-2] ) ) ) ;
-                (( char * )( r->stack_ptr[-2] ) )[ptr[1]] = 0;
+                strncat( *( char ** )( &r->stack_ptr[-2] ), string_get( n ), (ptr[1]-1) - strlen( *( char ** )( &r->stack_ptr[-2] ) ) ) ;
+                (( char * )( r->stack_ptr[-2] ) )[ptr[1]-1] = 0;
                 r->stack_ptr[-2] = r->stack_ptr[-1];
                 r->stack_ptr--;
                 ptr += 2 ;
