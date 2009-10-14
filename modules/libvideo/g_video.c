@@ -293,10 +293,7 @@ int gr_set_mode( int width, int height, int depth )
         scale_resolution_table_h = NULL;
     }
 
-    if ( scale_resolution != 0                  &&
-         ( scale_resolution / 10000 ) < width    &&
-         ( scale_resolution % 10000 ) < height
-       )
+    if ( scale_resolution != 0 )
     {
         surface_width  = scale_resolution / 10000 ;
         surface_height = scale_resolution % 10000 ;
