@@ -47,6 +47,13 @@
 #define STAT_LSHIFT             0x0000002
 #define STAT_CTRL               0x0000004
 #define STAT_ALT                0x0000008
+#define STAT_RCTRL              0x0000010
+#define STAT_LCTRL              0x0000020
+#define STAT_RALT               0x0000040
+#define STAT_LALT               0x0000080
+#define STAT_NUM                0x0000100
+#define STAT_CAPS               0x0000200
+#define STAT_SHIFT              0x0000400
 
 /* ---------------------------------------------------------------------- */
 
@@ -313,8 +320,15 @@ DLCONSTANT  __bgdexport( libkey, constants_def )[] =
     { "STAT_LSHIFT",  TYPE_DWORD,  STAT_LSHIFT },
     { "STAT_CTRL",    TYPE_DWORD,  STAT_CTRL   },
     { "STAT_ALT",     TYPE_DWORD,  STAT_ALT    },
+    { "STAT_RCTRL",   TYPE_DWORD,  STAT_RCTRL  },
+    { "STAT_LCTRL",   TYPE_DWORD,  STAT_LCTRL  },
+    { "STAT_RALT",    TYPE_DWORD,  STAT_RALT   },
+    { "STAT_LALT",    TYPE_DWORD,  STAT_LALT   },
+    { "STAT_NUM",     TYPE_DWORD,  STAT_NUM    },
+    { "STAT_CAPS",    TYPE_DWORD,  STAT_CAPS   },
+    { "STAT_SHIFT",   TYPE_DWORD,  STAT_SHIFT  },
 
-    { NULL          , 0         ,  0  }
+    { NULL          , 0         ,  0           }
 } ;
 
 /* ----------------------------------------------------------------- */
@@ -518,10 +532,21 @@ static void process_key_events()
 
     /* Now actualized every frame... */
     GLODWORD( libkey,  SHIFTSTATUS ) =
-        (( m & KMOD_RSHIFT )                         ? STAT_RSHIFT : 0 ) |
-        (( m & KMOD_LSHIFT )                         ? STAT_LSHIFT : 0 ) |
-        ((( m & KMOD_RCTRL ) || ( m & KMOD_LCTRL ) ) ? STAT_CTRL   : 0 ) |
-        ((( m & KMOD_LALT )  || ( m & KMOD_RALT ) )  ? STAT_ALT    : 0 ) ;
+        ( ( m & KMOD_RSHIFT ) ? STAT_RSHIFT : 0 ) |
+        ( ( m & KMOD_LSHIFT ) ? STAT_LSHIFT : 0 ) |
+
+        ( ( m & KMOD_CTRL   ) ? STAT_CTRL   : 0 ) |
+        ( ( m & KMOD_ALT    ) ? STAT_ALT    : 0 ) |
+
+        ( ( m & KMOD_RCTRL  ) ? STAT_RCTRL  : 0 ) |
+        ( ( m & KMOD_LCTRL  ) ? STAT_LCTRL  : 0 ) |
+
+        ( ( m & KMOD_RALT   ) ? STAT_RALT   : 0 ) |
+        ( ( m & KMOD_LALT   ) ? STAT_LALT   : 0 ) |
+
+        ( ( m & KMOD_NUM    ) ? STAT_NUM    : 0 ) |
+        ( ( m & KMOD_CAPS   ) ? STAT_CAPS   : 0 ) |
+        ( ( m & KMOD_SHIFT  ) ? STAT_SHIFT  : 0 ) ;
 }
 
 /* ----------------------------------------------------------------- */
