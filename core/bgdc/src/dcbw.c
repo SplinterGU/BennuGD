@@ -1,7 +1,7 @@
 /*
- *  Copyright © 2006-2009 SplinterGU (Fenix/Bennugd)
- *  Copyright © 2002-2006 Fenix Team (Fenix)
- *  Copyright © 1999-2002 José Luis Cebrián Pagüe (Fenix)
+ *  Copyright ï¿½ 2006-2009 SplinterGU (Fenix/Bennugd)
+ *  Copyright ï¿½ 2002-2006 Fenix Team (Fenix)
+ *  Copyright ï¿½ 1999-2002 Josï¿½ Luis Cebriï¿½n Pagï¿½e (Fenix)
  *
  *  This file is part of Bennu - Game Development
  *
@@ -47,7 +47,7 @@ extern int procdef_count;
 extern int identifier_count;
 extern PROCDEF ** procs;
 
-/* Gestión de la lista de ficheros a incluir en el DCB */
+/* Gestiï¿½n de la lista de ficheros a incluir en el DCB */
 
 DCB_FILE * dcb_files = 0;
 int dcb_ef_alloc = 0;
@@ -82,6 +82,11 @@ void dcb_add_file( const char * filename )
     if ( strlen( filename ) > 3 && !strncmp( filename + strlen( filename ) - 3, ".so", 3 ) )    return;
     if ( strlen( filename ) > 6 && !strncmp( filename + strlen( filename ) - 6, ".dylib", 6 ) ) return;
 
+    for ( i = 0; filename[i]; i++ ) if ( filename[i] == '\\' ) buffer[i] = '/'; else buffer[i] = filename[i];
+    buffer[i] = '\0';
+
+    filename = ( const char * ) buffer;
+
     fp = file_open( filename, "rb" );
     if ( !fp ) return;
     size = file_size( fp );
@@ -93,16 +98,13 @@ void dcb_add_file( const char * filename )
         if ( !dcb_files ) compile_error( "dcb_add_file: out of memory" );
     }
 
-    /* Comprueba que el fichero no haya sido ya añadido */
+    /* Comprueba que el fichero no haya sido ya aï¿½adido */
 
     for ( i = 0; i < dcb_filecount; i++ )
         if ( strcmp( filename, (const char *)dcb_files[i].Name ) == 0 ) return;
 
-    dcb_files[dcb_filecount].Name = (uint8_t *)strdup( filename );
+    dcb_files[dcb_filecount].Name = (uint8_t *) strdup( filename );
     dcb_files[dcb_filecount].SFile = size;
-
-    for ( i = 0; dcb_files[dcb_filecount].Name[i]; i++ )
-        if ( dcb_files[dcb_filecount].Name[i] == '\\' ) dcb_files[dcb_filecount].Name[i] = '/';
 
     dcb_filecount++;
 }
@@ -154,7 +156,7 @@ void dcb_settype( DCB_TYPEDEF * d, TYPEDEF * t )
 }
 
 
-/* Función principal que crea el fichero DCB
+/* Funciï¿½n principal que crea el fichero DCB
  * (ver dcb.h con la estructura del mismo) */
 
 DCB_HEADER dcb;
@@ -359,7 +361,7 @@ int dcb_save( const char * filename, int options, const char * stubname )
 
     dcb.file = dcb_files;
 
-    /* 4. Cálculo de offsets */
+    /* 4. Cï¿½lculo de offsets */
 
     offset = sizeof( DCB_HEADER_DATA );
 
@@ -558,7 +560,7 @@ int dcb_save( const char * filename, int options, const char * stubname )
 
     file_close( fp );
 
-    /* 6. Mostrar estadísticas */
+    /* 6. Mostrar estadï¿½sticas */
 
     printf( "\nFile %s compiled (%ld bytes):\n\n", filename, offset );
     printf( "  Processes              %8d\n", procdef_count );

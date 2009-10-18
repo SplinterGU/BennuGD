@@ -1,7 +1,7 @@
 /*
- *  Copyright © 2006-2009 SplinterGU (Fenix/Bennugd)
- *  Copyright © 2002-2006 Fenix Team (Fenix)
- *  Copyright © 1999-2002 José Luis Cebrián Pagüe (Fenix)
+ *  Copyright ï¿½ 2006-2009 SplinterGU (Fenix/Bennugd)
+ *  Copyright ï¿½ 2002-2006 Fenix Team (Fenix)
+ *  Copyright ï¿½ 1999-2002 Josï¿½ Luis Cebriï¿½n Pagï¿½e (Fenix)
  *
  *  This file is part of Bennu - Game Development
  *
@@ -156,9 +156,9 @@ int main( int argc, char **argv )
         if ( !filename )
         {
             printf( BGDI_VERSION "\n"
-                    "Copyright © 2006-2009 SplinterGU (Fenix/BennuGD)\n"
-                    "Copyright © 2002-2006 Fenix Team (Fenix)\n"
-                    "Copyright © 1999-2002 José Luis Cebrián Pagüe (Fenix)\n"
+                    "Copyright ï¿½ 2006-2009 SplinterGU (Fenix/BennuGD)\n"
+                    "Copyright ï¿½ 2002-2006 Fenix Team (Fenix)\n"
+                    "Copyright ï¿½ 1999-2002 Josï¿½ Luis Cebriï¿½n Pagï¿½e (Fenix)\n"
                     "Bennu Game Development comes with ABSOLUTELY NO WARRANTY;\n"
                     "see COPYING for details\n\n"
                     "Usage: %s [options] <data code block file>[.dcb]\n\n"
@@ -202,7 +202,7 @@ int main( int argc, char **argv )
 
             if ( !dcbloaded )
             {
-                printf( "%s: don't exist or isn't version %d DCB compatible\n", filename, DCB_VERSION >> 8 ) ;
+                printf( "%s: doesn't exist or isn't version %d DCB compatible\n", filename, DCB_VERSION >> 8 ) ;
                 return -1 ;
             }
         }
