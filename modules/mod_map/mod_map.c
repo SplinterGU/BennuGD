@@ -338,19 +338,16 @@ static int modmap_map_exists( INSTANCE * my, int * params )
 
 static int modmap_map_block_copy( INSTANCE * my, int * params )
 {
-    GRAPH * dest = bitmap_get( params[0], params[1] ) ;
-    GRAPH * orig = bitmap_get( params[0], params[4] ) ;
+    GRAPH * dest, * orig ;
     REGION clip ;
     int centerx, centery, flag ;
     uint32_t x, y, w, h, dx, dy ;
 
+    dest = bitmap_get( params[0], params[1] ) ;
     if ( !dest ) return 0;
 
-    if ( !orig )
-    {
-        if ( params[4] ) return 0;
-        orig = background ;
-    }
+    orig = bitmap_get( params[0], params[4] ) ;
+    if ( !orig ) return 0;
 
     x  = params[5] ;
     y  = params[6] ;
@@ -360,20 +357,19 @@ static int modmap_map_block_copy( INSTANCE * my, int * params )
     dy = params[3] ;
     flag = params[9] ;
 
-    centery = orig->height / 2 ;
-    centerx = orig->width / 2 ;
-    if ( orig->ncpoints > 0 )
+    if ( orig->ncpoints > 0 && orig->cpoints[0].x != CPOINT_UNDEFINED )
     {
-        if ( orig->cpoints[0].x != CPOINT_UNDEFINED )
-        {
-            centerx = orig->cpoints[0].x ;
-            centery = orig->cpoints[0].y ;
-        }
-        if ( flag & B_HMIRROR )
-            centerx = orig->width - 1 - centerx;
-        if ( flag & B_VMIRROR )
-            centery = orig->height - 1 - centery;
+        centerx = orig->cpoints[0].x ;
+        centery = orig->cpoints[0].y ;
     }
+    else
+    {
+        centery = orig->height / 2 ;
+        centerx = orig->width / 2 ;
+    }
+
+    if ( flag & B_HMIRROR ) centerx = orig->width - 1 - centerx;
+    if ( flag & B_VMIRROR ) centery = orig->height - 1 - centery;
 
     if ( x < 0 )
     {
@@ -400,26 +396,22 @@ static int modmap_map_block_copy( INSTANCE * my, int * params )
         dy = 0 ;
     }
 
-    if ( x + w > orig->width )
-        w = orig->width - x ;
+    if ( x + w > orig->width ) w = orig->width - x ;
 
-    if ( y + h > orig->height )
-        h = orig->height - y ;
+    if ( y + h > orig->height ) h = orig->height - y ;
 
-    if ( dx + w > dest->width )
-        w = dest->width - dx ;
+    if ( dx + w > dest->width ) w = dest->width - dx ;
 
-    if ( dy + h > dest->height )
-        h = dest->height - dy ;
+    if ( dy + h > dest->height ) h = dest->height - dy ;
 
-    if ( x  >= orig->width ||  y >= orig->height || dx >= dest->width || dy >= dest->height || w <= 0 || h <= 0 )
-        return 0 ;
+    if ( w <= 0 || h <= 0 ) return 0;
 
     clip.x = dx ;
     clip.y = dy ;
     clip.x2 = dx + w - 1 ;
     clip.y2 = dy + h - 1 ;
     gr_blit( dest, &clip, dx - x + centerx, dy - y + centery, flag, orig ) ;
+
     return 1 ;
 }
 
