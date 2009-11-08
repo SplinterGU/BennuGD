@@ -162,14 +162,18 @@ static int modvideo_list_modes( INSTANCE * my, int * params )
    returns 0 if the requested mode is not supported under any bit depth,
    or returns the bits-per-pixel of the closest available
    mode with the given width, height and requested flags
+
+   params:
+        height,width,depth,flags
+
 */
 
 static int modvideo_mode_is_ok( INSTANCE * my, int * params )
 {
-    int sdl_flags = get_sdl_flags( params[1] );
+    int sdl_flags = get_sdl_flags( params[3] );
     int depth = params[2];
 
-    if ( !depth ) depth = ( params[1] & MODE_32BITS ) ? 32 : (( params[1] & MODE_16BITS ) ? 16 : 8 );
+    if ( !depth ) depth = ( params[3] & MODE_32BITS ) ? 32 : (( params[3] & MODE_16BITS ) ? 16 : 8 );
 
     return ( SDL_VideoModeOK( params[0], params[1], depth, sdl_flags ) );
 }

@@ -114,8 +114,8 @@ DLSYSFUNCS  __bgdexport( mod_crypt, functions_exports)[] =
     { "CRYPT_DEL"       , "P"       , TYPE_INT         , modcrypt_del       },
     { "CRYPT_ENCRYPT"   , "PPPI"    , TYPE_INT         , modcrypt_encrypt   },
     { "CRYPT_DECRYPT"   , "PPPI"    , TYPE_INT         , modcrypt_decrypt   },
-    { "CRYPT_ENCRYPT"   , "IIPPI"   , TYPE_INT         , modcrypt_encrypt2  },
-    { "CRYPT_DECRYPT"   , "IIPPI"   , TYPE_INT         , modcrypt_decrypt2  },
+    { "CRYPT_ENCRYPT"   , "IPPPI"   , TYPE_INT         , modcrypt_encrypt2  },
+    { "CRYPT_DECRYPT"   , "IPPPI"   , TYPE_INT         , modcrypt_decrypt2  },
 
     { 0                 , 0         , 0                , 0                  }
 };

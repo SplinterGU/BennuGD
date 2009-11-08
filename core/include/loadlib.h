@@ -98,6 +98,7 @@ static dlibhandle * dlibopen( const char * fname )
             dlclose( hnd );
             return NULL;
         }
+
         dlib->hnd = hnd;
 
         return ( dlib );
