@@ -19,14 +19,14 @@
 
 static char * log_str_priority[] =
 {
-    "EMERGENCY",
-    "ALERT"    ,
-    "CRITICAL" ,
-    "ERROR"    ,
-    "WARNNING" ,
-    "NOTICE"   ,
-    "INFO"     ,
-    "DEBUG"    ,
+    "EMERG"     ,
+    "ALERT"     ,
+    "CRIT"      ,
+    "ERR"       ,
+    "WARN"      ,
+    "NOTICE"    ,
+    "INFO"      ,
+    "DEBUG"     ,
     "N/D"
 };
 
@@ -45,7 +45,7 @@ static FILE * __log_file_roll( log_be_file_t * _privData )
     struct tm Now ;
 
     FILE  * filelog;
-    char * nfilename = malloc( strlen( _privData->filename ) + 16 );
+    char * nfilename = malloc( strlen( _privData->fullpathname ) + 16 );
 
 #if WIN32
     struct tm * _Now = localtime( &Moment );
@@ -58,13 +58,12 @@ static FILE * __log_file_roll( log_be_file_t * _privData )
 
     strftime( MomentStr, sizeof( MomentStr ), "%y%m%d%H%M%S", &Now );
 
-    sprintf( nfilename, "%s.%s", _privData->filename, MomentStr );
+    sprintf( nfilename, "%s.%s", _privData->fullpathname, MomentStr );
 
-    rename( _privData->filename, nfilename );
+    rename( _privData->fullpathname, nfilename );
     free( nfilename );
 
-    filelog = _privData->handle = fopen( _privData->filename, "a" );
-
+    filelog = _privData->handle = fopen( _privData->fullpathname, "a" );
     if ( !filelog )
     {
         filelog = stdout;
@@ -96,6 +95,8 @@ log_t * log_file_be_create()
 
 void * log_file_open( char * name, int flags )
 {
+    char * p;
+
     log_be_file_t * privData = ( log_be_file_t * ) malloc( sizeof( log_be_file_t ) );
     if ( !privData )
     {
@@ -104,17 +105,36 @@ void * log_file_open( char * name, int flags )
 
     privData->flags = flags;
 
-    privData->filename = strdup( name );
-    if ( !privData->filename )
+    privData->fullpathname = strdup( name );
+    if ( !privData->fullpathname )
     {
         free( privData );
         return NULL;
     }
 
+    privData->filename = NULL;
+    p = privData->fullpathname ;
+    while ( ( p = strchr( p, '\\' ) )  )
+    {
+        *p = '/';
+        p++;
+        privData->filename = p;
+    }
+
+    if ( !privData->filename )
+    {
+        p = privData->filename = privData->fullpathname ;
+        while ( ( p = strchr( p, '/' ) )  )
+        {
+            p++;
+            privData->filename = p;
+        }
+    }
+
     privData->handle = fopen( name, "a" );
     if ( !privData->handle )
     {
-        free( privData->filename );
+        free( privData->fullpathname );
         free( privData );
         return NULL;
     }
@@ -128,7 +148,7 @@ void log_file_close( void * privData )
 {
     if ( privData && (( log_be_file_t * ) privData )->handle )
     {
-        free((( log_be_file_t * ) privData )->filename );
+        free((( log_be_file_t * ) privData )->fullpathname );
         fclose((( log_be_file_t * ) privData )->handle );
         free( privData );
     }
@@ -174,9 +194,7 @@ void log_file_write( void * privData, int priority, char * message )
         /* If day of year is different of last log, then roll it
            (tm_mday is used only for check valid date in internal structs)
          */
-        if (
-            Now.tm_yday != _privData->lastTime.tm_yday &&
-            _privData->lastTime.tm_mday != 0 )
+        if ( Now.tm_yday != _privData->lastTime.tm_yday && _privData->lastTime.tm_mday != 0 )
         {
             doroll = 1;
         }
@@ -194,12 +212,12 @@ void log_file_write( void * privData, int priority, char * message )
 
     if ( message && * message != '\0' )
     {
-        strftime( MomentStr, sizeof( MomentStr ), "%y/%m/%d %H:%M:%S", &Now );
+        strftime( MomentStr, sizeof( MomentStr ), "%y/%m/%d-%H:%M:%S", &Now );
 
         if ( _privData->flags & LOG_FILE_DISPLAY_FNAME )
-            fprintf( filelog, "%s %7.4f [%s] [%s] %s\n", MomentStr, clock() / 1000.00, _privData->filename, log_str_priority[ priority ], message );
+            fprintf( filelog, "%s:%s %7.4f %s %s\n", _privData->filename, MomentStr, clock() / 1000.00, log_str_priority[ priority ], message );
         else
-            fprintf( filelog, "%s %7.4f [%s] %s\n", MomentStr, clock() / 1000.00, log_str_priority[ priority ], message );
+            fprintf( filelog, "%s %7.4f %s %s\n", MomentStr, clock() / 1000.00, log_str_priority[ priority ], message );
 
         if ( !( _privData->flags & LOG_FILE_DONT_FLUSH ) ) fflush( filelog );
     }

@@ -75,6 +75,7 @@ void log_control( log_t * backend, long kid, char * args );
 
 typedef struct
 {
+    char * fullpathname;
     char * filename;
     FILE * handle;
     int flags;
