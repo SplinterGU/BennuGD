@@ -112,24 +112,15 @@ void * log_file_open( char * name, int flags )
         return NULL;
     }
 
-    privData->filename = NULL;
-    p = privData->fullpathname ;
-    while ( ( p = strchr( p, '\\' ) )  )
+    privData->filename = strrchr( privData->fullpathname, '/' );
+    if (!privData->filename)
     {
-        *p = '/';
-        p++;
-        privData->filename = p;
+        privData->filename = strrchr( privData->fullpathname, '\\' );
     }
-
     if ( !privData->filename )
-    {
-        p = privData->filename = privData->fullpathname ;
-        while ( ( p = strchr( p, '/' ) )  )
-        {
-            p++;
-            privData->filename = p;
-        }
-    }
+        privData->filename = privData->fullpathname;
+    else
+        privData->filename++;
 
     privData->handle = fopen( name, "a" );
     if ( !privData->handle )
