@@ -128,7 +128,6 @@ DLVARFIXUP __bgdexport( mod_grproc, globals_fixup )[] =
 static int grproc_advance( INSTANCE * my, int * params )
 {
     int angle = LOCINT32( mod_grproc, my, ANGLE ) ;
-    if ( !cos_table_initialized ) init_cos_tables() ;
     LOCINT32( mod_grproc, my, COORDX ) += fixtoi( fmul( fcos( angle ), itofix( params[0] ) ) ) ;
     LOCINT32( mod_grproc, my, COORDY ) -= fixtoi( fmul( fsin( angle ), itofix( params[0] ) ) ) ;
     return 1 ;
@@ -139,7 +138,6 @@ static int grproc_advance( INSTANCE * my, int * params )
 static int grproc_xadvance( INSTANCE * my, int * params )
 {
     int angle = params[0] ;
-    if ( !cos_table_initialized ) init_cos_tables() ;
     LOCINT32( mod_grproc, my, COORDX ) += fixtoi( fmul( fcos( angle ), itofix( params[1] ) ) ) ;
     LOCINT32( mod_grproc, my, COORDY ) -= fixtoi( fmul( fsin( angle ), itofix( params[1] ) ) ) ;
     return 1 ;
@@ -721,6 +719,14 @@ static int grproc_collision( INSTANCE * my, int * params )
     }
 
     return 0 ;
+}
+
+/* ----------------------------------------------------------------- */
+/* Funciones de inicializacion del modulo/plugin                     */
+
+void __bgdexport( mod_grproc, module_initialize )()
+{
+    init_cos_tables() ;
 }
 
 /* ----------------------------------------------------------------- */

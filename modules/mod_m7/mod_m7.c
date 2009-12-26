@@ -255,8 +255,6 @@ static void draw_mode7( int n, REGION * clip )
 
     INSTANCE * i ;
 
-    if ( !cos_table_initialized ) init_cos_tables() ;
-
     /* Averigua la posición inicial de dibujo */
 
     camera = instance_get( dat->camera_id ) ;
@@ -607,6 +605,14 @@ static int modm7_stop( INSTANCE * my, int * params )
     }
 
     return 1 ;
+}
+
+/* ----------------------------------------------------------------- */
+/* Funciones de inicializacion del modulo/plugin                     */
+
+void __bgdexport( mod_m7, module_initialize )()
+{
+    init_cos_tables() ;
 }
 
 /* --------------------------------------------------------------------------- */

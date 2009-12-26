@@ -60,7 +60,6 @@ typedef long int fixed ;
 //#define FIXED_PREC_DEC  1000
 
 static fixed * cos_table = NULL ;
-static int cos_table_initialized = 0 ;
 
 __INLINE fixed ftofix( float x )
 {
@@ -141,7 +140,6 @@ static void init_cos_tables()
     {
         cos_table[i] = ftofix( cos( i * M_PI / 180000.0 ) ) ;
     }
-    cos_table_initialized = 1 ;
 }
 
 #endif
