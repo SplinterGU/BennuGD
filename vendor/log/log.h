@@ -9,6 +9,7 @@
 #define _LOG_H
 
 #include <time.h>
+
 /* ---------------------------------------------------- */
 /* ---------------------------------------------------- */
 /* ---------------------------------------------------- */
@@ -45,11 +46,24 @@ typedef struct
 } log_t;
 
 /* ---------------------------------------------------- */
+/* Control format                                       */
+/* --------------                                       */
+/* 0xBBUUUUUU                                           */
+/* BB = Internal backend id ( 0xff - core control )     */
+/* UUUUUU = User data                                   */
+/* ---------------------------------------------------- */
+
+#define LOG_SYSTEM_CTRL         0xFF000000
+
+#define LOG_LEVEL               0xFF000001
+
+/* ---------------------------------------------------- */
 
 int log_open( log_t * backend, char * name, int flags );
 void log_close( log_t * backend );
 void log_write( log_t * backend, int priority, char * format, ... );
 void log_control( log_t * backend, long kid, char * args );
+FILE * log_get_handle( log_t * backend );
 
 /* ---------------------------------------------------- */
 /* ---------------------------------------------------- */
@@ -62,6 +76,7 @@ void log_control( log_t * backend, long kid, char * args );
 /* controls keyword id for file backend */
 
 #define LOG_FILE_ROLL_NOW       0x00000001
+#define LOG_FILE_GET_FD         0x00000002
 
 /* flags for file backend */
 

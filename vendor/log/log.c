@@ -30,6 +30,8 @@ static char * log_str_priority[] =
     "N/D"
 };
 
+static int log_level = -1;
+
 /* ---------------------------------------------------- */
 /* ---------------------------------------------------- */
 /* ---------------------------------------------------- */
@@ -225,6 +227,10 @@ void log_file_control( void * privData, long kid, char * args )
         case    LOG_FILE_ROLL_NOW:
             __log_file_roll(( log_be_file_t * ) privData );
             break;
+
+        case    LOG_FILE_GET_FD:
+            ( ( FILE ** ) args )[0] = ( FILE * )( ( ( log_be_file_t * ) privData )->handle );
+            break;
     }
 }
 
@@ -285,6 +291,8 @@ void log_write( log_t * backend, int priority, char * format, ... )
     {
         return;
     }
+
+    if ( log_level != -1 && priority > log_level ) return;
 
     /* Intenta imprimir en el espacio reservado. */
     va_start( ap, format );
@@ -349,7 +357,27 @@ void log_control( log_t * backend, long kid, char * args )
         return;
     }
 
+    if ( ( kid & LOG_SYSTEM_CTRL ) == LOG_SYSTEM_CTRL )
+    {
+        switch ( kid )
+        {
+            case    LOG_LEVEL:
+                log_level = ( int ) args;
+                break;
+        }
+        return;
+    }
+
     backend->log_control(( void * )( backend->privData ), kid, args );
+}
+
+/* ---------------------------------------------------- */
+
+FILE * log_get_handle( log_t * backend )
+{
+    log_be_file_t * _privData;
+    _privData = ( log_be_file_t * ) backend->privData;
+    return ( FILE *) _privData->handle;
 }
 
 /* ---------------------------------------------------- */
