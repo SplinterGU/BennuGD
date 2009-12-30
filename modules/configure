@@ -11908,13 +11908,13 @@ else
   as_fn_error "PNG library not found!" "$LINENO" 5
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for des_ecb_encrypt in -ldes" >&5
-$as_echo_n "checking for des_ecb_encrypt in -ldes... " >&6; }
-if test "${ac_cv_lib_des_des_ecb_encrypt+set}" = set; then :
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for DES_ecb_encrypt in -lssl" >&5
+$as_echo_n "checking for DES_ecb_encrypt in -lssl... " >&6; }
+if test "${ac_cv_lib_ssl_DES_ecb_encrypt+set}" = set; then :
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-ldes  $LIBS"
+LIBS="-lssl  $LIBS"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -11924,35 +11924,35 @@ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 #ifdef __cplusplus
 extern "C"
 #endif
-char des_ecb_encrypt ();
+char DES_ecb_encrypt ();
 int
 main ()
 {
-return des_ecb_encrypt ();
+return DES_ecb_encrypt ();
   ;
   return 0;
 }
 _ACEOF
 if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_des_des_ecb_encrypt=yes
+  ac_cv_lib_ssl_DES_ecb_encrypt=yes
 else
-  ac_cv_lib_des_des_ecb_encrypt=no
+  ac_cv_lib_ssl_DES_ecb_encrypt=no
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_des_des_ecb_encrypt" >&5
-$as_echo "$ac_cv_lib_des_des_ecb_encrypt" >&6; }
-if test "x$ac_cv_lib_des_des_ecb_encrypt" = x""yes; then :
-  ac_fn_c_check_header_mongrel "$LINENO" "des.h" "ac_cv_header_des_h" "$ac_includes_default"
-if test "x$ac_cv_header_des_h" = x""yes; then :
-  CRYPT_LDFLAGS="-ldes"
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_ssl_DES_ecb_encrypt" >&5
+$as_echo "$ac_cv_lib_ssl_DES_ecb_encrypt" >&6; }
+if test "x$ac_cv_lib_ssl_DES_ecb_encrypt" = x""yes; then :
+  ac_fn_c_check_header_mongrel "$LINENO" "openssl/des.h" "ac_cv_header_openssl_des_h" "$ac_includes_default"
+if test "x$ac_cv_header_openssl_des_h" = x""yes; then :
+  CRYPT_LDFLAGS="-lssl"
 fi
 
 
 else
-  as_fn_error "libdes not found!" "$LINENO" 5
+  as_fn_error "libssl not found!" "$LINENO" 5
 fi
 
 
