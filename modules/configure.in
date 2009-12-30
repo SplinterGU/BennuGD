@@ -81,9 +81,9 @@ dnl Check for SDL library
 SDL_VERSION=1.2.0
 AM_PATH_SDL($SDL_VERSION, :, AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!]))
 
-AC_CHECK_LIB(z, gzsetparams, [AC_CHECK_HEADER(zlib.h,ZLIBS="-lz",)], [AC_MSG_ERROR(zlib library not found)])
-AC_CHECK_LIB(png, png_read_info, [AC_CHECK_HEADER(png.h,PNGLIBS="-lpng",)], AC_MSG_ERROR(*** PNG library not found ***), -lz -lm)
-AC_CHECK_LIB(des, des_ecb_encrypt, [AC_CHECK_HEADER(des.h,DESLIBS="-ldes",)], [AC_MSG_ERROR(libdes library not found)])
+AC_CHECK_LIB(z, gzsetparams, [AC_CHECK_HEADER(zlib.h,ZLIBS="-lz",)], [AC_MSG_ERROR(zlib not found!)])
+AC_CHECK_LIB(png, png_read_info, [AC_CHECK_HEADER(png.h,PNGLIBS="-lpng",)], AC_MSG_ERROR(PNG library not found!), -lz -lm)
+AC_CHECK_LIB(des, des_ecb_encrypt, [AC_CHECK_HEADER(des.h,CRYPT_LDFLAGS="-ldes",)], [AC_MSG_ERROR(libdes not found!)])
 
 AC_CHECK_LIB(SDL_mixer, Mix_AllocateChannels, [AC_CHECK_HEADER(SDL_mixer.h,LIBS+="-lSDL_mixer",)], [AC_MSG_ERROR(libSDL_mixer not found!)], $SDL_MIXER_DEPS)
 #AC_CHECK_LIB(SDL_mixer, Mix_AllocateChannels,LIBS=$LIBS, AC_MSG_ERROR([*** SDL_mixer library not found!]))

@@ -19,13 +19,13 @@
  *
  */
 
+#include "b_crypt.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "bgddl.h"
-
-#include "crypt.h"
 
 /* ----------------------------------------------------------------- */
 

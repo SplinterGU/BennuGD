@@ -80,8 +80,8 @@ fi
 
 dnl librerias para todos
 
-AC_CHECK_LIB(z, gzsetparams, [AC_CHECK_HEADER(zlib.h,ZLIBS="-lz",)], [AC_MSG_ERROR(zlib library not found)])
-AC_CHECK_LIB(des, des_ecb_encrypt, [AC_CHECK_HEADER(des.h,DESLIBS="-ldes",)], [AC_MSG_ERROR(libdes library not found)])
+AC_CHECK_LIB(z, gzsetparams, [AC_CHECK_HEADER(zlib.h,ZLIBS="-lz",)], [AC_MSG_ERROR(zlib not found!)])
+AC_CHECK_LIB(ssl, DES_ecb_encrypt, [AC_CHECK_HEADER(openssl/des.h,CRYPT_LDFLAGS="-lssl",)], [AC_MSG_ERROR(libssl not found!)])
 
 dnl make these visible to all Makefiles
 
@@ -91,7 +91,7 @@ COMMON_CFLAGS="$CFLAGS $COMMON_CFLAGS"
 AC_SUBST(COMMON_CFLAGS)
 AC_SUBST(COMMON_LDFLAGS)
 AC_SUBST(ZLIBS)
-AC_SUBST(DESLIBS)
+AC_SUBST(CRYPT_LDFLAGS)
 
 AC_OUTPUT([
 Makefile

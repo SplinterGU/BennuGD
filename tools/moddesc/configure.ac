@@ -17,7 +17,13 @@ AC_PROG_MAKE_SET
 AC_DISABLE_STATIC
 AC_LIBTOOL_DLOPEN
 
+AM_PROG_CC_C_O
+
 AM_MAINTAINER_MODE
+
+LT_INIT
+
+AC_CONFIG_MACRO_DIR([m4])
 
 echo "You Machine: ${target_cpu} ${target_os}"
 
@@ -36,14 +42,15 @@ case "$target_os" in
 
 esac
 
-CFLAGS="$CFLAGS -I${bennu_prefix}/include -I/usr/local/include -I/usr/include "
-LDFLAGS="$LDFLAGS -L/usr/local/lib -L/usr/lib"
+COMMON_CFLAGS="$CFLAGS -I${bennu_prefix}/include -I/usr/local/include -I/usr/include "
+COMMON_LDFLAGS="$LDFLAGS -L/usr/local/lib -L/usr/lib"
 
 # Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS([stdlib.h])
 
-# Checks for typedefs, structures, and compiler characteristics.
+AC_SUBST(COMMON_CFLAGS)
+AC_SUBST(COMMON_LDFLAGS)
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
