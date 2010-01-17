@@ -39,6 +39,7 @@ typedef struct _node
     double f, g, h ;
     struct _node * parent ;
     struct _node * next ;
+    struct _node * inext ;
 }
 node ;
 
@@ -46,6 +47,8 @@ node ;
 
 static int  * path_result = NULL ;
 static int  * path_result_pointer = NULL ;
+
+static node * pf_all = NULL;
 
 static node * pf_open = NULL ;
 static node * pf_closed = NULL ;
@@ -157,7 +160,7 @@ static node * node_find( node * list, int x, int y )
 }
 
 /* --------------------------------------------------------------------------- */
-
+/*
 static void node_reset( node * list )
 {
     node * next ;
@@ -168,7 +171,7 @@ static void node_reset( node * list )
         list = next ;
     }
 }
-
+*/
 /* --------------------------------------------------------------------------- */
 
 static node * node_new( node * parent, int x, int y, int cost_inc )
@@ -213,8 +216,11 @@ static void node_push_succesor( node * parent, int ix, int iy, int cost )
         free( curr ); return ;
     }
 
+    /* Add to general list (used for free resources)*/
+    curr->inext = pf_all; pf_all = curr;
+
     if ( f_op ) { pf_open = node_remove( pf_open, f_op ); } /* this node is removed but childs that referent this node as parent will be wrong */
-/* this can't be possible, previous "if ( f_cl )" abort this code ->   if ( f_cl ) { pf_closed = node_remove( pf_closed, f_cl ); } /* this node is removed but childs that referent this node as parent will be wrong */
+/* this can't be possible, previous "if ( f_cl )" abort this code ->   if ( f_cl ) { pf_closed = node_remove( pf_closed, f_cl ); }*/ /* this node is removed but childs that referent this node as parent will be wrong */
 
     pf_open = node_add( pf_open, curr ) ;
 }
@@ -244,27 +250,46 @@ static void node_push_succesors( node * parent, int options )
 
 static int path_find( GRAPH * bitmap, int sx, int sy, int dx, int dy, int options )
 {
-    node * curr ;
+    node * curr, * inext ;
 
     startup_x = sx ;
     startup_y = sy ;
     map = bitmap ;
     destination_x = dx ;
     destination_y = dy ;
-
+/*
     node_reset( pf_open ) ;
     node_reset( pf_closed ) ;
+*/
+    /* Release all resources */
+
+    curr = pf_all;
+    while ( curr )
+    {
+        inext = curr->inext ;
+        free( curr ) ;
+        curr = inext ;
+    }
+    pf_all = NULL;
 
     pf_open = NULL;
     pf_closed = NULL;
 
+    if ( path_result ) { free ( path_result ); path_result = NULL; }
+    path_result_pointer = NULL;
+
     curr = node_new( NULL, startup_x, startup_y, 0 ) ;
+
+    /* Add to general list (used for free resources)*/
+    curr->inext = pf_all; pf_all = curr;
+
     curr->f = curr->h = 1 ;
     pf_open = node_add( pf_open, curr ) ;
 
     while ( pf_open )
     {
         curr = pf_open ;
+        pf_open = node_remove( pf_open, curr ) ;
 
         if ( curr->x == ( unsigned )destination_x && curr->y == ( unsigned )destination_y )
         {
@@ -277,7 +302,6 @@ static int path_find( GRAPH * bitmap, int sx, int sy, int dx, int dy, int option
                 curr = curr->parent ;
             }
 
-            if ( path_result ) free( path_result ) ;
             path_result = malloc( sizeof( int ) * 2 * ( count + 4 ) ) ;
             if ( !( options & PF_REVERSE ) )
             {
@@ -291,7 +315,11 @@ static int path_find( GRAPH * bitmap, int sx, int sy, int dx, int dy, int option
                     found = found->parent ;
                 }
 
-                if ( path_result_pointer != path_result - 1 ) return 0 ;
+                if ( path_result_pointer != path_result - 1 )
+                {
+                    path_result_pointer = NULL;
+                    return 0;
+                }
             }
             else
             {
@@ -309,8 +337,6 @@ static int path_find( GRAPH * bitmap, int sx, int sy, int dx, int dy, int option
             path_result_pointer = path_result ;
             return 1 ;
         }
-
-        pf_open = node_remove( pf_open, curr ) ;
 
         node_push_succesors( curr, options ) ;
 
