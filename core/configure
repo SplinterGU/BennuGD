@@ -10240,6 +10240,8 @@ else
 fi
 
 
+LIBSSL="-lssl"
+
 case "$target_os" in
     linux-gnu*)
         COMMON_CFLAGS="-Wall -DTARGET_LINUX"
@@ -10263,6 +10265,7 @@ case "$target_os" in
         INCLUDES="-I/usr/local/include"
 	    COMMON_CFLAGS="$INCLUDES -DTARGET_WIN32 -DWIN32 -D_WIN32"
 	    COMMON_LDFLAGS="-L/usr/local/lib -lshlwapi"
+	    LIBSSL="-leay32"
 	    ;;
 
     mingw32msvc)
@@ -11580,12 +11583,12 @@ $as_echo "$ac_cv_lib_ssl_DES_ecb_encrypt" >&6; }
 if test "x$ac_cv_lib_ssl_DES_ecb_encrypt" = x""yes; then :
   ac_fn_c_check_header_mongrel "$LINENO" "openssl/des.h" "ac_cv_header_openssl_des_h" "$ac_includes_default"
 if test "x$ac_cv_header_openssl_des_h" = x""yes; then :
-  CRYPT_LDFLAGS="-lssl"
+  CRYPT_LDFLAGS=$LIBSSL
 fi
 
 
 else
-  as_fn_error "libssl not found!" "$LINENO" 5
+  as_fn_error "$LIBSSL not found!" "$LINENO" 5
 fi
 
 
