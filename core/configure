@@ -10240,7 +10240,7 @@ else
 fi
 
 
-LIBSSL="-lssl"
+LIBSSL="ssl"
 
 case "$target_os" in
     linux-gnu*)
@@ -10265,7 +10265,7 @@ case "$target_os" in
         INCLUDES="-I/usr/local/include"
 	    COMMON_CFLAGS="$INCLUDES -DTARGET_WIN32 -DWIN32 -D_WIN32"
 	    COMMON_LDFLAGS="-L/usr/local/lib -lshlwapi"
-	    LIBSSL="-leay32"
+	    LIBSSL="eay32"
 	    ;;
 
     mingw32msvc)
@@ -11544,13 +11544,14 @@ else
   as_fn_error "zlib not found!" "$LINENO" 5
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for DES_ecb_encrypt in -lssl" >&5
-$as_echo_n "checking for DES_ecb_encrypt in -lssl... " >&6; }
-if test "${ac_cv_lib_ssl_DES_ecb_encrypt+set}" = set; then :
+as_ac_Lib=`$as_echo "ac_cv_lib_$LIBSSL''_DES_ecb_encrypt" | $as_tr_sh`
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for DES_ecb_encrypt in -l$LIBSSL" >&5
+$as_echo_n "checking for DES_ecb_encrypt in -l$LIBSSL... " >&6; }
+if { as_var=$as_ac_Lib; eval "test \"\${$as_var+set}\" = set"; }; then :
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lssl  $LIBS"
+LIBS="-l$LIBSSL  $LIBS"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -11570,20 +11571,22 @@ return DES_ecb_encrypt ();
 }
 _ACEOF
 if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_ssl_DES_ecb_encrypt=yes
+  eval "$as_ac_Lib=yes"
 else
-  ac_cv_lib_ssl_DES_ecb_encrypt=no
+  eval "$as_ac_Lib=no"
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_ssl_DES_ecb_encrypt" >&5
-$as_echo "$ac_cv_lib_ssl_DES_ecb_encrypt" >&6; }
-if test "x$ac_cv_lib_ssl_DES_ecb_encrypt" = x""yes; then :
+eval ac_res=\$$as_ac_Lib
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+eval as_val=\$$as_ac_Lib
+   if test "x$as_val" = x""yes; then :
   ac_fn_c_check_header_mongrel "$LINENO" "openssl/des.h" "ac_cv_header_openssl_des_h" "$ac_includes_default"
 if test "x$ac_cv_header_openssl_des_h" = x""yes; then :
-  CRYPT_LDFLAGS=$LIBSSL
+  CRYPT_LDFLAGS=-l$LIBSSL
 fi
 
 
