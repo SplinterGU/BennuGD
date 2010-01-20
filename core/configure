@@ -10240,7 +10240,7 @@ else
 fi
 
 
-LIBSSL="ssl"
+LIBSSL="crypto"
 
 case "$target_os" in
     linux-gnu*)

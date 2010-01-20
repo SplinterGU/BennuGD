@@ -19,7 +19,7 @@ AC_ARG_WITH(bennu-prefix,[  --with-bennu-prefix=PFX Prefix where Bennu is instal
 AC_CHECK_TOOL(WINDRES, windres, )
 AM_CONDITIONAL(HAVE_WINDRES, test "$WINDRES" != "")
 
-LIBSSL="ssl"
+LIBSSL="crypto"
 
 dnl Aqui es donde se chequeara el SO, pero solo hay una opcion xD
 case "$target_os" in
