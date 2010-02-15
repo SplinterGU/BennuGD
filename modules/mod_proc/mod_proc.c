@@ -93,6 +93,9 @@ DLCONSTANT __bgdexport( mod_proc, constants_def )[] =
     { "S_SLEEP"             , TYPE_INT, S_SLEEP             },
     { "S_FREEZE"            , TYPE_INT, S_FREEZE            },
 
+    { "S_FORCE"             , TYPE_INT, S_FORCE             },
+    { "S_TREE"              , TYPE_INT, S_TREE              },
+
     { "S_KILL_TREE"         , TYPE_INT, S_KILL_TREE         },
     { "S_WAKEUP_TREE"       , TYPE_INT, S_WAKEUP_TREE       },
     { "S_SLEEP_TREE"        , TYPE_INT, S_SLEEP_TREE        },
