@@ -1,5 +1,5 @@
 /*
- *  Copyright � 2006-2009 SplinterGU (Fenix/Bennugd)
+ *  Copyright � 2006-2010 SplinterGU (Fenix/Bennugd)
  *  Copyright � 2002-2006 Fenix Team (Fenix)
  *  Copyright � 1999-2002 Jos� Luis Cebri�n Pag�e (Fenix)
  *
