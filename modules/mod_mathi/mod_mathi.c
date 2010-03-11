@@ -32,7 +32,7 @@
 
 /* --------------------------------------------------------------------------- */
 
-DLCONSTANT __bgdexport( mod_math, constants_def )[] =
+DLCONSTANT __bgdexport( mod_mathi, constants_def )[] =
 {
     { "PI"  , TYPE_INT  , 180000    },
     { NULL  , 0         , 0         }
@@ -69,64 +69,49 @@ static int math_sqrt( INSTANCE * my, int * params )
 
 static int math_cos( INSTANCE * my, int * params )
 {
-    float param = *( float * ) & params[0] ;
-    float res = ( float )cos(( double )( param * M_PI / 180000.0 ) ) ;
-    return *(( int * )&res ) ;
+    return cos(( double )( params[0] * M_PI / 180000.0 )) * 1000 ;
 }
 
 /* --------------------------------------------------------------------------- */
 
 static int math_sin( INSTANCE * my, int * params )
 {
-    float param = *( float * ) & params[0] ;
-    float res = ( float )sin(( double )( param * M_PI / 180000.0 ) ) ;
-    return *(( int * )&res ) ;
+    return sin(( double )( params[0] * M_PI / 180000.0 )) * 1000 ;
 }
 
 /* --------------------------------------------------------------------------- */
 
 static int math_tan( INSTANCE * my, int * params )
 {
-    float param = *( float * ) & params[0] ;
-    float res = ( float )tan(( double )( param * M_PI / 180000.0 ) ) ;
-    return *(( int * )&res ) ;
+    return tan(( double )( params[0] * M_PI / 180000.0 )) * 1000 ;
 }
 
 /* --------------------------------------------------------------------------- */
 
 static int math_acos( INSTANCE * my, int * params )
 {
-    float param = *( float * ) & params[0] ;
-    float res = ( float )( acos(( double )param ) * 180000.0 / M_PI ) ;
-    return *(( int * )&res ) ;
+    return acos(( double )( params[0] * 180000.0 / M_PI )) * 1000 ;
 }
 
 /* --------------------------------------------------------------------------- */
 
 static int math_asin( INSTANCE * my, int * params )
 {
-    float param = *( float * ) & params[0] ;
-    float res = ( float )( asin(( double )param ) * 180000.0 / M_PI ) ;
-    return *(( int * )&res ) ;
+    return asin(( double )( params[0] * 180000.0 / M_PI )) * 1000 ;
 }
 
 /* --------------------------------------------------------------------------- */
 
 static int math_atan( INSTANCE * my, int * params )
 {
-    float param = *( float * ) & params[0] ;
-    float res = ( float )( atan(( double )param ) * 180000.0 / M_PI ) ;
-    return *(( int * )&res ) ;
+    return atan(( double )( params[0] * 180000.0 / M_PI )) * 1000 ;
 }
 
 /* --------------------------------------------------------------------------- */
 
 static int math_atan2( INSTANCE * my, int * params )
 {
-    float param1 = *( float * ) & params[0],
-          param2 = *( float * ) & params[1];
-    float res = ( float )( atan2(( double )param1, ( double )param2 ) * 180000.0 / M_PI ) ;
-    return *(( int * )&res ) ;
+    return atan2(( double )( params[0] * 180000.0 / M_PI ), ( double )( params[1] * 180000.0 / M_PI )) * 1000 ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -227,19 +212,19 @@ static int math_get_distx( INSTANCE * my, int * params )
 /* --------------------------------------------------------------------------- */
 /* Declaracion de funciones                                                    */
 
-DLSYSFUNCS __bgdexport( mod_math, functions_exports )[] =
+DLSYSFUNCS __bgdexport( mod_mathi, functions_exports )[] =
 {
     { "ABS"         , "F"       , TYPE_FLOAT    , math_abs          },
     { "POW"         , "FF"      , TYPE_FLOAT    , math_pow          },
     { "SQRT"        , "F"       , TYPE_FLOAT    , math_sqrt         },
 
-    { "COS"         , "F"       , TYPE_FLOAT    , math_cos          },
-    { "SIN"         , "F"       , TYPE_FLOAT    , math_sin          },
-    { "TAN"         , "F"       , TYPE_FLOAT    , math_tan          },
-    { "ACOS"        , "F"       , TYPE_FLOAT    , math_acos         },
-    { "ASIN"        , "F"       , TYPE_FLOAT    , math_asin         },
-    { "ATAN"        , "F"       , TYPE_FLOAT    , math_atan         },
-    { "ATAN2"       , "FF"      , TYPE_FLOAT    , math_atan2        },
+    { "COS"         , "I"       , TYPE_FLOAT    , math_cos          },
+    { "SIN"         , "I"       , TYPE_FLOAT    , math_sin          },
+    { "TAN"         , "I"       , TYPE_FLOAT    , math_tan          },
+    { "ACOS"        , "I"       , TYPE_FLOAT    , math_acos         },
+    { "ASIN"        , "I"       , TYPE_FLOAT    , math_asin         },
+    { "ATAN"        , "I"       , TYPE_FLOAT    , math_atan         },
+    { "ATAN2"       , "II"      , TYPE_FLOAT    , math_atan2        },
 
     { "ISINF"       , "F"       , TYPE_INT      , math_isinf        },
     { "ISNAN"       , "F"       , TYPE_INT      , math_isnan        },

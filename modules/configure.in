@@ -132,6 +132,7 @@ mod_file/Makefile
 mod_crypt/Makefile
 mod_joy/Makefile
 mod_math/Makefile
+mod_mathi/Makefile
 mod_mem/Makefile
 mod_proc/Makefile
 mod_rand/Makefile

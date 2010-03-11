@@ -29,6 +29,7 @@ SUBDIRS = \
     mod_crypt       \
     mod_joy         \
     mod_math        \
+    mod_mathi       \
     mod_mem         \
     mod_proc        \
     mod_rand        \
