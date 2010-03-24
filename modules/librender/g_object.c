@@ -208,7 +208,7 @@ void gr_destroy_object( int id )
     if ( !ctr->first_in_key ) destroy_container( ctr );
 
     /* Rects */
-    if ( object->bbox.x != -2 )
+    if ( object->bbox.x >= 0 || object->bbox.y >= 0 || object->bbox.x2 >= 0 || object->bbox.y2 >= 0 )
         gr_mark_rect( object->bbox.x, object->bbox.y, object->bbox.x2 - object->bbox.x + 1, object->bbox.y2 - object->bbox.y + 1 );
 
     free( object );
@@ -292,7 +292,7 @@ void gr_update_objects_mark_rects( int restore, int dump )
                     object->bbox.x2 < 0 || object->bbox.x > scr_width - 1 ||
                     object->bbox.y2 < 0 || object->bbox.y > scr_height - 1 ) continue;
 
-                if ( dump == 0 && object->changed && object->bbox.x != -2 )
+                if ( dump == 0 && object->changed && ( object->bbox.x >= 0 || object->bbox.y >= 0 || object->bbox.x2 >= 0 || object->bbox.y2 >= 0 ) )
                 {
                     gr_mark_rect( object->bbox.x, object->bbox.y, object->bbox.x2 - object->bbox.x + 1, object->bbox.y2 - object->bbox.y + 1 );
                 }

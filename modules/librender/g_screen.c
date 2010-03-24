@@ -71,12 +71,10 @@ void gr_draw_screen( GRAPH * dest, int restore_type, int dump_type )
     }
 
     /* Update the object list */
-
     gr_update_objects_mark_rects( restore_type, dump_type );
 
     /* Restore the background */
-
-    if ( dump_type == 0 || restore_type == 0 )
+    if ( !dump_type || !restore_type )
     {
         updaterects_count = gr_mark_rects( updaterects );
     }
@@ -106,7 +104,6 @@ void gr_draw_screen( GRAPH * dest, int restore_type, int dump_type )
     else if ( restore_type == 1 )
     {
         /* COMPLETE_RESTORE */
-
         if ( background->info_flags & GI_CLEAN )
             gr_clear( scrbitmap ) ;
         else
@@ -120,7 +117,6 @@ void gr_draw_screen( GRAPH * dest, int restore_type, int dump_type )
     }
 
     /* Dump the objects */
-
     if ( dump_type == 0 )
     {
         /* Dump only changed & enabled objects */
