@@ -26,6 +26,8 @@
 
 #include <stdint.h>
 
+#include "arrange.h"
+
 #include "files_st.h"
 
 /* Funciones de acceso a ficheros */

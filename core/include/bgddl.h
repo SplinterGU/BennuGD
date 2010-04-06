@@ -39,6 +39,11 @@
 #define __bgdexport(m,a)    m##_##a
 
 /* --------------------------------------------------------------------------- */
+/*
+ *  ENDIANESS TRICKS
+ */
+
+#include "arrange.h"
 
 #include <typedef_st.h>
 #include <instance_st.h>

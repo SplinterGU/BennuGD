@@ -41,13 +41,13 @@
 
 #include <commons_defs.h>
 
-#include "files.h"
-
 /*
  *  ENDIANESS TRICKS
  */
 
 #include "arrange.h"
+
+#include "files.h"
 
 #include "bgdrtm.h"
 
