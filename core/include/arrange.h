@@ -24,6 +24,8 @@
 #ifndef __ARRANGE_ST_H
     #define __ARRANGE_ST_H
 
+    #include <stdint.h>
+
     #define __LIL_ENDIAN 1234
     #define __BIG_ENDIAN 4321
 
