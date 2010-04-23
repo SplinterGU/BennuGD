@@ -180,7 +180,7 @@ int gr_load_pal( const char * filename )
 
     if ( r )
     {
-        pal_use( r );
+//        pal_use( r );
         if ( old_sys_pal )
         {
             pal_destroy( old_sys_pal );
