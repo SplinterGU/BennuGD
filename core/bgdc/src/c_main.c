@@ -69,7 +69,6 @@ int identifier_declare ;
 
 int identifier_program ;
 int identifier_debug ;
-int identifier_const ;
 int identifier_begin ;
 int identifier_end ;
 int identifier_global ;
@@ -608,6 +607,8 @@ void import_files( char * filename )
 
 void compile_import( void )
 {
+    no_include_this_file = 1;
+
     token_next() ;
     if ( token.type != STRING ) compile_error( MSG_STRING_EXP ) ;
 

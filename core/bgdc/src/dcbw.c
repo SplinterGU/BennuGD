@@ -78,10 +78,11 @@ void dcb_add_file( const char * filename )
     }
 
     /* No se incluyen dlls en el stub */
+/*
     if ( strlen( filename ) > 4 && !strncmp( filename + strlen( filename ) - 4, ".dll", 4 ) )   return;
     if ( strlen( filename ) > 3 && !strncmp( filename + strlen( filename ) - 3, ".so", 3 ) )    return;
     if ( strlen( filename ) > 6 && !strncmp( filename + strlen( filename ) - 6, ".dylib", 6 ) ) return;
-
+*/
     for ( i = 0; filename[i]; i++ ) if ( filename[i] == '\\' ) buffer[i] = '/'; else buffer[i] = filename[i];
     buffer[i] = '\0';
 
@@ -126,7 +127,7 @@ static int dcb_varspace( VARSPACE * v )
 
     dcb_orig_varspace[dcb_varspaces] = v;
 
-    dcb.varspace[dcb_varspaces].NVars = v->count;   ARRANGE_DWORD( &dcb.varspace[dcb_varspaces].NVars );
+    dcb.varspace[dcb_varspaces].NVars = v->count;   ARRANGE_DWORD( &dcb.varspace[dcb_varspaces].NVars ); /* Used Only for dcb */
     result = dcb_varspaces++;
 
     for ( n = 0; n < v->count; n++ )
@@ -135,9 +136,28 @@ static int dcb_varspace( VARSPACE * v )
     return result;
 }
 
-/* Conversiones de TYPEDEF */
+/* Conversiones de TYPEDEF (used in compile time) */
 
 void dcb_settype( DCB_TYPEDEF * d, TYPEDEF * t )
+{
+    int n;
+
+    for ( n = 0; n < MAX_TYPECHUNKS; n++ )
+    {
+        d->BaseType[n] = t->chunk[n].type;          /* 8 bits */
+        d->Count   [n] = t->chunk[n].count;
+    }
+
+    if ( t->varspace )
+        d->Members = dcb_varspace( t->varspace );
+    else
+        d->Members = NO_MEMBERS;
+}
+
+
+/* Conversiones de TYPEDEF (used in save time) */
+
+void dcb_prepare_type( DCB_TYPEDEF * d, TYPEDEF * t )
 {
     int n;
 
@@ -154,7 +174,6 @@ void dcb_settype( DCB_TYPEDEF * d, TYPEDEF * t )
 
     ARRANGE_DWORD( &d->Members );
 }
-
 
 /* Funci�n principal que crea el fichero DCB
  * (ver dcb.h con la estructura del mismo) */
@@ -307,7 +326,7 @@ int dcb_save( const char * filename, int options, const char * stubname )
         dcb.proc[n].privar = ( DCB_VAR * ) calloc( procs[n]->privars->count, sizeof( DCB_VAR ) );
         for ( i = 0; i < procs[n]->privars->count; i++ )
         {
-            dcb_settype( &dcb.proc[n].privar[i].Type, &procs[n]->privars->vars[i].type );
+            dcb_prepare_type( &dcb.proc[n].privar[i].Type, &procs[n]->privars->vars[i].type );
 
             dcb.proc[n].privar[i].ID     = procs[n]->privars->vars[i].code;     ARRANGE_DWORD( &dcb.proc[n].privar[i].ID );
             dcb.proc[n].privar[i].Offset = procs[n]->privars->vars[i].offset;   ARRANGE_DWORD( &dcb.proc[n].privar[i].Offset );
@@ -316,7 +335,7 @@ int dcb_save( const char * filename, int options, const char * stubname )
         dcb.proc[n].pubvar = ( DCB_VAR * ) calloc( procs[n]->pubvars->count, sizeof( DCB_VAR ) );
         for ( i = 0; i < procs[n]->pubvars->count; i++ )
         {
-            dcb_settype( &dcb.proc[n].pubvar[i].Type, &procs[n]->pubvars->vars[i].type );
+            dcb_prepare_type( &dcb.proc[n].pubvar[i].Type, &procs[n]->pubvars->vars[i].type );
 
             dcb.proc[n].pubvar[i].ID     = procs[n]->pubvars->vars[i].code;     ARRANGE_DWORD( &dcb.proc[n].pubvar[i].ID );
             dcb.proc[n].pubvar[i].Offset = procs[n]->pubvars->vars[i].offset;   ARRANGE_DWORD( &dcb.proc[n].pubvar[i].Offset );
@@ -343,7 +362,7 @@ int dcb_save( const char * filename, int options, const char * stubname )
 
     for ( n = 0; n < global.count; n++ )
     {
-        dcb_settype( &dcb.glovar[n].Type, &global.vars[n].type );
+        dcb_prepare_type( &dcb.glovar[n].Type, &global.vars[n].type );
 
         dcb.glovar[n].ID     = global.vars[n].code;                             ARRANGE_DWORD( &dcb.glovar[n].ID );
         dcb.glovar[n].Offset = global.vars[n].offset;                           ARRANGE_DWORD( &dcb.glovar[n].Offset );
@@ -351,7 +370,7 @@ int dcb_save( const char * filename, int options, const char * stubname )
 
     for ( n = 0; n < local.count; n++ )
     {
-        dcb_settype( &dcb.locvar[n].Type, &local.vars[n].type );
+        dcb_prepare_type( &dcb.locvar[n].Type, &local.vars[n].type );
 
         dcb.locvar[n].ID     = local.vars[n].code;                              ARRANGE_DWORD( &dcb.locvar[n].ID );
         dcb.locvar[n].Offset = local.vars[n].offset;                            ARRANGE_DWORD( &dcb.locvar[n].Offset );
@@ -365,13 +384,13 @@ int dcb_save( const char * filename, int options, const char * stubname )
 
     offset = sizeof( DCB_HEADER_DATA );
 
-    dcb.data.OProcsTab      = offset; offset += sizeof( DCB_PROC_DATA ) * procdef_count;      ARRANGE_DWORD( &dcb.data.OProcsTab );
+    dcb.data.OProcsTab      = offset; offset += sizeof( DCB_PROC_DATA ) * procdef_count;    ARRANGE_DWORD( &dcb.data.OProcsTab );
     dcb.data.OStrings       = offset; offset += 4 * string_count;                           ARRANGE_DWORD( &dcb.data.OStrings );
-    dcb.data.OGloVars       = offset; offset += sizeof( DCB_VAR ) * global.count;             ARRANGE_DWORD( &dcb.data.OGloVars );
-    dcb.data.OLocVars       = offset; offset += sizeof( DCB_VAR ) * local.count;              ARRANGE_DWORD( &dcb.data.OLocVars );
+    dcb.data.OGloVars       = offset; offset += sizeof( DCB_VAR ) * global.count;           ARRANGE_DWORD( &dcb.data.OGloVars );
+    dcb.data.OLocVars       = offset; offset += sizeof( DCB_VAR ) * local.count;            ARRANGE_DWORD( &dcb.data.OLocVars );
     dcb.data.OLocStrings    = offset; offset += 4 * local.stringvar_count;                  ARRANGE_DWORD( &dcb.data.OLocStrings );
-    dcb.data.OID            = offset; offset += sizeof( DCB_ID ) * identifier_count;          ARRANGE_DWORD( &dcb.data.OID );
-    dcb.data.OVarSpaces     = offset; offset += sizeof( DCB_VARSPACE ) * dcb_varspaces;       ARRANGE_DWORD( &dcb.data.OVarSpaces );
+    dcb.data.OID            = offset; offset += sizeof( DCB_ID ) * identifier_count;        ARRANGE_DWORD( &dcb.data.OID );
+    dcb.data.OVarSpaces     = offset; offset += sizeof( DCB_VARSPACE ) * dcb_varspaces;     ARRANGE_DWORD( &dcb.data.OVarSpaces );
     dcb.data.OText          = offset; offset += string_used;                                ARRANGE_DWORD( &dcb.data.OText );
     dcb.data.OImports       = offset; offset += 4 * nimports;                               ARRANGE_DWORD( &dcb.data.OImports );
     dcb.data.OGlobal        = offset; offset += globaldata->current;                        ARRANGE_DWORD( &dcb.data.OGlobal );
@@ -397,15 +416,15 @@ int dcb_save( const char * filename, int options, const char * stubname )
 
     for ( n = 0; n < procdef_count; n++ )
     {
-        dcb.proc[n].data.OSentences  = offset; offset += sizeof( DCB_SENTENCE ) * procs[n]->sentence_count;       ARRANGE_DWORD( &dcb.proc[n].data.OSentences );
+        dcb.proc[n].data.OSentences  = offset; offset += sizeof( DCB_SENTENCE ) * procs[n]->sentence_count;     ARRANGE_DWORD( &dcb.proc[n].data.OSentences );
 
         /* Privadas */
-        dcb.proc[n].data.OPriVars    = offset; offset += sizeof( DCB_VAR ) * procs[n]->privars->count;            ARRANGE_DWORD( &dcb.proc[n].data.OPriVars );
+        dcb.proc[n].data.OPriVars    = offset; offset += sizeof( DCB_VAR ) * procs[n]->privars->count;          ARRANGE_DWORD( &dcb.proc[n].data.OPriVars );
         dcb.proc[n].data.OPriStrings = offset; offset += 4 * procs[n]->privars->stringvar_count;                ARRANGE_DWORD( &dcb.proc[n].data.OPriStrings );
         dcb.proc[n].data.OPrivate    = offset; offset += procs[n]->pridata->current;                            ARRANGE_DWORD( &dcb.proc[n].data.OPrivate );
 
         /* Publicas */
-        dcb.proc[n].data.OPubVars    = offset; offset += sizeof( DCB_VAR ) * procs[n]->pubvars->count;            ARRANGE_DWORD( &dcb.proc[n].data.OPubVars );
+        dcb.proc[n].data.OPubVars    = offset; offset += sizeof( DCB_VAR ) * procs[n]->pubvars->count;          ARRANGE_DWORD( &dcb.proc[n].data.OPubVars );
         dcb.proc[n].data.OPubStrings = offset; offset += 4 * procs[n]->pubvars->stringvar_count;                ARRANGE_DWORD( &dcb.proc[n].data.OPubStrings );
         dcb.proc[n].data.OPublic     = offset; offset += procs[n]->pubdata->current;                            ARRANGE_DWORD( &dcb.proc[n].data.OPublic );
 
@@ -489,7 +508,7 @@ int dcb_save( const char * filename, int options, const char * stubname )
 
         for ( i = 0; i < dcb_orig_varspace[n]->count; i++, var++ )
         {
-            dcb_settype( &v.Type, &var->type );
+            dcb_prepare_type( &v.Type, &var->type );
             v.ID     = var->code;                                                           ARRANGE_DWORD( &v.ID );
             v.Offset = var->offset;                                                         ARRANGE_DWORD( &v.Offset );
 

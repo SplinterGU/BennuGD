@@ -83,6 +83,8 @@ extern int nimports ;       /* Número de imports */
 
 extern char langinfo[64] ;  /* language setting */
 
+extern int no_include_this_file ;
+
 /* Funciones para guardar y cargar un fichero DCB */
 
 #include "dcb.h"

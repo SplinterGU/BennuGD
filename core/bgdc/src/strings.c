@@ -124,6 +124,8 @@ int check_for_valid_pathname( char * pathname )
     return 1;
 }
 
+int no_include_this_file = 0;
+
 int string_compile( const char ** source )
 {
     char c = *( *source ) ++, conv ;
@@ -197,8 +199,10 @@ int string_compile( const char ** source )
 
     /* Hack: añade el posible fichero al DCB */
 
-    if ( autoinclude && check_for_valid_pathname( string_mem + string_offset[ string_count ] ) )
+    if ( !no_include_this_file && autoinclude && check_for_valid_pathname( string_mem + string_offset[ string_count ] ) )
         dcb_add_file( string_mem + string_offset[ string_count ] ) ;
+
+    no_include_this_file = 0;
 
     return string_count++ ;
 }
