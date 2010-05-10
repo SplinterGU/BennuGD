@@ -962,7 +962,7 @@ static int modsound_play_song( INSTANCE * my, int * params )
 
 static int modsound_unload_song( INSTANCE * my, int * params )
 {
-    if ( params[0] < 0 ) return ( -1 );
+    if ( params[0] == -1 ) return ( -1 );
     return( unload_song( params[0] ) );
 }
 
