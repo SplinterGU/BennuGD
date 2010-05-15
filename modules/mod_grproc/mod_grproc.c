@@ -651,12 +651,12 @@ static int check_collision( INSTANCE * proc1, INSTANCE * proc2 )
 static int grproc_collision( INSTANCE * my, int * params )
 {
     INSTANCE * ptr = instance_get( params[0] ), ** ctx ;
-    int status;
+    int status, p ;
 
     if ( params[0] == -1 ) return ( check_collision_with_mouse( my ) ) ? 1 : 0 ;
 
     /* Checks only for a single instance */
-    if ( params[0] >= FIRST_INSTANCE_ID && ptr ) return check_collision( my, ptr ) ;
+    if ( params[0] >= FIRST_INSTANCE_ID ) return ( ptr ? check_collision( my, ptr ) : 0 ) ;
 
     /* we must use full list of instances or get types from it */
     ptr = first_instance ;
@@ -664,9 +664,9 @@ static int grproc_collision( INSTANCE * my, int * params )
     if ( !params[0] )
     {
         LOCDWORD( mod_grproc, my, GRPROC_TYPE_SCAN ) = 0 ;
-        if ( LOCDWORD( mod_grproc, my, GRPROC_ID_SCAN ) )
+        if ( ( p = LOCDWORD( mod_grproc, my, GRPROC_ID_SCAN ) ) )
         {
-            ptr = instance_get( LOCDWORD( mod_grproc, my, GRPROC_ID_SCAN ) ) ;
+            ptr = instance_get( p ) ;
             if ( ptr ) ptr = ptr->next ;
         }
 
