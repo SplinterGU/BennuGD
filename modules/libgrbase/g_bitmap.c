@@ -361,10 +361,10 @@ void bitmap_analize( GRAPH * bitmap )
             int16_t * ptr = ( int16_t * ) bitmap->data ;
             int inc = bitmap->pitch - bitmap->widthb ;
 
-            for ( y = bitmap->height; y--; ptr = ( int16_t * )(( uint8_t * ) ptr ) + inc )
+            for ( y = bitmap->height; y--; ptr = ( int16_t * )((( uint8_t * ) ptr ) + inc ) )
             {
                 for ( x = bitmap->width; x--; ) if ( !*ptr++ ) break;
-                if ( x < 0 ) break;
+                if ( x >= 0 ) break;
             }
         }
         break;
@@ -373,13 +373,14 @@ void bitmap_analize( GRAPH * bitmap )
             int32_t * ptr = ( int32_t * ) bitmap->data ;
             int inc = bitmap->pitch - bitmap->widthb ;
 
-            for ( y = bitmap->height; y--; ptr = ( int32_t * )(( uint8_t * ) ptr ) + inc )
+            for ( y = bitmap->height; y--; ptr = ( int32_t * )((( uint8_t * ) ptr ) + inc ) )
             {
                 for ( x = bitmap->width; x--; ) if ( !*ptr++ ) break;
-                if ( x < 0 ) break;
+                if ( x >= 0 ) break;
             }
         }
     }
+
     if ( y < 0 ) bitmap->info_flags |= GI_NOCOLORKEY ;
 }
 
