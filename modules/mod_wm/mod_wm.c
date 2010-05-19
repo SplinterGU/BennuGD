@@ -38,7 +38,9 @@
 #include <SDL.h>
 #endif
 
+#if defined( WIN32 ) || ( __linux && ( defined( SDL_VIDEO_DRIVER_X11 ) ) )
 #include <SDL_syswm.h>
+#endif
 
 /* --------------------------------------------------------------------------- */
 /* Window Manager                                                              */
@@ -70,12 +72,14 @@ static int bgd_minimize( INSTANCE * my, int * params )
 static int bgd_move_window( INSTANCE * my, int * params )
 {
     int res = 0;
-    SDL_SysWMinfo wminfo ;
-
     if ( full_screen ) return 0;
 
+#if defined( WIN32 ) || ( __linux && ( defined( SDL_VIDEO_DRIVER_X11 ) ) )
+    SDL_SysWMinfo wminfo ;
+
     SDL_VERSION( &wminfo.version );
-    if ( !(SDL_GetWMInfo( &wminfo ) > 0) ) return 0 ;
+    if ( SDL_GetWMInfo( &wminfo ) != 1 ) return 0 ;
+#endif
 
 #ifdef WIN32
     /* Set the new window position */
@@ -115,12 +119,14 @@ static int bgd_move_window( INSTANCE * my, int * params )
 
 static int bgd_get_window_pos( INSTANCE * my, int * params )
 {
-    SDL_SysWMinfo wminfo ;
-
     if ( full_screen ) return -1;
 
+#if defined( WIN32 ) || ( __linux && ( defined( SDL_VIDEO_DRIVER_X11 ) ) )
+    SDL_SysWMinfo wminfo ;
+
     SDL_VERSION( &wminfo.version );
-    if ( !SDL_GetWMInfo( &wminfo ) > 0 ) return -1 ;
+    if ( SDL_GetWMInfo( &wminfo ) != 1 ) return -1 ;
+#endif
 
 #ifdef WIN32
     RECT Rect;
@@ -165,10 +171,12 @@ static int bgd_get_window_pos( INSTANCE * my, int * params )
 
 static int bgd_get_window_size( INSTANCE * my, int * params )
 {
+#if defined( WIN32 ) || ( __linux && ( defined( SDL_VIDEO_DRIVER_X11 ) ) )
     SDL_SysWMinfo wminfo ;
 
     SDL_VERSION( &wminfo.version );
-    if ( !SDL_GetWMInfo( &wminfo ) > 0 ) return -1 ;
+    if ( SDL_GetWMInfo( &wminfo ) != 1 ) return -1 ;
+#endif
 
 #ifdef WIN32
     RECT Rect;
@@ -245,7 +253,7 @@ static int bgd_get_desktop_size( INSTANCE * my, int * params )
     SDL_SysWMinfo wminfo ;
 
     SDL_VERSION( &wminfo.version );
-    if ( !SDL_GetWMInfo( &wminfo ) > 0 ) return -1 ;
+    if ( SDL_GetWMInfo( &wminfo ) != 1 ) return -1 ;
 
     wminfo.info.x11.lock_func();
     if ( XQueryTree(wminfo.info.x11.display, wminfo.info.x11.window, &root, &parent, &children, &children_count ) != BadWindow )
