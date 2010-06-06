@@ -315,13 +315,13 @@ GRAPH * bitmap_get( int libid, int mapcode )
     /* Get the map from the system library
      * (the only one that can have more than 1000 maps)
      */
-    if ( mapcode < 0 || mapcode > 999 ) lib = syslib ;
+    if ( mapcode > 999 ) lib = syslib ;
 
     if ( !lib ) lib = grlib_get( libid ) ;
 
     /* Get the map from a library */
 
-    if ( lib && lib->map_reserved > mapcode ) return lib->maps[ mapcode ] ;
+    if ( lib && lib->map_reserved > mapcode && mapcode >= 0 ) return lib->maps[ mapcode ] ;
 
     return 0 ;
 }
