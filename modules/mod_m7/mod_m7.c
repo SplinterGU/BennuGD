@@ -46,7 +46,7 @@ extern int trans_table_updated ;
 
 /* --------------------------------------------------------------------------- */
 
-#define FOCAL_DIST  128
+// #define FOCAL_DIST  128
 
 #define C_M7        2
 
@@ -168,9 +168,9 @@ char * __bgdexport( mod_m7, locals_def ) =
     "ctype;\n"
     "cnumber;\n"
     "height;\n"
-    "struct _m7_reserved\n"
-    "distance1;\n"
-    "end;\n";
+    "STRUCT _m7_reserved\n"
+    "  distance1;\n"
+    "END;\n";
 
 /* --------------------------------------------------------------------------- */
 /* Son las variables que se desea acceder.                           */
@@ -255,6 +255,11 @@ static void draw_mode7( int n, REGION * clip )
 
     INSTANCE * i ;
 
+    /* 8 bits only */
+    if ( dest->format->depth != 8 ) return; // gr_error ("Profundidad de color no soportada\n(mode7, dest)") ;
+    if ( outdoor && outdoor->format->depth != 8 ) return; // gr_error ("Profundidad de color no soportada\n(mode7, out)") ;
+    if ( indoor && indoor->format->depth != 8 ) return; // gr_error ("Profundidad de color no soportada\n(mode7, in)") ;
+
     /* Averigua la posición inicial de dibujo */
 
     camera = instance_get( dat->camera_id ) ;
@@ -291,7 +296,7 @@ static void draw_mode7( int n, REGION * clip )
     {
         /* Representa en las 3D el punto (0, y) de pantalla */
 
-        base_x = itofix( FOCAL_DIST ) ;
+        base_x = itofix( dat->focus /*FOCAL_DIST*/ ) ;
         base_y = -itofix( dat->focus / 2 ) ;
         base_z = itofix( dat->focus / 2 ) - itofix( y * dat->focus / height ) ;
 
@@ -308,6 +313,7 @@ static void draw_mode7( int n, REGION * clip )
             horizon_y = y ;
             continue ;
         }
+
         //if (point_z >= camera_z) break ;
 
         lines[y].left_bmp_x = fdiv( fmul(( point_x - camera_x ), -camera_z ), ( point_z - camera_z ) ) + camera_x ;
@@ -315,7 +321,7 @@ static void draw_mode7( int n, REGION * clip )
 
         /* Lo mismo para el punto (width,y) */
 
-        base_x = itofix( FOCAL_DIST ) ;
+        base_x = itofix( dat->focus /*FOCAL_DIST*/ ) ;
         base_y = itofix( dat->focus / 2 ) ;
         base_z = itofix( dat->focus / 2 ) - itofix( y * dat->focus / height ) ;
 
@@ -354,10 +360,6 @@ static void draw_mode7( int n, REGION * clip )
     ptr += (( jump > 0 ) ? dest->pitch : -( int )dest->pitch ) ;
     y   += jump ;
 
-    if ( dest->format->depth != 8 ) return; // gr_error ("Profundidad de color no soportada\n(mode7, dest)") ;
-    if ( outdoor && outdoor->format->depth != 8 ) return; // gr_error ("Profundidad de color no soportada\n(mode7, out)") ;
-    if ( indoor && indoor->format->depth != 8 ) return; // gr_error ("Profundidad de color no soportada\n(mode7, in)") ;
-
     if ( !( dat->flags & B_TRANSLUCENT ) )
         for ( ; y < height && y >= 0 ; y += jump )
         {
@@ -394,7 +396,7 @@ static void draw_mode7( int n, REGION * clip )
                 else
                 {
                     if ( outdoor ) c = (( uint8_t* )outdoor->data )[outdoor->pitch*( sy & outdoor_vmask ) + ( sx & outdoor_hmask )] ;
-                    else         c = dat->color ;
+                    else           c = dat->color ;
                     if ( c > 0 ) *ptr   = c ;
                     ptr++ ;
                 }
@@ -469,7 +471,7 @@ static void draw_mode7( int n, REGION * clip )
             )
             && LOCDWORD( mod_m7, i, CTYPE ) == C_M7 )
         {
-            if ( LOCDWORD( mod_m7, i, CNUMBER ) && !( LOCDWORD( mod_m7, i, CNUMBER ) & ( 1 << ( n - 1 ) ) ) )
+            if ( LOCDWORD( mod_m7, i, CNUMBER ) && !( LOCDWORD( mod_m7, i, CNUMBER ) & ( 1 << n ) ) )
             {
                 i = i->next ;
                 continue ;
@@ -491,7 +493,7 @@ static void draw_mode7( int n, REGION * clip )
             x -= fixtoi( camera_x ) ;
             y -= fixtoi( camera_y ) ;
 
-            LOCINT32( mod_m7, i, DISTANCE_1 ) = ftofix( sqrt(( double )x * x + ( double )y * y ) ) ;
+            LOCINT32( mod_m7, i, DISTANCE_1 ) = ftofix( sqrt(( double )(x * x) + ( double )(y * y) ) ) ;
 
             proclist[proclist_count++] = i ;
         }
@@ -513,15 +515,15 @@ static void draw_mode7( int n, REGION * clip )
 
             if ( LOCINT32( mod_m7, proclist[nproc], DISTANCE_1 ) <= 0 ) continue ;
 
-            base_x = LOCINT32( mod_m7, proclist[nproc], COORDX ) ;
-            base_y = LOCINT32( mod_m7, proclist[nproc], COORDY ) ;
-            base_z = LOCINT32( mod_m7, proclist[nproc], HEIGHT ) ;
+            base_x = itofix( LOCINT32( mod_m7, proclist[nproc], COORDX ) ) ;
+            base_y = itofix( LOCINT32( mod_m7, proclist[nproc], COORDY ) ) ;
+            base_z = itofix( LOCINT32( mod_m7, proclist[nproc], HEIGHT ) ) ;
 
             RESOLXYZ( mod_m7, proclist[nproc], base_x, base_y, base_z );
 
-            base_x = itofix( base_x ) - camera_x ;
-            base_y = itofix( base_y ) - camera_y ;
-            base_z = itofix( base_z ) + dat->height - camera_z ;
+            base_x = /*itofix( */base_x /*)*/ - camera_x ;
+            base_y = /*itofix( */base_y /*)*/ - camera_y ;
+            base_z = /*itofix( */base_z /*)*/ + /*dat->*/height - camera_z  ;
 
             x = ROTATEDX( base_x, base_y, cosa, sina ) ;
             y = ROTATEDY( base_x, base_y, cosa, sina ) ;
@@ -529,11 +531,11 @@ static void draw_mode7( int n, REGION * clip )
 
             if ( y <= 0 ) continue ;
 
-            bmp_x = ( long )( -(( float )FOCAL_DIST * fixtof( x ) / fixtof( y ) ) * ( float )width / ( float ) dat->focus ) ;
-            bmp_y = ( long )( -(( float )FOCAL_DIST * fixtof( z ) / fixtof( y ) ) * ( float )dat->height / ( float ) dat->focus ) ;
+            bmp_x = ( long )( -(( float )dat->focus /*FOCAL_DIST*/ * fixtof( x ) / fixtof( y ) ) * ( float )width / ( float ) dat->focus ) ;
+            bmp_y = ( long )( -(( float )dat->focus /*FOCAL_DIST*/ * fixtof( z ) / fixtof( y ) ) * ( float )height / ( float ) dat->focus ) ;
 
             x = LOCINT32( mod_m7, proclist[nproc], GRAPHSIZE ) ;
-            LOCINT32( mod_m7, proclist[nproc], GRAPHSIZE ) = dat->focus * 8 / fixtoi( LOCDWORD( mod_m7, proclist[nproc], DISTANCE_1 ) ) ;
+            LOCINT32( mod_m7, proclist[nproc], GRAPHSIZE ) = dat->focus * 8 / fixtof( LOCDWORD( mod_m7, proclist[nproc], DISTANCE_1 ) ) ;
             draw_instance_at( proclist[nproc], mode7->region, mode7->region->x + width / 2  + bmp_x, mode7->region->y + height / 2 + bmp_y ) ;
             LOCINT32( mod_m7, proclist[nproc], GRAPHSIZE ) = x ;
         }
