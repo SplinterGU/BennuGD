@@ -89,6 +89,7 @@ void gr_fade_init( int r, int g, int b, int speed )
 {
     if ( fade_pos.r == r && fade_pos.g == g && fade_pos.b == b )
     {
+        GLODWORD( librender, FADING ) = 0 ;
         fade_on = 0 ;
         return ;
     }
