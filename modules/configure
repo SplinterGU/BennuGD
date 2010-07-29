@@ -11600,6 +11600,7 @@ fi
     fi
   fi
 
+  as_save_PATH="$PATH"
   if test "x$prefix" != xNONE; then
     PATH="$prefix/bin:$prefix/usr/bin:$PATH"
   fi
@@ -11644,6 +11645,7 @@ $as_echo "no" >&6; }
 fi
 
 
+  PATH="$as_save_PATH"
   min_sdl_version=$SDL_VERSION
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for SDL - version >= $min_sdl_version" >&5
 $as_echo_n "checking for SDL - version >= $min_sdl_version... " >&6; }
