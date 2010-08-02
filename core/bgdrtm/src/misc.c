@@ -36,6 +36,14 @@
 #include "sysprocs_p.h"
 #include "xstrings.h"
 
+#ifdef TARGET_GP2X_WIZ
+    #include <sys/types.h>
+    #include <sys/stat.h>
+    #include <fcntl.h>
+
+    #include <sys/mman.h>
+#endif
+
 /* --------------------------------------------------------------------------- */
 
 char * appname = NULL;
@@ -82,6 +90,40 @@ int debug     = 0;  /* 1 if running in debug mode      */
 #endif
 
 /* --------------------------------------------------------------------------- */
+
+#ifdef TARGET_GP2X_WIZ
+
+#define TIMER_BASE3 0x1980
+#define TIMER_REG(x) __bgdrtm_memregl[(TIMER_BASE3 + x) >> 2]
+
+volatile unsigned long *__bgdrtm_memregl = NULL;
+int __bgdrtm_memdev = -1;
+
+void bgdrtm_ptimer_init(void)
+{
+    TIMER_REG(0x44) = 0x922;
+    TIMER_REG(0x40) = 0x0c;
+    TIMER_REG(0x08) = 0x6b;
+}
+
+unsigned long bgdrtm_ptimer_get_ticks_us(void)
+{
+    TIMER_REG(0x08) = 0x4b;  /* run timer, latch value */
+    return TIMER_REG(0);
+}
+
+void bgdrtm_ptimer_cleanup(void)
+{
+    TIMER_REG(0x40) = 0x0c;
+    TIMER_REG(0x08) = 0x23;
+    TIMER_REG(0x00) = 0;
+    TIMER_REG(0x40) = 0;
+    TIMER_REG(0x44) = 0;
+}
+
+#endif
+
+/* --------------------------------------------------------------------------- */
 /*
  *  FUNCTION : strncmpi
  *
@@ -122,6 +164,13 @@ void bgdrtm_entry( int argc, char * argv[] )
     }
 
     GLODWORD( OS_ID ) = _OS_ID ;
+
+#ifdef TARGET_GP2X_WIZ
+    __bgdrtm_memdev = open( "/dev/mem", O_RDWR );
+    __bgdrtm_memregl = mmap( 0, 0x20000, PROT_READ|PROT_WRITE, MAP_SHARED, __bgdrtm_memdev, 0xc0000000 );
+
+    bgdrtm_ptimer_init();
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
@@ -145,6 +194,14 @@ void bgdrtm_exit( int exit_value )
     if ( module_finalize_count )
         for ( n = 0; n < module_finalize_count; n++ )
             module_finalize_list[n]();
+
+#ifdef TARGET_GP2X_WIZ
+    bgdrtm_ptimer_cleanup();
+
+    __bgdrtm_memregl = munmap( 0, 0x20000 ); __bgdrtm_memregl = NULL;
+    close( __bgdrtm_memdev ); __bgdrtm_memdev = -1;
+#endif
+
     exit( exit_value ) ;
 }
 

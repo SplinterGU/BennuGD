@@ -81,4 +81,20 @@ extern void bgdrtm_exit( int n );
 
 /* --------------------------------------------------------------------------- */
 
+#ifdef TARGET_GP2X_WIZ
+
+#define TIMER_BASE3 0x1980
+#define TIMER_REG(x) __bgdrtm_memregl[(TIMER_BASE3 + x) >> 2]
+
+extern volatile unsigned long *__bgdrtm_memregl;
+extern int __bgdrtm_memdev;
+
+extern void bgdrtm_ptimer_init(void);
+extern unsigned long bgdrtm_ptimer_get_ticks_us(void);
+extern void bgdrtm_ptimer_cleanup(void);
+
+#endif
+
+/* --------------------------------------------------------------------------- */
+
 #endif

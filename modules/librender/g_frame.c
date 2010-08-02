@@ -105,11 +105,18 @@ void gr_wait_frame()
     /* -------------- */
 
     /* Tomo Tick actual */
+#ifdef TARGET_GP2X_WIZ
+    frame_ticks = bgdrtm_ptimer_get_ticks_us() / 1000L;
+#else
     frame_ticks = SDL_GetTicks() ;
-
+#endif
     if ( !FPS_init_sync )
     {
+#ifdef TARGET_GP2X_WIZ
+        FPS_init_sync = FPS_init = bgdrtm_ptimer_get_ticks_us() / 1000L;
+#else
         FPS_init_sync = FPS_init = SDL_GetTicks() ;
+#endif
         FPS_count_sync = FPS_count = 0 ;
         jump = 0;
 
@@ -147,11 +154,21 @@ void gr_wait_frame()
 
             if ( delay > 0 )
             {
+#ifdef TARGET_GP2X_WIZ
+                {
+                    unsigned long ta = bgdrtm_ptimer_get_ticks_us(), te = ta + delay * 1000;
+                    if ( ta > te ) while ( bgdrtm_ptimer_get_ticks_us() > te );
+                    while ( bgdrtm_ptimer_get_ticks_us() < te );
+                }
+#else
                 SDL_Delay( delay ) ;
-
+#endif
                 /* Reajust after delay */
+#ifdef TARGET_GP2X_WIZ
+                frame_ticks = bgdrtm_ptimer_get_ticks_us() / 1000L;
+#else
                 frame_ticks = SDL_GetTicks() ;
-
+#endif
                 ticks_per_frame = ( ( float ) ( frame_ticks - FPS_init_sync ) ) / ( float ) FPS_count_sync ;
                 fps_partial = 1000.0 / ticks_per_frame ;
             }
