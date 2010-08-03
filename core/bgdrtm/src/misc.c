@@ -58,35 +58,50 @@ int debug     = 0;  /* 1 if running in debug mode      */
 #ifdef _WIN32
 #define _OS_ID          OS_WIN32
 #endif
+
 #ifdef TARGET_LINUX
 #define _OS_ID          OS_LINUX
 #endif
+
 #ifdef TARGET_BEOS
 #define _OS_ID          OS_BEOS
 #endif
+
 #ifdef TARGET_MAC
 #define _OS_ID          OS_MACOS
 #endif
+
 #ifdef TARGET_GP32
 #define _OS_ID          OS_GP32
 #endif
+
 #ifdef TARGET_DC
 #define _OS_ID          OS_DC
 #endif
+
 #ifdef TARGET_BSD
 #define _OS_ID          OS_BSD
 #endif
+
 #ifdef TARGET_GP2X
 #ifdef _OS_ID
 #undef _OS_ID
 #endif
 #define _OS_ID          OS_GP2X
 #endif
+
 #ifdef TARGET_GP2X_WIZ
 #ifdef _OS_ID
 #undef _OS_ID
 #endif
 #define _OS_ID          OS_GP2X_WIZ
+#endif
+
+#ifdef TARGET_CAANOO
+#ifdef _OS_ID
+#undef _OS_ID
+#endif
+#define _OS_ID          OS_CAANOO
 #endif
 
 /* --------------------------------------------------------------------------- */
