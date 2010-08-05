@@ -193,7 +193,7 @@ static int modjoy_get_ball( INSTANCE * my, int * params )
 
 static int modjoy_get_accel( INSTANCE * my, int * params )
 {
-    return ( libjoy_get_accel_specific( ( int * ) params[0], ( int * ) params[1], ( int * ) params[2] ) );
+    return ( libjoy_get_accel( ( int * ) params[0], ( int * ) params[1], ( int * ) params[2] ) );
 }
 
 /* --------------------------------------------------------------------------- */
