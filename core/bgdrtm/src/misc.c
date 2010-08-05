@@ -184,9 +184,6 @@ void bgdrtm_entry( int argc, char * argv[] )
     else
         GLODWORD( OS_ID ) = _OS_ID ;
 
-        printf( "%s:%d (%s) %s %d %d\n", __FILE__, __LINE__, __FUNCTION__, os_id ? os_id : "N/A", _OS_ID, GLODWORD( OS_ID ) ); fflush( stdout );
-
-
 #if defined(TARGET_GP2X_WIZ) || defined(TARGET_CAANOO)
     __bgdrtm_memdev = open( "/dev/mem", O_RDWR );
     __bgdrtm_memregl = mmap( 0, 0x20000, PROT_READ|PROT_WRITE, MAP_SHARED, __bgdrtm_memdev, 0xc0000000 );
