@@ -190,6 +190,13 @@ static int modjoy_get_ball( INSTANCE * my, int * params )
 }
 
 /* --------------------------------------------------------------------------- */
+
+static int modjoy_get_accel( INSTANCE * my, int * params )
+{
+    return ( libjoy_get_accel_specific( ( int * ) params[0], ( int * ) params[1], ( int * ) params[2] ) );
+}
+
+/* --------------------------------------------------------------------------- */
 /* --------------------------------------------------------------------------- */
 /* --------------------------------------------------------------------------- */
 
@@ -304,6 +311,13 @@ static int modjoy_get_ball_specific( INSTANCE * my, int * params )
     return ( libjoy_get_ball_specific( params[0], params[1], ( int * ) params[2], ( int * ) params[3] ) );
 }
 
+/* --------------------------------------------------------------------------- */
+
+static int modjoy_get_accel_specific( INSTANCE * my, int * params )
+{
+    return ( libjoy_get_accel_specific( params[0], ( int * ) params[1], ( int * ) params[2], ( int * ) params[3] ) );
+}
+
 /* ---------------------------------------------------------------------- */
 
 DLSYSFUNCS  __bgdexport( mod_joy, functions_exports )[] =
@@ -341,6 +355,9 @@ DLSYSFUNCS  __bgdexport( mod_joy, functions_exports )[] =
     { "JOY_GETHAT"          , "II"    , TYPE_INT    , modjoy_get_hat_specific      },   /* Added by Sandman */
     { "JOY_GETBALL"         , "IPP"   , TYPE_INT    , modjoy_get_ball              },
     { "JOY_GETBALL"         , "IIPP"  , TYPE_INT    , modjoy_get_ball_specific     },   /* Added by Sandman */
+
+    { "JOY_GETACCEL"        , "PPP"   , TYPE_INT    , modjoy_get_accel             },
+    { "JOY_GETACCEL"        , "IPPP"  , TYPE_INT    , modjoy_get_accel_specific    },
 
     /* Compatibility */
 

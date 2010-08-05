@@ -36,7 +36,7 @@
 #include "sysprocs_p.h"
 #include "xstrings.h"
 
-#ifdef TARGET_GP2X_WIZ
+#if defined(TARGET_GP2X_WIZ) || defined(TARGET_CAANOO)
     #include <sys/types.h>
     #include <sys/stat.h>
     #include <fcntl.h>
@@ -106,7 +106,7 @@ int debug     = 0;  /* 1 if running in debug mode      */
 
 /* --------------------------------------------------------------------------- */
 
-#ifdef TARGET_GP2X_WIZ
+#if defined(TARGET_GP2X_WIZ) || defined(TARGET_CAANOO)
 
 #define TIMER_BASE3 0x1980
 #define TIMER_REG(x) __bgdrtm_memregl[(TIMER_BASE3 + x) >> 2]
@@ -169,6 +169,7 @@ void bgdrtm_entry( int argc, char * argv[] )
 {
     int i;
     int * args = (int *)&GLODWORD( ARGV_TABLE );
+    char * os_id;
 
     GLODWORD( ARGC ) = argc ;
 
@@ -178,9 +179,15 @@ void bgdrtm_entry( int argc, char * argv[] )
         string_use( args[i] ) ;
     }
 
-    GLODWORD( OS_ID ) = _OS_ID ;
+    if ( ( os_id = getenv( "OS_ID" ) ) )
+        GLODWORD( OS_ID ) = atol( os_id ) ;
+    else
+        GLODWORD( OS_ID ) = _OS_ID ;
 
-#ifdef TARGET_GP2X_WIZ
+        printf( "%s:%d (%s) %s %d %d\n", __FILE__, __LINE__, __FUNCTION__, os_id ? os_id : "N/A", _OS_ID, GLODWORD( OS_ID ) ); fflush( stdout );
+
+
+#if defined(TARGET_GP2X_WIZ) || defined(TARGET_CAANOO)
     __bgdrtm_memdev = open( "/dev/mem", O_RDWR );
     __bgdrtm_memregl = mmap( 0, 0x20000, PROT_READ|PROT_WRITE, MAP_SHARED, __bgdrtm_memdev, 0xc0000000 );
 
@@ -210,7 +217,7 @@ void bgdrtm_exit( int exit_value )
         for ( n = 0; n < module_finalize_count; n++ )
             module_finalize_list[n]();
 
-#ifdef TARGET_GP2X_WIZ
+#if defined(TARGET_GP2X_WIZ) || defined(TARGET_CAANOO)
     bgdrtm_ptimer_cleanup();
 
     __bgdrtm_memregl = munmap( 0, 0x20000 ); __bgdrtm_memregl = NULL;

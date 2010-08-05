@@ -81,7 +81,7 @@ extern void bgdrtm_exit( int n );
 
 /* --------------------------------------------------------------------------- */
 
-#ifdef TARGET_GP2X_WIZ
+#if defined( TARGET_GP2X_WIZ ) || defined( TARGET_CAANOO )
 
 #define TIMER_BASE3 0x1980
 #define TIMER_REG(x) __bgdrtm_memregl[(TIMER_BASE3 + x) >> 2]
