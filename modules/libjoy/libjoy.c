@@ -118,7 +118,7 @@ int libjoy_buttons( void )
     {
         return SDL_JoystickNumButtons( _joysticks[ _selected_joystick ] ) ;
     }
-    return -1 ;
+    return 0 ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -136,7 +136,7 @@ int libjoy_axes( void )
 #endif
         return SDL_JoystickNumAxes( _joysticks[ _selected_joystick ] ) ;
     }
-    return -1 ;
+    return 0 ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -183,7 +183,7 @@ int libjoy_get_button( int button )
 #endif
         return SDL_JoystickGetButton( _joysticks[ _selected_joystick ], button ) ;
     }
-    return -1 ;
+    return 0 ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -201,7 +201,7 @@ int libjoy_get_position( int axis )
 #endif
         return SDL_JoystickGetAxis( _joysticks[ _selected_joystick ], axis ) ;
     }
-    return -1 ;
+    return 0 ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -216,7 +216,7 @@ int libjoy_hats( void )
     {
         return SDL_JoystickNumHats( _joysticks[ _selected_joystick ] ) ;
     }
-    return -1 ;
+    return 0 ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -231,7 +231,7 @@ int libjoy_balls( void )
     {
         return SDL_JoystickNumBalls( _joysticks[ _selected_joystick ] ) ;
     }
-    return -1 ;
+    return 0 ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -249,7 +249,7 @@ int libjoy_get_hat( int hat )
             return SDL_JoystickGetHat( _joysticks[ _selected_joystick ], hat ) ;
         }
     }
-    return -1 ;
+    return 0 ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -303,7 +303,7 @@ int libjoy_buttons_specific( int joy )
 #endif
         return SDL_JoystickNumButtons( _joysticks[ joy ] ) ;
     }
-    return -1 ;
+    return 0 ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -322,7 +322,7 @@ int libjoy_axes_specific( int joy )
 #endif
         return SDL_JoystickNumAxes( _joysticks[ joy ] ) ;
     }
-    return -1 ;
+    return 0 ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -375,7 +375,7 @@ int libjoy_get_button_specific( int joy, int button )
             return SDL_JoystickGetButton( _joysticks[ joy ], button ) ;
         }
     }
-    return -1 ;
+    return 0 ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -397,7 +397,7 @@ int libjoy_get_position_specific( int joy, int axis )
             return SDL_JoystickGetAxis( _joysticks[ joy ], axis ) ;
         }
     }
-    return -1 ;
+    return 0 ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -417,7 +417,7 @@ int libjoy_hats_specific( int joy )
 #endif
         return SDL_JoystickNumHats( _joysticks[ joy ] ) ;
     }
-    return -1 ;
+    return 0 ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -435,7 +435,7 @@ int libjoy_balls_specific( int joy )
 #endif
         return SDL_JoystickNumBalls( _joysticks[ joy ] ) ;
     }
-    return -1 ;
+    return 0 ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -456,7 +456,7 @@ int libjoy_get_hat_specific( int joy, int hat )
             return SDL_JoystickGetHat( _joysticks[ joy ], hat ) ;
         }
     }
-    return -1 ;
+    return 0 ;
 }
 
 /* --------------------------------------------------------------------------- */
