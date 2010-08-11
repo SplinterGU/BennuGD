@@ -66,6 +66,8 @@ int waitvsync = 0 ;
 int scale_resolution = 0 ;
 int * scale_resolution_table_w = NULL;
 int * scale_resolution_table_h = NULL;
+int scale_resolution_aspectratio = 0;
+int scale_resolution_orientation = 0;
 
 /* --------------------------------------------------------------------------- */
 
@@ -114,10 +116,12 @@ DLCONSTANT  __bgdexport( libvideo, constants_def )[] =
 
 /* --------------------------------------------------------------------------- */
 
-#define GRAPH_MODE          0
-#define SCALE_MODE          1
-#define FULL_SCREEN         2
-#define SCALE_RESOLUTION    3
+#define GRAPH_MODE                      0
+#define SCALE_MODE                      1
+#define FULL_SCREEN                     2
+#define SCALE_RESOLUTION                3
+#define SCALE_RESOLUTION_ASPECTRATIO    4
+#define SCALE_RESOLUTION_ORIENTATION    5
 
 /* --------------------------------------------------------------------------- */
 /* Definicion de variables globales (usada en tiempo de compilacion) */
@@ -127,6 +131,8 @@ char * __bgdexport( libvideo, globals_def ) =
     "scale_mode = 0;\n"
     "full_screen = 0;\n"
     "scale_resolution = 0;\n"
+    "scale_resolution_aspectratio = 0;\n"
+    "scale_resolution_orientation = 0;\n"
     ;
 
 /* --------------------------------------------------------------------------- */
@@ -141,6 +147,11 @@ DLVARFIXUP __bgdexport( libvideo, globals_fixup )[] =
     { "scale_mode" , NULL, -1, -1 },
     { "full_screen" , NULL, -1, -1 },
     { "scale_resolution", NULL, -1, -1 },
+
+    /* new vars for use with scale_resolution */
+    { "scale_resolution_aspectratio", NULL, -1, -1 },
+    { "scale_resolution_orientation", NULL, -1, -1 },
+
     { NULL , NULL, -1, -1 }
 };
 
@@ -259,7 +270,11 @@ int gr_set_mode( int width, int height, int depth )
     waitvsync = ( GLODWORD( libvideo, GRAPH_MODE ) & MODE_WAITVSYNC ) ? 1 : 0 ;
     scale_mode = GLODWORD( libvideo, SCALE_MODE );
     full_screen |= GLODWORD( libvideo, FULL_SCREEN );
+
     scale_resolution = GLODWORD( libvideo, SCALE_RESOLUTION );
+
+    if ( GLOEXISTS( libvideo, SCALE_RESOLUTION_ASPECTRATIO ) ) scale_resolution_aspectratio = GLODWORD( libvideo, SCALE_RESOLUTION_ASPECTRATIO );
+    if ( GLOEXISTS( libvideo, SCALE_RESOLUTION_ORIENTATION ) ) scale_resolution_orientation = GLODWORD( libvideo, SCALE_RESOLUTION_ORIENTATION );
 
     if ( !depth )
     {
@@ -337,7 +352,15 @@ int gr_set_mode( int width, int height, int depth )
 
     if ( scale_resolution != 0 )
     {
+        if ( scale_resolution_orientation )
+        {
+            int aux =  surface_width;
+            surface_width = surface_height;
+            surface_height = aux;
+        }
+
         scale_screen = SDL_SetVideoMode( surface_width, surface_height, depth, sdl_flags );
+
         if ( !scale_screen ) return -1;
         screen = SDL_CreateRGBSurface( sdl_flags,
                                        width,
@@ -350,11 +373,33 @@ int gr_set_mode( int width, int height, int depth )
                                      );
 
         /* scale tables */
+
+        if ( scale_resolution_orientation )
         {
-            double  fw = (double)screen->w / (double)scale_screen->w,
-                    fh = (double)screen->h / (double)scale_screen->h,
-                    fx, fy = 0.0 ;
+            double  fw, fh, fx, fy;
             int     h, w;
+            int     offx = 0, offy = 0;
+
+            if ( scale_resolution_aspectratio )
+            {
+                if ( scale_screen->w > scale_screen->h )
+                {
+                    fh = fw = (double)screen->w / (double)scale_screen->h;
+                    offx = ( scale_screen->w - screen->h / fw ) / 2 ;
+                    offy = 0;
+                }
+                else
+                {
+                    fh = fw = (double)screen->h / (double)scale_screen->w;
+                    offx = 0;
+                    offy = ( scale_screen->h - screen->w / fw ) / 2 ;
+                }
+            }
+            else
+            {
+                fw = (double)screen->w / (double)scale_screen->h;
+                fh = (double)screen->h / (double)scale_screen->w;
+            }
 
             if ( !( scale_resolution_table_w = malloc( surface_width  * sizeof( int ) ) ) ) return -1;
             if ( !( scale_resolution_table_h = malloc( surface_height * sizeof( int ) ) ) ) return -1;
@@ -362,15 +407,79 @@ int gr_set_mode( int width, int height, int depth )
             fx = 0.0;
             for ( w = 0; w < scale_screen->w; w++ )
             {
-                scale_resolution_table_w[w] = ( int ) fx;
-                fx += fw;
+                if ( w < offx )
+                    scale_resolution_table_w[w] = -1;
+                else
+                {
+                    scale_resolution_table_w[w] = ( fx < screen->h ) ? screen->pitch * ( int ) fx : -1 ;
+                    fx += fh;
+                }
             }
 
             fy = 0.0;
             for ( h = 0; h < scale_screen->h; h++ )
             {
-                scale_resolution_table_h[h] = screen->pitch * ( int ) fy ;
-                fy += fh;
+                if ( h < offy )
+                    scale_resolution_table_h[h] = -1;
+                else
+                {
+                    scale_resolution_table_h[h] = ( fy < screen->w ) ? ( int ) fy : -1 ;
+                    fy += fw;
+                }
+            }
+        }
+        else
+        {
+            double  fw, fh, fx, fy = 0.0 ;
+            int     h, w;
+            int     offx = 0, offy = 0;
+
+            if ( scale_resolution_aspectratio )
+            {
+                if ( scale_screen->w > scale_screen->h )
+                {
+                    fh = fw = (double)screen->h / (double)scale_screen->h;
+                    offx = ( scale_screen->w - screen->w / fw ) / 2 ;
+                    offy = 0;
+                }
+                else
+                {
+                    fh = fw = (double)screen->w / (double)scale_screen->w;
+                    offx = 0;
+                    offy = ( scale_screen->h - screen->h / fw ) / 2 ;
+                }
+            }
+            else
+            {
+                fw = (double)screen->w / (double)scale_screen->w;
+                fh = (double)screen->h / (double)scale_screen->h;
+            }
+
+            if ( !( scale_resolution_table_w = malloc( surface_width  * sizeof( int ) ) ) ) return -1;
+            if ( !( scale_resolution_table_h = malloc( surface_height * sizeof( int ) ) ) ) return -1;
+
+            fx = 0.0;
+            for ( w = 0; w < scale_screen->w; w++ )
+            {
+                if ( w < offx )
+                    scale_resolution_table_w[w] = -1;
+                else
+                {
+                    scale_resolution_table_w[w] = ( fx < screen->w ) ? ( int ) fx : -1 ;
+                    fx += fw;
+                }
+            }
+
+            fy = 0.0;
+            for ( h = 0; h < scale_screen->h; h++ )
+            {
+                if ( h < offy )
+                    scale_resolution_table_h[h] = -1;
+                else
+                {
+                    scale_resolution_table_h[h] = ( fy < screen->h ) ? screen->pitch * ( int ) fy : -1 ;
+                    fy += fh;
+                }
             }
         }
     }

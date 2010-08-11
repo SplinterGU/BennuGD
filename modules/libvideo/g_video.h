@@ -78,6 +78,9 @@ extern int scale_resolution ;
 extern int * scale_resolution_table_w;
 extern int * scale_resolution_table_h;
 
+extern int scale_resolution_aspectratio;
+extern int scale_resolution_orientation;
+
 /* --------------------------------------------------------------------------- */
 
 extern int gr_init( int width, int height );
