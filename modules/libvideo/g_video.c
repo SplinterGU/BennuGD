@@ -260,6 +260,7 @@ int gr_set_mode( int width, int height, int depth )
     int sdl_flags = 0;
     int surface_width = width;
     int surface_height = height;
+    char * e;
 
     enable_scale = ( GLODWORD( libvideo, GRAPH_MODE ) & MODE_2XSCALE ) ? 1 : 0 ;
     full_screen = ( GLODWORD( libvideo, GRAPH_MODE ) & MODE_FULLSCREEN ) ? 1 : 0 ;
@@ -275,6 +276,12 @@ int gr_set_mode( int width, int height, int depth )
 
     if ( GLOEXISTS( libvideo, SCALE_RESOLUTION_ASPECTRATIO ) ) scale_resolution_aspectratio = GLODWORD( libvideo, SCALE_RESOLUTION_ASPECTRATIO );
     if ( GLOEXISTS( libvideo, SCALE_RESOLUTION_ORIENTATION ) ) scale_resolution_orientation = GLODWORD( libvideo, SCALE_RESOLUTION_ORIENTATION );
+
+    /* Overwrite all params */
+
+    if ( ( e = getenv( "SCALE_RESOLUTION"             ) ) ) scale_resolution = atol( e );
+    if ( ( e = getenv( "SCALE_RESOLUTION_ASPECTRATIO" ) ) ) scale_resolution_aspectratio = atol( e );
+    if ( ( e = getenv( "SCALE_RESOLUTION_ORIENTATION" ) ) ) scale_resolution_orientation = atol( e );
 
     if ( scale_resolution_orientation > 4 || scale_resolution_orientation < 0 ) scale_resolution_orientation = 0;
 
@@ -575,21 +582,12 @@ void __bgdexport( libvideo, module_initialize )()
 #endif
     apptitle = appname;
 
-    e = getenv("VIDEO_WIDTH");
-    if ( e ) scr_width = atoi(e);
-
-    e = getenv("VIDEO_HEIGHT");
-    if ( e ) scr_height = atoi(e);
-
-    e = getenv("VIDEO_DEPTH");
-    if ( e )
+    if ( ( e = getenv( "VIDEO_WIDTH"  ) ) ) scr_width = atoi(e);
+    if ( ( e = getenv( "VIDEO_HEIGHT" ) ) ) scr_height = atoi(e);
+    if ( ( e = getenv( "VIDEO_DEPTH"  ) ) )
         GLODWORD( libvideo, GRAPH_MODE ) = atoi(e);
     else
-/*#ifdef TARGET_GP2X_WIZ*/
         GLODWORD( libvideo, GRAPH_MODE ) = MODE_16BITS;
-/*#else
-        GLODWORD( libvideo, GRAPH_MODE ) = MODE_32BITS;
-#endif*/
 
     gr_init( scr_width, scr_height ) ;
 }
