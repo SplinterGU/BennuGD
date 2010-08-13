@@ -202,7 +202,7 @@ void gr_unlock_screen()
         switch ( scale_screen->format->BitsPerPixel )
         {
             case    8:
-                    if ( scale_resolution_orientation )
+                    if ( scale_resolution_orientation == 1 || scale_resolution_orientation == 3 )
                     {
                         if ( scale_resolution_aspectratio )
                         {
@@ -269,7 +269,7 @@ void gr_unlock_screen()
                     break;
 
             case    16:
-                    if ( scale_resolution_orientation )
+                    if ( scale_resolution_orientation = 1 || scale_resolution_orientation == 3 )
                     {
                         if ( scale_resolution_aspectratio )
                         {
@@ -338,7 +338,7 @@ void gr_unlock_screen()
                     break;
 
             case    32:
-                    if ( scale_resolution_orientation )
+                    if ( scale_resolution_orientation == 1 || scale_resolution_orientation == 3 )
                     {
                         if ( scale_resolution_aspectratio )
                         {
