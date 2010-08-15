@@ -1456,6 +1456,13 @@ static int modsound_reverse_stereo( INSTANCE * my, int * params )
 
 /* --------------------------------------------------------------------------- */
 
+static int modsound_set_music_position( INSTANCE * my, int * params )
+{
+    return ( Mix_SetMusicPosition( ( double ) *( float * ) & params[0] ) );
+}
+
+/* --------------------------------------------------------------------------- */
+
 static int modsound_init( INSTANCE * my, int * params )
 {
     return( sound_init() );
@@ -1500,6 +1507,7 @@ DLSYSFUNCS  __bgdexport( mod_sound, functions_exports )[] =
     { "SET_DISTANCE"        , "II"   , TYPE_INT , modsound_set_distance       },
     { "REVERSE_STEREO"      , "II"   , TYPE_INT , modsound_reverse_stereo     },
     { "PLAY_WAV"            , "III"  , TYPE_INT , modsound_play_wav_channel   },
+    { "SET_MUSIC_POSITION"  , "F"    , TYPE_INT , modsound_set_music_position },
     { 0                     , 0      , 0        , 0                           }
 };
 

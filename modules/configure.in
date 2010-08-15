@@ -23,6 +23,15 @@ LIBSSL="crypto"
 
 dnl Aqui es donde se chequeara el SO, pero solo hay una opcion xD
 case "$target_os" in
+    linux-gnueabi)
+        COMMON_CFLAGS="-Wall -DTARGET_LINUX"
+        COMMON_LDFLAGS="$COMMON_LIBS -lc -ldl"
+
+        COMMON_CFLAGS="$COMMON_CFLAGS $CFLAGS"
+        COMMON_LDFLAGS="$COMMON_LDFLAGS $LDFLAGS"
+        SDL_MIXER_DEPS="-lSDL -lvorbis -logg -lmad -lvorbisfile -lvorbisidec"
+        ;;
+
     linux-gnu*)
         COMMON_CFLAGS="-Wall -DTARGET_LINUX"
         COMMON_LDFLAGS="$COMMON_LIBS -lc -ldl"
@@ -88,8 +97,8 @@ AC_CHECK_LIB(z, gzsetparams, [AC_CHECK_HEADER(zlib.h,ZLIBS="-lz",)], [AC_MSG_ERR
 AC_CHECK_LIB(png, png_read_info, [AC_CHECK_HEADER(png.h,PNGLIBS="-lpng",)], AC_MSG_ERROR(PNG library not found!), -lz -lm)
 AC_CHECK_LIB($LIBSSL, DES_ecb_encrypt, [AC_CHECK_HEADER(openssl/des.h,CRYPT_LDFLAGS=$LIBSSL,)], [AC_MSG_ERROR($LIBSSL not found!)])
 
-LIBS+=-lSDL_mixer
-#AC_CHECK_LIB(SDL_mixer, Mix_AllocateChannels, [AC_CHECK_HEADER(SDL_mixer.h,LIBS+="-lSDL_mixer",)], [AC_MSG_ERROR(libSDL_mixer not found!)], $SDL_MIXER_DEPS)
+#LIBS+=-lSDL_mixer
+AC_CHECK_LIB(SDL_mixer, Mix_AllocateChannels, [AC_CHECK_HEADER(SDL_mixer.h,LIBS+="-lSDL_mixer",)], [AC_MSG_ERROR(libSDL_mixer not found!)], $SDL_MIXER_DEPS)
 #AC_CHECK_LIB(SDL_mixer, Mix_AllocateChannels,LIBS=$LIBS, AC_MSG_ERROR([*** SDL_mixer library not found!]))
 AC_CHECK_LIB(X11, [XQueryTree,XMoveWindow],X11LIBS="-lX11",)
 

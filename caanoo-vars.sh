@@ -25,7 +25,7 @@ export PKG_CONFIG_PATH
 PREFIX=$OPEN2X
 export PREFIX
 
-PATH=$PATH:$OPEN2X/bin
+PATH=$OPEN2X/bin:$PATH
 export PATH
 
 ln -s `whereis -b pkg-config | sed 's/pkg-config\: //g'` ~/caanoo/GPH_SDK/tools/gcc-4.2.4-glibc-2.7-eabi/arm-gph-linux-gnueabil/bin/pkg-config
