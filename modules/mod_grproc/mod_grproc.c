@@ -40,6 +40,14 @@
 
 /* --------------------------------------------------------------------------- */
 
+enum {
+    COLLISION_NORMAL = 0,
+    COLLISION_BOX,
+    COLLISION_CIRCLE
+};
+
+/* --------------------------------------------------------------------------- */
+
 /* Locals */
 
 #define GRPROC_TYPE_SCAN    0
@@ -166,24 +174,17 @@ static int grproc_get_angle( INSTANCE * my, int * params )
 
 /* --------------------------------------------------------------------------- */
 
-static int grproc_get_dist( INSTANCE * a, int * params )
+static int inline get_distance_xy( INSTANCE * a, int x2, int y2 )
 {
-    INSTANCE * b = instance_get( params[0] ) ;
-
-    if ( a && b )
+    if ( a )
     {
-        int x1, y1, x2, y2;
+        int x1, y1;
         int res = LOCINT32( mod_grproc, a, RESOLUTION ) ;
 
         x1 = LOCINT32( mod_grproc, a, COORDX ) ;
         y1 = LOCINT32( mod_grproc, a, COORDY ) ;
 
         RESOLXY( mod_grproc, a, x1, y1 );
-
-        x2 = LOCINT32( mod_grproc, b, COORDX ) ;
-        y2 = LOCINT32( mod_grproc, b, COORDY ) ;
-
-        RESOLXY( mod_grproc, b, x2, y2 );
 
         double dx = ( x2 - x1 ) * ( x2 - x1 ) ;
         double dy = ( y2 - y1 ) * ( y2 - y1 ) ;
@@ -195,7 +196,23 @@ static int grproc_get_dist( INSTANCE * a, int * params )
 
         return ( int )sqrt( dx + dy ) ;
     }
+
     return -1 ;
+}
+
+/* --------------------------------------------------------------------------- */
+
+static int get_distance( INSTANCE * a, INSTANCE * b )
+{
+    if ( a && b ) return ( get_distance_xy( a, LOCINT32( mod_grproc, b, COORDX ), LOCINT32( mod_grproc, b, COORDY ) ) ) ;
+    return -1 ;
+}
+
+/* --------------------------------------------------------------------------- */
+
+static int grproc_get_dist( INSTANCE * a, int * params )
+{
+    return ( get_distance( a, instance_get( params[0] ) ) );
 }
 
 /* --------------------------------------------------------------------------- */
@@ -414,11 +431,24 @@ static int get_bbox( REGION * bbox, INSTANCE * proc )
 /* --------------------------------------------------------------------------- */
 /* Colisiones */
 
-static int check_collision_with_mouse( INSTANCE * proc1 )
+static int check_collision_with_mouse( INSTANCE * proc1, int colltype )
 {
-    REGION bbox1 ;
+    REGION bbox1, bbox2 ;
     int x, y, mx, my ;
-    static GRAPH * bmp ;
+    static GRAPH * bmp = NULL;
+
+    switch ( colltype )
+    {
+        case    COLLISION_BOX:
+        case    COLLISION_CIRCLE:
+                if ( !get_bbox( &bbox2, proc1 ) ) return 0 ;
+
+        case    COLLISION_NORMAL:
+                break;
+
+        default:
+                return 0;
+    }
 
     mx = GLOINT32( mod_grproc, MOUSEX ) ;
     my = GLOINT32( mod_grproc, MOUSEY ) ;
@@ -428,22 +458,42 @@ static int check_collision_with_mouse( INSTANCE * proc1 )
 
     if ( LOCDWORD( mod_grproc, proc1, CTYPE ) == C_SCREEN )
     {
-        if ( !get_bbox( &bbox1, proc1 ) ) return 0 ;
+        switch ( colltype )
+        {
+            case    COLLISION_NORMAL:
+                    if ( !get_bbox( &bbox2, proc1 ) ) return 0 ;
+                    if ( bbox2.x > mx || bbox2.x2 < mx || bbox2.y > my || bbox2.y2 < my ) return 0 ;
+                    break;
 
-        if ( bbox1.x > mx || bbox1.x2 < mx || bbox1.y > my || bbox1.y2 < my ) return 0 ;
+            case    COLLISION_BOX:
+                    if ( bbox2.x <= mx && bbox2.x2 >= mx && bbox2.y <= my && bbox2.y2 >= my ) return 1;
+                    return 0;
+                    break;
+
+            case    COLLISION_CIRCLE:
+                {
+                    int dist = get_distance_xy( proc1, mx, my );
+                    if ( ( bbox2.x2 - bbox2.x ) / 2 >= dist && ( bbox2.y2 - bbox2.y ) / 2 >= dist ) return 1;
+                    return 0;
+                    break;
+                }
+        }
     }
 
     /* Creates a temporary bitmap (only once) */
 
-    if ( !bmp ) bmp = bitmap_new( 0, 2, 2, sys_pixel_format->depth ) ;
-    if ( !bmp ) return 0 ;
+    if ( colltype == COLLISION_NORMAL )
+    {
+        if ( !bmp ) bmp = bitmap_new( 0, 1, 1, sys_pixel_format->depth ) ;
+        if ( !bmp ) return 0 ;
 
-    memset( bmp->data, 0, bmp->pitch * bmp->height ) ;
+        memset( bmp->data, 0, bmp->pitch * bmp->height ) ;
+    }
 
     /* Retrieves process information */
 
-    bbox1.x = 0 ; bbox1.x2 = 1 ;
-    bbox1.y = 0 ; bbox1.y2 = 1 ;
+    bbox1.x = 0 ; bbox1.x2 = 0 ;
+    bbox1.y = 0 ; bbox1.y2 = 0 ;
 
     x = LOCINT32( mod_grproc, proc1, COORDX ) ;
     y = LOCINT32( mod_grproc, proc1, COORDY ) ;
@@ -472,21 +522,39 @@ static int check_collision_with_mouse( INSTANCE * proc1 )
                 {
                     REGION * r = scroll->region;
 
-                    if ( r->x > mx || r->x2 < mx || r->y > my || r->y2 < my ) continue;
-                    draw_at( bmp, x + r->x - mx - scroll->posx0, y + r->y - my - scroll->posy0, &bbox1, proc1 );
-                    switch ( sys_pixel_format->depth )
+                    switch ( colltype )
                     {
-                        case    8:
-                            if ( *( uint8_t * )bmp->data ) return 1;
-                            break;
+                        case    COLLISION_NORMAL:
+                                if ( r->x > mx || r->x2 < mx || r->y > my || r->y2 < my ) continue;
 
-                        case    16:
-                            if ( *( uint16_t * )bmp->data ) return 1;
-                            break;
+                                draw_at( bmp, x + r->x - mx - scroll->posx0, y + r->y - my - scroll->posy0, &bbox1, proc1 );
+                                switch ( sys_pixel_format->depth )
+                                {
+                                    case    8:
+                                        if ( *( uint8_t * )bmp->data ) return 1;
+                                        break;
 
-                        case    32:
-                            if ( *( uint32_t * )bmp->data ) return 1;
-                            break;
+                                    case    16:
+                                        if ( *( uint16_t * )bmp->data ) return 1;
+                                        break;
+
+                                    case    32:
+                                        if ( *( uint32_t * )bmp->data ) return 1;
+                                        break;
+                                }
+                                break;
+
+                        case    COLLISION_BOX:
+                                if ( bbox2.x <= scroll->posx0 + r->x + mx && bbox2.x2 >= scroll->posx0 + r->x + mx &&
+                                     bbox2.y <= scroll->posy0 + r->y + my && bbox2.y2 >= scroll->posy0 + r->y + my ) return 1;
+                                break;
+
+                        case    COLLISION_CIRCLE:
+                            {
+                                int dist = get_distance_xy( proc1, r->x + mx + scroll->posx0, r->y + my + scroll->posy0 );
+                                if ( ( bbox2.x2 - bbox2.x ) / 2 >= dist && ( bbox2.y2 - bbox2.y ) / 2 >= dist ) return 1;
+                                break;
+                            }
                     }
                 }
             }
@@ -495,25 +563,82 @@ static int check_collision_with_mouse( INSTANCE * proc1 )
         return 0;
     }
 
-    /* Collision check (blits into temporary space and checks the resulting pixel) */
-    draw_at( bmp, x - mx, y - my, &bbox1, proc1 ) ;
-
-    switch ( sys_pixel_format->depth )
+    switch ( colltype )
     {
-        case    8:
-            if ( *( uint8_t * )bmp->data ) return 1;
-            break;
+        case    COLLISION_NORMAL:
+                /* Collision check (blits into temporary space and checks the resulting pixel) */
+                draw_at( bmp, x - mx, y - my, &bbox1, proc1 ) ;
 
-        case    16:
-            if ( *( uint16_t * )bmp->data ) return 1;
-            break;
+                switch ( sys_pixel_format->depth )
+                {
+                    case    8:
+                        if ( *( uint8_t * )bmp->data ) return 1;
+                        break;
 
-        case    32:
-            if ( *( uint32_t * )bmp->data ) return 1;
-            break;
+                    case    16:
+                        if ( *( uint16_t * )bmp->data ) return 1;
+                        break;
+
+                    case    32:
+                        if ( *( uint32_t * )bmp->data ) return 1;
+                        break;
+                }
+                break;
+
+        case    COLLISION_BOX:
+                if ( bbox2.x <= mx && bbox2.x2 >= mx &&
+                     bbox2.y <= my && bbox2.y2 >= my ) return 1;
+                break;
+
+        case    COLLISION_CIRCLE:
+            {
+                int dist = get_distance_xy( proc1, mx, my );
+                if ( ( bbox2.x2 - bbox2.x ) / 2 >= dist && ( bbox2.y2 - bbox2.y ) / 2 >= dist ) return 1;
+                break;
+            }
     }
 
     return 0 ;
+}
+
+/* --------------------------------------------------------------------------- */
+
+static int check_collision_circle( INSTANCE * proc1, INSTANCE * proc2 )
+{
+    REGION bbox1, bbox2 ;
+    int dist ;
+    GRAPH * bmp1;
+
+    bmp1 = instance_graph( proc1 ) ; if ( !bmp1 ) return 0 ;
+    instance_get_bbox( proc1, bmp1, &bbox1 );
+
+    bmp1 = instance_graph( proc2 ) ; if ( !bmp1 ) return 0 ;
+    instance_get_bbox( proc1, bmp1, &bbox2 );
+
+    if ( ( dist = get_distance( proc1, proc2 ) ) > -1 &&
+           dist < ( ( ( ( bbox1.x2 - bbox1.x + 1 ) + ( bbox1.y2 - bbox1.y + 1 ) ) / 2 ) +
+                    ( ( ( bbox2.x2 - bbox2.x + 1 ) + ( bbox2.y2 - bbox2.y + 1 ) ) / 2 ) ) / 2 ) return 1;
+
+    return 0;
+}
+
+/* --------------------------------------------------------------------------- */
+
+static int check_collision_box( INSTANCE * proc1, INSTANCE * proc2 )
+{
+    REGION bbox1, bbox2 ;
+    GRAPH * bmp1 ;
+
+    bmp1 = instance_graph( proc1 ) ; if ( !bmp1 ) return 0 ;
+    instance_get_bbox( proc1, bmp1, &bbox1 );
+
+    bmp1 = instance_graph( proc2 ) ; if ( !bmp1 ) return 0 ;
+    instance_get_bbox( proc2, bmp1, &bbox2 );
+
+    region_union( &bbox1, &bbox2 ) ;
+    if ( region_is_empty( &bbox1 ) ) return 0 ;
+
+    return 1;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -648,20 +773,39 @@ static int check_collision( INSTANCE * proc1, INSTANCE * proc2 )
 
 /* --------------------------------------------------------------------------- */
 
-static int grproc_collision( INSTANCE * my, int * params )
+static int __collision( INSTANCE * my, int id, int colltype )
 {
-    INSTANCE * ptr = instance_get( params[0] ), ** ctx ;
+    INSTANCE * ptr = instance_get( id ), ** ctx ;
     int status, p ;
+    int ( *colfunc )( INSTANCE *, INSTANCE * );
 
-    if ( params[0] == -1 ) return ( check_collision_with_mouse( my ) ) ? 1 : 0 ;
+    if ( id == -1 ) return ( check_collision_with_mouse( my, colltype ) ) ? 1 : 0 ;
+
+    switch ( colltype )
+    {
+        case    COLLISION_NORMAL:
+                colfunc = check_collision;
+                break;
+
+        case    COLLISION_BOX:
+                colfunc = check_collision_box;
+                break;
+
+        case    COLLISION_CIRCLE:
+                colfunc = check_collision_circle;
+                break;
+
+        default:
+                return 0;
+    }
 
     /* Checks only for a single instance */
-    if ( params[0] >= FIRST_INSTANCE_ID ) return ( ptr ? check_collision( my, ptr ) : 0 ) ;
+    if ( id >= FIRST_INSTANCE_ID ) return ( ptr ? colfunc( my, ptr ) : 0 ) ;
 
     /* we must use full list of instances or get types from it */
     ptr = first_instance ;
 
-    if ( !params[0] )
+    if ( !id )
     {
         LOCDWORD( mod_grproc, my, GRPROC_TYPE_SCAN ) = 0 ;
         if ( ( p = LOCDWORD( mod_grproc, my, GRPROC_ID_SCAN ) ) )
@@ -676,8 +820,7 @@ static int grproc_collision( INSTANCE * my, int * params )
                   (
                     ( status = ( LOCDWORD( mod_grproc, ptr, STATUS ) & ~STATUS_WAITING_MASK ) ) == STATUS_RUNNING ||
                     status == STATUS_FROZEN
-                  ) &&
-                  check_collision( my, ptr )
+                  ) && colfunc( my, ptr )
                 )
             {
                 LOCDWORD( mod_grproc, my, GRPROC_ID_SCAN ) = LOCDWORD( mod_grproc, ptr, PROCESS_ID ) ;
@@ -691,27 +834,20 @@ static int grproc_collision( INSTANCE * my, int * params )
     LOCDWORD( mod_grproc, my, GRPROC_ID_SCAN ) = 0 ;
     /* Check if already in scan by type and we reach limit */
     ctx = ( INSTANCE ** ) LOCADDR( mod_grproc, my, GRPROC_CONTEXT );
-/*
-    if ( !*ctx && LOCDWORD( mod_grproc, my, GRPROC_TYPE_SCAN ) )
-    {
-        LOCDWORD( mod_grproc, my, GRPROC_TYPE_SCAN ) = 0;
-        return 0;
-    }
-*/
-    if ( LOCDWORD( mod_grproc, my, GRPROC_TYPE_SCAN ) != params[0] ) /* Check if type change from last call */
+    if ( LOCDWORD( mod_grproc, my, GRPROC_TYPE_SCAN ) != id ) /* Check if type change from last call */
     {
         *ctx = NULL;
-        LOCDWORD( mod_grproc, my, GRPROC_TYPE_SCAN ) = params[0];
+        LOCDWORD( mod_grproc, my, GRPROC_TYPE_SCAN ) = id;
     }
 
-    while ( ( ptr = instance_get_by_type( params[0], ctx ) ) )
+    while ( ( ptr = instance_get_by_type( id, ctx ) ) )
     {
         if ( ptr != my &&
              (
                 ( status = ( LOCDWORD( mod_grproc, ptr, STATUS ) & ~STATUS_WAITING_MASK ) ) == STATUS_RUNNING ||
                   status == STATUS_FROZEN
              ) &&
-             check_collision( my, ptr )
+             colfunc( my, ptr )
            )
         {
             return LOCDWORD( mod_grproc, ptr, PROCESS_ID ) ;
@@ -719,6 +855,27 @@ static int grproc_collision( INSTANCE * my, int * params )
     }
 
     return 0 ;
+}
+
+/* --------------------------------------------------------------------------- */
+
+static int grproc_collision( INSTANCE * my, int * params )
+{
+    return __collision( my, params[ 0 ], COLLISION_NORMAL );
+}
+
+/* --------------------------------------------------------------------------- */
+
+static int grproc_collision_box( INSTANCE * my, int * params )
+{
+    return __collision( my, params[ 0 ], COLLISION_BOX );
+}
+
+/* ----------------------------------------------------------------- */
+
+static int grproc_collision_circle( INSTANCE * my, int * params )
+{
+    return __collision( my, params[ 0 ], COLLISION_CIRCLE );
 }
 
 /* ----------------------------------------------------------------- */
@@ -742,16 +899,18 @@ void __bgdexport( mod_grproc, process_exec_hook )( INSTANCE * r )
 
 DLSYSFUNCS  __bgdexport( mod_grproc, functions_exports )[] =
 {
-    { "ADVANCE"         , "I"   , TYPE_INT  , grproc_advance        },
-    { "XADVANCE"        , "II"  , TYPE_INT  , grproc_xadvance       },
+    { "ADVANCE"             , "I"   , TYPE_INT  , grproc_advance            },
+    { "XADVANCE"            , "II"  , TYPE_INT  , grproc_xadvance           },
 
-    { "GET_ANGLE"       , "I"   , TYPE_INT  , grproc_get_angle      },
-    { "GET_DIST"        , "I"   , TYPE_INT  , grproc_get_dist       },
-    { "COLLISION"       , "I"   , TYPE_INT  , grproc_collision      },
+    { "GET_ANGLE"           , "I"   , TYPE_INT  , grproc_get_angle          },
+    { "GET_DIST"            , "I"   , TYPE_INT  , grproc_get_dist           },
+    { "COLLISION"           , "I"   , TYPE_INT  , grproc_collision          },
+    { "COLLISION_BOX"       , "I"   , TYPE_INT  , grproc_collision_box      },
+    { "COLLISION_CIRCLE"    , "I"   , TYPE_INT  , grproc_collision_circle   },
 
-    { "GET_REAL_POINT"  , "IPP" , TYPE_INT  , grproc_get_real_point },
+    { "GET_REAL_POINT"      , "IPP" , TYPE_INT  , grproc_get_real_point     },
 
-    { 0                 , 0     , 0         , 0                     }
+    { 0                     , 0     , 0         , 0                         }
 };
 
 /* --------------------------------------------------------------------------- */
