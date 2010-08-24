@@ -2467,7 +2467,7 @@ void gr_rotated_blit(
             }
 
             /* Draw the resulting line */
-            if ( x2 > x )
+            if ( x2 >= x )
             {
                 draw_span
                 (

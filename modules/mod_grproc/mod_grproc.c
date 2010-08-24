@@ -484,6 +484,8 @@ static int check_collision_with_mouse( INSTANCE * proc1, int colltype )
 
     if ( colltype == COLLISION_NORMAL )
     {
+        /* maybe must force this to 32 bits */
+        if ( bmp && bmp->format->depth != sys_pixel_format->depth ) { bitmap_destroy( bmp ); bmp = NULL; }
         if ( !bmp ) bmp = bitmap_new( 0, 1, 1, sys_pixel_format->depth ) ;
         if ( !bmp ) return 0 ;
 
