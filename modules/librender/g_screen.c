@@ -196,8 +196,7 @@ void gr_unlock_screen()
         uint8_t  * src8  = screen->pixels, * dst8  = scale_screen->pixels , * pdst = scale_screen->pixels ;
         uint16_t * src16 = screen->pixels, * dst16 = scale_screen->pixels ;
         uint32_t * src32 = screen->pixels, * dst32 = scale_screen->pixels ;
-
-        int     h, w;
+        int h, w;
 
         switch ( scale_screen->format->BitsPerPixel )
         {
@@ -269,7 +268,7 @@ void gr_unlock_screen()
                     break;
 
             case    16:
-                    if ( scale_resolution_orientation = 1 || scale_resolution_orientation == 3 )
+                    if ( scale_resolution_orientation == 1 || scale_resolution_orientation == 3 )
                     {
                         if ( scale_resolution_aspectratio )
                         {

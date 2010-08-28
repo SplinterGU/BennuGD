@@ -283,7 +283,7 @@ int gr_set_mode( int width, int height, int depth )
     if ( ( e = getenv( "SCALE_RESOLUTION_ASPECTRATIO" ) ) ) scale_resolution_aspectratio = atol( e );
     if ( ( e = getenv( "SCALE_RESOLUTION_ORIENTATION" ) ) ) scale_resolution_orientation = atol( e );
 
-    if ( scale_resolution_orientation > 4 || scale_resolution_orientation < 0 ) scale_resolution_orientation = 0;
+    if ( scale_resolution_orientation < 0 || scale_resolution_orientation > 4 ) scale_resolution_orientation = 0;
 
     if ( !depth )
     {
@@ -389,7 +389,7 @@ int gr_set_mode( int width, int height, int depth )
         /* scale tables */
 
         int     lim_w = 0, lim_h = 0, pitch_w = 0, pitch_h = 0;
-        double  fw = 0, fh = 0, fx = 0.0, fy = 0.0;
+        double  fw = 0.0, fh = 0.0, fx = 0.0, fy = 0.0;
         int     h, w;
         int     offx = 0, offy = 0;
         int     start_w = 0, start_h = 0, fix = 1;
@@ -425,12 +425,16 @@ int gr_set_mode( int width, int height, int depth )
         {
             case    0:
             case    1:
-                    start_w = 0, start_h = 0, fix = -1;
+                    start_w = 0;
+                    start_h = 0;
+                    fix = -1;
                     break;
 
             case    2:
             case    3:
-                    start_w = scale_screen->w - 1, start_h = scale_screen->h - 1, fix = 1;
+                    start_w = scale_screen->w - 1;
+                    start_h = scale_screen->h - 1;
+                    fix = 1;
                     break;
         }
 
@@ -446,7 +450,7 @@ int gr_set_mode( int width, int height, int depth )
             {
                 fh = fw;
                 offx = 0;
-                offy = ( scale_screen->h - lim_h / fw ) / 2 ;
+                offy = ( scale_screen->h - lim_h / fh ) / 2 ;
             }
         }
 
