@@ -190,7 +190,6 @@ static int sound_init()
     fprintf( stderr, "[SOUND] No se pudo inicializar el audio: %s\n", SDL_GetError() ) ;
     audio_initialized = 0;
     return -1 ;
-
 }
 
 /* --------------------------------------------------------------------------- */
@@ -244,22 +243,18 @@ static int load_song( const char * filename )
     Mix_Music *music = NULL;
     file      *fp;
 
-    if ( !audio_initialized && sound_init() ) return ( -1 );
+    if ( !audio_initialized && sound_init() ) return ( 0 );
 
-    fp = file_open( filename, "rb0" );
-    if ( !fp )
-        return ( -1 );
+    if ( !( fp = file_open( filename, "rb0" ) ) ) return ( 0 );
 
-    music = Mix_LoadMUS_RW( SDL_RWFromBGDFP( fp ) );
-
-    if ( music == NULL )
+    if ( !( music = Mix_LoadMUS_RW( SDL_RWFromBGDFP( fp ) ) ) )
     {
         file_close( fp );
         fprintf( stderr, "Couldn't load %s: %s\n", filename, SDL_GetError() );
-        return( -1 );
+        return( 0 );
     }
-    return (( int )music );
 
+    return (( int )music );
 }
 
 /* --------------------------------------------------------------------------- */
@@ -280,9 +275,7 @@ static int load_song( const char * filename )
 
 static int play_song( int id, int loops )
 {
-    if ( !audio_initialized ) return ( -1 );
-
-    if ((( Mix_Music * )id != NULL ) )
+    if ( audio_initialized && id )
     {
         int result = Mix_PlayMusic(( Mix_Music * )id, loops );
         if ( result == -1 ) fprintf( stderr, "%s", Mix_GetError() );
@@ -291,7 +284,6 @@ static int play_song( int id, int loops )
 
     fprintf( stderr, "Play song called with invalid handle" );
     return( -1 );
-
 }
 
 /* --------------------------------------------------------------------------- */
@@ -313,14 +305,8 @@ static int play_song( int id, int loops )
 
 static int fade_music_in( int id, int loops, int ms )
 {
-    if ( !audio_initialized ) return ( -1 );
-
-    if ((( Mix_Music * )id != NULL ) )
-    {
-        return( Mix_FadeInMusic(( Mix_Music * )id, loops, ms ) );
-    }
+    if ( audio_initialized && id ) return( Mix_FadeInMusic(( Mix_Music * )id, loops, ms ) );
     return( -1 );
-
 }
 
 /* --------------------------------------------------------------------------- */
@@ -341,7 +327,7 @@ static int fade_music_in( int id, int loops, int ms )
 
 static int fade_music_off( int ms )
 {
-    if ( !audio_initialized ) return ( -1 );
+    if ( !audio_initialized ) return ( 0 );
     return ( Mix_FadeOutMusic( ms ) );
 }
 
@@ -363,15 +349,12 @@ static int fade_music_off( int ms )
 
 static int unload_song( int id )
 {
-    if ( !audio_initialized ) return ( -1 );
-
-    if (( Mix_Music * )id != NULL )
+    if ( audio_initialized && id )
     {
+        if ( Mix_PlayingMusic() ) Mix_HaltMusic();
         Mix_FreeMusic(( Mix_Music * )id );
-        return ( 0 ) ;
     }
-    return ( -1 );
-
+    return ( 0 ) ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -392,8 +375,8 @@ static int unload_song( int id )
 
 static int stop_song( void )
 {
-    if ( !audio_initialized ) return ( -1 );
-    return ( Mix_HaltMusic() );
+    if ( audio_initialized ) Mix_HaltMusic();
+    return ( 0 ) ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -414,8 +397,7 @@ static int stop_song( void )
 
 static int pause_song( void )
 {
-    if ( !audio_initialized ) return ( -1 );
-    Mix_PauseMusic();
+    if ( audio_initialized ) Mix_PauseMusic();
     return ( 0 ) ;
 }
 
@@ -437,8 +419,7 @@ static int pause_song( void )
 
 static int resume_song( void )
 {
-    if ( !audio_initialized ) return ( -1 );
-    Mix_ResumeMusic();
+    if ( audio_initialized ) Mix_ResumeMusic();
     return( 0 ) ;
 }
 
@@ -461,7 +442,7 @@ static int resume_song( void )
 
 static int is_playing_song( void )
 {
-    if ( !audio_initialized ) return ( -1 );
+    if ( !audio_initialized ) return ( 0 );
     return Mix_PlayingMusic();
 }
 
@@ -517,18 +498,15 @@ static int load_wav( const char * filename )
     Mix_Chunk *music = NULL;
     file      *fp;
 
-    if ( !audio_initialized && sound_init() ) return ( -1 );
+    if ( !audio_initialized && sound_init() ) return ( 0 );
 
-    fp = file_open( filename, "rb0" );
-    if ( !fp ) return ( -1 );
+    if ( !( fp = file_open( filename, "rb0" ) ) ) return ( 0 );
 
-    music = Mix_LoadWAV_RW( SDL_RWFromBGDFP( fp ), 1 );
-    if ( music == NULL )
+    if ( !( music = Mix_LoadWAV_RW( SDL_RWFromBGDFP( fp ), 1 ) ) )
     {
         fprintf( stderr, "Couldn't load %s: %s\n", filename, SDL_GetError() );
-        return( -1 );
+        return( 0 );
     }
-
     return (( int )music );
 }
 
@@ -552,18 +530,8 @@ static int load_wav( const char * filename )
 
 static int play_wav( int id, int loops, int channel )
 {
-    int canal;
-
-    if ( !audio_initialized ) return ( -1 );
-
-    if (( Mix_Chunk * )id != NULL )
-    {
-        canal = Mix_PlayChannel( channel, ( Mix_Chunk * )id, loops );
-        return( canal );
-    }
-
+    if ( audio_initialized && id ) return ( ( int ) Mix_PlayChannel( channel, ( Mix_Chunk * )id, loops ) );
     return ( -1 );
-
 }
 
 /* --------------------------------------------------------------------------- */
@@ -584,15 +552,8 @@ static int play_wav( int id, int loops, int channel )
 
 static int unload_wav( int id )
 {
-    if ( !audio_initialized ) return ( -1 );
-
-    if (( Mix_Chunk * )id != NULL )
-    {
-        Mix_FreeChunk(( Mix_Chunk * )id );
-        return ( 0 ) ;
-    }
-
-    return ( -1 );
+    if ( audio_initialized && id ) Mix_FreeChunk(( Mix_Chunk * )id );
+    return ( 0 );
 }
 
 /* --------------------------------------------------------------------------- */
@@ -613,9 +574,7 @@ static int unload_wav( int id )
 
 static int stop_wav( int canal )
 {
-    if ( !audio_initialized ) return ( -1 );
-
-    if ( Mix_Playing( canal ) ) return( Mix_HaltChannel( canal ) );
+    if ( audio_initialized && Mix_Playing( canal ) ) return( Mix_HaltChannel( canal ) );
     return ( -1 ) ;
 }
 
@@ -637,9 +596,7 @@ static int stop_wav( int canal )
 
 static int pause_wav( int canal )
 {
-    if ( !audio_initialized ) return ( -1 );
-
-    if ( Mix_Playing( canal ) )
+    if ( audio_initialized && Mix_Playing( canal ) )
     {
         Mix_Pause( canal );
         return ( 0 ) ;
@@ -665,14 +622,11 @@ static int pause_wav( int canal )
 
 static int resume_wav( int canal )
 {
-    if ( !audio_initialized ) return ( -1 );
-
-    if ( Mix_Playing( canal ) )
+    if ( audio_initialized && Mix_Playing( canal ) )
     {
         Mix_Resume( canal );
         return ( 0 ) ;
     }
-
     return ( -1 ) ;
 }
 
@@ -695,8 +649,8 @@ static int resume_wav( int canal )
 
 static int is_playing_wav( int canal )
 {
-    if ( !audio_initialized ) return ( -1 );
-    return( Mix_Playing( canal ) );
+    if ( audio_initialized ) return( Mix_Playing( canal ) );
+    return ( 0 );
 }
 
 /* --------------------------------------------------------------------------- */
@@ -723,7 +677,7 @@ static int  set_wav_volume( int sample, int volume )
     if ( volume < 0 ) volume = 0;
     if ( volume > 128 ) volume = 128;
 
-    if (( Mix_Chunk * )sample ) return( Mix_VolumeChunk(( Mix_Chunk * )sample, volume ) );
+    if ( sample ) return( Mix_VolumeChunk(( Mix_Chunk * )sample, volume ) );
 
     return -1 ;
 }
@@ -774,7 +728,6 @@ static int  set_channel_volume( int canal, int volume )
 static int reserve_channels( int canales )
 {
     if ( !audio_initialized && sound_init() ) return ( -1 );
-
     return Mix_ReserveChannels( canales );
 }
 
@@ -801,7 +754,6 @@ static int set_panning( int canal, int left, int right )
         Mix_SetPanning( canal, ( Uint8 )left, ( Uint8 )right );
         return ( 0 ) ;
     }
-
     return ( -1 ) ;
 }
 
@@ -828,9 +780,7 @@ static int set_position( int canal, int angle, int dist )
         Mix_SetPosition( canal, ( Sint16 )angle, ( Uint8 )dist );
         return ( 0 ) ;
     }
-
     return ( -1 ) ;
-
 }
 
 /* --------------------------------------------------------------------------- */
@@ -909,13 +859,11 @@ static int reverse_stereo( int canal, int flip )
 static int modsound_load_song( INSTANCE * my, int * params )
 {
     int var;
-
     const char * filename ;
 
-    filename = string_get( params[0] ) ;
-    if ( !filename ) return ( -1 ) ;
+    if ( !( filename = string_get( params[0] ) ) ) return ( 0 ) ;
 
-    var = ( load_song( filename ) );
+    var = load_song( filename );
     string_discard( params[0] );
 
     return ( var );
@@ -964,6 +912,31 @@ static int modsound_unload_song( INSTANCE * my, int * params )
 {
     if ( params[0] == -1 ) return ( -1 );
     return( unload_song( params[0] ) );
+}
+
+/* --------------------------------------------------------------------------- */
+/*
+ *  FUNCTION : modsound_unload_song2
+ *
+ *  Frees the resources from a MOD and unloads it
+ *
+ *  PARAMS:
+ *      mod *id;
+ *
+ *  RETURN VALUE:
+ *
+ *  -1 if there is any error
+ *  0 if all goes ok
+ *
+ */
+
+static int modsound_unload_song2( INSTANCE * my, int * params )
+{
+    int *s = params[0], r;
+    if ( !s || *s == -1 ) return ( -1 );
+    r = unload_song( *s );
+    *s = 0;
+    return( r );
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1138,17 +1111,14 @@ static int modsound_fade_music_off( INSTANCE * my, int * params )
 static int modsound_load_wav( INSTANCE * my, int * params )
 {
     int var;
-
     const char * filename ;
 
-    filename = string_get( params[0] ) ;
-    if ( !filename ) return ( -1 ) ;
+    if ( !( filename = string_get( params[0] ) ) ) return ( 0 ) ;
 
-    var = ( load_wav( filename ) );
+    var = load_wav( filename );
     string_discard( params[0] );
 
     return ( var );
-
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1219,6 +1189,32 @@ static int modsound_unload_wav( INSTANCE * my, int * params )
 {
     if ( params[0] == -1 ) return -1;
     return( unload_wav( params[0] ) );
+}
+
+/* --------------------------------------------------------------------------- */
+/*
+ *  FUNCTION : modsound_unload_wav2
+ *
+ *  Frees the resources from a wav, unloading it
+ *
+ *  PARAMS:
+ *
+ *  mod *id
+ *
+ *  RETURN VALUE:
+ *
+ *  -1 if there is any error
+ *  0 if all goes ok
+ *
+ */
+
+static int modsound_unload_wav2( INSTANCE * my, int * params )
+{
+    int *s = params[0], r;
+    if ( !s || *s == -1 ) return ( -1 );
+    r = unload_wav( *s );
+    *s = 0;
+    return( r );
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1458,7 +1454,7 @@ static int modsound_reverse_stereo( INSTANCE * my, int * params )
 
 static int modsound_set_music_position( INSTANCE * my, int * params )
 {
-    return ( Mix_SetMusicPosition( ( double ) *( float * ) & params[0] ) );
+    return ( Mix_SetMusicPosition( ( double ) *( float * ) &params[0] ) );
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1508,6 +1504,8 @@ DLSYSFUNCS  __bgdexport( mod_sound, functions_exports )[] =
     { "REVERSE_STEREO"      , "II"   , TYPE_INT , modsound_reverse_stereo     },
     { "PLAY_WAV"            , "III"  , TYPE_INT , modsound_play_wav_channel   },
     { "SET_MUSIC_POSITION"  , "F"    , TYPE_INT , modsound_set_music_position },
+    { "UNLOAD_SONG"         , "P"    , TYPE_INT , modsound_unload_song2       },
+    { "UNLOAD_WAV"          , "P"    , TYPE_INT , modsound_unload_wav2        },
     { 0                     , 0      , 0        , 0                           }
 };
 
