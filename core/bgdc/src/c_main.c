@@ -171,7 +171,7 @@ int identifier_include ;
 
 int identifier_import ;
 int reserved_words ;
-int debug ;
+int debug = 0 ;
 
 /* ---------------------------------------------------------------------- */
 

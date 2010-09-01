@@ -52,7 +52,7 @@ extern int dcb_options;
 
 char langinfo[64];
 
-int debug = 0;
+extern int debug;
 int autodeclare = 1;
 
 char * main_path = NULL;
