@@ -317,6 +317,7 @@ void blend_translucency( int16_t * blend, float amount )
 
     amount = 1.0f - amount;
     amount2 = 1.0f - amount;
+
     for ( i = 0; i < 65536; i++ )
     {
         r = ( int )( GETR( *blend ) * amount );
