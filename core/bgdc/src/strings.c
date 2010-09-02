@@ -183,6 +183,7 @@ int string_compile( const char ** source )
         }
         else
         {
+            if ( *( *source ) == '\\' && *( *source + 1 ) == c ) ( *source ) ++ ;
             conv = convert( *( *source ) ) ;
             string_mem[ string_used++ ] = conv ;
 
