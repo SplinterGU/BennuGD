@@ -183,7 +183,9 @@ int string_compile( const char ** source )
         }
         else
         {
+#ifdef __USE_C_STRING_ESCAPE
             if ( *( *source ) == '\\' && *( *source + 1 ) == c ) ( *source ) ++ ;
+#endif
             conv = convert( *( *source ) ) ;
             string_mem[ string_used++ ] = conv ;
 
