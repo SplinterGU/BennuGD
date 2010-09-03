@@ -2419,7 +2419,7 @@ void gr_rotated_blit(
     float s, t, s2, t2;
     int yi = vertex[0].y / 1000, yf = vertex[3].y / 1000;
 
-    for ( i = yi ; i <= yf; i++ )
+    for ( i = yi ; i < yf; i++ )
     {
         left_pos++;
         right_pos++;
@@ -2452,14 +2452,14 @@ void gr_rotated_blit(
         /* Clip the resulting coordinates */
         if ( i >= min.y && i <= max.y )
         {
-            if ( x < min.x && x2 >= x )
+            if ( x < min.x && x2 > x )
             {
                 s += ( min.x - x ) * (( s2 - s ) / ( x2 - x ) );
                 t += ( min.x - x ) * (( t2 - t ) / ( x2 - x ) );
                 x  = min.x;
             }
 
-            if ( x2 > max.x && x2 >= x )
+            if ( x2 > max.x && x2 > x )
             {
                 s2 -= ( x2 - max.x ) * (( s2 - s ) / ( x2 - x ) );
                 t2 -= ( x2 - max.x ) * (( t2 - t ) / ( x2 - x ) );
@@ -2467,7 +2467,7 @@ void gr_rotated_blit(
             }
 
             /* Draw the resulting line */
-            if ( x2 >= x )
+            if ( x2 > x )
             {
                 draw_span
                 (
@@ -2978,6 +2978,7 @@ void gr_blit(
         tex = ( uint8_t * ) gr->data + gr->pitch * t + s / 8;
     else
         tex = ( uint8_t * ) gr->data + gr->pitch * t + s * gr->format->depthb;
+
     scr_inc   = dest->pitch ;
     tex_inc   = gr->pitch ;
     direction = 1;
