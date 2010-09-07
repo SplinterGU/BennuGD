@@ -47,6 +47,7 @@
 #define OS_GP2X                 7
 #define OS_GP2X_WIZ             8
 #define OS_CAANOO               9
+#define OS_HAIKU                10
 #define OS_WII                  1000
 
 #endif

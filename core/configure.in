@@ -65,6 +65,12 @@ case "$target_os" in
 	    COMMON_LDFLAGS="-L/usr/local/lib"
 	    ;;
 
+    haiku)
+        INCLUDES="-I/usr/local/include"
+        COMMON_CFLAGS="-Wall -DTARGET_HAIKU"
+	    COMMON_LDFLAGS="-L/usr/local/lib"
+        ;;
+
 esac
 
 AM_INIT_AUTOMAKE(1.6)

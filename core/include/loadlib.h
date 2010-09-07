@@ -142,12 +142,13 @@ static void * dlibaddr( dlibhandle * handle, const char * symbol )
         ptr++;
     }
     if ( f ) ptr = f + 1;
-
+#ifndef TARGET_HAIKU
     if ( strcmp( ptr, handle->fname ) )
     {
         __dliberr = "Symbol not found." ;
         return NULL;
     }
+#endif
 #endif
 /*
     printf( "[%s:%s]->%p\n", handle->fname, symbol, addr );fflush( stdout );

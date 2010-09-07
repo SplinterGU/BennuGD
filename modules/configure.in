@@ -30,6 +30,7 @@ case "$target_os" in
         COMMON_CFLAGS="$COMMON_CFLAGS $CFLAGS"
         COMMON_LDFLAGS="$COMMON_LDFLAGS $LDFLAGS"
         SDL_MIXER_DEPS="-lSDL -lvorbis -logg -lmad -lvorbisfile -lvorbisidec"
+        LM=-lm
         ;;
 
     linux-gnu*)
@@ -40,12 +41,14 @@ case "$target_os" in
             *i386*)
                 COMMON_CFLAGS="$COMMON_CFLAGS -m32"
                 COMMON_LDFLAGS="$COMMON_LDFLAGS -m32 -L/lib32"
+                LM=-lm
                 ;;
 
             arm)
                 COMMON_CFLAGS="$COMMON_CFLAGS $CFLAGS"
                 COMMON_LDFLAGS="$COMMON_LDFLAGS $LDFLAGS"
                 SDL_MIXER_DEPS="-lSDL -liconv -lvorbis -logg -lmad -lvorbisfile -lvorbisidec"
+                LM=-lm
                 ;;
 
         esac
@@ -55,22 +58,33 @@ case "$target_os" in
 	    COMMON_CFLAGS="-I/usr/local/include -DTARGET_WIN32 -DWIN32 -D_WIN32"
 	    COMMON_LDFLAGS="-L/usr/local/lib -lshlwapi"
 	    LIBSSL="eay32"
+        LM=-lm
 	    ;;
 
     mingw32msvc)
 	    COMMON_CFLAGS="-I/usr/i586-mingw32msvc/include -DTARGET_WIN32 -DWIN32 -D_WIN32"
 	    COMMON_LDFLAGS="-L/usr/i586-mingw32msvc/lib -lshlwapi"
+        LM=-lm
 	    ;;
 
     dragonfly*)
         COMMON_CFLAGS="-I/usr/local/include -Wall -DTARGET_BSD"
 	    COMMON_LDFLAGS="-pthread -L/usr/local/lib"
+        LM=-lm
 	    ;;
 
     darwin*)
         COMMON_CFLAGS="-I/usr/local/include -Wall -DTARGET_MAC"
         COMMON_LDFLAGS="-L/usr/local/lib"
+        LM=-lm
 	    ;;
+
+    haiku)
+        INCLUDES="-I/usr/local/include"
+        COMMON_CFLAGS="-Wall -DTARGET_HAIKU"
+	    COMMON_LDFLAGS="-L/usr/local/lib"
+        LM=
+        ;;
 
 esac
 
@@ -94,7 +108,7 @@ SDL_VERSION=1.2.0
 AM_PATH_SDL($SDL_VERSION, :, AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!]))
 
 AC_CHECK_LIB(z, gzsetparams, [AC_CHECK_HEADER(zlib.h,ZLIBS="-lz",)], [AC_MSG_ERROR(zlib not found!)])
-AC_CHECK_LIB(png, png_read_info, [AC_CHECK_HEADER(png.h,PNGLIBS="-lpng",)], AC_MSG_ERROR(PNG library not found!), -lz -lm)
+AC_CHECK_LIB(png, png_read_info, [AC_CHECK_HEADER(png.h,PNGLIBS="-lpng",)], AC_MSG_ERROR(PNG library not found!), -lz $LM)
 AC_CHECK_LIB($LIBSSL, DES_ecb_encrypt, [AC_CHECK_HEADER(openssl/des.h,CRYPT_LDFLAGS=$LIBSSL,)], [AC_MSG_ERROR($LIBSSL not found!)])
 
 #LIBS+=-lSDL_mixer

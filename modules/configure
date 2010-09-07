@@ -10278,6 +10278,7 @@ case "$target_os" in
         COMMON_CFLAGS="$COMMON_CFLAGS $CFLAGS"
         COMMON_LDFLAGS="$COMMON_LDFLAGS $LDFLAGS"
         SDL_MIXER_DEPS="-lSDL -lvorbis -logg -lmad -lvorbisfile -lvorbisidec"
+        LM=-lm
         ;;
 
     linux-gnu*)
@@ -10288,12 +10289,14 @@ case "$target_os" in
             *i386*)
                 COMMON_CFLAGS="$COMMON_CFLAGS -m32"
                 COMMON_LDFLAGS="$COMMON_LDFLAGS -m32 -L/lib32"
+                LM=-lm
                 ;;
 
             arm)
                 COMMON_CFLAGS="$COMMON_CFLAGS $CFLAGS"
                 COMMON_LDFLAGS="$COMMON_LDFLAGS $LDFLAGS"
                 SDL_MIXER_DEPS="-lSDL -liconv -lvorbis -logg -lmad -lvorbisfile -lvorbisidec"
+                LM=-lm
                 ;;
 
         esac
@@ -10303,22 +10306,33 @@ case "$target_os" in
 	    COMMON_CFLAGS="-I/usr/local/include -DTARGET_WIN32 -DWIN32 -D_WIN32"
 	    COMMON_LDFLAGS="-L/usr/local/lib -lshlwapi"
 	    LIBSSL="eay32"
+        LM=-lm
 	    ;;
 
     mingw32msvc)
 	    COMMON_CFLAGS="-I/usr/i586-mingw32msvc/include -DTARGET_WIN32 -DWIN32 -D_WIN32"
 	    COMMON_LDFLAGS="-L/usr/i586-mingw32msvc/lib -lshlwapi"
+        LM=-lm
 	    ;;
 
     dragonfly*)
         COMMON_CFLAGS="-I/usr/local/include -Wall -DTARGET_BSD"
 	    COMMON_LDFLAGS="-pthread -L/usr/local/lib"
+        LM=-lm
 	    ;;
 
     darwin*)
         COMMON_CFLAGS="-I/usr/local/include -Wall -DTARGET_MAC"
         COMMON_LDFLAGS="-L/usr/local/lib"
+        LM=-lm
 	    ;;
+
+    haiku)
+        INCLUDES="-I/usr/local/include"
+        COMMON_CFLAGS="-Wall -DTARGET_HAIKU"
+	    COMMON_LDFLAGS="-L/usr/local/lib"
+        LM=
+        ;;
 
 esac
 
@@ -11887,7 +11901,7 @@ if test "${ac_cv_lib_png_png_read_info+set}" = set; then :
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lpng -lz -lm $LIBS"
+LIBS="-lpng -lz $LM $LIBS"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 

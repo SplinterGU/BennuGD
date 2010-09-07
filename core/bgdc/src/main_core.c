@@ -64,6 +64,7 @@ constants_def[] =
     { "OS_GP2X_WIZ"     , TYPE_DWORD, OS_GP2X_WIZ         },
     { "OS_CAANOO"       , TYPE_DWORD, OS_CAANOO           },
     { "OS_WII"          , TYPE_DWORD, OS_WII              },
+    { "OS_HAIKU"        , TYPE_DWORD, OS_HAIKU            },
 
     { "MIN_INT"         , TYPE_INT  , -2147483647L - 1    },
     { "MAX_INT"         , TYPE_INT  , 2147483647L         },
