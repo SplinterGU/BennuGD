@@ -142,7 +142,7 @@ static void * dlibaddr( dlibhandle * handle, const char * symbol )
         ptr++;
     }
     if ( f ) ptr = f + 1;
-#ifndef TARGET_HAIKU
+#ifndef TARGET_BEOS
     if ( strcmp( ptr, handle->fname ) )
     {
         __dliberr = "Symbol not found." ;

@@ -104,13 +104,6 @@ int debug     = 0;  /* 1 if running in debug mode      */
 #define _OS_ID          OS_CAANOO
 #endif
 
-#ifdef TARGET_HAIKU
-#ifdef _OS_ID
-#undef _OS_ID
-#endif
-#define _OS_ID          OS_HAIKU
-#endif
-
 /* --------------------------------------------------------------------------- */
 
 #if defined(TARGET_GP2X_WIZ) || defined(TARGET_CAANOO)

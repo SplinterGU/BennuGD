@@ -67,7 +67,7 @@ case "$target_os" in
 
     haiku)
         INCLUDES="-I/usr/local/include"
-        COMMON_CFLAGS="-Wall -DTARGET_HAIKU"
+        COMMON_CFLAGS="-Wall -DTARGET_BEOS"
 	    COMMON_LDFLAGS="-L/usr/local/lib"
         ;;
 
