@@ -124,6 +124,8 @@ static void * dlibaddr( dlibhandle * handle, const char * symbol )
         __dliberr = dlerror() ;
         return NULL;
     }
+
+#ifndef TARGET_BEOS
     {
         Dl_info dli;
         dladdr( addr, &dli );
@@ -142,7 +144,7 @@ static void * dlibaddr( dlibhandle * handle, const char * symbol )
         ptr++;
     }
     if ( f ) ptr = f + 1;
-#ifndef TARGET_BEOS
+
     if ( strcmp( ptr, handle->fname ) )
     {
         __dliberr = "Symbol not found." ;
