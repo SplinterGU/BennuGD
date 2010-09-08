@@ -10330,7 +10330,7 @@ case "$target_os" in
     haiku)
         INCLUDES="-I/usr/local/include"
         COMMON_CFLAGS="-Wall -DTARGET_BEOS"
-	    COMMON_LDFLAGS="-L/usr/local/lib"
+	    COMMON_LDFLAGS="-L/boot/system/lib -L/usr/local/lib"
         LM=
         ;;
 
