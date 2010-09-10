@@ -211,7 +211,7 @@ __DIR_ST * dir_open( const char * path )
 
     if ( !final_path )
     {
-        free ( path );
+        free ( hDir->path );
         free ( hDir );
         return NULL;
     }
