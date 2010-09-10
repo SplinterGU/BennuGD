@@ -56,6 +56,8 @@ char * dir_path_convert( const char * dir )
     char *c, *p ;
 
     p = strdup( dir ) ;
+    if ( !p ) return NULL;
+
     c = p ;
     /* Convert characters */
     while ( *p )
@@ -103,6 +105,7 @@ char * dir_current( void )
 int dir_change( const char * dir )
 {
     char *c = dir_path_convert( dir ) ;
+    if ( !c ) return 0;
     int r = chdir( c ) ;
     free( c ) ;
     return r ;
@@ -126,12 +129,11 @@ int dir_change( const char * dir )
 int dir_create( const char * dir )
 {
     char *c = dir_path_convert( dir ) ;
-    int r ;
-
+    if ( !c ) return 0;
 #ifdef WIN32
-    r = mkdir( c ) ;
+    int r = mkdir( c ) ;
 #else
-    r = mkdir( c, 0777 ) ;
+    int r = mkdir( c, 0777 ) ;
 #endif
     free( c ) ;
     return r ;
@@ -155,6 +157,7 @@ int dir_create( const char * dir )
 int dir_delete( const char * dir )
 {
     char *c = dir_path_convert( dir ) ;
+    if ( !c ) return 0;
     int r = rmdir( c ) ;
     free( c ) ;
     return r ;
@@ -178,6 +181,7 @@ int dir_delete( const char * dir )
 int dir_deletefile( const char * filename )
 {
     char *c = dir_path_convert( filename ) ;
+    if ( !c ) return 0;
     int r = unlink( c ) ;
     free( c ) ;
     return ( r == -1 ) ? 0 : 1 ;
@@ -188,16 +192,29 @@ int dir_deletefile( const char * filename )
 __DIR_ST * dir_open( const char * path )
 {
     __DIR_ST * hDir = malloc( sizeof( __DIR_ST ) );
+    if ( !hDir ) return NULL;
 
     hDir->path = strdup( path );
+    if ( !hDir->path )
+    {
+        free ( hDir );
+        return NULL;
+    }
 
 #ifdef _WIN32
     hDir->handle = FindFirstFile( hDir->path, &hDir->data );
     hDir->eod = ( hDir->handle == INVALID_HANDLE_VALUE ) ;
 #else
-    char * path_final = malloc( strlen( path ) * 4 );
+    char * final_path = malloc( strlen( path ) * 4 );
     const char * ptr = hDir->path ;
-    char * fptr = path_final ;
+    char * fptr = final_path ;
+
+    if ( !final_path )
+    {
+        free ( path );
+        free ( hDir );
+        return NULL;
+    }
 
     /* Clean the path creating a case-insensitive match pattern */
 
@@ -227,16 +244,16 @@ __DIR_ST * dir_open( const char * path )
     }
     *fptr = 0;
 
-    /* Convert *.* to * */
-    if ( fptr > path_final + 2 && fptr[ -1 ] == '*' && fptr[ -2 ] == '.' && fptr[ -3 ] == '*' ) fptr[ -2 ] = 0;
+    /* Convert '*.*' to '*' */
+    if ( fptr > final_path + 2 && fptr[ -1 ] == '*' && fptr[ -2 ] == '.' && fptr[ -3 ] == '*' ) fptr[ -2 ] = 0;
 
-#if defined(TARGET_MAC)
-    glob( path_final, GLOB_ERR | GLOB_NOSORT, NULL, &hDir->globd );
-#elif defined(TARGET_BEOS)
-    glob( path_final, GLOB_ERR | GLOB_NOSORT, NULL, &hDir->globd );
+#if defined(TARGET_MAC) || defined(TARGET_BEOS)
+    glob( final_path, GLOB_ERR | GLOB_NOSORT, NULL, &hDir->globd );
 #else
-    glob( path_final, GLOB_ERR | GLOB_PERIOD | GLOB_NOSORT, NULL, &hDir->globd );
+    glob( final_path, GLOB_ERR | GLOB_PERIOD | GLOB_NOSORT, NULL, &hDir->globd );
 #endif
+
+    free( final_path );
 
     hDir->currFile = 0;
 #endif
