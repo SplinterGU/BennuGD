@@ -151,7 +151,7 @@ int main( int argc, char **argv )
 
                 if ( argv[i][j] == 'g' ) dcb_options |= DCB_DEBUG;
 
-                if ( argv[i][j] == 'p' ) autodeclare = 1 ;
+                if ( argv[i][j] == 'p' ) autodeclare = 0 ;
 
                 if ( argv[i][j] == 's' )
                 {
