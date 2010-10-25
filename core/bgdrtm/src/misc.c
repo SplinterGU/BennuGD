@@ -116,7 +116,11 @@ int __bgdrtm_memdev = -1;
 
 void bgdrtm_ptimer_init(void)
 {
+#if defined(TARGET_GP2X_WIZ)
     TIMER_REG(0x44) = 0x922;
+#else
+    TIMER_REG(0x44) = 0x0FF2;
+#endif
     TIMER_REG(0x40) = 0x0c;
     TIMER_REG(0x08) = 0x6b;
 }
