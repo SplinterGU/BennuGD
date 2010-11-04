@@ -529,7 +529,7 @@ static int check_collision_with_mouse( INSTANCE * proc1, int colltype )
     {
         /* maybe must force this to 32 bits */
         if ( bmp && bmp->format->depth != sys_pixel_format->depth ) { bitmap_destroy( bmp ); bmp = NULL; }
-        if ( !bmp ) bmp = bitmap_new( 0, 1, 1, sys_pixel_format->depth ) ;
+        if ( !bmp ) bmp = bitmap_new( 0, 2, 1, sys_pixel_format->depth ) ;
         if ( !bmp ) return 0 ;
 
         memset( bmp->data, 0, bmp->pitch * bmp->height ) ;
@@ -537,7 +537,7 @@ static int check_collision_with_mouse( INSTANCE * proc1, int colltype )
 
     /* Retrieves process information */
 
-    bbox1.x = 0 ; bbox1.x2 = 0 ;
+    bbox1.x = 0 ; bbox1.x2 = 1 ;
     bbox1.y = 0 ; bbox1.y2 = 0 ;
 
     x = LOCINT32( mod_grproc, proc1, COORDX ) ;
