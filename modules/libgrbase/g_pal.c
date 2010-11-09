@@ -655,7 +655,7 @@ int gr_rgb( int r, int g, int b )
 
 int gr_rgba( int r, int g, int b, int a )
 {
-    int color = 0;
+    int color;
 
     if ( sys_pixel_format->depth == 32 )
     {
@@ -734,6 +734,133 @@ void gr_get_rgba( int color, int *r, int *g, int *b, int *a )
     {
         ( *a ) = (( color & sys_pixel_format->Amask ) >> sys_pixel_format->Ashift ) << sys_pixel_format->Aloss ;
     }
+}
+
+/* --------------------------------------------------------------------------- */
+/* This functions is used only for 16 and 32 bits                              */
+
+int gr_rgb_depth( int depth, int r, int g, int b )
+{
+    int color ;
+
+    if ( depth == 32 )
+    {
+        return                 0xff000000   |
+                (( r << 16 ) & 0x00ff0000 ) |
+                (( g <<  8 ) & 0x0000ff00 ) |
+                (( b       ) & 0x000000ff ) ;
+    }
+
+    /* 16 bits */
+
+    PIXEL_FORMAT * pf = bitmap_create_format( depth );
+
+    color = (( r >> pf->Rloss ) << pf->Rshift ) |
+            (( g >> pf->Gloss ) << pf->Gshift ) |
+            (( b >> pf->Bloss ) << pf->Bshift ) ;
+
+    free( pf );
+
+    if ( !color ) return 1 ;
+
+    return color ;
+}
+
+/* --------------------------------------------------------------------------- */
+/* This functions is used only for 16 and 32 bits                              */
+
+int gr_rgba_depth( int depth, int r, int g, int b, int a )
+{
+    int color;
+
+    if ( depth == 32 )
+    {
+        return  (( a << 24 ) & 0xff000000 ) |
+                (( r << 16 ) & 0x00ff0000 ) |
+                (( g <<  8 ) & 0x0000ff00 ) |
+                (( b       ) & 0x000000ff ) ;
+    }
+
+    PIXEL_FORMAT * pf = bitmap_create_format( depth );
+
+    color = (( r >> pf->Rloss ) << pf->Rshift ) |
+            (( g >> pf->Gloss ) << pf->Gshift ) |
+            (( b >> pf->Bloss ) << pf->Bshift ) ;
+
+    free( pf );
+
+    if ( !color ) return 1 ;
+
+    return color ;
+}
+
+/* --------------------------------------------------------------------------- */
+
+void gr_get_rgb_depth( int depth, int color, int *r, int *g, int *b )
+{
+    /* 8 bits mode, work with system palette */
+
+    if ( depth < 16 )
+    {
+        rgb_component * rgb ;
+
+        if ( !sys_pixel_format->palette )
+            rgb = ( rgb_component * ) default_palette;
+        else
+            rgb = sys_pixel_format->palette->rgb ;
+
+        color &= 0xFF ;
+        ( *r ) = rgb[ color ].r ;
+        ( *g ) = rgb[ color ].g ;
+        ( *b ) = rgb[ color ].b ;
+
+        return ;
+    }
+
+    PIXEL_FORMAT * pf = bitmap_create_format( depth );
+
+    ( *r ) = (( color & pf->Rmask ) >> pf->Rshift ) << pf->Rloss;
+    ( *g ) = (( color & pf->Gmask ) >> pf->Gshift ) << pf->Gloss;
+    ( *b ) = (( color & pf->Bmask ) >> pf->Bshift ) << pf->Bloss;
+
+    free( pf );
+}
+
+/* --------------------------------------------------------------------------- */
+
+void gr_get_rgba_depth( int depth, int color, int *r, int *g, int *b, int *a )
+{
+    /* 8 bits mode, work with system palette */
+
+    if ( depth < 16 )
+    {
+        rgb_component * rgb ;
+
+        if ( !sys_pixel_format->palette )
+            rgb = ( rgb_component * ) default_palette;
+        else
+            rgb = sys_pixel_format->palette->rgb ;
+
+        color &= 0xFF ;
+        ( *r ) = rgb[ color ].r ;
+        ( *g ) = rgb[ color ].g ;
+        ( *b ) = rgb[ color ].b ;
+
+        return ;
+    }
+
+    PIXEL_FORMAT * pf = bitmap_create_format( depth );
+
+    ( *r ) = (( color & pf->Rmask ) >> pf->Rshift ) << pf->Rloss;
+    ( *g ) = (( color & pf->Gmask ) >> pf->Gshift ) << pf->Gloss;
+    ( *b ) = (( color & pf->Bmask ) >> pf->Bshift ) << pf->Bloss;
+
+    if ( depth == 32 )
+    {
+        ( *a ) = (( color & pf->Amask ) >> pf->Ashift ) << pf->Aloss ;
+    }
+
+    free( pf );
 }
 
 /* --------------------------------------------------------------------------- */

@@ -279,6 +279,18 @@ GRAPH * gr_read_png( const char * filename )
                 }
                 else
                     *ptr = 0 ;
+/* need revision, only works on 16bits (?)
+                if (( color == PNG_COLOR_TYPE_RGB ) && ( info_ptr->pixel_depth == 24 ) && ( info_ptr->valid & PNG_INFO_tRNS ))
+                {
+                	uint8_t * ptr8 = (uint8_t *)orig;
+        			if (
+        			    ( ptr8[0] == info_ptr->trans_values.red   ) &&
+        				( ptr8[1] == info_ptr->trans_values.green ) &&
+        				( ptr8[2] == info_ptr->trans_values.blue  )
+        			   )
+        				*ptr = 0;
+                }
+*/
                 ptr++, orig++ ;
             }
         }

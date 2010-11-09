@@ -35,12 +35,6 @@ uint32_t * map_code_bmp = NULL ;
 int map_code_allocated = 0 ;
 int map_code_last = 0;
 
-/*
-GRAPH * map_first = NULL;
-*/
-
-/* static int free_map_code = 1000 ; */
-
 /* --------------------------------------------------------------------------- */
 
 PIXEL_FORMAT * bitmap_create_format( int bpp )
@@ -51,10 +45,9 @@ PIXEL_FORMAT * bitmap_create_format( int bpp )
     format = malloc( sizeof( *format ) );
     if ( !format ) return( NULL );
 
-    memset( format, 0, sizeof( *format ) );
-
     /* Set up the format */
 
+    format->palette = NULL;
     format->depth = bpp;
     format->depthb = ( bpp + 7 ) / 8;
 
@@ -120,8 +113,6 @@ GRAPH * bitmap_new_ex( int code, int w, int h, int depth, void * data, int pitch
     GRAPH * gr ;
     int wb ;
 
-//    if ( depth != 8 && depth != 16 && depth != 1 ) return NULL; // Profundidad de color no soportada
-
     /* Create and fill the struct */
 
     gr = ( GRAPH * ) malloc( sizeof( GRAPH ) ) ;
@@ -154,14 +145,7 @@ GRAPH * bitmap_new_ex( int code, int w, int h, int depth, void * data, int pitch
 
     gr->modified = 0;
     gr->info_flags = GI_EXTERNAL_DATA ;
-/*
-    gr->next = map_first;
-    gr->prev = NULL;
 
-    if ( map_first ) map_first->prev = gr;
-
-    map_first = gr;
-*/
     return gr ;
 }
 
@@ -171,8 +155,6 @@ GRAPH * bitmap_new( int code, int w, int h, int depth )
 {
     GRAPH * gr ;
     int bytesPerRow, wb ;
-
-//    if ( depth != 8 && depth != 16 && depth != 1 ) return NULL; // Profundidad de color no soportada
 
     /* Create and fill the struct */
 
@@ -214,14 +196,7 @@ GRAPH * bitmap_new( int code, int w, int h, int depth )
 
     gr->modified = 0;
     gr->info_flags = 0;
-/*
-    gr->next = map_first;
-    gr->prev = NULL;
 
-    if ( map_first ) map_first->prev = gr;
-
-    map_first = gr;
-*/
     return gr ;
 }
 
@@ -310,11 +285,7 @@ void bitmap_set_cpoint( GRAPH * map, uint32_t point, int x, int y )
 void bitmap_destroy( GRAPH * map )
 {
     if ( !map ) return ;
-/*
-    if ( map->prev ) map->prev->next = map->next;
-    if ( map->next ) map->next->prev = map->prev;
-    if ( map_first == map ) map_first = map->next;
-*/
+
     if ( map->cpoints ) free( map->cpoints ) ;
 
     if ( map->code > 999 ) bit_clr( map_code_bmp, map->code - 1000 );
@@ -384,35 +355,6 @@ void bitmap_analize( GRAPH * bitmap )
     if ( y < 0 ) bitmap->info_flags |= GI_NOCOLORKEY ;
 }
 
-/* --------------------------------------------------------------------------- */
-/*
- *  FUNCTION : bitmap_16bits_conversion
- *
- *  When 16 bits mode is initialized for the first time, this
- *  function will convert every 16 bit bitmap in memory to
- *  the screen format
- *
- *  PARAMS :
- *      None
- *
- *  RETURN VALUE :
- *      None
- *
- */
-/*
-void bitmap_16bits_conversion()
-{
-    GRAPH * map = map_first;
-
-    while ( map )
-    {
-        if ( map->format->depth == 16 )
-            gr_convert16_565ToScreen( map->data, map->width * map->height );
-
-        map = map->next;
-    }
-}
-*/
 /* --------------------------------------------------------------------------- */
 /* Returns the code of a new system library graph (1000+). Searchs
    for free slots if the program creates too many system maps */
@@ -491,3 +433,4 @@ GRAPH * bitmap_new_syslib( int w, int h, int depth )
     return gr ;
 }
 
+/* --------------------------------------------------------------------------- */
