@@ -398,6 +398,17 @@ int gr_save_png( GRAPH * gr, const char * filename )
                 PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE,
                 PNG_FILTER_TYPE_BASE ) ;
 
+        /* DCelso */
+        uint8_t trans = 1;
+
+        if (!( gr->info_flags & GI_NOCOLORKEY ))
+        {
+			info_ptr->num_trans = 1;
+			info_ptr->trans = &trans;
+			info_ptr->valid = info_ptr->valid | PNG_INFO_tRNS;
+        }
+        /* DCelso */
+
         pal = ( png_colorp ) png_malloc( png_ptr, 256 * sizeof( png_color ) ) ;
         if ( !pal )
         {
