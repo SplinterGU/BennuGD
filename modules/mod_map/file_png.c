@@ -247,6 +247,18 @@ GRAPH * gr_read_png( const char * filename )
             {
                 ARRANGE_DWORD( orig );
                 *ptr32 = *orig ;
+
+                /* DCelso */
+                if (( color == PNG_COLOR_TYPE_RGB ) && ( info_ptr->pixel_depth == 24 ) && ( info_ptr->valid & PNG_INFO_tRNS ))
+                {
+                	uint8_t * ptr8 = (uint8_t *)orig;
+        			if (
+        			    ( ptr8[0] == info_ptr->trans_values.red   ) &&
+        				( ptr8[1] == info_ptr->trans_values.green ) &&
+        				( ptr8[2] == info_ptr->trans_values.blue  )
+        			   )
+        				*ptr32 = 0;
+                }
                 ptr32++, orig++ ;
             }
         }
@@ -279,7 +291,8 @@ GRAPH * gr_read_png( const char * filename )
                 }
                 else
                     *ptr = 0 ;
-/* need revision, only works on 16bits (?)
+
+                /* DCelso */
                 if (( color == PNG_COLOR_TYPE_RGB ) && ( info_ptr->pixel_depth == 24 ) && ( info_ptr->valid & PNG_INFO_tRNS ))
                 {
                 	uint8_t * ptr8 = (uint8_t *)orig;
@@ -290,7 +303,6 @@ GRAPH * gr_read_png( const char * filename )
         			   )
         				*ptr = 0;
                 }
-*/
                 ptr++, orig++ ;
             }
         }
@@ -427,6 +439,7 @@ int gr_save_png( GRAPH * gr, const char * filename )
                 gr->height, 8, PNG_COLOR_TYPE_RGB_ALPHA,
                 PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE,
                 PNG_FILTER_TYPE_BASE ) ;
+
         png_write_info( png_ptr, info_ptr ) ;
 
         data = malloc( gr->width * gr->height * 4 ) ;
@@ -473,22 +486,11 @@ int gr_save_png( GRAPH * gr, const char * filename )
                 rowpointers[k] = ( uint8_t * )ptr ;
                 for ( i = 0 ; i < ( unsigned )gr->width ; i++ )
                 {
-/*
-                    if ( !*orig32 && !( gr->info_flags & GI_NOCOLORKEY ) )
-                        *ptr = 0 ;
-                    else if ( !( *orig32 & 0xff000000 ) )
-                        *ptr =
-                            0xff000000 |
-                            (( *orig32 & 0x00ff0000 ) >> 16 ) |
-                            (( *orig32 & 0x0000ff00 ) ) |
-                            (( *orig32 & 0x000000ff ) << 16 ) ;
-                    else
-*/
-                        *ptr =
-                            (( *orig32 & 0xff000000 ) ) |
-                            (( *orig32 & 0x00ff0000 ) >> 16 ) |
-                            (( *orig32 & 0x0000ff00 ) ) |
-                            (( *orig32 & 0x000000ff ) << 16 ) ;
+                    *ptr =
+                        (( *orig32 & 0xff000000 ) ) |
+                        (( *orig32 & 0x00ff0000 ) >> 16 ) |
+                        (( *orig32 & 0x0000ff00 ) ) |
+                        (( *orig32 & 0x000000ff ) << 16 ) ;
 
                     /* Rearrange data */
                     ARRANGE_DWORD( ptr ) ;
