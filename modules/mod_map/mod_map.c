@@ -563,7 +563,7 @@ static int modmap_rgba( INSTANCE * my, int * params )
 
 static int modmap_get_rgb_depth( INSTANCE * my, int * params )
 {
-    gr_get_rgb_depth( params[0], params[1], ( int * )params[2], ( int * )params[3], ( int * )params[4] ) ;
+    gr_get_rgb_depth( params[4], params[0], ( int * )params[1], ( int * )params[2], ( int * )params[3] ) ;
     return 1 ;
 }
 
@@ -571,7 +571,7 @@ static int modmap_get_rgb_depth( INSTANCE * my, int * params )
 
 static int modmap_get_rgba_depth( INSTANCE * my, int * params )
 {
-    gr_get_rgba_depth( params[0], params[1], ( int * )params[2], ( int * )params[3], ( int * )params[4], ( int * )params[5] ) ;
+    gr_get_rgba_depth( params[5], params[0], ( int * )params[1], ( int * )params[2], ( int * )params[3], ( int * )params[4] ) ;
     return 1 ;
 }
 
@@ -579,18 +579,18 @@ static int modmap_get_rgba_depth( INSTANCE * my, int * params )
 
 static int modmap_rgb_depth( INSTANCE * my, int * params )
 {
-    return params[0] > 8 ?
-            gr_rgb_depth( params[0], params[1], params[2], params[3] ) :
-            gr_find_nearest_color( params[1], params[2], params[3] ) ;
+    return params[3] > 8 ?
+            gr_rgb_depth( params[3], params[0], params[1], params[2] ) :
+            gr_find_nearest_color( params[0], params[1], params[2] ) ;
 }
 
 /* --------------------------------------------------------------------------- */
 
 static int modmap_rgba_depth( INSTANCE * my, int * params )
 {
-    return params[0] > 8 ?
-            gr_rgba_depth( params[0], params[1], params[2], params[3], params[4] ) :
-            gr_find_nearest_color( params[1], params[2], params[3] ) ;
+    return params[4] > 8 ?
+            gr_rgba_depth( params[4], params[0], params[1], params[2], params[3] ) :
+            gr_find_nearest_color( params[0], params[1], params[2] ) ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1039,15 +1039,15 @@ DLSYSFUNCS  __bgdexport( mod_map, functions_exports )[] =
 
     { "COLOR_FIND"          , "BBB"         , TYPE_INT      , modmap_find_color         },
 
+    { "RGB"                 , "BBBI"        , TYPE_INT      , modmap_rgb_depth          },
+    { "RGBA"                , "BBBBI"       , TYPE_INT      , modmap_rgba_depth         },
+    { "RGB_GET"             , "IPPPI"       , TYPE_INT      , modmap_get_rgb_depth      },
+    { "RGBA_GET"            , "IPPPPI"      , TYPE_INT      , modmap_get_rgba_depth     },
+
     { "RGB"                 , "BBB"         , TYPE_INT      , modmap_rgb                },
     { "RGBA"                , "BBBB"        , TYPE_INT      , modmap_rgba               },
     { "RGB_GET"             , "IPPP"        , TYPE_INT      , modmap_get_rgb            },
     { "RGBA_GET"            , "IPPPP"       , TYPE_INT      , modmap_get_rgba           },
-
-    { "RGB"                 , "IBBB"        , TYPE_INT      , modmap_rgb_depth          },
-    { "RGBA"                , "IBBBB"       , TYPE_INT      , modmap_rgba_depth         },
-    { "RGB_GET"             , "IIPPP"       , TYPE_INT      , modmap_get_rgb_depth      },
-    { "RGBA_GET"            , "IIPPPP"      , TYPE_INT      , modmap_get_rgba_depth     },
 
     { "FADE"                , "IIII"        , TYPE_INT      , modmap_fade               },
     { "FADE_ON"             , ""            , TYPE_INT      , modmap_fade_on            },
@@ -1106,10 +1106,10 @@ DLSYSFUNCS  __bgdexport( mod_map, functions_exports )[] =
     { "ROLL_PALETTE"        , "III"         , TYPE_INT      , modmap_roll_palette       },
     { "CONVERT_PALETTE"     , "IIP"         , TYPE_INT      , modmap_convert_palette    },
     { "FIND_COLOR"          , "BBB"         , TYPE_INT      , modmap_find_color         },
+    { "GET_RGB"             , "IPPPI"       , TYPE_INT      , modmap_get_rgb_depth      },
+    { "GET_RGBA"            , "IPPPPI"      , TYPE_INT      , modmap_get_rgba_depth     },
     { "GET_RGB"             , "IPPP"        , TYPE_INT      , modmap_get_rgb            },
-    { "GET_RGB"             , "IIPPP"       , TYPE_INT      , modmap_get_rgb_depth      },
     { "GET_RGBA"            , "IPPPP"       , TYPE_INT      , modmap_get_rgba           },
-    { "GET_RGBA"            , "IIPPPP"      , TYPE_INT      , modmap_get_rgba_depth     },
 
     /* FPG */
     { "NEW_FPG"             , ""            , TYPE_INT      , modmap_fpg_new            },
