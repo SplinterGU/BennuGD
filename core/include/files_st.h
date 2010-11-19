@@ -39,11 +39,14 @@
 
 #include <zlib.h>
 
+#define __MAX_PATH          32768
+/*
 #define __MAX_PATH          260
 #define	__MAX_DRIVE	        (3)
 #define	__MAX_DIR	        256
 #define	__MAX_FNAME	        256
 #define	__MAX_EXT	        256
+*/
 
 #ifdef WIN32
 #define PATH_SEP "\\"
