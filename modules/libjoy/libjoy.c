@@ -50,6 +50,11 @@
 
 #ifdef TARGET_CAANOO
 #include "caanoo/te9_tf9_hybrid_driver.c"
+
+#ifndef ABS
+#define ABS(x) (((x) < 0) ? -(x):(x))
+#endif
+
 #endif
 
 /* --------------------------------------------------------------------------- */
@@ -136,16 +141,18 @@ int libjoy_get_button( int button )
 #ifdef TARGET_CAANOO
         if ( _selected_joystick == 0 )
         {
+            int vax;
+
             switch ( button )
             {
                 case    1: /* UPLF                  */  return ( SDL_JoystickGetAxis( _joysticks[ 0 ], 1 ) < -16384 && SDL_JoystickGetAxis( _joysticks[ 0 ], 0 ) < -16384 );
                 case    3: /* DWLF                  */  return ( SDL_JoystickGetAxis( _joysticks[ 0 ], 1 ) >  16384 && SDL_JoystickGetAxis( _joysticks[ 0 ], 0 ) < -16384 );
                 case    5: /* DWRT                  */  return ( SDL_JoystickGetAxis( _joysticks[ 0 ], 1 ) >  16384 && SDL_JoystickGetAxis( _joysticks[ 0 ], 0 ) >  16384 );
                 case    7: /* UPRT                  */  return ( SDL_JoystickGetAxis( _joysticks[ 0 ], 1 ) < -16384 && SDL_JoystickGetAxis( _joysticks[ 0 ], 0 ) >  16384 );
-                case    0: /* UP                    */  return ( SDL_JoystickGetAxis( _joysticks[ 0 ], 1 ) < -16384 );
-                case    4: /* DW                    */  return ( SDL_JoystickGetAxis( _joysticks[ 0 ], 1 ) > 16384 );
-                case    2: /* LF                    */  return ( SDL_JoystickGetAxis( _joysticks[ 0 ], 0 ) < -16384 );
-                case    6: /* RT                    */  return ( SDL_JoystickGetAxis( _joysticks[ 0 ], 0 ) > 16384 );
+                case    0: /* UP                    */  vax = SDL_JoystickGetAxis( _joysticks[ 0 ], 0 ) ; return ( SDL_JoystickGetAxis( _joysticks[ 0 ], 1 ) < -16384 && ABS( vax ) < 16384 );
+                case    4: /* DW                    */  vax = SDL_JoystickGetAxis( _joysticks[ 0 ], 0 ) ; return ( SDL_JoystickGetAxis( _joysticks[ 0 ], 1 ) >  16384 && ABS( vax ) < 16384 );
+                case    2: /* LF                    */  vax = SDL_JoystickGetAxis( _joysticks[ 0 ], 1 ) ; return ( SDL_JoystickGetAxis( _joysticks[ 0 ], 0 ) < -16384 && ABS( vax ) < 16384 );
+                case    6: /* RT                    */  vax = SDL_JoystickGetAxis( _joysticks[ 0 ], 1 ) ; return ( SDL_JoystickGetAxis( _joysticks[ 0 ], 0 ) >  16384 && ABS( vax ) < 16384 );
 
                 case    8:  /* MENU->HOME           */  return ( SDL_JoystickGetButton( _joysticks[ 0 ], 6 ) );
                 case    9:  /* SELECT->HELP-II      */  return ( SDL_JoystickGetButton( _joysticks[ 0 ], 9 ) );
@@ -313,16 +320,18 @@ int libjoy_get_button_specific( int joy, int button )
 #ifdef TARGET_CAANOO
             if ( joy == 0 )
             {
+                int vax;
+
                 switch ( button )
                 {
-                    case    1: /* UPLF                  */  return ( SDL_JoystickGetAxis( _joysticks[ joy ], 1 ) < -16384 && SDL_JoystickGetAxis( _joysticks[ joy ], 0 ) < -16384 );
-                    case    3: /* DWLF                  */  return ( SDL_JoystickGetAxis( _joysticks[ joy ], 1 ) >  16384 && SDL_JoystickGetAxis( _joysticks[ joy ], 0 ) < -16384 );
-                    case    5: /* DWRT                  */  return ( SDL_JoystickGetAxis( _joysticks[ joy ], 1 ) >  16384 && SDL_JoystickGetAxis( _joysticks[ joy ], 0 ) >  16384 );
-                    case    7: /* UPRT                  */  return ( SDL_JoystickGetAxis( _joysticks[ joy ], 1 ) < -16384 && SDL_JoystickGetAxis( _joysticks[ joy ], 0 ) >  16384 );
-                    case    0: /* UP                    */  return ( SDL_JoystickGetAxis( _joysticks[ joy ], 1 ) < -16384 );
-                    case    4: /* DW                    */  return ( SDL_JoystickGetAxis( _joysticks[ joy ], 1 ) > 16384 );
-                    case    2: /* LF                    */  return ( SDL_JoystickGetAxis( _joysticks[ joy ], 0 ) < -16384 );
-                    case    6: /* RT                    */  return ( SDL_JoystickGetAxis( _joysticks[ joy ], 0 ) > 16384 );
+                    case    1: /* UPLF                  */  return ( SDL_JoystickGetAxis( _joysticks[ 0 ], 1 ) < -16384 && SDL_JoystickGetAxis( _joysticks[ 0 ], 0 ) < -16384 );
+                    case    3: /* DWLF                  */  return ( SDL_JoystickGetAxis( _joysticks[ 0 ], 1 ) >  16384 && SDL_JoystickGetAxis( _joysticks[ 0 ], 0 ) < -16384 );
+                    case    5: /* DWRT                  */  return ( SDL_JoystickGetAxis( _joysticks[ 0 ], 1 ) >  16384 && SDL_JoystickGetAxis( _joysticks[ 0 ], 0 ) >  16384 );
+                    case    7: /* UPRT                  */  return ( SDL_JoystickGetAxis( _joysticks[ 0 ], 1 ) < -16384 && SDL_JoystickGetAxis( _joysticks[ 0 ], 0 ) >  16384 );
+                    case    0: /* UP                    */  vax = SDL_JoystickGetAxis( _joysticks[ 0 ], 0 ) ; return ( SDL_JoystickGetAxis( _joysticks[ 0 ], 1 ) < -16384 && ABS( vax ) < 16384 );
+                    case    4: /* DW                    */  vax = SDL_JoystickGetAxis( _joysticks[ 0 ], 0 ) ; return ( SDL_JoystickGetAxis( _joysticks[ 0 ], 1 ) >  16384 && ABS( vax ) < 16384 );
+                    case    2: /* LF                    */  vax = SDL_JoystickGetAxis( _joysticks[ 0 ], 1 ) ; return ( SDL_JoystickGetAxis( _joysticks[ 0 ], 0 ) < -16384 && ABS( vax ) < 16384 );
+                    case    6: /* RT                    */  vax = SDL_JoystickGetAxis( _joysticks[ 0 ], 1 ) ; return ( SDL_JoystickGetAxis( _joysticks[ 0 ], 0 ) >  16384 && ABS( vax ) < 16384 );
 
                     case    8:  /* MENU->HOME           */  return ( SDL_JoystickGetButton( _joysticks[ 0 ], 6 ) );
                     case    9:  /* SELECT->HELP-II      */  return ( SDL_JoystickGetButton( _joysticks[ 0 ], 9 ) );
