@@ -121,7 +121,7 @@ GRAPH * gr_read_png( const char * filename )
 
     /* Configura los distintos modos disponibles */
 
-    if ( color == PNG_COLOR_TYPE_GRAY /*|| color == PNG_COLOR_TYPE_GRAY_ALPHA*/ )
+    if ( color == PNG_COLOR_TYPE_GRAY || color == PNG_COLOR_TYPE_GRAY_ALPHA )
     {
         png_set_gray_to_rgb( png_ptr );
         if ( color == PNG_COLOR_TYPE_GRAY ) png_set_filler( png_ptr, 0xFF, PNG_FILLER_AFTER ) ;
@@ -136,7 +136,7 @@ GRAPH * gr_read_png( const char * filename )
     /* Recupera el fichero, convirtiendo a 16 bits si es preciso */
 
     rowbytes = png_get_rowbytes( png_ptr, info_ptr ) ;
-    bitmap = bitmap_new( 0, width, height, ( color == PNG_COLOR_TYPE_PALETTE ) ? 8 : ( sys_pixel_format->depth == 16 ? 16 : 32 ) ) ;
+    bitmap = bitmap_new( 0, width, height, ( color == PNG_COLOR_TYPE_GRAY )  ? 1 : ( color == PNG_COLOR_TYPE_PALETTE ) ? 8 : ( sys_pixel_format->depth == 16 ? 16 : 32 ) ) ;
     if ( !bitmap )
     {
         png_destroy_read_struct( &png_ptr, &info_ptr, &end_info ) ;
@@ -146,7 +146,15 @@ GRAPH * gr_read_png( const char * filename )
         return NULL;
     }
 
-    if ( color == PNG_COLOR_TYPE_PALETTE )
+    if ( color == PNG_COLOR_TYPE_GRAY )
+    {
+        for ( n = 0 ; n < height ; n++ )
+        {
+            rowpointers[0] = ( void * )(( uint8_t * )bitmap->data ) + n * bitmap->pitch ;
+            png_read_rows( png_ptr, rowpointers, 0, 1 ) ;
+        }
+    }
+    else if ( color == PNG_COLOR_TYPE_PALETTE )
     {
         /* Read the color palette */
 
@@ -315,6 +323,7 @@ GRAPH * gr_read_png( const char * filename )
     bitmap->modified = 1 ;
 
     png_destroy_read_struct( &png_ptr, &info_ptr, &end_info ) ;
+
     free( rowpointers ) ;
     free( row ) ;
     file_close( png ) ;
@@ -344,7 +353,7 @@ int gr_save_png( GRAPH * gr, const char * filename )
     FILE * file = fopen( filename, "wb" ) ;
     png_structp png_ptr ;
     png_infop info_ptr ;
-    png_uint_32 k, i ;
+    int k, i ;
     png_bytep * rowpointers ;
     png_colorp pal ;
     uint32_t * data, * ptr ;
@@ -390,6 +399,21 @@ int gr_save_png( GRAPH * gr, const char * filename )
 
     png_init_io( png_ptr, file ) ;
 
+    if ( gr->format->depth == 1 )
+    {
+        png_set_IHDR( png_ptr, info_ptr, gr->width,
+                gr->height, 1, PNG_COLOR_TYPE_GRAY,
+                PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE,
+                PNG_FILTER_TYPE_BASE ) ;
+
+        png_write_info( png_ptr, info_ptr ) ;
+
+        for ( k = 0 ; k < ( unsigned )gr->height ; k++ )
+            rowpointers[k] = ( uint8_t * )gr->data + gr->pitch * k ;
+
+        png_write_image( png_ptr, rowpointers ) ;
+    }
+    else
     if ( gr->format->depth == 8 )
     {
         /* 8 bits PNG file */
@@ -516,9 +540,9 @@ int gr_save_png( GRAPH * gr, const char * filename )
     }
 
     png_write_end( png_ptr, info_ptr ) ;
-    fclose( file ) ;
     png_destroy_write_struct( &png_ptr, NULL ) ;
     free( rowpointers ) ;
+    fclose( file ) ;
     return ( 1 ) ;
 }
 
