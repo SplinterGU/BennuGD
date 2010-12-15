@@ -980,15 +980,13 @@ int token_endfile()
 
 void token_dump()
 {
-    fprintf( stdout, "(" );
     if ( token.type == NUMBER ) fprintf( stdout, "%d", token.code );
     else if ( token.type == FLOAT ) fprintf( stdout, "%f", token.value );
     else if ( token.type == STRING ) fprintf( stdout, "\"%s\"", string_get( token.code ) );
     else if ( token.type == IDENTIFIER ) fprintf( stdout, "\"%s\"", identifier_name( token.code ) );
     else if ( token.type == LABEL ) fprintf( stdout, "\"%s\"", identifier_name( token.code ) );
     else if ( token.type == NOTOKEN ) fprintf( stdout, "EOF" );
-    else fprintf( stdout, "unknown\n" );
-    fprintf( stdout, ")\n" );
+    else fprintf( stdout, "unknown" );
 }
 
 extern int c_type_initialized;

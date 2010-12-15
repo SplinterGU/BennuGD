@@ -49,9 +49,10 @@ extern SYSPROC sysprocs[MAX_SYSPROCS] ;
 SYSPROC sysprocs[MAX_SYSPROCS] =
 {
     /* Internal use */
-    { 0x01, "#COPY#"    , "PV++I" , TYPE_POINTER    , 5, SYSMACRO(bgd_copy_struct)      },
-    { 0x02, "#MEMCOPY#" , "PPI"   , TYPE_INT        , 3, SYSMACRO(bgd_internal_memcopy) },
+    { 0x01, "#COPY#"        , "PV++I" , TYPE_POINTER    , 5, SYSMACRO(bgd_copy_struct)                  },
+    { 0x02, "#MEMCOPY#"     , "PPI"   , TYPE_INT        , 3, SYSMACRO(bgd_internal_memcopy)             },
+    { 0x03, "#COPYSTRA#"    , "PPI"   , TYPE_INT        , 3, SYSMACRO(bgd_internal_copy_string_array)   },
 
-    { 0   , 0           , ""      , TYPE_UNDEFINED  , 0, 0                              }
+    { 0   , 0               , ""      , TYPE_UNDEFINED  , 0, 0                                          }
 } ;
 #endif

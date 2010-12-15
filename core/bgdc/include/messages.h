@@ -53,8 +53,8 @@
     "Free Software Foundation; either the version 2 of the license or\n" \
     "(at your will) any later version.\n\n" \
     "Read the file COPYING for details\n\n"
-#define MSG_COMPILE_ERROR                       "%s%s:%d: error: %s "
-#define MSG_COMPILE_WARNING                     "%s%s:%d: warning: %s "
+#define MSG_COMPILE_ERROR                       "%s%s:%d: error: %s"
+#define MSG_COMPILE_WARNING                     "%s%s:%d: warning: %s"
 #define MSG_CONSTANT_NAME_EXP                   "Constant name expected"
 #define MSG_INVALID_IDENTIFIER                  "Invalid identifier"
 #define MSG_EXPECTED                            "\"%s\" expected"

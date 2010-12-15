@@ -51,7 +51,7 @@ int compile_array_data( VARSPACE * n, segment * data, int size, int subsize, BAS
         {
             token_back();
             break;
-            compile_error( MSG_TOO_MANY_INIT ) ;
+//            compile_error( MSG_TOO_MANY_INIT ) ;
         }
 
         token_next() ;
@@ -142,6 +142,7 @@ int compile_array_data( VARSPACE * n, segment * data, int size, int subsize, BAS
         token_next() ;
         if ( token.type == IDENTIFIER && token.code == identifier_comma )
         {
+            if ( !size && *t == TYPE_CHAR ) compile_error( MSG_TOO_MANY_INIT );
             continue ;
         }
         token_back() ;

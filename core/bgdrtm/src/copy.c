@@ -207,3 +207,17 @@ int bgd_internal_memcopy( INSTANCE * my, int * params )
     memmove(( void * )params[0], ( void * )params[1], params[2] ) ;
     return 1 ;
 }
+
+int bgd_internal_copy_string_array( INSTANCE * my, int * params )
+{
+    int n = params[ 2 ];
+    memmove(( void * )params[0], ( void * )params[1], params[2] ) ;
+
+    while( n-- )
+    {
+        ((int *)( params[ 0 ] )) [ n ] = ((int *)( params[ 1 ] )) [ n ];
+        string_use( ((int *)( params[ 0 ] )) [ n ] );
+    }
+
+    return 1 ;
+}

@@ -407,8 +407,9 @@ expresion_result compile_sublvalue( VARSPACE * from, int base_offset, VARSPACE *
     }
 
     /* Un acceso a un array es un acceso a su primer elemento */
+/*
     res.count = 1;
-    if ( typedef_is_array( res.type ) && reduce_arrays == 1 )
+    if ( reduce_arrays == 1 && typedef_is_array( res.type ) )
     {
         if ( res.type.chunk[1].type != TYPE_CHAR )
         {
@@ -419,6 +420,7 @@ expresion_result compile_sublvalue( VARSPACE * from, int base_offset, VARSPACE *
             }
         }
     }
+*/
 
     token_back() ;
 
@@ -1783,6 +1785,7 @@ expresion_result compile_factor()
                 part.lvalue = 1 ;
 
                 token_next() ;
+
                 if ( token.type != IDENTIFIER || token.code != identifier_rightb ) compile_error( MSG_EXPECTED, "]" ) ; /* "]" */
                 continue ;
             }
@@ -1810,6 +1813,7 @@ expresion_result compile_factor()
     }
 
     token_back() ;
+
     return part ;
 }
 
@@ -2041,6 +2045,7 @@ expresion_result compile_operation()
         token_back() ;
         break ;
     }
+
     return left ;
 }
 
@@ -2804,28 +2809,28 @@ expresion_result compile_subexpresion()
 
         /* Otra posible combinación(for not string/char[]/pointers) */
 
-        if ( token.code == identifier_plusequal         /* "+=" */
-                ||  token.code == identifier_minusequal    /* "-=" */
-                ||  token.code == identifier_multequal     /* "*=" */
-                ||  token.code == identifier_divequal      /* "/=" */
-                ||  token.code == identifier_modequal      /* "%=" */
-                ||  token.code == identifier_andequal      /* "&=" */
-                ||  token.code == identifier_xorequal      /* "^=" */
-                ||  token.code == identifier_orequal       /* "|=" */
-                ||  token.code == identifier_rolequal      /* "<<=" */
-                ||  token.code == identifier_rorequal      /* ">>=" */
-                ||  token.code == identifier_equal )       /* "=" */
+        if (    token.code == identifier_plusequal      /* "+=" */
+            ||  token.code == identifier_minusequal     /* "-=" */
+            ||  token.code == identifier_multequal      /* "*=" */
+            ||  token.code == identifier_divequal       /* "/=" */
+            ||  token.code == identifier_modequal       /* "%=" */
+            ||  token.code == identifier_andequal       /* "&=" */
+            ||  token.code == identifier_xorequal       /* "^=" */
+            ||  token.code == identifier_orequal        /* "|=" */
+            ||  token.code == identifier_rolequal       /* "<<=" */
+            ||  token.code == identifier_rorequal       /* ">>=" */
+            ||  token.code == identifier_equal )        /* "=" */
         {
             SYSPROC * proc_copy = sysproc_get( identifier_search_or_add( "#COPY#" ) );
             SYSPROC * proc_memcopy = sysproc_get( identifier_search_or_add( "#MEMCOPY#" ) );
+            SYSPROC * proc_copy_string_array = sysproc_get( identifier_search_or_add( "#COPYSTRA#" ) );
             int size, nvar;
 
             op = token.code ;
 
+            /* Assignation to struct: struct copy */
             if ( typedef_is_struct( base.type ) )
             {
-                /* Assignation to struct: struct copy */
-
                 if ( token.code != identifier_equal ) compile_error( MSG_EXPECTED, "=" ) ; /* "=" */
 
                 right = compile_expresion( 0, 0, 0, TYPE_UNDEFINED );
@@ -2891,12 +2896,47 @@ expresion_result compile_subexpresion()
                 return base;
             }
 
-            if ( typedef_is_array( base.type ) ) compile_error( MSG_EXPECTED, "[" ) ;
+            if ( op != identifier_equal && typedef_is_array( base.type ) ) compile_error( MSG_EXPECTED, "[" ) ;
 
             if ( !base.lvalue ) compile_error( MSG_VARIABLE_REQUIRED ) ;
-
             right = compile_expresion( 0, 0, 0, typedef_base( base.type ) ) ;
-            if ( right.lvalue ) codeblock_add( code, mntype( right.type, 0 ) | MN_PTR, 0 ) ;
+
+            if ( right.lvalue && !typedef_is_array( right.type ) ) codeblock_add( code, mntype( right.type, 0 ) | MN_PTR, 0 ) ;
+
+            /* Array copy */
+            if ( op == identifier_equal && typedef_is_array( base.type ) && typedef_is_array( right.type ) )
+            {
+                int size;
+
+                if ( !typedef_is_equal( base.type, right.type ) ) compile_error( MSG_TYPES_NOT_THE_SAME );
+
+                size = typedef_size( base.type );
+
+                while ( typedef_is_array( base.type ) )
+                {
+                    base.type = typedef_reduce( base.type ) ;
+                    right.type = typedef_reduce( right.type ) ;
+                }
+
+                /* Optimized fast memcopy version */
+                if ( typedef_is_string( base.type ) )
+                {
+                    codeblock_add( code, MN_PUSH, size / sizeof( int ) );
+                    codeblock_add( code, MN_SYSCALL, proc_copy_string_array->code );
+                }
+                else
+                {
+                    codeblock_add( code, MN_PUSH, size );
+                    codeblock_add( code, MN_SYSCALL, proc_memcopy->code );
+                }
+
+                base.type = right.type;
+                base.constant = 0;
+                base.lvalue = 0;
+                base.call = 1;
+
+                return base;
+            }
 
             type = check_numeric_types( &base, &right ) ;
 
@@ -2975,7 +3015,7 @@ expresion_result compile_expresion( int need_constant, int need_lvalue, int disc
 
     /* Quita los lvalue */
 
-    if ( !need_lvalue && res.lvalue )
+    if ( !need_lvalue && res.lvalue && !typedef_is_array( res.type ) )
     {
         res.lvalue = 0 ;
         codeblock_add( code, mntype( res.type, 0 ) | MN_PTR, 0 ) ;

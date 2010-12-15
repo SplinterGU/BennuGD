@@ -348,7 +348,9 @@ void compile_error( const char *fmt, ... )
             fname ? fname : "N/A",
             ( import_filename ) ? import_line : line_count,
             text ) ;
+    fprintf( stdout, ", found " );
     token_dump() ;
+    fprintf( stdout, "\n" );
     exit( 2 ) ;
 }
 
@@ -369,7 +371,9 @@ void compile_warning( const char *fmt, ... )
             fname ? fname : "N/A",
             ( import_filename ) ? import_line : line_count,
             text ) ;
+    fprintf( stdout, ", found " );
     token_dump() ;
+    fprintf( stdout, "\n" );
 }
 
 /* ---------------------------------------------------------------------- */
