@@ -51,7 +51,7 @@ int debug_next = 0 ;
 int trace_sentence  = -1;
 INSTANCE * trace_instance = NULL;
 
-/* --------------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------- */
 
 static INSTANCE * last_instance_run = NULL;
 

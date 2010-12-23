@@ -109,6 +109,42 @@ int main( int argc, char **argv )
     string_init();
     compile_init();
 
+    /* Init vars */
+
+    char tmp_version[ 32 ];
+    sprintf( tmp_version, "\"%s\"", VERSION );
+    add_simple_define( "COMPILER_VERSION", tmp_version );
+    add_simple_define( "__VERSION__", tmp_version );
+
+    curtime = time( NULL ); /* Get the current time. */
+    loctime = localtime( &curtime ); /* Convert it to local time representation. */
+
+    strftime( timebuff, sizeof( timebuff ), "%Y/%m/%d", loctime );
+    value = string_new( timebuff );
+    code = identifier_search_or_add( "__DATE__" ) ;
+    constants_add( code, typedef_new( TYPE_STRING ), value ) ;
+
+    strftime( timebuff, sizeof( timebuff ), "%H:%M:%S", loctime );
+    value = string_new( timebuff );
+    code = identifier_search_or_add( "__TIME__" ) ;
+    constants_add( code, typedef_new( TYPE_STRING ), value ) ;
+/*
+    value = string_new( VERSION );
+    code = identifier_search_or_add( "__VERSION__" ) ;
+    constants_add( code, typedef_new( TYPE_STRING ), value ) ;
+    code = identifier_search_or_add( "COMPILER_VERSION" ) ;
+    constants_add( code, typedef_new( TYPE_STRING ), value ) ;
+*/
+    strcpy( _tmp, VERSION );
+                d = strchr( _tmp, '.' ); *d = '\0'; add_simple_define( "__BGD__", _tmp );
+    d1 = d + 1; d = strchr(   d1, '.' ); *d = '\0'; add_simple_define( "__BGD_MINOR__", d1 );
+    d1 = d + 1;                                     add_simple_define( "__BGD_PATCHLEVEL__", d1 );
+
+    memset( &dcb, 0, sizeof( dcb ) );
+
+    core_init();
+    sysproc_init();
+
     /* Get command line parameters */
 
     for ( i = 1 ; i < argc ; i++ )
@@ -259,12 +295,13 @@ int main( int argc, char **argv )
         }
         else
         {
+/*
             if ( sourcefile )
             {
                 printf( MSG_TOO_MANY_FILES "\n" );
                 return 0;
             }
-
+*/
             char * p, * pathend = NULL;
 
             sourcefile = argv[i];
@@ -285,6 +322,36 @@ int main( int argc, char **argv )
                 main_path = getcwd(malloc(__MAX_PATH), __MAX_PATH);
                 strcat(main_path, PATH_SEP);
             }
+
+            /* Files names */
+
+            strcpy( basepathname, sourcefile );
+            REMOVE_EXT( basepathname );
+
+            /* Default compiler imports */
+            strcpy( compilerimport, argv[0] );
+#ifdef WIN32
+            REMOVE_EXT( compilerimport );
+#endif
+            strcat( compilerimport, ".imp" );
+            import_files( compilerimport );
+            strcat( compilerimport, "ort" ); /* name.import */
+            import_files( compilerimport );
+
+            /* Project imports */
+            strcpy( importname, basepathname ); strcat( importname, ".imp" );
+            import_files( importname );
+
+            strcat( importname, "ort" ); /* name.import */
+            import_files( importname );
+
+            /* Load Main Source File */
+            load_file( sourcefile );
+
+            if ( !dcbname[0] )
+            {
+                strcpy( dcbname, basepathname ); strcat( dcbname, ".dcb" );
+            }
         }
     }
 
@@ -297,71 +364,7 @@ int main( int argc, char **argv )
         return 0;
     }
 
-    char tmp_version[ 32 ];
-    sprintf( tmp_version, "\"%s\"", VERSION );
-    add_simple_define( "COMPILER_VERSION", tmp_version );
-    add_simple_define( "__VERSION__", tmp_version );
-
-    curtime = time( NULL ); /* Get the current time. */
-    loctime = localtime( &curtime ); /* Convert it to local time representation. */
-
-    strftime( timebuff, sizeof( timebuff ), "%Y/%m/%d", loctime );
-    value = string_new( timebuff );
-    code = identifier_search_or_add( "__DATE__" ) ;
-    constants_add( code, typedef_new( TYPE_STRING ), value ) ;
-
-    strftime( timebuff, sizeof( timebuff ), "%H:%M:%S", loctime );
-    value = string_new( timebuff );
-    code = identifier_search_or_add( "__TIME__" ) ;
-    constants_add( code, typedef_new( TYPE_STRING ), value ) ;
-/*
-    value = string_new( VERSION );
-    code = identifier_search_or_add( "__VERSION__" ) ;
-    constants_add( code, typedef_new( TYPE_STRING ), value ) ;
-    code = identifier_search_or_add( "COMPILER_VERSION" ) ;
-    constants_add( code, typedef_new( TYPE_STRING ), value ) ;
-*/
-    strcpy( _tmp, VERSION );
-                d = strchr( _tmp, '.' ); *d = '\0'; add_simple_define( "__BGD__", _tmp );
-    d1 = d + 1; d = strchr(   d1, '.' ); *d = '\0'; add_simple_define( "__BGD_MINOR__", d1 );
-    d1 = d + 1;                                     add_simple_define( "__BGD_PATCHLEVEL__", d1 );
-
-    memset( &dcb, 0, sizeof( dcb ) );
-
-    core_init();
-    sysproc_init();
-
-    /* Files names */
-
-    strcpy( basepathname, sourcefile );
-    REMOVE_EXT( basepathname );
-
-    /* Default compiler imports */
-    strcpy( compilerimport, argv[0] );
-#ifdef WIN32
-    REMOVE_EXT( compilerimport );
-#endif
-    strcat( compilerimport, ".imp" );
-    import_files( compilerimport );
-    strcat( compilerimport, "ort" ); /* name.import */
-    import_files( compilerimport );
-
-    /* Project imports */
-    strcpy( importname, basepathname ); strcat( importname, ".imp" );
-    import_files( importname );
-
-    strcat( importname, "ort" ); /* name.import */
-    import_files( importname );
-
-    /* Load Main Source File */
-    load_file( sourcefile );
-
     compile_program();
-
-    if ( !dcbname[0] )
-    {
-        strcpy( dcbname, basepathname ); strcat( dcbname, ".dcb" );
-    }
 
     if ( stubname[0] != 0 )
     {
