@@ -79,6 +79,10 @@ void string_dump( void ( *wlog )( const char *fmt, ... ) )
 int string_new( const char * text )
 {
     int len = strlen( text ) + 1 ;
+    int i;
+
+    /* Reuse strings */
+    for ( i = 0; i < string_count; i++ ) if ( !strcmp( text, string_mem + string_offset[ i ] ) ) return i;
 
     if ( string_count == string_max )
     {
@@ -130,6 +134,7 @@ int string_compile( const char ** source )
 {
     char c = *( *source ) ++, conv ;
     const char * ptr ;
+    int string_used_back = string_used;
 
     if ( string_count == string_max )
     {
@@ -197,8 +202,20 @@ int string_compile( const char ** source )
     }
 
     string_mem[ string_used++ ] = 0 ;
-    if ( string_used >= string_allocated )
-        string_alloc( 1024 ) ;
+
+    int i;
+
+    /* Reuse strings */
+    for ( i = 0; i < string_count; i++ )
+    {
+        if ( !strcmp( string_mem + string_used_back, string_mem + string_offset[ i ] ) )
+        {
+            string_used = string_used_back;
+            return i;
+        }
+    }
+
+    if ( string_used >= string_allocated ) string_alloc( 1024 ) ;
 
     /* Hack: añade el posible fichero al DCB */
 

@@ -4,7 +4,7 @@
 
 ## OPEN2X - This should point to the root of your tool-chain {i.e. folder above the BIN dir}
 
-OPEN2X=~/caanoo/GPH_SDK/tools/gcc-4.2.4-glibc-2.7-eabi/arm-gph-linux-gnueabi
+OPEN2X=~/devel/caanoo/GPH_SDK/tools/gcc-4.2.4-glibc-2.7-eabi/arm-gph-linux-gnueabi
 
 ## HOST and TARGET - These should be the canonical tool names of your tool.
 ## For the sake of this script HOST and TARGET should be the same.
@@ -13,7 +13,7 @@ OPEN2X=~/caanoo/GPH_SDK/tools/gcc-4.2.4-glibc-2.7-eabi/arm-gph-linux-gnueabi
 HOST=arm-gph-linux-gnueabi
 TARGET=arm-gph-linux-gnueabi
 BUILD=`uname -m`
-PKG_CONFIG_PATH=~/caanoo/GPH_SDK/tools/gcc-4.2.4-glibc-2.7-eabi/arm-gph-linux-gnueabi/lib/pkgconfig
+PKG_CONFIG_PATH=~/devel/caanoo/GPH_SDK/tools/gcc-4.2.4-glibc-2.7-eabi/arm-gph-linux-gnueabi/lib/pkgconfig
 
 ## -- END OPEN2X USER SETTINGS
 
@@ -28,7 +28,7 @@ export PREFIX
 PATH=$OPEN2X/bin:$PATH
 export PATH
 
-ln -s `whereis -b pkg-config | sed 's/pkg-config\: //g'` ~/caanoo/GPH_SDK/tools/gcc-4.2.4-glibc-2.7-eabi/arm-gph-linux-gnueabil/bin/pkg-config
+ln -s `whereis -b pkg-config | sed 's/pkg-config\: //g'` ~/devel/caanoo/GPH_SDK/tools/gcc-4.2.4-glibc-2.7-eabi/arm-gph-linux-gnueabil/bin/pkg-config
 
 # Do not edit below here
 CC="${OPEN2X}/../bin/${HOST}-gcc"

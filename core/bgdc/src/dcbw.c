@@ -38,7 +38,7 @@
 #define SYSPROCS_ONLY_DECLARE
 #include "sysprocs.h"
 
-/* Datos externos accedidos vilmente */
+/* dirty declare external vars */
 
 extern char * string_mem;
 extern int * string_offset;
@@ -47,7 +47,7 @@ extern int procdef_count;
 extern int identifier_count;
 extern PROCDEF ** procs;
 
-/* Gesti�n de la lista de ficheros a incluir en el DCB */
+/* List of files to include in DCB file managment */
 
 DCB_FILE * dcb_files = 0;
 int dcb_ef_alloc = 0;
@@ -77,7 +77,7 @@ void dcb_add_file( const char * filename )
         return;
     }
 
-    /* No se incluyen dlls en el stub */
+    /* Dinamyc libraries aren't included in the stub */
 /*
     if ( strlen( filename ) > 4 && !strncmp( filename + strlen( filename ) - 4, ".dll", 4 ) )   return;
     if ( strlen( filename ) > 3 && !strncmp( filename + strlen( filename ) - 3, ".so", 3 ) )    return;
@@ -99,7 +99,7 @@ void dcb_add_file( const char * filename )
         if ( !dcb_files ) compile_error( "dcb_add_file: out of memory" );
     }
 
-    /* Comprueba que el fichero no haya sido ya a�adido */
+    /* file is already included ? */
 
     for ( i = 0; i < dcb_filecount; i++ )
         if ( strcmp( filename, (const char *)dcb_files[i].Name ) == 0 ) return;
@@ -110,7 +110,7 @@ void dcb_add_file( const char * filename )
     dcb_filecount++;
 }
 
-/* Hack para poder asignar ID's a los varspaces */
+/* Hack for set ID's to varspaces */
 
 VARSPACE ** dcb_orig_varspace = 0;
 int dcb_varspaces = 0;
@@ -136,7 +136,7 @@ static int dcb_varspace( VARSPACE * v )
     return result;
 }
 
-/* Conversiones de TYPEDEF (used in compile time) */
+/* TYPEDEF converts (used in compile time) */
 
 void dcb_settype( DCB_TYPEDEF * d, TYPEDEF * t )
 {
@@ -155,7 +155,7 @@ void dcb_settype( DCB_TYPEDEF * d, TYPEDEF * t )
 }
 
 
-/* Conversiones de TYPEDEF (used in save time) */
+/* TYPEDEF converts (used in save time) */
 
 void dcb_prepare_type( DCB_TYPEDEF * d, TYPEDEF * t )
 {
@@ -175,8 +175,7 @@ void dcb_prepare_type( DCB_TYPEDEF * d, TYPEDEF * t )
     ARRANGE_DWORD( &d->Members );
 }
 
-/* Funci�n principal que crea el fichero DCB
- * (ver dcb.h con la estructura del mismo) */
+/* Make DCB file (see dcb.h) */
 
 DCB_HEADER dcb;
 
@@ -241,7 +240,7 @@ int dcb_save( const char * filename, int options, const char * stubname )
         file_close( stub );
     }
 
-    /* Refresco lista de sysprocs */
+    /* Refresh sysprocs list */
 
     for ( s = sysprocs; s->name; s++ )
     {
@@ -249,12 +248,12 @@ int dcb_save( const char * filename, int options, const char * stubname )
         NSysProcs++;
     }
 
-    /* Asumimos que dcb.varspace ha sido rellenado anteriormente */
+    /* We can asume that dcb.varspace is already filled */
 
-    /* Splinter, correccion para guardar solo info necesaria */
+    /* Splinter, fix to save neccessary info only */
     if ( !( options & DCB_DEBUG ) ) n_files = 0;
 
-    /* 1. Rellenar los datos de la cabecera */
+    /* 1. Fill header */
 
     memcpy( dcb.data.Header, DCB_MAGIC, sizeof( DCB_MAGIC ) );
     dcb.data.Version        = DCB_VERSION;                                      ARRANGE_DWORD( &dcb.data.Version );
@@ -277,7 +276,7 @@ int dcb_save( const char * filename, int options, const char * stubname )
 
     dcb.data.NSysProcsCodes = NSysProcs;                                        ARRANGE_DWORD( &dcb.data.NSysProcsCodes );
 
-    /* 2. Crear tabla de procesos */
+    /* 2. Build process table */
 
     dcb.proc = ( DCB_PROC * ) calloc( procdef_count, sizeof( DCB_PROC ) );
 
@@ -342,7 +341,7 @@ int dcb_save( const char * filename, int options, const char * stubname )
         }
     }
 
-    /* 3. Crear tablas globales */
+    /* 3. Build global tables */
 
     dcb.id = ( DCB_ID * ) calloc( identifier_count, sizeof( DCB_ID ) );
 
@@ -380,7 +379,7 @@ int dcb_save( const char * filename, int options, const char * stubname )
 
     dcb.file = dcb_files;
 
-    /* 4. C�lculo de offsets */
+    /* 4. Calculate offsets */
 
     offset = sizeof( DCB_HEADER_DATA );
 
@@ -397,7 +396,8 @@ int dcb_save( const char * filename, int options, const char * stubname )
     dcb.data.OLocal         = offset; offset += localdata->current;                         ARRANGE_DWORD( &dcb.data.OLocal );
 
     dcb.data.OSourceFiles   = offset;                                                       ARRANGE_DWORD( &dcb.data.OSourceFiles );
-    /* Cada uno de los sources */
+
+    /* sources */
     for ( n = 0; n < n_files; n++ )
         offset += sizeof( uint32_t ) + strlen( files[n] ) + 1;
 
@@ -418,12 +418,12 @@ int dcb_save( const char * filename, int options, const char * stubname )
     {
         dcb.proc[n].data.OSentences  = offset; offset += sizeof( DCB_SENTENCE ) * procs[n]->sentence_count;     ARRANGE_DWORD( &dcb.proc[n].data.OSentences );
 
-        /* Privadas */
+        /* Private */
         dcb.proc[n].data.OPriVars    = offset; offset += sizeof( DCB_VAR ) * procs[n]->privars->count;          ARRANGE_DWORD( &dcb.proc[n].data.OPriVars );
         dcb.proc[n].data.OPriStrings = offset; offset += 4 * procs[n]->privars->stringvar_count;                ARRANGE_DWORD( &dcb.proc[n].data.OPriStrings );
         dcb.proc[n].data.OPrivate    = offset; offset += procs[n]->pridata->current;                            ARRANGE_DWORD( &dcb.proc[n].data.OPrivate );
 
-        /* Publicas */
+        /* Publics */
         dcb.proc[n].data.OPubVars    = offset; offset += sizeof( DCB_VAR ) * procs[n]->pubvars->count;          ARRANGE_DWORD( &dcb.proc[n].data.OPubVars );
         dcb.proc[n].data.OPubStrings = offset; offset += 4 * procs[n]->pubvars->stringvar_count;                ARRANGE_DWORD( &dcb.proc[n].data.OPubStrings );
         dcb.proc[n].data.OPublic     = offset; offset += procs[n]->pubdata->current;                            ARRANGE_DWORD( &dcb.proc[n].data.OPublic );

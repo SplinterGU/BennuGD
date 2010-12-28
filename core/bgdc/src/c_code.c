@@ -477,7 +477,7 @@ int compile_sizeof( VARSPACE * here, int * content_size, char * content_type, in
 
     if ( base )
     {
-        token_next() ;
+          token_next() ;
         if ( token.type == IDENTIFIER && token.code != identifier_point )
         {
             token_back() ;
@@ -1718,6 +1718,11 @@ expresion_result compile_factor()
         {
             if ( token.code == identifier_point ) /* "." */ /* Operador "." */
             {
+                if ( typedef_is_array( part.type ) )
+                {
+                    while ( typedef_is_array ( part.type = typedef_reduce( part.type ) ) ) ;
+                }
+
                 if ( typedef_is_pointer( part.type ) )
                 {
                     part.type = typedef_reduce( part.type ) ;
