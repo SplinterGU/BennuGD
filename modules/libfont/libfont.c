@@ -441,9 +441,9 @@ int gr_font_newfrombitmap( GRAPH * map, int charset, int width, int height, int 
             if ( options != NFB_FIXEDWIDTH )
             {
                 if ( map->format->depth == 1 )
-                    f->glyph[i].xadvance = get_bitmap_char_width( ( unsigned char * ) charptr, width, height, map->pitch, map->format->depth );
+                    f->glyph[i].xadvance = get_bitmap_char_width( ( unsigned char * ) charptr, width, height, map->pitch, map->format->depth ) + 1;
                 else
-                    f->glyph[i].xadvance = get_bitmap_char_width( bitmap->data, width, height, bitmap->pitch, bitmap->format->depth );
+                    f->glyph[i].xadvance = get_bitmap_char_width( bitmap->data, width, height, bitmap->pitch, bitmap->format->depth ) + 1;
             }
             else
                 f->glyph[i].xadvance = width + 1;
