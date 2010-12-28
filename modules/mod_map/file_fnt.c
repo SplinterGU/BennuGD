@@ -166,7 +166,11 @@ static int gr_font_loadfrom( file * fp )
 
     /* Create the font */
 
-    id = gr_font_new() ;
+    if ( header[2] == 'x' )
+        id = gr_font_new( types, header[7] ) ;
+    else
+        id = gr_font_new( CHARSET_CP850, 8 ) ;
+
     if ( id == -1 )
     {
         pal_destroy( pal );
@@ -179,17 +183,6 @@ static int gr_font_loadfrom( file * fp )
         gr_font_destroy( id );
         pal_destroy( pal );
         return -1 ;
-    }
-
-    if ( header[2] == 'x' )
-    {
-        f->bpp = header[7];
-        f->charset = types;
-    }
-    else
-    {
-        f->bpp = 8;
-        f->charset = CHARSET_CP850;
     }
 
     /* Load the character bitmaps */
@@ -219,13 +212,12 @@ static int gr_font_loadfrom( file * fp )
         gr->format->palette = pal;
         pal_use( pal );
 
-        for ( y = 0, ptr = gr->data ; y < gr->height ; y++, ptr += gr->pitch )
+        for ( y = 0, ptr = gr->data; y < gr->height; y++, ptr += gr->pitch )
         {
             if ( !file_read( fp, ptr, gr->widthb ) ) break ;
 
             if ( gr->format->depth == 16 )
             {
-/*                gr_convert16_565ToScreen(( uint16_t * )ptr, gr->width ); */
                 ARRANGE_WORDS( ptr, ( int )gr->width );
             }
             else if ( gr->format->depth == 32 )
@@ -236,7 +228,7 @@ static int gr_font_loadfrom( file * fp )
 
         f->glyph[i].yoffset = chardata[i].yoffset ;
     }
-    if ( f->glyph[32].xadvance == 0 ) f->glyph[32].xadvance = 4 ;
+    if ( f->glyph[32].xadvance == 0 ) f->glyph[32].xadvance = f->glyph['j'].xadvance ;
 
     pal_destroy( pal ); // Elimino la instancia inicial
 
@@ -472,11 +464,9 @@ int gr_load_bdf( const char * filename )
     fp = file_open( filename, "r" );
     if ( !fp ) return -1;
 
-    id = gr_font_new();
+    id = gr_font_new( CHARSET_ISO8859, 1 );
     if ( id < 0 ) return -1;
     font = fonts[id];
-    font->bpp = 1;
-    font->charset = CHARSET_ISO8859;
     font->maxwidth = 0;
     font->maxheight = 0;
 
@@ -580,6 +570,7 @@ int gr_load_bdf( const char * filename )
 
     if ( error )
     {
+        gr_font_destroy( id );
         return -1;
     }
 
@@ -589,8 +580,8 @@ int gr_load_bdf( const char * filename )
 
     if ( font->glyph[32].xadvance == 0 ) font->glyph[32].xadvance = font->glyph['j'].xadvance;
 
-    fonts[font_count] = font ;
-    return font_count++ ;
+//    fonts[font_count] = font ;
+    return id /* font_count++ */ ;
 }
 
 /* --------------------------------------------------------------------------- */

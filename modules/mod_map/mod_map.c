@@ -53,19 +53,25 @@
 
 DLCONSTANT __bgdexport( mod_map, constants_def )[] =
 {
-    { "G_WIDE",         TYPE_INT,   G_WIDE      },    /* Obsolete */
-    { "G_WIDTH",        TYPE_INT,   G_WIDTH     },
-    { "G_HEIGHT",       TYPE_INT,   G_HEIGHT    },
-    { "G_CENTER_X",     TYPE_INT,   G_CENTER_X  },
-    { "G_X_CENTER",     TYPE_INT,   G_X_CENTER  },
-    { "G_CENTER_Y",     TYPE_INT,   G_CENTER_Y  },
-    { "G_Y_CENTER",     TYPE_INT,   G_Y_CENTER  },
-    { "G_PITCH",        TYPE_INT,   G_PITCH     },
-    { "G_DEPTH",        TYPE_INT,   G_DEPTH     },
+    { "G_WIDE"          , TYPE_INT, G_WIDE              },    /* Obsolete */
+    { "G_WIDTH"         , TYPE_INT, G_WIDTH             },
+    { "G_HEIGHT"        , TYPE_INT, G_HEIGHT            },
+    { "G_CENTER_X"      , TYPE_INT, G_CENTER_X          },
+    { "G_X_CENTER"      , TYPE_INT, G_X_CENTER          },
+    { "G_CENTER_Y"      , TYPE_INT, G_CENTER_Y          },
+    { "G_Y_CENTER"      , TYPE_INT, G_Y_CENTER          },
+    { "G_PITCH"         , TYPE_INT, G_PITCH             },
+    { "G_DEPTH"         , TYPE_INT, G_DEPTH             },
 
-    { "B_CLEAR",        TYPE_INT,   B_CLEAR     },
+    { "B_CLEAR"         , TYPE_INT, B_CLEAR             },
 
-    { NULL              , 0       , 0           }
+    { "CHARSET_ISO8859" , TYPE_INT, CHARSET_ISO8859     },
+    { "CHARSET_CP850"   , TYPE_INT, CHARSET_CP850       },
+
+    { "NFB_VARIABLEWIDTH", TYPE_INT, 0                  },
+    { "NFB_FIXEDWIDTH"  , TYPE_INT, NFB_FIXEDWIDTH      },
+
+    { NULL              , 0       , 0                   }
 } ;
 
 /* --------------------------------------------------------------------------- */
@@ -887,10 +893,31 @@ static int modmap_unload_fnt( INSTANCE * my, int * params )
 
 static int modmap_fnt_new( INSTANCE * my, int * params )
 {
-    int result = gr_font_new();
-    FONT * font = gr_font_get( result );
-    if ( font ) font->bpp = params[0];
-    return result;
+    return gr_font_new( CHARSET_CP850, params[0] );
+}
+
+/* --------------------------------------------------------------------------- */
+
+/** FNT_NEW (CHARSET, DEPTH)
+ *  Create a new font in memory (returns the font ID)
+ */
+
+static int modmap_fnt_new_charset( INSTANCE * my, int * params )
+{
+    return gr_font_new( params[0], params[1] );
+}
+
+/* --------------------------------------------------------------------------- */
+
+/** FNT_NEW (FILE, GRAPH, CHARSET, WITDH, HEIGHT, FIRST, LAST, FLAGS)
+ *  Create a new font in memory (returns the font ID)
+ */
+
+static int modmap_fnt_new_from_bitmap( INSTANCE * my, int * params )
+{
+    GRAPH * bmp = bitmap_get( params[0], params[1] ) ;
+    if ( !bmp ) return -1;
+    return gr_font_newfrombitmap( bmp, params[2], params[3], params[4], params[5], params[6], params[7] );
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1075,6 +1102,8 @@ DLSYSFUNCS  __bgdexport( mod_map, functions_exports )[] =
     { "FNT_UNLOAD"          , "I"           , TYPE_INT      , modmap_unload_fnt         },
     { "FNT_SAVE"            , "IS"          , TYPE_INT      , modmap_save_fnt           },
     { "FNT_NEW"             , "I"           , TYPE_INT      , modmap_fnt_new            },
+    { "FNT_NEW"             , "II"          , TYPE_INT      , modmap_fnt_new_charset    },
+    { "FNT_NEW"             , "IIIIIIII"    , TYPE_INT      , modmap_fnt_new_from_bitmap},
 
     { "BDF_LOAD"            , "S"           , TYPE_INT      , modmap_load_bdf           },
 
@@ -1128,6 +1157,8 @@ DLSYSFUNCS  __bgdexport( mod_map, functions_exports )[] =
 
     /* Fonts */
     { "NEW_FNT"             , "I"           , TYPE_INT      , modmap_fnt_new            },
+    { "NEW_FNT"             , "II"          , TYPE_INT      , modmap_fnt_new_charset    },
+    { "NEW_FNT"             , "IIIIIIII"    , TYPE_INT      , modmap_fnt_new_from_bitmap},
     { "LOAD_FNT"            , "S"           , TYPE_INT      , modmap_load_fnt           },
     { "UNLOAD_FNT"          , "I"           , TYPE_INT      , modmap_unload_fnt         },
     { "SAVE_FNT"            , "IS"          , TYPE_INT      , modmap_save_fnt           },
@@ -1157,3 +1188,33 @@ char * __bgdexport( mod_map, modules_dependency )[] =
 };
 
 /* --------------------------------------------------------------------------- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
