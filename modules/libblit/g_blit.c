@@ -1753,15 +1753,7 @@ static void draw_hspan_32to32_nocolorkey( uint32_t *scr, uint32_t * tex, int pix
  *
  */
 
-static void gr_calculate_corners(
-    GRAPH * dest,
-    int screen_x,
-    int screen_y,
-    int flags,
-    int angle,
-    int scalex,
-    int scaley,
-    _POINTF * corners )
+static void gr_calculate_corners( GRAPH * dest, int screen_x, int screen_y, int flags, int angle, int scalex, int scaley, _POINTF * corners )
 {
     float center_x, center_y;
     float top_y, bot_y;
@@ -1828,8 +1820,8 @@ static void gr_calculate_corners(
 
     /* Adjust size to prevent integer conversion errors */
 
-    if ( scalex < 0 ) scalex = 0;
-    if ( scaley < 0 ) scaley = 0;
+    if ( scalex <= 0 || ( scalex * dest->width / 100 ) <= 0 ) scalex = 0;
+    if ( scaley <= 0 || ( scaley * dest->height / 100 ) <= 0 ) scaley = 0;
     /*
         if ( scalex > 100 && scalex < 250 ) scalex = (( scalex - 4 ) & ~3 ) + 6;
         if ( scaley > 100 && scaley < 250 ) scaley = (( scaley - 4 ) & ~3 ) + 6;
@@ -1864,6 +1856,7 @@ static void gr_calculate_corners(
 
     corners[3].x = ( screen_x + ( cos_angle * rig_x - sin_angle * bot_y ) ) * 1000 ;
     corners[3].y = ( screen_y + ( sin_angle * rig_x + cos_angle * bot_y ) ) * 1000 ;
+
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1885,17 +1878,8 @@ static void gr_calculate_corners(
  *      None
  *
  */
-#include <math.h>
-void gr_get_bbox(
-    REGION * dest,
-    REGION * clip,
-    int x,
-    int y,
-    int flags,
-    int angle,
-    int scalex,
-    int scaley,
-    GRAPH * gr )
+
+void gr_get_bbox( REGION * dest, REGION * clip, int x, int y, int flags, int angle, int scalex, int scaley, GRAPH * gr )
 {
     _POINTF corners[4];
     _POINT  min, max;
@@ -1943,16 +1927,7 @@ void gr_get_bbox(
  *
  */
 
-void gr_rotated_blit(
-    GRAPH * dest,
-    REGION * clip,
-    int scrx,
-    int scry,
-    int flags,
-    int angle,
-    int scalex,
-    int scaley,
-    GRAPH * gr )
+void gr_rotated_blit( GRAPH * dest, REGION * clip, int scrx, int scry, int flags, int angle, int scalex, int scaley, GRAPH * gr )
 {
     _POINTF corners[4];
     _POINT  min, max;
@@ -2540,13 +2515,7 @@ void gr_rotated_blit(
  *
  */
 
-void gr_blit(
-    GRAPH * dest,
-    REGION * clip,
-    int scrx,
-    int scry,
-    int flags,
-    GRAPH * gr )
+void gr_blit( GRAPH * dest, REGION * clip, int scrx, int scry, int flags, GRAPH * gr )
 {
     _POINT  min, max;
     _POINT  center;
