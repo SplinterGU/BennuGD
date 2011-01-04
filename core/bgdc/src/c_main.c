@@ -603,8 +603,17 @@ void import_files( char * filename )
     }
 
     file_close( fp );
+}
 
-    return;
+/* ---------------------------------------------------------------------- */
+
+void import_mod( char * libname )
+{
+    import_line = 0;
+    if ( import_exists( libname ) != -1 ) return;
+    import_filename = libname ;
+    import_module( libname );
+    import_filename = NULL ;
 }
 
 /* ---------------------------------------------------------------------- */
@@ -1200,28 +1209,6 @@ void compile_process()
     if ( !is_declare )
     {
         codeblock_add( &proc->code, MN_END, 0 ) ;
-
-        if ( debug )
-        {
-            printf( "\n\n---------- Process %d (%s)\n\n", proc->typeid, identifier_name( code ) ) ;
-
-            if ( proc->privars->count )
-            {
-                printf( "---- Private variables\n" ) ;
-                varspace_dump( proc->privars, 0 ) ;
-                printf( "\n" ) ;
-            }
-
-            if ( proc->pubvars->count )
-            {
-                printf( "---- Public variables\n" ) ;
-                varspace_dump( proc->pubvars, 0 ) ;
-                printf( "\n" ) ;
-            }
-
-            /* segment_dump  (proc->pridata) ; */
-            codeblock_dump( &proc->code ) ;
-        }
     }
 
     proc->declared = 1 ;
@@ -1252,8 +1239,6 @@ void compile_program()
     {
         token_back() ;
     }
-
-    mainproc = procdef_new( procdef_getid(), identifier_search_or_add( "MAIN" ) ) ;
 
     for ( ;; )
     {
@@ -1336,16 +1321,6 @@ void compile_program()
         }
     }
 
-    if ( debug )
-    {
-        printf( "\n----- Main procedure\n\n" ) ;
-        varspace_dump( mainproc->privars, 0 ) ;
-        /* segment_dump  (mainproc->pridata) ; */
-        printf( "\n" );
-        codeblock_dump( &mainproc->code ) ;
-        printf( "\n" ) ;
-    }
-
     if ( global.count && debug )
     {
         printf( "\n---- Global variables\n\n" ) ;
@@ -1365,8 +1340,9 @@ void compile_program()
     }
 
     program_postprocess() ;
+    if ( debug ) program_dumpprocesses() ;
 
-    if ( !mainproc->defined )
+    if ( !libmode && !mainproc->defined )
     {
         compile_error( MSG_NO_MAIN ) ;
     }

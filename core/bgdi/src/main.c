@@ -232,7 +232,7 @@ int main( int argc, char **argv )
 
     if ( mainproc )
     {
-        mainproc_running = instance_new( mainproc, 0 ) ;
+        mainproc_running = instance_new( mainproc, NULL ) ;
         ret = instance_go_all() ;
     }
 

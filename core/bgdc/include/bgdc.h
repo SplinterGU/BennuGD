@@ -80,10 +80,13 @@ extern char * main_path ;
 extern int autoinclude ;    /* Incluye ficheros en el DCB automáticamente */
 extern int imports[] ;      /* Códigos de cadena con nombres de imports */
 extern int nimports ;       /* Número de imports */
+extern int libmode ;
 
 extern char langinfo[64] ;  /* language setting */
 
 extern int no_include_this_file ;
+
+extern int debug;
 
 /* Funciones para guardar y cargar un fichero DCB */
 
@@ -114,6 +117,10 @@ extern SYSPROC *   sysproc_get    (int id) ;
 extern SYSPROC * * sysproc_getall (int id) ;
 extern char    *   sysproc_name   (int code) ;
 extern void        sysproc_init() ;
+
+extern void compile_warning( const char *fmt, ... );
+extern void compile_error( const char *fmt, ... );
+
 
 /* Constantes */
 

@@ -31,7 +31,7 @@ static int max_id = 0 ;
 static int free_id[1024] ;
 static int free_count = 0 ;
 
-static segment * * segments = 0 ;
+static segment ** segments = 0 ;
 static int segments_reserved = 0 ;
 
 segment * globaldata, * localdata ;

@@ -53,13 +53,13 @@
 void codeblock_postprocess (CODEBLOCK * code)
 {
 	int * ptr = code->data ;
-	PROCDEF * proc ;
+	PROCDEF * proc, * my = procdef_search_by_codeblock( code ) ;
 
 	while (ptr < code->data + code->current)
 	{
-		if (*ptr == MN_CALL || *ptr == MN_PROC || *ptr == MN_TYPE)
+		if ( !libmode && ( *ptr == MN_CALL || *ptr == MN_PROC || *ptr == MN_TYPE ))
 		{
-			proc = procdef_search (ptr[1]) ;
+			proc = procdef_search(ptr[1]) ;
 			if (!proc || !proc->defined)
 			{
 				token.type = IDENTIFIER ;
@@ -69,58 +69,63 @@ void codeblock_postprocess (CODEBLOCK * code)
 				current_file = identifier_file(token.code) ;
 				compile_error (MSG_UNDEFINED_PROC) ;
 			}
-			ptr[1] = proc->typeid ;
+	        ptr[1] = proc->typeid ;
 		}
-		if (*ptr == MN_JUMP      || *ptr == MN_NCALL   ||
-		    *ptr == MN_JFALSE    || *ptr == MN_JTFALSE ||
-		    *ptr == MN_JTRUE     || *ptr == MN_JTTRUE  ||
-		    *ptr == MN_JNOCASE   || *ptr == MN_CLONE   ||
-		    *ptr == MN_EXITHNDLR || *ptr == MN_ERRHNDLR
-		    )
+		if ( !my->imported )
 		{
-			ptr++ ;
-			if (*ptr == -1 && (*ptr == MN_EXITHNDLR || *ptr == MN_ERRHNDLR))
-			{
-			    *ptr = 0;
-			    ptr++;
-			    continue;
-			}
-            if (code->labels[*ptr] == -1)
-			{
-				token.type = LABEL ;
-				token.code = code->labelsextra[*ptr].name ;
-				/* Patch so linecount gets right */
-				line_count = code->labelsextra[*ptr].line ;
-				current_file = code->labelsextra[*ptr].file ;
-				compile_error ("Undefined label") ;
-			}
-			*ptr = code->labels[*ptr] ;
-			ptr++ ;
-			continue ;
-		}
-		if (*ptr == MN_REFALSE)
-		{
-			*ptr++ = MN_JFALSE ;
-			*ptr = code->loops[*ptr*2] ;
-			ptr++ ;
-			continue ;
-		}
-		if (*ptr == MN_REPEAT || *ptr == MN_RETRUE)
-		{
-			*ptr = (*ptr == MN_REPEAT ? MN_JUMP : MN_JTRUE) ;
-			ptr++ ;
-			*ptr = code->loops[*ptr*2] ;
-			ptr++ ;
-			continue ;
-		}
-		if (*ptr == MN_BREAK || *ptr == MN_BRFALSE)
-		{
-			*ptr = (*ptr == MN_BREAK ? MN_JUMP : MN_JFALSE) ;
-			ptr++ ;
-			*ptr = code->loops[*ptr*2 + 1] ;
-			ptr++ ;
-			continue ;
-		}
+    		if (*ptr == MN_JUMP      || *ptr == MN_NCALL   ||
+    		    *ptr == MN_JFALSE    || *ptr == MN_JTFALSE ||
+    		    *ptr == MN_JTRUE     || *ptr == MN_JTTRUE  ||
+    		    *ptr == MN_JNOCASE   || *ptr == MN_CLONE   ||
+    		    *ptr == MN_EXITHNDLR || *ptr == MN_ERRHNDLR
+    		    )
+    		{
+    			ptr++ ;
+
+    			if (*ptr == -1 || *ptr == MN_EXITHNDLR || *ptr == MN_ERRHNDLR)
+    			{
+    			    *ptr = 0;
+    			    ptr++;
+    			    continue;
+    			}
+
+                if (code->labels[*ptr] == -1)
+    			{
+    				token.type = LABEL ;
+    				token.code = code->labelsextra[*ptr].name ;
+    				/* Patch so linecount gets right */
+    				line_count = code->labelsextra[*ptr].line ;
+    				current_file = code->labelsextra[*ptr].file ;
+    				compile_error ("Undefined label") ;
+    			}
+    			*ptr = code->labels[*ptr] ;
+    			ptr++ ;
+    			continue ;
+    		}
+    		if (*ptr == MN_REFALSE)
+    		{
+    			*ptr++ = MN_JFALSE ;
+    			*ptr = code->loops[*ptr*2] ;
+    			ptr++ ;
+    			continue ;
+    		}
+    		if (*ptr == MN_REPEAT || *ptr == MN_RETRUE)
+    		{
+    			*ptr = (*ptr == MN_REPEAT ? MN_JUMP : MN_JTRUE) ;
+    			ptr++ ;
+    			*ptr = code->loops[*ptr*2] ;
+    			ptr++ ;
+    			continue ;
+    		}
+    		if (*ptr == MN_BREAK || *ptr == MN_BRFALSE)
+    		{
+    			*ptr = (*ptr == MN_BREAK ? MN_JUMP : MN_JFALSE) ;
+    			ptr++ ;
+    			*ptr = code->loops[*ptr*2 + 1] ;
+    			ptr++ ;
+    			continue ;
+    		}
+    	}
 		ptr+=MN_PARAMS(*ptr)+1 ;
 	}
 }
@@ -181,7 +186,7 @@ void codeblock_init(CODEBLOCK * c)
  *      None
  */
 
-static void codeblock_alloc (CODEBLOCK * c, int count)
+void codeblock_alloc (CODEBLOCK * c, int count)
 {
 	c->reserved += count ;
 	c->data = (int *) realloc (c->data, c->reserved * sizeof(int)) ;

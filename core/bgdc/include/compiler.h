@@ -56,6 +56,8 @@ extern void compile_program ();
 extern void compile_sentence (PROCDEF * p) ;
 extern void compile_block(PROCDEF *) ;
 
+extern void import_mod( char * libname );
+
 /* Compilado de secciones especiales (definición de datos, etc) */
 extern int  compile_array_data (VARSPACE * n, segment * data, int size, int subsize, BASETYPE *t) ;
 extern int  compile_varspace (VARSPACE * n, segment * data, int additive, int copies, int padding, VARSPACE ** c, int alignment, int duplicateignore) ;

@@ -80,5 +80,8 @@ extern void program_postprocess () ;
 extern CODEBLOCK_POS codeblock_pos(CODEBLOCK * c);
 extern void          codeblock_setpos(CODEBLOCK * c, CODEBLOCK_POS p);
 
+extern void codeblock_alloc (CODEBLOCK * c, int count);
+
+
 #endif
 

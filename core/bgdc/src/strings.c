@@ -206,6 +206,7 @@ int string_compile( const char ** source )
     int i;
 
     /* Reuse strings */
+
     for ( i = 0; i < string_count; i++ )
     {
         if ( !strcmp( string_mem + string_used_back, string_mem + string_offset[ i ] ) )

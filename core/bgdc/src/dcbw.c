@@ -38,6 +38,8 @@
 #define SYSPROCS_ONLY_DECLARE
 #include "sysprocs.h"
 
+#define FREEM(m)    if(m) { free(m); m = NULL; }
+
 /* dirty declare external vars */
 
 extern char * string_mem;
@@ -46,6 +48,8 @@ extern int string_count, string_used;
 extern int procdef_count;
 extern int identifier_count;
 extern PROCDEF ** procs;
+
+extern int debug;
 
 /* List of files to include in DCB file managment */
 
@@ -255,7 +259,11 @@ int dcb_save( const char * filename, int options, const char * stubname )
 
     /* 1. Fill header */
 
-    memcpy( dcb.data.Header, DCB_MAGIC, sizeof( DCB_MAGIC ) );
+    if ( libmode )
+        memcpy( dcb.data.Header, DCL_MAGIC, sizeof( DCL_MAGIC ) - 1 );
+    else
+        memcpy( dcb.data.Header, DCB_MAGIC, sizeof( DCB_MAGIC ) - 1 );
+
     dcb.data.Version        = DCB_VERSION;                                      ARRANGE_DWORD( &dcb.data.Version );
 
     dcb.data.NProcs         = procdef_count;                                    ARRANGE_DWORD( &dcb.data.NProcs );
@@ -605,3 +613,638 @@ int dcb_save( const char * filename, int options, const char * stubname )
 
     return 1;
 }
+
+/* ---------------------------------------------------------------------------
+ * load_dcb as library
+ * --------------------------------------------------------------------------- */
+
+int * newid = NULL;
+int * stringid = NULL;
+int * fileid = NULL;
+
+/* --------------------------------------------------------------------------- */
+
+void * glodata  = NULL ;
+void * locdata  = NULL ;
+
+DCB_SYSPROC_CODE2 * sysproc_code_ref = NULL ;
+
+/* ---------------------------------------------------------------------- */
+
+typedef struct
+{
+    int offstart;
+    int offend;
+    int offnew;
+} range;
+
+range * glovaroffs = NULL;
+range * locvaroffs = NULL;
+
+VARSPACE * varspaces = NULL;
+
+/* ---------------------------------------------------------------------- */
+
+void dcb_varspaces_load( file * fp, VARSPACE * vs, VARSPACE * vs_array, int count )
+{
+    int n, m;
+    DCB_VAR vars;
+    VARIABLE var;
+    TYPEDEF type;
+
+    for ( n = 0; n < count; n++ )
+    {
+        file_read( fp, &vars, sizeof( DCB_VAR ) ) ;
+        ARRANGE_DWORD( &vars.ID );
+        ARRANGE_DWORD( &vars.Offset );
+        for ( m = 0; m < MAX_TYPECHUNKS; m++ ) ARRANGE_DWORD( &vars.Type.Count[m] );
+        ARRANGE_DWORD( &vars.Type.Members );
+
+        type.depth = 0;
+        for ( m = 0; m < MAX_TYPECHUNKS; m++ )
+        {
+            type.chunk[m].type = vars.Type.BaseType[m];
+            type.chunk[m].count = vars.Type.Count[m];
+            if ( type.chunk[m].type != TYPE_UNDEFINED ) type.depth++;
+        }
+
+        if ( vars.Type.Members != NO_MEMBERS )
+            type.varspace = &vs_array[vars.Type.Members];
+        else
+            type.varspace = NULL;
+
+        var.code = newid[vars.ID];
+        var.type = type;
+        var.offset = vars.Offset;
+        varspace_add( vs, var );
+    }
+}
+
+/* ---------------------------------------------------------------------- */
+
+void dcb_vars_load( file * fp, VARSPACE * vs, segment * data, char * data_source, int count, range ** offs, int totalsize )
+{
+    int n, m;
+    DCB_VAR * vars = calloc( count, sizeof( DCB_VAR ) );
+    VARIABLE var, * v;
+    TYPEDEF type;
+
+    if ( offs ) *offs = calloc( count, sizeof( range ) );
+
+    for ( n = 0; n < count; n++ )
+    {
+        file_read( fp, &vars[n], sizeof( DCB_VAR ) ) ;
+        ARRANGE_DWORD( &vars[n].ID );
+        ARRANGE_DWORD( &vars[n].Offset );
+        for ( m = 0; m < MAX_TYPECHUNKS; m++ ) ARRANGE_DWORD( &vars[n].Type.Count[m] );
+        ARRANGE_DWORD( &vars[n].Type.Members );
+    }
+
+    for ( n = 0; n < count; n++ )
+    {
+        type.depth = 0;
+
+        for ( m = 0; m < MAX_TYPECHUNKS; m++ )
+        {
+            type.chunk[m].type = vars[n].Type.BaseType[m];
+            type.chunk[m].count = vars[n].Type.Count[m];
+            if ( type.chunk[m].type != TYPE_UNDEFINED ) type.depth++;
+        }
+
+        if ( vars[n].Type.Members != NO_MEMBERS )
+            type.varspace = &varspaces[vars[n].Type.Members];
+        else
+            type.varspace = NULL;
+
+        var.code = newid[vars[n].ID];
+        var.type = type;
+        var.offset = data->current;
+
+        if ( ( v = varspace_search( vs, newid[vars[n].ID] ) ) )
+        {
+            int sz;
+
+            if ( !typedef_is_equal( v->type, type ) )
+            {
+                printf( "ERROR: var %s already exits in varspace but is different\n", identifier_name( newid[vars[n].ID] ) );
+                exit ( -1 );
+            }
+
+            sz = typedef_size( v->type );
+            if ( sz & 0x0003 ) sz = ( sz & ~0x0003 ) + 4;
+
+            if ( offs )
+            {
+                (*offs)[n].offstart = vars[n].Offset;
+                (*offs)[n].offend = vars[n].Offset + sz - 1;
+                (*offs)[n].offnew = v->offset;
+            }
+        }
+        else
+        {
+            int sz;
+            if ( n < count - 1 )
+                sz = vars[n+1].Offset - vars[n].Offset;
+            else
+                sz = totalsize - vars[n].Offset;
+
+            segment_alloc(data, sz);
+            var.offset = data->current;
+            varspace_add( vs, var );
+
+            if ( offs )
+            {
+                (*offs)[n].offstart = vars[n].Offset;
+                (*offs)[n].offend = vars[n].Offset + sz - 1;
+                (*offs)[n].offnew = var.offset;
+            }
+
+            memmove( &((char *)data->bytes)[var.offset], &data_source[vars[n].Offset], sz );
+
+            data->current += sz;
+        }
+    }
+
+    free( vars );
+}
+
+/* ---------------------------------------------------------------------- */
+
+int get_new_off( int off, range * offs, int noffs )
+{
+    int n;
+
+    for ( n = 0; n < noffs; n++ )
+        if ( off >= offs[n].offstart && off <= offs[n].offend )
+            return off - offs[n].offstart + offs[n].offnew;
+
+    return 0;
+}
+
+/* ---------------------------------------------------------------------- */
+
+void codeblock_adjust(CODEBLOCK * code)
+{
+	int * ptr = code->data ;
+	int n;
+
+	while (ptr < code->data + code->current)
+	{
+		if (*ptr == MN_CALL || *ptr == MN_PROC || *ptr == MN_TYPE)
+		{
+		    ptr[1] = newid[ptr[1]];
+		}
+
+        if (MN_TYPEOF(*ptr) == MN_STRING && (*ptr & MN_MASK) == MN_PUSH)
+        {
+            ptr[1] = stringid[ptr[1]];
+        }
+
+        if ( (*ptr & MN_MASK) == MN_GLOBAL)
+        {
+            ptr[1] = get_new_off( ptr[1], glovaroffs, dcb.data.NGloVars );
+        }
+
+        if ( (*ptr & MN_MASK) == MN_LOCAL)
+        {
+            ptr[1] = get_new_off( ptr[1], locvaroffs, dcb.data.NLocVars );
+        }
+
+        if ( (*ptr & MN_MASK) == MN_SENTENCE )
+        {
+            if ( dcb.data.Version == 0x0700 )
+                ptr[1] = (ptr[1] & 0xfffff) | ( fileid[ptr[1]>>24] << 20 );
+            else
+                ptr[1] = (ptr[1] & 0xfffff) | ( fileid[ptr[1]>>20] << 20 );
+        }
+
+        if ( (*ptr & MN_MASK) == MN_SYSCALL || (*ptr & MN_MASK)  == MN_SYSPROC )
+        {
+            DCB_SYSPROC_CODE2 * s = sysproc_code_ref ;
+            int ex = 0;
+            for ( n = 0; n < dcb.data.NSysProcsCodes && !ex; n++, s++ )
+            {
+                if ( s->Code == ptr[1] )
+                {
+                    SYSPROC * p = sysproc_get( newid[ s->Id ]);
+                    for ( ; p->name && !ex; p++ )
+                    {
+                        if ( p->type == s->Type && p->params == s->Params &&
+                             !strcmp( (const char *)s->ParamTypes, p->paramtypes ) )
+                        {
+                            ptr[1] = p->code;
+                            ex = 1;
+                        }
+                    }
+                }
+            }
+        }
+		ptr += MN_PARAMS(*ptr)+1 ;
+	}
+}
+
+/* ---------------------------------------------------------------------- */
+
+int dcb_load_lib( const char * filename )
+{
+    unsigned int n ;
+    file * fp ;
+    PROCDEF * proc;
+
+    /* check for existence of the DCB FILE */
+    if ( !file_exists( filename ) ) return 0 ;
+
+    fp = file_open( filename, "rb0" ) ;
+    if ( !fp )
+    {
+        fprintf( stderr, "ERROR: Runtime error - Could not open file (%s)\n", filename ) ;
+        exit( 1 );
+    }
+
+    /* Read Header */
+
+    file_seek( fp, 0, SEEK_SET );
+    file_read( fp, &dcb, sizeof( DCB_HEADER_DATA ) ) ;
+
+    ARRANGE_DWORD( &dcb.data.Version );
+    ARRANGE_DWORD( &dcb.data.NProcs );
+    ARRANGE_DWORD( &dcb.data.NFiles );
+    ARRANGE_DWORD( &dcb.data.NID );
+    ARRANGE_DWORD( &dcb.data.NStrings );
+    ARRANGE_DWORD( &dcb.data.NLocVars );
+    ARRANGE_DWORD( &dcb.data.NLocStrings );
+    ARRANGE_DWORD( &dcb.data.NGloVars );
+
+    ARRANGE_DWORD( &dcb.data.SGlobal );
+    ARRANGE_DWORD( &dcb.data.SLocal );
+    ARRANGE_DWORD( &dcb.data.SText );
+
+    ARRANGE_DWORD( &dcb.data.NImports );
+
+    ARRANGE_DWORD( &dcb.data.NSourceFiles );
+
+    ARRANGE_DWORD( &dcb.data.NSysProcsCodes );
+
+    ARRANGE_DWORD( &dcb.data.OProcsTab );
+    ARRANGE_DWORD( &dcb.data.OID );
+    ARRANGE_DWORD( &dcb.data.OStrings );
+    ARRANGE_DWORD( &dcb.data.OText );
+    ARRANGE_DWORD( &dcb.data.OGlobal );
+    ARRANGE_DWORD( &dcb.data.OGloVars );
+    ARRANGE_DWORD( &dcb.data.OLocal );
+    ARRANGE_DWORD( &dcb.data.OLocVars );
+    ARRANGE_DWORD( &dcb.data.OLocStrings );
+    ARRANGE_DWORD( &dcb.data.OVarSpaces );
+    ARRANGE_DWORD( &dcb.data.OFilesTab );
+    ARRANGE_DWORD( &dcb.data.OImports );
+
+    ARRANGE_DWORD( &dcb.data.OSourceFiles );
+    ARRANGE_DWORD( &dcb.data.OSysProcsCodes );
+
+    if ( memcmp( dcb.data.Header, DCL_MAGIC, sizeof( DCL_MAGIC ) - 1 ) != 0 ) return 0 ;
+    if ( dcb.data.Version < 0x0710 ) return -1 ;
+
+    /* Load identifiers */
+
+    if ( dcb.data.NID )
+    {
+        dcb.id = ( DCB_ID * ) calloc( dcb.data.NID, sizeof( DCB_ID ) ) ;
+
+        FREEM( newid );
+        newid = calloc( dcb.data.NID, sizeof( int ) );
+
+        file_seek( fp, dcb.data.OID, SEEK_SET ) ;
+        for ( n = 0; n < dcb.data.NID; n++ )
+        {
+            file_read( fp, &dcb.id[n], sizeof( DCB_ID ) ) ;
+            ARRANGE_DWORD( &dcb.id[n].Code );
+            newid[dcb.id[n].Code] = identifier_search_or_add( ( const char * ) dcb.id[n].Name );
+        }
+        free( dcb.id );
+    }
+
+    /* Load strings */
+
+    if ( dcb.data.NStrings )
+    {
+        char * strdata = calloc( 1, dcb.data.SText );
+        uint32_t * stroffs = calloc( dcb.data.NStrings, sizeof( uint32_t ) );
+
+        FREEM( stringid );
+        stringid = calloc( dcb.data.NStrings, sizeof( int ) );
+
+        file_seek(( file * )fp, dcb.data.OStrings, SEEK_SET ) ;
+        file_readUint32A(( file * )fp, stroffs, dcb.data.NStrings ) ;
+
+        file_seek(( file * )fp, dcb.data.OText, SEEK_SET ) ;
+        file_read(( file * )fp, strdata, dcb.data.SText ) ;
+
+        for ( n = 0; n < dcb.data.NStrings; n++ ) stringid[n] = string_new( &strdata[stroffs[n]] );
+
+        free( strdata );
+        free( stroffs );
+    }
+
+    /* Load imports */
+
+    if ( dcb.data.NImports )
+    {
+        dcb.imports = ( uint32_t * )calloc( dcb.data.NImports, sizeof( uint32_t ) ) ;
+        file_seek( fp, dcb.data.OImports, SEEK_SET ) ;
+        file_readUint32A( fp, dcb.imports, dcb.data.NImports ) ;
+        for ( n = 0; n < dcb.data.NImports; n++ ) import_mod( ( char * ) string_get( stringid[dcb.imports[n]] ) );
+        FREEM( dcb.imports );
+    }
+
+    /* Recupero tabla de fixup de sysprocs */
+
+    sysproc_code_ref = calloc( dcb.data.NSysProcsCodes, sizeof( DCB_SYSPROC_CODE2 ) ) ;
+    file_seek( fp, dcb.data.OSysProcsCodes, SEEK_SET ) ;
+    for ( n = 0; n < dcb.data.NSysProcsCodes; n++ )
+    {
+        DCB_SYSPROC_CODE sdcb;
+        file_read( fp, &sdcb, sizeof( DCB_SYSPROC_CODE ) ) ;
+
+        ARRANGE_DWORD( &sdcb.Id );
+        ARRANGE_DWORD( &sdcb.Type );
+        ARRANGE_DWORD( &sdcb.Params );
+        ARRANGE_DWORD( &sdcb.Code );
+
+        sysproc_code_ref[n].Id = sdcb.Id ;
+        sysproc_code_ref[n].Type = sdcb.Type ;
+        sysproc_code_ref[n].Params = sdcb.Params ;
+        sysproc_code_ref[n].Code = sdcb.Code ;
+        sysproc_code_ref[n].ParamTypes = ( uint8_t * ) calloc( sdcb.Params + 1, sizeof( char ) );
+        if ( sdcb.Params ) file_read( fp, sysproc_code_ref[n].ParamTypes, sdcb.Params ) ;
+    }
+
+    /* Load sources */
+
+    if ( dcb.data.NSourceFiles )
+    {
+        char filename[__MAX_PATH] ;
+
+        fileid = calloc( dcb.data.NSourceFiles, sizeof( int ) );
+
+        dcb.sourcecount = ( uint32_t * ) calloc( dcb.data.NSourceFiles, sizeof( uint32_t ) ) ;
+        dcb.sourcelines = ( uint8_t *** ) calloc( dcb.data.NSourceFiles, sizeof( char ** ) ) ;
+        dcb.sourcefiles = ( uint8_t ** ) calloc( dcb.data.NSourceFiles, sizeof( char * ) ) ;
+        file_seek( fp, dcb.data.OSourceFiles, SEEK_SET ) ;
+        for ( n = 0; n < dcb.data.NSourceFiles; n++ )
+        {
+            int m;
+            uint32_t size;
+            file_readUint32( fp, &size ) ;
+            file_read( fp, filename, size ) ;
+            fileid[n] = -1;
+            for( m = 0; m < n_files; m++ ) if ( !strcmp( filename, files[m] ) ) fileid[n] = m;
+            if ( fileid[n] == -1 )
+            {
+                strcpy( files[n_files], filename );
+                fileid[n] = n_files++;
+            }
+        }
+    }
+
+    /* Load datas */
+
+    glodata = ( void * ) calloc( dcb.data.SGlobal, 1 ) ;
+    locdata = ( void * ) calloc( dcb.data.SLocal, 1 ) ;
+
+    /* Recupera las zonas de datos globales */
+
+    file_seek( fp, dcb.data.OGlobal, SEEK_SET ) ;
+    file_read( fp, glodata, dcb.data.SGlobal ) ;        /* **** */
+
+    file_seek( fp, dcb.data.OLocal, SEEK_SET ) ;
+    file_read( fp, locdata, dcb.data.SLocal ) ;         /* **** */
+
+    /* Varspaces Load */
+
+    if ( dcb.data.NVarSpaces )
+    {
+        varspaces = ( VARSPACE * ) calloc( dcb.data.NVarSpaces, sizeof( VARSPACE ) ) ;
+        dcb.varspace = ( DCB_VARSPACE * ) calloc( dcb.data.NVarSpaces, sizeof( DCB_VARSPACE ) ) ;
+
+        file_seek( fp, dcb.data.OVarSpaces, SEEK_SET ) ;
+        for ( n = 0; n < dcb.data.NVarSpaces; n++ )
+        {
+            file_read( fp, &dcb.varspace[n], sizeof( DCB_VARSPACE ) ) ;
+            ARRANGE_DWORD( &dcb.varspace[n].NVars );
+            ARRANGE_DWORD( &dcb.varspace[n].OVars );
+        }
+
+        for ( n = 0; n < dcb.data.NVarSpaces; n++ )
+        {
+            if ( !dcb.varspace[n].NVars ) continue ;
+            file_seek( fp, dcb.varspace[n].OVars, SEEK_SET ) ;
+            dcb_varspaces_load( fp, &varspaces[n], varspaces, dcb.varspace[n].NVars );
+        }
+    }
+
+    if ( dcb.data.NGloVars )
+    {
+        file_seek( fp, dcb.data.OGloVars, SEEK_SET ) ;
+        dcb_vars_load( fp, &global, globaldata, glodata, dcb.data.NGloVars, &glovaroffs, dcb.data.SGlobal );
+    }
+
+    if ( dcb.data.NLocVars )
+    {
+        file_seek( fp, dcb.data.OLocVars, SEEK_SET ) ;
+        dcb_vars_load( fp, &local, localdata, locdata, dcb.data.NLocVars, &locvaroffs, dcb.data.SLocal );
+    }
+
+    if ( dcb.data.NLocStrings )
+    {
+        int o, newoff, found, m;
+        int * locstr = ( int * ) calloc( dcb.data.NLocStrings + 4, sizeof( int ) ) ;
+
+        file_seek( fp, dcb.data.OLocStrings, SEEK_SET ) ;
+        file_readUint32A( fp, (uint32_t *)locstr, dcb.data.NLocStrings ) ;
+        for ( m = 0; m < dcb.data.NLocStrings; m++ )
+        {
+            newoff = get_new_off( locstr[m], locvaroffs, dcb.data.NLocStrings );
+            for ( found = 0, o = 0; o < local.stringvar_count; o++ ) if ( newoff == local.stringvars[o] ) { found = 1; break; }
+            if ( !found ) varspace_varstring( &local, newoff );
+        }
+        FREEM( locstr );
+    }
+
+    /* Load process */
+
+    dcb.proc   = ( DCB_PROC * ) calloc(( 1 + dcb.data.NProcs ), sizeof( DCB_PROC ) ) ;
+
+    file_seek( fp, dcb.data.OProcsTab, SEEK_SET ) ;
+    for ( n = 0; n < dcb.data.NProcs; n++ )
+    {
+        file_read( fp, &dcb.proc[n], sizeof( DCB_PROC_DATA ) ) ;
+
+        ARRANGE_DWORD( &dcb.proc[n].data.ID );
+
+        ARRANGE_DWORD( &dcb.proc[n].data.Flags );
+        ARRANGE_DWORD( &dcb.proc[n].data.NParams );
+
+        ARRANGE_DWORD( &dcb.proc[n].data.NPriVars );
+        ARRANGE_DWORD( &dcb.proc[n].data.NPriStrings );
+
+        ARRANGE_DWORD( &dcb.proc[n].data.NPubVars );
+        ARRANGE_DWORD( &dcb.proc[n].data.NPubStrings );
+
+        ARRANGE_DWORD( &dcb.proc[n].data.NSentences );
+
+        ARRANGE_DWORD( &dcb.proc[n].data.SPrivate );
+        ARRANGE_DWORD( &dcb.proc[n].data.SPublic );
+
+        ARRANGE_DWORD( &dcb.proc[n].data.SCode );
+
+        ARRANGE_DWORD( &dcb.proc[n].data.OExitCode );
+        ARRANGE_DWORD( &dcb.proc[n].data.OErrorCode );
+
+        ARRANGE_DWORD( &dcb.proc[n].data.OSentences );
+
+        ARRANGE_DWORD( &dcb.proc[n].data.OPriVars );
+        ARRANGE_DWORD( &dcb.proc[n].data.OPriStrings );
+        ARRANGE_DWORD( &dcb.proc[n].data.OPrivate );
+
+        ARRANGE_DWORD( &dcb.proc[n].data.OPubVars );
+        ARRANGE_DWORD( &dcb.proc[n].data.OPubStrings );
+        ARRANGE_DWORD( &dcb.proc[n].data.OPublic );
+
+        ARRANGE_DWORD( &dcb.proc[n].data.OCode );
+    }
+
+    for ( n = 0; n < dcb.data.NProcs; n++ )
+    {
+        char * pridata = NULL, *pubdata = NULL;
+        range * prioffs = NULL, * puboffs = NULL;
+
+        if ( !dcb.proc[n].data.SCode )
+        {
+            continue;
+        }
+        else if ( procdef_search( newid[dcb.proc[n].data.ID] ) )
+        {
+            if ( debug )
+            {
+                token.type = IDENTIFIER;
+                token.code = newid[dcb.proc[n].data.ID];
+                compile_warning(MSG_PROC_ALREADY_DEFINED);
+            }
+            continue;
+        }
+
+        proc = procdef_new(procdef_getid(), newid[dcb.proc[n].data.ID]);
+
+        codeblock_alloc(&proc->code, dcb.proc[n].data.SCode);
+
+        file_seek( fp, dcb.proc[n].data.OCode, SEEK_SET ) ;
+        file_readUint32A( fp, (uint32_t *)proc->code.data, dcb.proc[n].data.SCode / sizeof(uint32_t) ) ;
+        proc->code.current = dcb.proc[n].data.SCode / sizeof(uint32_t);
+
+        if ( dcb.proc[n].data.OExitCode )
+            proc->exitcode = dcb.proc[n].data.OExitCode ;
+        else
+            proc->exitcode = 0 ;
+
+        if ( dcb.proc[n].data.OErrorCode )
+            proc->errorcode = dcb.proc[n].data.OErrorCode ;
+        else
+            proc->errorcode = 0 ;
+
+        proc->defined = 1;
+        proc->declared = 1;
+        proc->imported = 1;
+
+        proc->params = dcb.proc[n].data.NParams ;
+
+        if ( dcb.proc[n].data.SPrivate )
+        {
+            pridata = calloc(dcb.proc[n].data.SPrivate, 1);
+            file_seek( fp, dcb.proc[n].data.OPrivate, SEEK_SET ) ;
+            file_read( fp, pridata, dcb.proc[n].data.SPrivate ) ;       /* *** */
+        }
+
+        if ( dcb.proc[n].data.SPublic )
+        {
+            pubdata = calloc(dcb.proc[n].data.SPublic, 1);
+            file_seek( fp, dcb.proc[n].data.OPublic, SEEK_SET ) ;
+            file_read( fp, pubdata, dcb.proc[n].data.SPublic ) ;       /* *** */
+        }
+
+        if ( dcb.proc[n].data.NPriVars )
+        {
+            prioffs = calloc( dcb.proc[n].data.NPriVars, sizeof( range ) );
+            file_seek( fp, dcb.proc[n].data.OPriVars, SEEK_SET ) ;
+            dcb_vars_load( fp, proc->privars, proc->pridata, pridata, dcb.proc[n].data.NPriVars, &prioffs, dcb.proc[n].data.SPrivate );
+        }
+
+        if ( dcb.proc[n].data.NPubVars )
+        {
+            puboffs = calloc( dcb.proc[n].data.NPubVars, sizeof( range ) );
+            file_seek( fp, dcb.proc[n].data.OPubVars, SEEK_SET ) ;
+            dcb_vars_load( fp, proc->pubvars, proc->pubdata, pubdata, dcb.proc[n].data.NPubVars, &puboffs, dcb.proc[n].data.SPublic );
+        }
+
+        if ( dcb.proc[n].data.NPriStrings )
+        {
+            int m, * sv = ( int * )calloc( dcb.proc[n].data.NPriStrings, sizeof( int ) ) ;
+            file_seek( fp, dcb.proc[n].data.OPriStrings, SEEK_SET ) ;
+            file_readUint32A( fp, (uint32_t *)sv, dcb.proc[n].data.NPriStrings ) ;
+            for ( m = 0; m < dcb.proc[n].data.NPriStrings; m++ ) varspace_varstring( proc->privars, get_new_off( sv[m], prioffs, dcb.proc[n].data.NPriVars ));
+            FREEM( sv );
+        }
+
+        if ( dcb.proc[n].data.NPubStrings )
+        {
+            int m, * sv = ( int * )calloc( dcb.proc[n].data.NPubStrings, sizeof( int ) ) ;
+            file_seek( fp, dcb.proc[n].data.OPubStrings, SEEK_SET ) ;
+            file_readUint32A( fp, (uint32_t *)sv, dcb.proc[n].data.NPubStrings ) ;
+            for ( m = 0; m < dcb.proc[n].data.NPubStrings; m++ ) varspace_varstring( proc->pubvars, get_new_off( sv[m], puboffs, dcb.proc[n].data.NPubVars ));
+            FREEM( sv );
+        }
+
+        codeblock_adjust( &proc->code );
+
+        FREEM( pridata )
+        FREEM( pubdata )
+        FREEM( prioffs )
+        FREEM( puboffs )
+    }
+
+    FREEM( sysproc_code_ref );
+    FREEM( fileid );
+    FREEM( newid );
+    FREEM( stringid );
+    FREEM( glodata );
+    FREEM( locdata );
+    FREEM( glovaroffs );
+    FREEM( locvaroffs );
+
+    /* Recupera los ficheros incluídos */
+/* N/A
+    if ( dcb.data.NFiles )
+    {
+        DCB_FILE dcbfile;
+        char fname[__MAX_PATH];
+
+        xfile_init( dcb.data.NFiles );
+        file_seek( fp, dcb.data.OFilesTab, SEEK_SET ) ;
+        for ( n = 0 ; n < dcb.data.NFiles; n++ )
+        {
+            file_read( fp, &dcbfile, sizeof( DCB_FILE ) ) ;
+
+            ARRANGE_DWORD( &dcbfile.SName );
+            ARRANGE_DWORD( &dcbfile.SFile );
+            ARRANGE_DWORD( &dcbfile.OFile );
+
+            file_read( fp, &fname, dcbfile.SName ) ;
+            file_add_xfile( fp, dcbfile.OFile, fname, dcbfile.SFile ) ;
+        }
+    }
+*/
+    file_close( fp );
+
+    return 1 ;
+}
+
+/* ---------------------------------------------------------------------- */

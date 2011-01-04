@@ -74,6 +74,7 @@ PROCDEF * procdef_new (int typeid, int id)
     proc->declared  = 0 ;
     proc->type      = TYPE_DWORD ;
     proc->flags     = 0 ;
+    proc->imported  = 0 ;
 
     proc->sentence_count = 0 ;
     proc->sentences      = 0 ;
@@ -154,7 +155,33 @@ void procdef_destroy (PROCDEF * proc)
 void program_postprocess ()
 {
     int n ;
+    for (n = 0; n <= procdef_maxid; n++) codeblock_postprocess (&procs[n]->code) ;
+}
 
-    for (n = 0 ; n <= procdef_maxid ; n++)
-        codeblock_postprocess (&procs[n]->code) ;
+void program_dumpprocesses()
+{
+    int n;
+    for (n = 0; n <= procdef_maxid; n++) procdef_dump( procs[n] );
+}
+
+void procdef_dump( PROCDEF * proc )
+{
+    printf( "\n\n---------- Process %d (%s)\n\n", proc->typeid, identifier_name( proc->identifier ) ) ;
+
+    if ( proc->privars->count )
+    {
+        printf( "---- Private variables\n" ) ;
+        varspace_dump( proc->privars, 0 ) ;
+        printf( "\n" ) ;
+    }
+
+    if ( proc->pubvars->count )
+    {
+        printf( "---- Public variables\n" ) ;
+        varspace_dump( proc->pubvars, 0 ) ;
+        printf( "\n" ) ;
+    }
+
+    /* segment_dump  (proc->pridata) ; */
+    codeblock_dump( &proc->code ) ;
 }

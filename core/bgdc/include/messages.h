@@ -43,6 +43,8 @@
     "   -c              File uses the MS-DOS character set\n" \
     "   -D macro=text   Set a macro\n" \
     "   -p|--pedantic   Don't use automatic declare\n" \
+    "   --libmode       Build a library\n" \
+    "   -L library      Include a library\n" \
     "   -C options      Specify compiler options\n" \
     "                   Where options are:\n" \
     "                   a    Enable automatic declare functions\n" \

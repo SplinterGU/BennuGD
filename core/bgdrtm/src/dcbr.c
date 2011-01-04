@@ -277,14 +277,13 @@ int dcb_load_from( file * fp, int offset )
     ARRANGE_DWORD( &dcb.data.OSourceFiles );
     ARRANGE_DWORD( &dcb.data.OSysProcsCodes );
 
-    if ( memcmp( dcb.data.Header, DCB_MAGIC, sizeof( DCB_MAGIC ) ) != 0 || ( dcb.data.Version & 0xFF00 ) != ( DCB_VERSION & 0xFF00 ) ) return 0 ;
+    if ( memcmp( dcb.data.Header, DCB_MAGIC, sizeof( DCB_MAGIC ) - 1 ) != 0 || dcb.data.Version < 0x0700 ) return 0 ;
 
     globaldata = calloc( dcb.data.SGlobal + 4, 1 ) ;
     localdata  = calloc( dcb.data.SLocal + 4, 1 ) ;
     localstr   = ( int * ) calloc( dcb.data.NLocStrings + 4, sizeof( int ) ) ;
     dcb.proc   = ( DCB_PROC * ) calloc(( 1 + dcb.data.NProcs ), sizeof( DCB_PROC ) ) ;
     procs      = ( PROCDEF * ) calloc(( 1 + dcb.data.NProcs ), sizeof( PROCDEF ) ) ;
-    mainproc   = procs ;
 
     procdef_count = dcb.data.NProcs ;
     local_size    = dcb.data.SLocal ;
@@ -543,6 +542,8 @@ int dcb_load_from( file * fp, int offset )
     }
 
     sysprocs_fixup();
+
+    mainproc = procdef_get_by_name( "MAIN" );
 
     return 1 ;
 }

@@ -2129,17 +2129,6 @@ int instance_go( INSTANCE * r )
             case MN_SENTENCE:
                 trace_sentence     = ptr[1];
                 trace_instance     = r;
-                /*
-                    if (debug)
-                    {
-                        printf ("%d: ", trace_sentence & 0xFFFFFF);
-                        if (dcb.sourcecount[trace_sentence >> 24]) {
-                            printf (" %s", dcb.sourcelines[trace_sentence >> 24] [(trace_sentence & 0xFFFFFF)-1]) ;
-                        }
-                        printf ("\n");
-                        fflush(stdout) ;
-                    }
-                */
                 ptr += 2 ;
                 break ;
 

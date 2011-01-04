@@ -39,4 +39,6 @@ extern SYSPROC  * sysproc_get (int code) ;
 extern int        sysproc_add (char * name, char * paramtypes, int type, void * func) ;
 extern void       sysproc_init() ;
 
+extern PROCDEF  * procdef_get( int n );
+
 #endif

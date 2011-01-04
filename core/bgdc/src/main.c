@@ -48,12 +48,15 @@ extern void import_files( char * filename );
 extern void add_simple_define( char * macro, char *text );
 extern int dcb_options;
 
+extern int dcb_load_lib( const char * filename );
+
 /* --------------------------------------------------------------------------- */
 
 char langinfo[64];
 
 extern int debug;
 int autodeclare = 1;
+int libmode = 0;
 
 char * main_path = NULL;
 
@@ -109,6 +112,8 @@ int main( int argc, char **argv )
     string_init();
     compile_init();
 
+    mainproc = procdef_new( procdef_getid(), identifier_search_or_add( "MAIN" ) ) ;
+
     /* Init vars */
 
     char tmp_version[ 32 ];
@@ -154,6 +159,12 @@ int main( int argc, char **argv )
             if ( !strcmp( argv[i], "--pedantic" ) )
             {
                 autodeclare = 0 ;
+                continue;
+            }
+
+            if ( !strcmp( argv[i], "--libmode" ) )
+            {
+                libmode = 1 ;
                 continue;
             }
 
@@ -290,6 +301,31 @@ int main( int argc, char **argv )
                     break;
                 }
 
+                if ( argv[i][j] == 'L' )
+                {
+                    int r = 1;
+                    char * f;
+                    if ( argv[i][j + 1] )
+                        r = dcb_load_lib( ( f = argv[i + j] + 1 ) );
+                    else if ( argv[i + 1] && argv[i + 1][0] != '-' )
+                    {
+                        r = dcb_load_lib( ( f = argv[i + 1] ) );
+                        i++;
+                    }
+
+                    switch ( r )
+                    {
+                        case    0:
+                                printf( "ERROR: %s doesn't exist or isn't version DCB compatible\n", f ) ;
+                                exit( -1 );
+
+                        case    -1:
+                                printf( "ERROR: %s isn't 7.10 DCB version, you need a 7.10 version or greater for use this feature\n", f ) ;
+                                exit( -1 );
+                    }
+                    break;
+                }
+
                 j++;
             }
         }
@@ -350,7 +386,7 @@ int main( int argc, char **argv )
 
             if ( !dcbname[0] )
             {
-                strcpy( dcbname, basepathname ); strcat( dcbname, ".dcb" );
+                strcpy( dcbname, basepathname ); strcat( dcbname, !libmode ? ".dcb" : ".dcl" );
             }
         }
     }

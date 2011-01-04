@@ -3365,7 +3365,7 @@ void compile_block( PROCDEF * p )
 
             if ( token.code == identifier_continue )  /* "CONTINUE" */
             {
-                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 24 ) ) ;
+                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 20 ) ) ;
 
                 if ( !code->loop_active ) compile_error( MSG_NO_LOOP ) ;
 
@@ -3376,7 +3376,7 @@ void compile_block( PROCDEF * p )
 
             if ( token.code == identifier_break ) /* "BREAK" */
             {
-                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 24 ) ) ;
+                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 20 ) ) ;
 
                 if ( !code->loop_active ) compile_error( MSG_NO_LOOP ) ;
 
@@ -3390,7 +3390,7 @@ void compile_block( PROCDEF * p )
                 if ( proc->type != TYPE_INT && proc->type != TYPE_DWORD )
                     if ( !( proc->flags & PROC_FUNCTION ) ) compile_error( MSG_FRAME_REQUIRES_INT );
 
-                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 24 ) ) ;
+                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 20 ) ) ;
 
                 token_next() ;
                 if ( token.type != IDENTIFIER || token.code != identifier_semicolon ) /* ";" */
@@ -3411,7 +3411,7 @@ void compile_block( PROCDEF * p )
 
             if ( token.code == identifier_debug ) /* "DEBUG" */
             {
-                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 24 ) ) ;
+                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 20 ) ) ;
 
                 codeblock_add( code, MN_DEBUG, 0 ) ;
                 compile_sentence_end() ;
@@ -3420,7 +3420,7 @@ void compile_block( PROCDEF * p )
 
             if ( token.code == identifier_return )  /* "RETURN" */
             {
-                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 24 ) ) ;
+                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 20 ) ) ;
 
                 token_next() ;
                 if ( token.type != IDENTIFIER || token.code != identifier_semicolon ) /* ";" */
@@ -3439,7 +3439,7 @@ void compile_block( PROCDEF * p )
 
             if ( token.code == identifier_clone ) /* "CLONE" */
             {
-                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 24 ) ) ;
+                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 20 ) ) ;
 
                 et1 = codeblock_label_add( code, -1 ) ;
                 codeblock_add( code, MN_CLONE, et1 ) ;
@@ -3454,7 +3454,7 @@ void compile_block( PROCDEF * p )
                 /* Label at the end of a IF/ELSEIF/ELSEIF/ELSE chain */
                 int end_of_chain = -1;
 
-                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 24 ) ) ;
+                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 20 ) ) ;
 
                 for ( ;; )
                 {
@@ -3489,7 +3489,7 @@ void compile_block( PROCDEF * p )
                     }
                     else if ( token.type == IDENTIFIER && token.code == identifier_elseif ) /* "ELSEIF" */
                     {
-                        if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 24 ) ) ;
+                        if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 20 ) ) ;
                         if ( end_of_chain == -1 ) end_of_chain = codeblock_label_add( code, -1 ) ;
                         codeblock_add( code, MN_JUMP, end_of_chain );
                         codeblock_label_set( code, et1, code->current ) ;
@@ -3507,7 +3507,7 @@ void compile_block( PROCDEF * p )
 
             if ( token.code == identifier_for ) /* "FOR" */
             {
-                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 24 ) ) ;
+                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 20 ) ) ;
 
                 loop = codeblock_loop_add( code ) ;
                 et1 = codeblock_label_add( code, -1 ) ;
@@ -3540,7 +3540,7 @@ void compile_block( PROCDEF * p )
                 token_next() ;
                 if ( token.type != IDENTIFIER || token.code != identifier_semicolon ) /* ";" */
                 {
-                    if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 24 ) ) ;
+                    if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 20 ) ) ;
                     token_back() ;
                     do
                     {
@@ -3562,7 +3562,7 @@ void compile_block( PROCDEF * p )
                 token_next() ;
                 if ( token.type != IDENTIFIER || token.code != identifier_rightp )  /* ")" */
                 {
-                    if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 24 ) ) ;
+                    if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 20 ) ) ;
                     token_back() ;
                     do
                     {
@@ -3586,7 +3586,7 @@ void compile_block( PROCDEF * p )
                 compile_block( p ) ;
                 code->loop_active = last_loop ;
 
-                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 24 ) ) ;
+                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 20 ) ) ;
 
                 codeblock_add( code, MN_REPEAT, loop ) ;
                 codeblock_loop_end( code, loop, code->current ) ;
@@ -3598,7 +3598,7 @@ void compile_block( PROCDEF * p )
                 BASETYPE switch_type = TYPE_UNDEFINED;
                 expresion_result switch_exp ;
 
-                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 24 ) ) ;
+                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 20 ) ) ;
 
                 token_next() ;
                 if ( token.type != IDENTIFIER || token.code != identifier_leftp ) /* "(" */
@@ -3637,7 +3637,7 @@ void compile_block( PROCDEF * p )
                     token_next() ;
                     if ( token.type == IDENTIFIER && token.code == identifier_case )  /* "CASE" */
                     {
-                        if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 24 ) ) ;
+                        if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 20 ) ) ;
 
                         for ( ;; )
                         {
@@ -3689,7 +3689,7 @@ void compile_block( PROCDEF * p )
                     }
                     else if ( token.type == IDENTIFIER && token.code == identifier_default ) /* "DEFAULT" */
                     {
-                        if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 24 ) ) ;
+                        if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 20 ) ) ;
 
                         token_next() ;
 
@@ -3714,14 +3714,14 @@ void compile_block( PROCDEF * p )
                 loop = codeblock_loop_add( code ) ;
                 codeblock_loop_start( code, loop, code->current ) ;
 
-                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 24 ) ) ;
+                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 20 ) ) ;
 
                 last_loop = code->loop_active ;
                 code->loop_active = loop ;
                 compile_block( p ) ;
                 code->loop_active = last_loop ;
 
-                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 24 ) ) ;
+                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 20 ) ) ;
 
                 codeblock_add( code, MN_REPEAT, loop ) ;
                 codeblock_loop_end( code, loop, code->current ) ;
@@ -3745,7 +3745,7 @@ void compile_block( PROCDEF * p )
 
                 loop = codeblock_loop_add( code ) ;
 
-                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 24 ) ) ;
+                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 20 ) ) ;
 
                 var_pos = codeblock_pos( code );
 
@@ -3834,7 +3834,7 @@ void compile_block( PROCDEF * p )
                 if ( token.type != IDENTIFIER || token.code != identifier_semicolon ) /* ";" */
                     compile_error( MSG_EXPECTED, ";" ) ;
 
-                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 24 ) ) ;
+                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 20 ) ) ;
 
                 codeblock_add( code, MN_BRFALSE, loop ) ;
 
@@ -3882,7 +3882,7 @@ void compile_block( PROCDEF * p )
                 codeblock_add( code, MN_JUMP, et2 ) ;
                 codeblock_label_set( code, et1, code->current ) ;
 
-                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 24 ) ) ;
+                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 20 ) ) ;
 
                 last_loop = code->loop_active ;
                 code->loop_active = loop ;
@@ -3891,7 +3891,7 @@ void compile_block( PROCDEF * p )
 
                 codeblock_label_set( code, et2, code->current ) ;
 
-                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 24 ) ) ;
+                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 20 ) ) ;
 
                 if ( token.type != IDENTIFIER || token.code != identifier_until ) /* "UNTIL" */
                     compile_error( MSG_EXPECTED, "UNTIL" ) ;
@@ -3928,7 +3928,7 @@ void compile_block( PROCDEF * p )
                     loop = codeblock_loop_add( code ) ;
                     codeblock_loop_start( code, loop, code->current ) ;
 
-                    if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 24 ) ) ;
+                    if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 20 ) ) ;
 
                     compile_expresion( 0, 0, 0, TYPE_DWORD ) ;
                     token_next() ;
@@ -3940,7 +3940,7 @@ void compile_block( PROCDEF * p )
                     loop = codeblock_loop_add( code ) ;
                     codeblock_loop_start( code, loop, code->current ) ;
 
-                    if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 24 ) ) ;
+                    if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 20 ) ) ;
 
                     compile_expresion( 0, 0, 0, TYPE_DWORD ) ;
                     token_next() ;
@@ -3955,7 +3955,7 @@ void compile_block( PROCDEF * p )
                 compile_block( p ) ;
                 code->loop_active = last_loop ;
 
-                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 24 ) ) ;
+                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 20 ) ) ;
 
                 codeblock_add( code, MN_REPEAT, loop ) ;
                 codeblock_loop_end( code, loop, code->current ) ;
@@ -3964,7 +3964,7 @@ void compile_block( PROCDEF * p )
 
             if ( token.code == identifier_jmp ) /* JMP */
             {
-                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 24 ) ) ;
+                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 20 ) ) ;
 
                 token_next();
 
@@ -3982,7 +3982,7 @@ void compile_block( PROCDEF * p )
 
             if ( token.code == identifier_call ) /* CALL */
             {
-                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 24 ) ) ;
+                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 20 ) ) ;
 
                 token_next();
 
@@ -4002,7 +4002,7 @@ void compile_block( PROCDEF * p )
             {
                 int on_req = 0;
 
-                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 24 ) ) ;
+                if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 20 ) ) ;
 
                 token_next();
 
@@ -4061,7 +4061,7 @@ void compile_block( PROCDEF * p )
 
         if ( token.type != IDENTIFIER ) /* || token.code < reserved_words) */ compile_error( MSG_INVALID_SENTENCE ) ;
 
-        if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 24 ) ) ;
+        if ( dcb_options & DCB_DEBUG ) codeblock_add( code, MN_SENTENCE, line_count + ( current_file << 20 ) ) ;
 
         token_back() ;
 

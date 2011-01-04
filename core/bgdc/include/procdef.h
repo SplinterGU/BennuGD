@@ -64,6 +64,8 @@ typedef struct _procdef
     int         declared ;
     int         flags ;
 
+    int         imported; /* this proc is a libproc */
+
     BASETYPE    paramtype[MAX_PARAMS] ;
     BASETYPE    type ;
 
@@ -87,7 +89,11 @@ extern PROCDEF * procdef_search (int identifier) ;
 extern PROCDEF * procdef_search_by_codeblock (CODEBLOCK * p);
 extern void      procdef_destroy(PROCDEF *) ;
 
+extern void      procdef_dump( PROCDEF * proc );
+
 /* Proceso "principal", el primero en definirse y ejecutarse */
 extern PROCDEF * mainproc ;
+
+extern void program_dumpprocesses();
 
 #endif
