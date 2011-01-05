@@ -1154,6 +1154,7 @@ int dcb_load_lib( const char * filename )
         proc->defined = 1;
         proc->declared = 1;
         proc->imported = 1;
+        proc->flags = dcb.proc[n].data.Flags ;
 
         proc->params = dcb.proc[n].data.NParams ;
 
