@@ -2626,13 +2626,27 @@ static void console_draw( INSTANCE * i, REGION * clip )
 
     if ( console_showing && trace_sentence != -1 )
     {
-        if ( trace_instance && instance_exists( trace_instance ) && dcb.sourcecount[trace_sentence >> 24] )
+        if ( dcb.data.Version < 0x0710 )
         {
-            console_printf( "¬07[%s(%d):%d]\n¬14%s¬07\n\n",
-                    trace_instance->proc->name,
-                    LOCDWORD( mod_debug, trace_instance, PROCESS_ID ),
-                    trace_sentence & 0xFFFFFF,
-                    dcb.sourcelines [trace_sentence >> 24] [( trace_sentence & 0xFFFFFF )-1] ) ;
+            if ( trace_instance && instance_exists( trace_instance ) && dcb.sourcecount[trace_sentence >> 24] )
+            {
+                console_printf( "¬07[%s(%d):%d]\n¬14%s¬07\n\n",
+                        trace_instance->proc->name,
+                        LOCDWORD( mod_debug, trace_instance, PROCESS_ID ),
+                        trace_sentence & 0xFFFFFF,
+                        dcb.sourcelines [trace_sentence >> 24] [( trace_sentence & 0xFFFFFF )-1] ) ;
+            }
+        }
+        else
+        {
+            if ( trace_instance && instance_exists( trace_instance ) && dcb.sourcecount[trace_sentence >> 20] )
+            {
+                console_printf( "¬07[%s(%d):%d]\n¬14%s¬07\n\n",
+                        trace_instance->proc->name,
+                        LOCDWORD( mod_debug, trace_instance, PROCESS_ID ),
+                        trace_sentence & 0xFFFFF,
+                        dcb.sourcelines [trace_sentence >> 20] [( trace_sentence & 0xFFFFF )-1] ) ;
+            }
         }
         debug_on_frame = 0;
         force_debug = 0;
