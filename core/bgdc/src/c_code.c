@@ -2906,8 +2906,6 @@ expresion_result compile_subexpresion()
             if ( !base.lvalue ) compile_error( MSG_VARIABLE_REQUIRED ) ;
             right = compile_expresion( 0, 0, 0, typedef_base( base.type ) ) ;
 
-            if ( right.lvalue && !typedef_is_array( right.type ) ) codeblock_add( code, mntype( right.type, 0 ) | MN_PTR, 0 ) ;
-
             /* Array copy */
             if ( op == identifier_equal && typedef_is_array( base.type ) && typedef_is_array( right.type ) )
             {
@@ -2942,6 +2940,8 @@ expresion_result compile_subexpresion()
 
                 return base;
             }
+
+            if ( right.lvalue ) codeblock_add( code, mntype( right.type, 0 ) | MN_PTR, 0 ) ;
 
             type = check_numeric_types( &base, &right ) ;
 

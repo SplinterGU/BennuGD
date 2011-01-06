@@ -81,14 +81,12 @@ void codeblock_postprocess (CODEBLOCK * code)
     		    )
     		{
     			ptr++ ;
-
-    			if (*ptr == -1 || *ptr == MN_EXITHNDLR || *ptr == MN_ERRHNDLR)
+    			if (*ptr == -1)
     			{
-    			    *ptr = 0;
+//    			    *ptr = 0;
     			    ptr++;
     			    continue;
     			}
-
                 if (code->labels[*ptr] == -1)
     			{
     				token.type = LABEL ;
