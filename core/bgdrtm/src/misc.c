@@ -115,7 +115,7 @@ volatile unsigned long *__bgdrtm_memregl = NULL;
 int __bgdrtm_memdev = -1;
 
 #ifdef TARGET_CAANOO
-static unsigned long caanoo_firmaware_version = 0;
+static unsigned long caanoo_firmware_version = 0;
 #endif
 
 void bgdrtm_ptimer_init(void)
@@ -123,7 +123,7 @@ void bgdrtm_ptimer_init(void)
 #if defined(TARGET_GP2X_WIZ)
     TIMER_REG(0x44) = 0x922;
 #else
-    if ( caanoo_firmaware_version < 1000006 ) /* firmware version < 1.0.6 */
+    if ( caanoo_firmware_version < 1000006 ) /* firmware version < 1.0.6 */
     {
         TIMER_REG(0x44) = 0x922;
     }
@@ -214,13 +214,16 @@ void bgdrtm_entry( int argc, char * argv[] )
             if ( ( p2 = strchr( b, '.' ) ) )
             {
                 *p2++ = '\0';
-                caanoo_firmaware_version = atol( b ) * 1000000L;
+                caanoo_firmware_version = atol( b ) * 1000000L;
                 if ( ( p1 = strchr( p2, '.' ) ) )
                 {
                     *p1++ = '\0';
-                    caanoo_firmaware_version = atol( p2 ) * 1000L;
-                    caanoo_firmaware_version = atol( p1 );
-
+                    caanoo_firmware_version += atol( p2 ) * 1000L;
+                    caanoo_firmware_version += atol( p1 );
+                }
+                else
+                {
+                    caanoo_firmware_version += atol( p2 ) * 1000L;
                 }
             }
         }
