@@ -53,8 +53,8 @@ export PKG_CONFIG
 echo Current settings.
 echo
 echo Install root/Working dir	= $OPEN2X
-echo Tool locations 		= $OPEN2X/bin
-echo Host/Target		= $HOST / $TARGET
+echo Tool locations 		    = $OPEN2X/bin
+echo Host/Target		        = $HOST / $TARGET
 echo
 
 echo CC         = $CC
@@ -67,11 +67,45 @@ echo CFLAGS     = $CFLAGS
 echo LDFLAGS    = $LDFLAGS
 echo PKG_CONFIG = $PKG_CONFIG
 
-#cd vendor/des-4.04b; make -f Makefile.openwiz clean all install; cd -
-#cd core; ./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared ; make -f Makefile; cd -
+echo "### Building 3rd party software ###"
+cd 3rdparty/des-4.04b
+make clean
+make
+cd -
 
-echo ""
-echo "Now do:"
-echo "cd project"
-echo './configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared'
+echo "### Building BennuGD Core ###"
 
+cd core
+./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared
+make clean
+make
+cd -
+
+echo "### Building BennuGD Modules ###"
+
+cd modules
+./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared
+make clean
+make
+cd -
+
+echo "### Building BennuGD Tools ###"
+
+cd tools/moddesc
+./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared
+make clean
+make
+cd -
+
+echo "### Copying files to bin folder ###"
+
+mkdir bin
+cp 3rdparty/des-4.0.4b/libdes.so bin/
+cp tools/moddesc/moddesc bin/
+cp core/bgdi/src/.libs/bgdi bin/
+cp core/bgdc/src/bgdc bin/
+cp core/bgdrtm/src/.libs/libbgdrtm.so bin/
+cp modules/mod*/.libs/mod*.so bin
+cp modules/lib*/.libs/lib*.so bin/
+
+echo "### Build done! ###"
