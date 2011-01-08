@@ -1,5 +1,5 @@
 /*
- *  Copyright © 2006-2010 SplinterGU (Fenix/Bennugd)
+ *  Copyright © 2006-2011 SplinterGU (Fenix/Bennugd)
  *  Copyright © 2002-2006 Fenix Team (Fenix)
  *  Copyright © 1999-2002 José Luis Cebrián Pagüe (Fenix)
  *
@@ -156,7 +156,7 @@ int main( int argc, char **argv )
         if ( !filename )
         {
             printf( BGDI_VERSION "\n"
-                    "Copyright (c) 2006-2010 SplinterGU (Fenix/BennuGD)\n"
+                    "Copyright (c) 2006-2011 SplinterGU (Fenix/BennuGD)\n"
                     "Copyright (c) 2002-2006 Fenix Team (Fenix)\n"
                     "Copyright (c) 1999-2002 José Luis Cebrián Pagüe (Fenix)\n"
                     "Bennu Game Development comes with ABSOLUTELY NO WARRANTY;\n"

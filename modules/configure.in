@@ -19,8 +19,6 @@ AC_ARG_WITH(bennu-prefix,[  --with-bennu-prefix=PFX Prefix where Bennu is instal
 AC_CHECK_TOOL(WINDRES, windres, )
 AM_CONDITIONAL(HAVE_WINDRES, test "$WINDRES" != "")
 
-LIBSSL="crypto"
-
 dnl Aqui es donde se chequeara el SO, pero solo hay una opcion xD
 case "$target_os" in
     linux-gnueabi)
@@ -42,6 +40,8 @@ case "$target_os" in
                 COMMON_CFLAGS="$COMMON_CFLAGS -m32"
                 COMMON_LDFLAGS="$COMMON_LDFLAGS -m32 -L/lib32"
                 LM=-lm
+                LIBSSL="crypto"
+                USE_OPENSSL=yes
                 ;;
 
             arm)
@@ -59,24 +59,31 @@ case "$target_os" in
 	    COMMON_LDFLAGS="-L/usr/local/lib -lshlwapi"
 	    LIBSSL="eay32"
         LM=-lm
+        USE_OPENSSL=yes
 	    ;;
 
     mingw32msvc)
 	    COMMON_CFLAGS="-I/usr/i586-mingw32msvc/include -DTARGET_WIN32 -DWIN32 -D_WIN32"
 	    COMMON_LDFLAGS="-L/usr/i586-mingw32msvc/lib -lshlwapi"
         LM=-lm
+        LIBSSL="crypto"
+        USE_OPENSSL=yes
 	    ;;
 
     dragonfly*)
         COMMON_CFLAGS="-I/usr/local/include -Wall -DTARGET_BSD"
 	    COMMON_LDFLAGS="-pthread -L/usr/local/lib"
         LM=-lm
+        LIBSSL="crypto"
+        USE_OPENSSL=yes
 	    ;;
 
     darwin*)
         COMMON_CFLAGS="-I/usr/local/include -Wall -DTARGET_MAC"
         COMMON_LDFLAGS="-L/usr/local/lib"
         LM=-lm
+        LIBSSL="crypto"
+        USE_OPENSSL=yes
 	    ;;
 
     haiku)
@@ -84,6 +91,8 @@ case "$target_os" in
         COMMON_CFLAGS="-Wall -DTARGET_BEOS"
 	    COMMON_LDFLAGS="-L/usr/local/lib"
         LM=
+        LIBSSL="crypto"
+        USE_OPENSSL=yes
         ;;
 
 esac
@@ -109,11 +118,11 @@ AM_PATH_SDL($SDL_VERSION, :, AC_MSG_ERROR([*** SDL version $SDL_VERSION not foun
 
 AC_CHECK_LIB(z, gzsetparams, [AC_CHECK_HEADER(zlib.h,ZLIBS="-lz",)], [AC_MSG_ERROR(zlib not found!)])
 AC_CHECK_LIB(png, png_read_info, [AC_CHECK_HEADER(png.h,PNGLIBS="-lpng",)], AC_MSG_ERROR(PNG library not found!), -lz $LM)
-AC_CHECK_LIB($LIBSSL, DES_ecb_encrypt, [AC_CHECK_HEADER(openssl/des.h,CRYPT_LDFLAGS=$LIBSSL,)], [AC_MSG_ERROR($LIBSSL not found!)])
+if test "$USE_OPENSSL" = "yes"; then
+AC_CHECK_LIB($LIBSSL, DES_ecb_encrypt, [AC_CHECK_HEADER(openssl/des.h,CRYPT_LDFLAGS=-l$LIBSSL,)], [AC_MSG_ERROR($LIBSSL not found!)])
+fi
 
-#LIBS+=-lSDL_mixer
 AC_CHECK_LIB(SDL_mixer, Mix_AllocateChannels, [AC_CHECK_HEADER(SDL_mixer.h,LIBS+="-lSDL_mixer",)], [AC_MSG_ERROR(libSDL_mixer not found!)], $SDL_MIXER_DEPS)
-#AC_CHECK_LIB(SDL_mixer, Mix_AllocateChannels,LIBS=$LIBS, AC_MSG_ERROR([*** SDL_mixer library not found!]))
 AC_CHECK_LIB(X11, [XQueryTree,XMoveWindow],X11LIBS="-lX11",)
 
 AC_SUBST(COMMON_LDFLAGS)

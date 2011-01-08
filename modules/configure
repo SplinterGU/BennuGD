@@ -10268,8 +10268,6 @@ else
 fi
 
 
-LIBSSL="crypto"
-
 case "$target_os" in
     linux-gnueabi)
         COMMON_CFLAGS="-Wall -DTARGET_LINUX"
@@ -10290,6 +10288,8 @@ case "$target_os" in
                 COMMON_CFLAGS="$COMMON_CFLAGS -m32"
                 COMMON_LDFLAGS="$COMMON_LDFLAGS -m32 -L/lib32"
                 LM=-lm
+                LIBSSL="crypto"
+                USE_OPENSSL=yes
                 ;;
 
             arm)
@@ -10307,24 +10307,31 @@ case "$target_os" in
 	    COMMON_LDFLAGS="-L/usr/local/lib -lshlwapi"
 	    LIBSSL="eay32"
         LM=-lm
+        USE_OPENSSL=yes
 	    ;;
 
     mingw32msvc)
 	    COMMON_CFLAGS="-I/usr/i586-mingw32msvc/include -DTARGET_WIN32 -DWIN32 -D_WIN32"
 	    COMMON_LDFLAGS="-L/usr/i586-mingw32msvc/lib -lshlwapi"
         LM=-lm
+        LIBSSL="crypto"
+        USE_OPENSSL=yes
 	    ;;
 
     dragonfly*)
         COMMON_CFLAGS="-I/usr/local/include -Wall -DTARGET_BSD"
 	    COMMON_LDFLAGS="-pthread -L/usr/local/lib"
         LM=-lm
+        LIBSSL="crypto"
+        USE_OPENSSL=yes
 	    ;;
 
     darwin*)
         COMMON_CFLAGS="-I/usr/local/include -Wall -DTARGET_MAC"
         COMMON_LDFLAGS="-L/usr/local/lib"
         LM=-lm
+        LIBSSL="crypto"
+        USE_OPENSSL=yes
 	    ;;
 
     haiku)
@@ -10332,6 +10339,8 @@ case "$target_os" in
         COMMON_CFLAGS="-Wall -DTARGET_BEOS"
 	    COMMON_LDFLAGS="-L/usr/local/lib"
         LM=
+        LIBSSL="crypto"
+        USE_OPENSSL=yes
         ;;
 
 esac
@@ -11942,6 +11951,7 @@ else
   as_fn_error $? "PNG library not found!" "$LINENO" 5
 fi
 
+if test "$USE_OPENSSL" = "yes"; then
 as_ac_Lib=`$as_echo "ac_cv_lib_$LIBSSL''_DES_ecb_encrypt" | $as_tr_sh`
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for DES_ecb_encrypt in -l$LIBSSL" >&5
 $as_echo_n "checking for DES_ecb_encrypt in -l$LIBSSL... " >&6; }
@@ -11983,7 +11993,7 @@ $as_echo "$ac_res" >&6; }
 if eval test \"x\$"$as_ac_Lib"\" = x"yes"; then :
   ac_fn_c_check_header_mongrel "$LINENO" "openssl/des.h" "ac_cv_header_openssl_des_h" "$ac_includes_default"
 if test "x$ac_cv_header_openssl_des_h" = x""yes; then :
-  CRYPT_LDFLAGS=$LIBSSL
+  CRYPT_LDFLAGS=-l$LIBSSL
 fi
 
 
@@ -11991,8 +12001,8 @@ else
   as_fn_error $? "$LIBSSL not found!" "$LINENO" 5
 fi
 
+fi
 
-#LIBS+=-lSDL_mixer
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Mix_AllocateChannels in -lSDL_mixer" >&5
 $as_echo_n "checking for Mix_AllocateChannels in -lSDL_mixer... " >&6; }
 if test "${ac_cv_lib_SDL_mixer_Mix_AllocateChannels+set}" = set; then :
@@ -12040,7 +12050,6 @@ else
   as_fn_error $? "libSDL_mixer not found!" "$LINENO" 5
 fi
 
-#AC_CHECK_LIB(SDL_mixer, Mix_AllocateChannels,LIBS=$LIBS, AC_MSG_ERROR([*** SDL_mixer library not found!]))
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for XQueryTree,XMoveWindow in -lX11" >&5
 $as_echo_n "checking for XQueryTree,XMoveWindow in -lX11... " >&6; }
 if test "${ac_cv_lib_X11_XQueryTree_XMoveWindow+set}" = set; then :

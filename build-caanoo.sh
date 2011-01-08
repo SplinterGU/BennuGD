@@ -38,9 +38,7 @@ STRIP="${OPEN2X}/../bin/${HOST}-strip"
 RANLIB="${OPEN2X}/../bin/${HOST}-ranlib"
 
 #CFLAGS="-DTARGET_CAANOO -O2 -ffast-math -fomit-frame-pointer -mcpu=arm920t -DARM -D_ARM_ASSEM_ -I${OPEN2X}/include -I${OPEN2X}/include/libxml2 -I${OPEN2X}/include/SDL"
-
 #CFLAGS="-DTARGET_CAANOO -mcpu=arm926ej-s -mtune=arm926ej-s -fsigned-char -O3 -msoft-float -fomit-frame-pointer -fstrict-aliasing -mstructure-size-boundary=32 -fexpensive-optimizations -fweb -frename-registers -falign-functions=16 -falign-loops -falign-labels -falign-jumps -finline -finline-functions -fno-common -fno-builtin -fsingle-precision-constant -DARM -D_ARM_ASSEM_ -I${OPEN2X}/include -I${OPEN2X}/include/libxml2 -I${OPEN2X}/include/SDL"
-
 CFLAGS="-DTARGET_CAANOO -mcpu=arm926ej-s -mtune=arm926ej-s -O3 -DARM -D_ARM_ASSEM_ -I${OPEN2X}/include -I${OPEN2X}/include/libxml2 -I${OPEN2X}/include/SDL"
 
 LDFLAGS="-L${OPEN2X}/lib"
@@ -58,8 +56,8 @@ export PKG_CONFIG
 echo Current settings.
 echo
 echo Install root/Working dir	= $OPEN2X
-echo Tool locations 		= $OPEN2X/bin
-echo Host/Target		= $HOST / $TARGET
+echo Tool locations 		    = $OPEN2X/bin
+echo Host/Target		        = $HOST / $TARGET
 echo
 
 echo CC         = $CC
@@ -72,11 +70,45 @@ echo CFLAGS     = $CFLAGS
 echo LDFLAGS    = $LDFLAGS
 echo PKG_CONFIG = $PKG_CONFIG
 
-#cd vendor/des-4.04b; make -f Makefile.openwiz clean all install; cd -
-#cd core; ./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared ; make -f Makefile; cd -
+echo "### Building 3rd party software ###"
+cd 3rdparty/des-4.04b
+make clean
+make
+cd -
 
-echo ""
-echo "Now do:"
-echo "cd project"
-echo './configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared'
+echo "### Building BennuGD Core ###"
 
+cd core
+./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared
+make clean
+make
+cd -
+
+echo "### Building BennuGD Modules ###"
+
+cd modules
+./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared
+make clean
+make
+cd -
+
+echo "### Building BennuGD Tools ###"
+
+cd tools/moddesc
+./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared
+make clean
+make
+cd -
+
+echo "### Copying files to bin folder ###"
+
+mkdir bin
+cp 3rdparty/des-4.0.4b/libdes.so bin/
+cp tools/moddesc/moddesc bin/
+cp core/bgdi/src/.libs/bgdi bin/
+cp core/bgdc/src/bgdc bin/
+cp core/bgdrtm/src/.libs/libbgdrtm.so bin/
+cp modules/mod*/.libs/mod*.so bin
+cp modules/lib*/.libs/lib*.so bin/
+
+echo "### Build done! ###"

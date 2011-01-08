@@ -10246,8 +10246,6 @@ else
 fi
 
 
-LIBSSL="crypto"
-
 case "$target_os" in
     linux-gnu*)
         COMMON_CFLAGS="-Wall -DTARGET_LINUX"
@@ -10257,11 +10255,13 @@ case "$target_os" in
             *i386*)
                 COMMON_CFLAGS="$COMMON_CFLAGS -m32"
                 COMMON_LDFLAGS="$COMMON_LDFLAGS -m32 -L/lib32"
+                LIBSSL="crypto"
+                USE_OPENSSL=yes
                 ;;
 
             arm)
-                COMMON_CFLAGS="$COMMON_CFLAGS $CFLAGS"
-                COMMON_LDFLAGS="$COMMON_LDFLAGS $LDFLAGS"
+                COMMON_CFLAGS="$COMMON_CFLAGS -DUSE_LIBDES $CFLAGS"
+                COMMON_LDFLAGS="$COMMON_LDFLAGS $LDFLAGS -L3rdparty/des-4.0.4b -ldes"
                 ;;
 
         esac
@@ -10272,30 +10272,39 @@ case "$target_os" in
 	    COMMON_CFLAGS="$INCLUDES -DTARGET_WIN32 -DWIN32 -D_WIN32"
 	    COMMON_LDFLAGS="-L/usr/local/lib -lshlwapi"
 	    LIBSSL="eay32"
+        USE_OPENSSL=yes
 	    ;;
 
     mingw32msvc)
         INCLUDES="-I/usr/i586-mingw32msvc/include"
 	    COMMON_CFLAGS="$INCLUDES -DTARGET_WIN32 -DWIN32 -D_WIN32"
 	    COMMON_LDFLAGS="-L/usr/i586-mingw32msvc/lib -lshlwapi"
+        LIBSSL="crypto"
+        USE_OPENSSL=yes
 	    ;;
 
     dragonfly*)
         INCLUDES="-I/usr/local/include"
         COMMON_CFLAGS="-Wall -DTARGET_BSD"
 	    COMMON_LDFLAGS="-L/usr/local/lib -lpthread"
+        LIBSSL="crypto"
+        USE_OPENSSL=yes
 	    ;;
 
     darwin*)
         INCLUDES="-I/usr/local/include"
         COMMON_CFLAGS="-Wall -DTARGET_MAC"
 	    COMMON_LDFLAGS="-L/usr/local/lib"
+        LIBSSL="crypto"
+        USE_OPENSSL=yes
 	    ;;
 
     haiku)
         INCLUDES="-I/usr/local/include"
         COMMON_CFLAGS="-Wall -DTARGET_BEOS"
 	    COMMON_LDFLAGS="-L/usr/local/lib"
+        LIBSSL="crypto"
+        USE_OPENSSL=yes
         ;;
 
 esac
@@ -11556,6 +11565,8 @@ else
   as_fn_error $? "zlib not found!" "$LINENO" 5
 fi
 
+
+if test "$USE_OPENSSL" = "yes"; then
 as_ac_Lib=`$as_echo "ac_cv_lib_$LIBSSL''_DES_ecb_encrypt" | $as_tr_sh`
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for DES_ecb_encrypt in -l$LIBSSL" >&5
 $as_echo_n "checking for DES_ecb_encrypt in -l$LIBSSL... " >&6; }
@@ -11605,6 +11616,7 @@ else
   as_fn_error $? "$LIBSSL not found!" "$LINENO" 5
 fi
 
+fi
 
 
 COMMON_LDFLAGS="$LDFLAGS $COMMON_LDFLAGS"
