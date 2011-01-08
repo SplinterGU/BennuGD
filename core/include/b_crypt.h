@@ -26,6 +26,10 @@
 
 #ifdef USE_LIBDES
 #include <des.h>
+#define DES_key_schedule    des_key_schedule
+#define DES_key_sched       key_sched
+#define DES_ecb_encrypt     des_ecb_encrypt
+#define DES_cblock          des_cblock
 #else
 #include <openssl/des.h>
 #endif
