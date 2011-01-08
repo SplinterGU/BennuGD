@@ -33,8 +33,8 @@ case "$target_os" in
                 ;;
 
             arm)
-                COMMON_CFLAGS="$COMMON_CFLAGS -DUSE_LIBDES $CFLAGS"
-                COMMON_LDFLAGS="$COMMON_LDFLAGS $LDFLAGS -L3rdparty/des-4.0.4b -ldes"
+                COMMON_CFLAGS="$COMMON_CFLAGS -DUSE_LIBDES $CFLAGS -I../3rdparty/des-4.0.4b"
+                COMMON_LDFLAGS="$COMMON_LDFLAGS $LDFLAGS -L../3rdparty/des-4.0.4b -ldes"
                 ;;
 
         esac

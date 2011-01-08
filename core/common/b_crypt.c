@@ -27,6 +27,11 @@
 
 #include "b_crypt.h"
 
+#ifdef USE_LIBDES
+#define DES_key_sched   key_sched
+#define DES_ecb_encryt  des_ecb_encrypt
+#endif
+
 /* ------------------------------------------------------------------------- */
 
 crypt_handle * crypt_create( int method, char * key )
