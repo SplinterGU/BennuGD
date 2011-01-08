@@ -201,6 +201,7 @@ void bgdrtm_entry( int argc, char * argv[] )
 
 #if defined(TARGET_GP2X_WIZ) || defined(TARGET_CAANOO)
 
+#ifdef TARGET_CAANOO
     {
         FILE * fp = fopen( "/usr/gp2x/version", "r" );
         if ( fp )
@@ -228,6 +229,7 @@ void bgdrtm_entry( int argc, char * argv[] )
             }
         }
     }
+#endif
 
     __bgdrtm_memdev = open( "/dev/mem", O_RDWR );
     __bgdrtm_memregl = mmap( 0, 0x20000, PROT_READ|PROT_WRITE, MAP_SHARED, __bgdrtm_memdev, 0xc0000000 );
