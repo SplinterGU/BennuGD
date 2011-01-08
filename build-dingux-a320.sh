@@ -94,13 +94,13 @@ make clean
 make
 cd -
 
-echo "### Building BennuGD Tools ###"
-
-cd tools/moddesc
-./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared
-make clean
-make
-cd -
+#echo "### Building BennuGD Tools ###"
+#
+#cd tools/moddesc
+#./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared
+#make clean
+#make
+#cd -
 
 echo "### Copying files to bin folder ###"
 
