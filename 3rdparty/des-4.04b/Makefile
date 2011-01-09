@@ -47,7 +47,7 @@ MAKE=make -f Makefile
 #CFLAG= -O4 -funroll-loops -fomit-frame-pointer
 #CFLAG= -O3 -fomit-frame-pointer
 
-CFLAGS+=$(OPTS) $(CFLAG)
+CFLAGS+=$(OPTS) $(CFLAG) -fPIC
 #CPP=$(CC) -E
 #AS=as
 
@@ -166,7 +166,7 @@ test:	all
 
 $(DLIB): $(OBJ)
 	/bin/rm -f $(DLIB)
-	$(CC) --shared -o $(DLIB) $(OBJ)
+	$(CC) -fPIC --shared -o $(DLIB) $(OBJ)
 #	$(AR) cr $(DLIB) $(OBJ)
 #	$(RANLIB) $(DLIB)
 
