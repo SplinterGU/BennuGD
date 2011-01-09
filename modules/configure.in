@@ -51,6 +51,13 @@ case "$target_os" in
                 LM=-lm
                 ;;
 
+            mipsel)
+                COMMON_CFLAGS="$COMMON_CFLAGS -DUSE_LIBDES $CFLAGS -I`pwd`/../3rdparty/des-4.04b"
+                COMMON_LDFLAGS="$COMMON_LDFLAGS $LDFLAGS -L`pwd`/../3rdparty/des-4.04b -ldes"
+                SDL_MIXER_DEPS="-lSDL -liconv -lvorbis -logg -lmad -lvorbisfile -lvorbisidec"
+                LM=-lm
+                ;;
+
         esac
 	    ;;
 
