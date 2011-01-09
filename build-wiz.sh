@@ -99,9 +99,8 @@ cd -
 
 echo "### Copying files to bin folder ###"
 
-mkdir bin
+mkdir bin 2>/dev/null
 cp 3rdparty/des-4.04b/libdes.so bin/
-cp tools/moddesc/moddesc bin/
 cp core/bgdi/src/.libs/bgdi bin/
 cp core/bgdc/src/bgdc bin/
 cp core/bgdrtm/src/.libs/libbgdrtm.so bin/
