@@ -30,19 +30,19 @@ echo "You Machine: ${target_cpu} ${target_os}"
 AC_ARG_WITH(bennu-prefix,[  --with-bennu-prefix=PFX Prefix where Bennu is installed (optional)],bennu_prefix="$withval", bennu_prefix="`pwd`/../../core")
 
 case "$target_os" in
-    linux-gnu*)
-        CFLAGS=" -Wall"
-        LDFLAGS=" -lc -ldl"
+    mingw32)
+	    CFLAGS+=" -DWIN32 -D_WIN32 "
 	    ;;
 
-    mingw32)
-	    CFLAGS=" -DWIN32 -D_WIN32"
+    *)
+        CFLAGS+=" -Wall"
+        LDFLAGS+=" -lc -ldl"
 	    ;;
 
 esac
 
-COMMON_CFLAGS="$CFLAGS -I${bennu_prefix}/include -I/usr/local/include -I/usr/include "
-COMMON_LDFLAGS="$LDFLAGS -L/usr/local/lib -L/usr/lib"
+COMMON_CFLAGS+="$CFLAGS -I${bennu_prefix}/include"
+COMMON_LDFLAGS+="$LDFLAGS"
 
 # Checks for header files.
 AC_HEADER_STDC
