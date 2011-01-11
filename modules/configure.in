@@ -9,6 +9,8 @@ AC_LIBTOOL_WIN32_DLL
 AC_LIBTOOL_DLOPEN
 AC_PROG_LIBTOOL
 
+LT_INIT
+
 AM_MAINTAINER_MODE
 
 echo "Your machine: ${target_cpu} ${target_os}"
@@ -129,7 +131,7 @@ if test "$USE_OPENSSL" = "yes"; then
 AC_CHECK_LIB($LIBSSL, DES_ecb_encrypt, [AC_CHECK_HEADER(openssl/des.h,CRYPT_LDFLAGS=-l$LIBSSL,)], [AC_MSG_ERROR($LIBSSL not found!)])
 fi
 
-AC_CHECK_LIB(SDL_mixer, Mix_AllocateChannels, [AC_CHECK_HEADER(SDL_mixer.h,LIBS+="-lSDL_mixer",)], [AC_MSG_ERROR(libSDL_mixer not found!)], $SDL_MIXER_DEPS)
+#AC_CHECK_LIB(SDL_mixer, Mix_AllocateChannels, [AC_CHECK_HEADER(SDL_mixer.h,LIBS+="-lSDL_mixer",)], [AC_MSG_ERROR(libSDL_mixer not found!)], $SDL_MIXER_DEPS)
 AC_CHECK_LIB(X11, [XQueryTree,XMoveWindow],X11LIBS="-lX11",)
 
 AC_SUBST(COMMON_LDFLAGS)

@@ -36,11 +36,11 @@ CXX="${DINGUX}/bin/${HOST}-g++"
 AR="${DINGUX}/bin/${HOST}-ar"
 STRIP="${DINGUX}/bin/${HOST}-strip"
 RANLIB="${DINGUX}/bin/${HOST}-ranlib"
-LD="${DINGUX}/bin/${HOST}-gcc"
+LD="${DINGUX}/bin/${HOST}-ld"
 
 # -msoft-float -funroll-loops -ffast-math -fomit-frame-pointer -fno-strength-reduce -finline-functions -G0 -march=mips32 -mtune=r4600 -mno-mips16
-CFLAGS="-DTARGET_DINGUX_A320 -O2 -fstrength-reduce -fthread-jumps -fexpensive-optimizations -fomit-frame-pointer -frename-registers -pipe -G0 -DMPU_JZ4740 -ffast-math -msoft-float -I${DINGUX}/include"
-LDFLAGS="-L${DINGUX}/lib"
+CFLAGS="-D_REENTRANT -DTARGET_DINGUX_A320 -O2 -fstrength-reduce -fthread-jumps -fexpensive-optimizations -fomit-frame-pointer -frename-registers -pipe -G0 -DMPU_JZ4740 -ffast-math -msoft-float -I${DINGUX}/include"
+LDFLAGS="-L${DINGUX}/lib -D_REENTRANT"
 PKG_CONFIG="${DINGUX}/bin/pkg-config"
 
 export CC
@@ -73,6 +73,7 @@ echo LDFLAGS    = $LDFLAGS
 echo PKG_CONFIG = $PKG_CONFIG
 
 echo "### Building 3rd party software ###"
+
 cd 3rdparty/des-4.04b
 make clean
 make
@@ -89,7 +90,10 @@ cd -
 echo "### Building BennuGD Modules ###"
 
 cd modules
-./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared
+./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared --libdir=$PREFIX/lib
+
+#cd -
+#cd modules/mod_sound
 make clean
 make
 cd -
@@ -97,7 +101,7 @@ cd -
 #echo "### Building BennuGD Tools ###"
 #
 #cd tools/moddesc
-#./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared
+#./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared --libdir=$PREFIX/lib
 #make clean
 #make
 #cd -

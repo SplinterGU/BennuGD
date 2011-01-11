@@ -1,13 +1,15 @@
-AC_INIT(bennu,1.0.0)
+AC_INIT([bennu],[1.0.0])
 
 AC_CONFIG_MACRO_DIR([m4])
 
-AC_CANONICAL_SYSTEM
+AC_CANONICAL_TARGET
 AC_ARG_PROGRAM
 
 AC_LIBTOOL_WIN32_DLL
 AC_LIBTOOL_DLOPEN
 AC_PROG_LIBTOOL
+
+LT_INIT
 
 AM_MAINTAINER_MODE
 
@@ -20,6 +22,11 @@ AM_CONDITIONAL(HAVE_WINDRES, test "$WINDRES" != "")
 
 dnl Aqui es donde se chequeara el SO, pero solo hay una opcion xD
 case "$target_os" in
+    linux-gnueabi)
+        COMMON_CFLAGS="$COMMON_CFLAGS -DUSE_LIBDES $CFLAGS -I`pwd`/../3rdparty/des-4.04b"
+        COMMON_LDFLAGS="$COMMON_LDFLAGS $LDFLAGS -L`pwd`/../3rdparty/des-4.04b -ldes"
+        ;;
+
     linux-gnu*)
         COMMON_CFLAGS="-Wall -DTARGET_LINUX"
         COMMON_LDFLAGS="$COMMON_LDFLAGS -lc -ldl"
@@ -39,7 +46,7 @@ case "$target_os" in
 
             mipsel)
                 COMMON_CFLAGS="$COMMON_CFLAGS -DUSE_LIBDES $CFLAGS -I`pwd`/../3rdparty/des-4.04b"
-                COMMON_LDFLAGS="$COMMON_LDFLAGS $LDFLAGS -L`pwd`/../3rdparty/des-4.04b -ldes"
+                COMMON_LDFLAGS="$COMMON_LDFLAGS $LDFLAGS -L`pwd`/../3rdparty/des-4.04b -ldes -lz"
                 ;;
 
         esac
@@ -88,9 +95,6 @@ case "$target_os" in
 esac
 
 AM_INIT_AUTOMAKE(1.6)
-#AM_INIT_AUTOMAKE(no-dependencies)
-
-#AC_PROG_INSTALL
 
 dnl Check for compilers
 AC_PROG_CC
@@ -119,7 +123,7 @@ AC_SUBST(COMMON_LDFLAGS)
 AC_SUBST(ZLIBS)
 AC_SUBST(CRYPT_LDFLAGS)
 
-AC_OUTPUT([
+AC_CONFIG_FILES([
 Makefile
 bgdrtm/Makefile
 bgdrtm/src/Makefile
@@ -128,6 +132,7 @@ bgdc/src/Makefile
 bgdi/Makefile
 bgdi/src/Makefile
 ])
+AC_OUTPUT
 
 echo
 echo Bennu $VERSION
