@@ -10286,7 +10286,7 @@ case "$target_os" in
         COMMON_LDFLAGS="$COMMON_LIBS -lc -ldl"
 
         case "$target_cpu" in
-            *i386*)
+            i*86*)
                 COMMON_CFLAGS="$COMMON_CFLAGS -m32"
                 COMMON_LDFLAGS="$COMMON_LDFLAGS -m32 -L/lib32"
                 LM=-lm

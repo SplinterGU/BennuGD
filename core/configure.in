@@ -23,8 +23,8 @@ AM_CONDITIONAL(HAVE_WINDRES, test "$WINDRES" != "")
 dnl Aqui es donde se chequeara el SO, pero solo hay una opcion xD
 case "$target_os" in
     linux-gnueabi)
-        COMMON_CFLAGS="$COMMON_CFLAGS -DUSE_LIBDES $CFLAGS -I`pwd`/../3rdparty/des-4.04b"
-        COMMON_LDFLAGS="$COMMON_LDFLAGS $LDFLAGS -L`pwd`/../3rdparty/des-4.04b -ldes"
+        COMMON_CFLAGS="$COMMON_CFLAGS -DUSE_LIBDES $CFLAGS -I`pwd`/../3rdparty/des-4.04b -Wall -DTARGET_LINUX"
+        COMMON_LDFLAGS="$COMMON_LDFLAGS $LDFLAGS -L`pwd`/../3rdparty/des-4.04b -ldes -lc -ldl"
         ;;
 
     linux-gnu*)
@@ -32,8 +32,8 @@ case "$target_os" in
         COMMON_LDFLAGS="$COMMON_LDFLAGS -lc -ldl"
 
         case "$target_cpu" in
-            *i386*)
-                COMMON_CFLAGS="$COMMON_CFLAGS -m32"
+            i*86)
+                COMMON_CFLAGS="$COMMON_CFLAGS -m32 -DUSE_OPENSSL"
                 COMMON_LDFLAGS="$COMMON_LDFLAGS -m32 -L/lib32"
                 LIBSSL="crypto"
                 USE_OPENSSL=yes
@@ -54,7 +54,7 @@ case "$target_os" in
 
     mingw32)
         INCLUDES="-I/usr/local/include"
-	    COMMON_CFLAGS="$INCLUDES -DTARGET_WIN32 -DWIN32 -D_WIN32"
+	    COMMON_CFLAGS="$INCLUDES -DTARGET_WIN32 -DWIN32 -D_WIN32 -DUSE_OPENSSL"
 	    COMMON_LDFLAGS="-L/usr/local/lib -lshlwapi"
 	    LIBSSL="eay32"
         USE_OPENSSL=yes
@@ -62,7 +62,7 @@ case "$target_os" in
 
     mingw32msvc)
         INCLUDES="-I/usr/i586-mingw32msvc/include"
-	    COMMON_CFLAGS="$INCLUDES -DTARGET_WIN32 -DWIN32 -D_WIN32"
+	    COMMON_CFLAGS="$INCLUDES -DTARGET_WIN32 -DWIN32 -D_WIN32 -DUSE_OPENSSL"
 	    COMMON_LDFLAGS="-L/usr/i586-mingw32msvc/lib -lshlwapi"
         LIBSSL="crypto"
         USE_OPENSSL=yes
@@ -70,7 +70,7 @@ case "$target_os" in
 
     dragonfly*)
         INCLUDES="-I/usr/local/include"
-        COMMON_CFLAGS="-Wall -DTARGET_BSD"
+        COMMON_CFLAGS="-Wall -DTARGET_BSD -DUSE_OPENSSL"
 	    COMMON_LDFLAGS="-L/usr/local/lib -lpthread"
         LIBSSL="crypto"
         USE_OPENSSL=yes
@@ -78,7 +78,7 @@ case "$target_os" in
 
     darwin*)
         INCLUDES="-I/usr/local/include"
-        COMMON_CFLAGS="-Wall -DTARGET_MAC"
+        COMMON_CFLAGS="-Wall -DTARGET_MAC -DUSE_OPENSSL"
 	    COMMON_LDFLAGS="-L/usr/local/lib"
         LIBSSL="crypto"
         USE_OPENSSL=yes
@@ -86,7 +86,7 @@ case "$target_os" in
 
     haiku)
         INCLUDES="-I/usr/local/include"
-        COMMON_CFLAGS="-Wall -DTARGET_BEOS"
+        COMMON_CFLAGS="-Wall -DTARGET_BEOS -DUSE_OPENSSL"
 	    COMMON_LDFLAGS="-L/usr/local/lib"
         LIBSSL="crypto"
         USE_OPENSSL=yes

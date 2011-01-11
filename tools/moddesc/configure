@@ -10660,7 +10660,7 @@ echo "You Machine: ${target_cpu} ${target_os}"
 if test "${with_bennu_prefix+set}" = set; then :
   withval=$with_bennu_prefix; bennu_prefix="$withval"
 else
-  bennu_prefix="/opt/bennu"
+  bennu_prefix="`pwd`/../../core"
 fi
 
 

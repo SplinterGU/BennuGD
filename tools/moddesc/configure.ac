@@ -27,8 +27,7 @@ AC_CONFIG_MACRO_DIR([m4])
 
 echo "You Machine: ${target_cpu} ${target_os}"
 
-AC_ARG_WITH(bennu-prefix,[  --with-bennu-prefix=PFX Prefix where Bennu is installed (optional)],
-            bennu_prefix="$withval", bennu_prefix="/opt/bennu")
+AC_ARG_WITH(bennu-prefix,[  --with-bennu-prefix=PFX Prefix where Bennu is installed (optional)],bennu_prefix="$withval", bennu_prefix="`pwd`/../../core")
 
 case "$target_os" in
     linux-gnu*)
