@@ -61,7 +61,7 @@ static int embedded    = 0;  /* 1 only if this is a stub with an embedded DCB */
  *
  */
 
-int main( int argc, char **argv )
+int main( int argc, char *argv[] )
 {
     char * filename = 0 ;
     char dcbname[__MAX_PATH] ;

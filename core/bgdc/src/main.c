@@ -67,7 +67,7 @@ static char _tmp[128];
 
 /* --------------------------------------------------------------------------- */
 
-int main( int argc, char **argv )
+int main( int argc, char *argv[] )
 {
     time_t curtime;
     struct tm *loctime;
