@@ -785,15 +785,15 @@ int get_new_off( int off, range * offs, int noffs )
 
 void codeblock_adjust(CODEBLOCK * code)
 {
-	int * ptr = code->data ;
-	int n;
+    int * ptr = code->data ;
+    int n;
 
-	while (ptr < code->data + code->current)
-	{
-		if (*ptr == MN_CALL || *ptr == MN_PROC || *ptr == MN_TYPE)
-		{
-		    ptr[1] = newid[ptr[1]];
-		}
+    while (ptr < code->data + code->current)
+    {
+        if (*ptr == MN_CALL || *ptr == MN_PROC || *ptr == MN_TYPE)
+        {
+            ptr[1] = newid[ptr[1]];
+        }
 
         if (MN_TYPEOF(*ptr) == MN_STRING && (*ptr & MN_MASK) == MN_PUSH)
         {
@@ -821,26 +821,26 @@ void codeblock_adjust(CODEBLOCK * code)
         if ( (*ptr & MN_MASK) == MN_SYSCALL || (*ptr & MN_MASK)  == MN_SYSPROC )
         {
             DCB_SYSPROC_CODE2 * s = sysproc_code_ref ;
-            int ex = 0;
-            for ( n = 0; n < dcb.data.NSysProcsCodes && !ex; n++, s++ )
+            int found = 0;
+            for ( n = 0; n < dcb.data.NSysProcsCodes && !found; n++, s++ )
             {
                 if ( s->Code == ptr[1] )
                 {
-                    SYSPROC * p = sysproc_get( newid[ s->Id ]);
-                    for ( ; p->name && !ex; p++ )
+                    SYSPROC * p = sysproc_get( newid[ s->Id ] );
+                    for ( ; p && !found; p = p->next )
                     {
                         if ( p->type == s->Type && p->params == s->Params &&
                              !strcmp( (const char *)s->ParamTypes, p->paramtypes ) )
                         {
                             ptr[1] = p->code;
-                            ex = 1;
+                            found = 1;
                         }
                     }
                 }
             }
         }
-		ptr += MN_PARAMS(*ptr)+1 ;
-	}
+        ptr += MN_PARAMS(*ptr)+1 ;
+    }
 }
 
 /* ---------------------------------------------------------------------- */

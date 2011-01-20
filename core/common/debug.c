@@ -242,7 +242,10 @@ void mnemonic_dump( int i, int param )
         else if ( i == MN_CALL || i == MN_PROC || i == MN_TYPE )
         {
 #ifndef __BGDRTM__
-            printf( "%-8s (%d)", identifier_name( (procdef_get(param))->identifier ), param ) ;
+            if ( libmode )
+                printf( "%-8s (%d)", identifier_name( (procdef_search(param))->identifier ), param ) ;
+            else
+                printf( "%-8s (%d)", identifier_name( (procdef_get(param))->identifier ), param ) ;
 #else
             printf( "%-8s (%d)", procdef_get(param)->name, param ) ;
 #endif
