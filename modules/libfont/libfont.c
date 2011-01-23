@@ -576,7 +576,7 @@ static int get_bitmap_char_width( unsigned char *data, int width, int height, in
                         if ( x*8 + d > max ) max = x * 8 + d ;
                     }
                 }
-                return ( max + 1 < 4 ) ? 4 : max + 1;
+                return ( max < 4 ) ? 4 : max;
 
         case    8:
                 {
@@ -591,7 +591,7 @@ static int get_bitmap_char_width( unsigned char *data, int width, int height, in
                         }
                         if ( max < w ) max = w;
                     }
-                    return ( !max ) ? width * 65 / 100 : max + 1;
+                    return ( !max ) ? width * 65 / 100 : max;
                 }
 
         case    16:
@@ -607,7 +607,7 @@ static int get_bitmap_char_width( unsigned char *data, int width, int height, in
                     }
                     if ( max < w ) max = w;
                 }
-                return ( !max ) ? width * 65 / 100 : max + 1;
+                return ( !max ) ? width * 65 / 100 : max;
             }
 
         case    32:
@@ -623,11 +623,11 @@ static int get_bitmap_char_width( unsigned char *data, int width, int height, in
                     }
                     if ( max < w ) max = w;
                 }
-                return ( !max ) ? width * 65 / 100 : max + 1;
+                return ( !max ) ? width * 65 / 100 : max;
             }
     }
 
-    return width + 1;
+    return width;
 }
 
 /* --------------------------------------------------------------------------- */
