@@ -39,10 +39,10 @@
 
 #include <zlib.h>
 
-#if defined(TARGET_CAANOO) || defined(TARGET_GP2X_WIZ)
-#define __MAX_PATH          260
-#else
+#ifdef _WIN32
 #define __MAX_PATH          32768
+#else
+#define __MAX_PATH          260
 #endif
 
 /*

@@ -84,11 +84,11 @@ echo "### Building BennuGD Core ###"
 cd core
 ./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared
 make clean
-cd -
-cd core/bgdrtm
-make
-cd -
-cd core/bgdi
+#cd -
+#cd core/bgdrtm
+#make
+#cd -
+#cd core/bgdi
 make
 cd -
 
@@ -113,7 +113,7 @@ echo "### Copying files to bin folder ###"
 mkdir -p bin/$TARGET 2>/dev/null
 cp 3rdparty/des-4.04b/libdes.so bin/$TARGET
 cp core/bgdi/src/.libs/bgdi bin/$TARGET
-#cp core/bgdc/src/bgdc bin/$TARGET
+cp core/bgdc/src/bgdc bin/$TARGET
 cp core/bgdrtm/src/.libs/libbgdrtm.so bin/$TARGET
 cp modules/mod*/.libs/mod*.so bin/$TARGET
 cp modules/lib*/.libs/lib*.so bin/$TARGET
