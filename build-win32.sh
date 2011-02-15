@@ -41,7 +41,7 @@ cp core/bgdc/src/.libs/bgdc.exe bin/$TARGET
 cp core/bgdrtm/src/.libs/libbgdrtm.dll bin/$TARGET
 cp modules/mod*/.libs/mod*.dll bin/$TARGET
 cp modules/lib*/.libs/lib*.dll bin/$TARGET
-cp tools/moddesc/moddesc.exe bin/$TARGET
+cp tools/moddesc/.libs/moddesc.exe bin/$TARGET
 
 strip bin/$TARGET/*
 
