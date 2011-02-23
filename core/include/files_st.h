@@ -37,7 +37,9 @@
 #define F_FILE   2
 #define F_GZFILE 3
 
+#ifndef NO_ZLIB
 #include <zlib.h>
+#endif
 
 #ifdef _WIN32
 #define __MAX_PATH          32768
@@ -73,7 +75,9 @@ typedef struct
     int     type ;
 
     FILE *  fp ;
+#ifndef NO_ZLIB
     gzFile  gz ;
+#endif
     int     n ;
     int     error ;
 	char	name[__MAX_PATH];

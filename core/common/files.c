@@ -110,6 +110,7 @@ int file_read( file * fp, void * buffer, int len )
         return result ;
     }
 
+#ifndef NO_ZLIB
     if ( fp->type == F_GZFILE )
     {
         int result = gzread( fp->gz, buffer, len ) ;
@@ -117,6 +118,7 @@ int file_read( file * fp, void * buffer, int len )
         if ( result < 0 ) result = 0;
         return result ;
     }
+#endif
 
     return fread( buffer, 1, len, fp->fp ) ;
 }
@@ -193,10 +195,12 @@ int file_qgets( file * fp, char * buffer, int len )
         if ( l == 0 ) return 0 ;
 
     }
+#ifndef NO_ZLIB
     else if ( fp->type == F_GZFILE )
     {
         result = gzgets( fp->gz, buffer, len ) ;
     }
+#endif
     else
     {
         result = fgets( buffer, len, fp->fp );
@@ -266,10 +270,12 @@ int file_gets( file * fp, char * buffer, int len )
 
         if ( l == 0 ) return 0 ;
     }
+#ifndef NO_ZLIB
     else if ( fp->type == F_GZFILE )
     {
         result = gzgets( fp->gz, buffer, len ) ;
     }
+#endif
     else
     {
         result = fgets( buffer, len, fp->fp );
@@ -487,12 +493,14 @@ int file_write( file * fp, void * buffer, int len )
         return result ;
     }
 
+#ifndef NO_ZLIB
     if ( fp->type == F_GZFILE )
     {
         int result = gzwrite( fp->gz, buffer, len ) ;
         if (( fp->error = ( result < 0 ) ) != 0 ) result = 0 ;
         return ( result < len ) ? 0 : len ;
     }
+#endif
 
     return fwrite( buffer, 1, len, fp->fp ) ;
 }
@@ -506,6 +514,7 @@ int file_size( file * fp )
     if ( fp->type == F_XFILE ) return x_file[fp->n].size ;
 
     pos = file_pos( fp );
+#ifndef NO_ZLIB
     if ( fp->type == F_GZFILE )
     {
         char buffer[8192];
@@ -513,6 +522,7 @@ int file_size( file * fp )
         while ( !file_eof( fp ) ) size += file_read( fp, buffer, sizeof(buffer) );
     }
     else
+#endif
     {
         file_seek(fp, 0, SEEK_END ) ;
         size = file_pos( fp ) ;
@@ -529,8 +539,10 @@ int file_pos( file * fp )
     if ( fp->type == F_XFILE )
         return fp->pos - x_file[fp->n].offset ;
 
+#ifndef NO_ZLIB
     if ( fp->type == F_GZFILE )
         return gztell( fp->gz ) ;
+#endif
 
     return ftell( fp->fp ) ;
 }
@@ -555,11 +567,13 @@ int file_seek( file * fp, int pos, int where )
         return pos ;
     }
 
+#ifndef NO_ZLIB
     if ( fp->type == F_GZFILE )
     {
         assert( fp->gz );
         return gzseek( fp->gz, pos, where ) ;
     }
+#endif
 
     assert( fp->fp );
     return fseek( fp->fp, pos, where ) ;
@@ -575,9 +589,11 @@ void file_rewind( file * fp )
             fp->pos = x_file[fp->n].offset ;
             break;
 
+#ifndef NO_ZLIB
         case F_GZFILE:
             gzrewind( fp->gz ) ;
             break;
+#endif
 
         default:
             rewind( fp->fp ) ;
@@ -591,6 +607,7 @@ static int open_raw( file * f, const char * filename, const char * mode )
     char    _mode[5];
     char    *p;
 
+#ifndef NO_ZLIB
     if ( !strchr( mode, '0' ) )
     {
         f->type = F_GZFILE ;
@@ -598,6 +615,7 @@ static int open_raw( file * f, const char * filename, const char * mode )
         f->eof  = 0 ;
         if ( f->gz ) return 1 ;
     }
+#endif
 
     p = _mode;
     while ( *mode )
@@ -713,7 +731,9 @@ void file_close( file * fp )
 {
     if ( fp == NULL ) return;
     if ( fp->type == F_FILE ) fclose( fp->fp ) ;
+#ifndef NO_ZLIB
     if ( fp->type == F_GZFILE ) gzclose( fp->gz ) ;
+#endif
     opened_files--;
     free( fp ) ;
 }
@@ -774,11 +794,13 @@ int file_eof( file * fp )
         return fp->eof ? 1 : 0;
     }
 
+#ifndef NO_ZLIB
     if ( fp->type == F_GZFILE )
     {
         if ( fp->error ) return 1 ;
         return gzeof( fp->gz ) ? 1 : 0;
     }
+#endif
 
     return feof( fp->fp ) ? 1 : 0;
 }
