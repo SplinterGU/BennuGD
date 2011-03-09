@@ -208,34 +208,7 @@ DCB_VAR * read_and_arrange_varspace( file * fp, int count )
 int dcb_load_from( file * fp, int offset )
 {
     unsigned int n ;
-    char *path, *ptr ;
     uint32_t size;
-
-#ifdef WIN32
-    int base_drive ;
-#endif
-
-    /* Cambia al directorio del DCB con chdir */
-    path = dir_path_convert( fp->name ) ;
-    for ( ptr = path + strlen( path ) ; ptr >= path ; ptr-- )
-        if ( *ptr == '/' || *ptr == '\\' ) break ;
-    ptr[1] = 0 ;
-    chdir( path ) ;
-
-    /* En WIN32, cambia a la unidad del DCB */
-
-#ifdef WIN32
-    if ( path[0] && path[1] == ':' )
-    {
-        if ( path[0] >= 'A' && path[0] <= 'Z' )
-            base_drive = path[0] - 'A' + 1 ;
-
-        if ( path[0] >= 'a' && path[0] <= 'z' )
-            base_drive = path[0] - 'a' + 1 ;
-
-        _chdrive( base_drive );
-    }
-#endif
 
     /* Lee el contenido del fichero */
 

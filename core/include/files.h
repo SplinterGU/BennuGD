@@ -92,4 +92,7 @@ extern void   xfile_init       (int maxfiles);
 
 extern int    opened_files;
 
+extern char * getfullpath( char *rel_path );
+extern char * whereis( char *file );
+
 #endif

@@ -38,6 +38,7 @@
 #include "bgdi.h"
 #include "bgdrtm.h"
 #include "xstrings.h"
+#include "dirs.h"
 
 /* ---------------------------------------------------------------------- */
 
@@ -63,29 +64,54 @@ static int embedded    = 0;  /* 1 only if this is a stub with an embedded DCB */
 
 int main( int argc, char *argv[] )
 {
-    char * filename = 0 ;
-    char dcbname[__MAX_PATH] ;
-    INSTANCE * mainproc_running ;
-    int i, j ;
-    char * ptr ;
+    char * filename = NULL, dcbname[ __MAX_PATH ], *ptr ;
+    int i, j, ret = -1;
     file * fp = NULL;
-    int ret = -1;
-
+    INSTANCE * mainproc_running;
     dcb_signature dcb_signature;
 
-    /* Find out if we are calling bgdi.exe or whatever.exe */
-
-    ptr = argv[0] + strlen( argv[0] ) ;
+    /* get my executable name */
+    ptr = argv[0] + strlen( argv[0] );
     while ( ptr > argv[0] && ptr[-1] != '\\' && ptr[-1] != '/' ) ptr-- ;
-    standalone = ( strncmpi( ptr, "bgdi", 4 ) == 0 ) ;
+    appexename = strdup( ptr );
+
+    /* get executable full pathname  */
+    appexefullpath = getfullpath( argv[0] );
+    if ( ( !strchr( argv[0], '\\' ) && !strchr( argv[0], '/' ) ) && !file_exists( appexefullpath ) )
+    {
+        char *p = whereis( appexename );
+        if ( p )
+        {
+            char * tmp = calloc( 1, strlen( p ) + strlen( appexename ) + 2 );
+            free( appexefullpath );
+            sprintf( tmp, "%s/%s", p, appexename );
+            appexefullpath = getfullpath( tmp );
+            free( tmp );
+        }
+    }
+
+    /* get pathname of executable */
+    ptr = strstr( appexefullpath, appexename );
+    appexepath = calloc( 1, ptr - appexefullpath + 1 );
+    strncpy( appexepath, appexefullpath, ptr - appexefullpath );
+
+#ifdef _WIN32
+    appname = calloc( 1, strlen( appexename ) - 3 );
+    strncpy( appname, appexename, strlen( appexename ) - 4 );
+#else
+    appname = strdup( appexename );
+#endif
+
+    standalone = ( strncmpi( appexename, "bgdi", 4 ) == 0 ) ;
+
+    /* add binary path */
+    file_addp( appexepath );
 
     if ( !standalone )
     {
         /* Hand-made interpreter: search for DCB at EOF */
-
-        if ( file_exists( argv[0] ) ) fp = file_open( argv[0], "rb0" );
-
-        if ( fp != NULL )
+        fp = file_open( argv[0], "rb0" );
+        if ( fp )
         {
             file_seek( fp, -( int )sizeof( dcb_signature ), SEEK_END );
             file_read( fp, &dcb_signature, sizeof( dcb_signature ) );
@@ -93,21 +119,11 @@ int main( int argc, char *argv[] )
             if ( strcmp( dcb_signature.magic, DCB_STUB_MAGIC ) == 0 )
             {
                 ARRANGE_DWORD( &dcb_signature.dcb_offset );
-
-                filename = argv[0];
                 embedded = 1;
             }
         }
 
-        if ( !embedded )
-        {
-            /* No embedded DCB; search for a DCB with similar name */
-
-            filename = ptr ;
-            while ( *ptr ) ptr++ ; ptr--;
-            while ( ptr > filename && *ptr != '.' ) ptr-- ;
-            if ( *ptr == '.' ) * ptr = 0 ;
-        }
+        filename = appname;
     }
 
     if ( standalone )
@@ -182,7 +198,12 @@ int main( int argc, char *argv[] )
     /* Init application title for windowed modes */
 
     strcpy( dcbname, filename ) ;
-    appname = strdup( filename ) ;
+
+    if ( appname && filename != appname )
+    {
+        free( appname );
+        appname = strdup( filename ) ;
+    }
 
     if ( !embedded )
     {
@@ -237,6 +258,11 @@ int main( int argc, char *argv[] )
     }
 
     bgdrtm_exit( ret );
+
+    free( appexename        );
+    free( appexepath        );
+    free( appexefullpath    );
+    free( appname           );
 
     return ret;
 }

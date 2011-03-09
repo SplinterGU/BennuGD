@@ -48,6 +48,9 @@ extern PROCDEF * mainproc ;
 extern int procdef_count ;
 
 extern char *appname;
+extern char *appexename;
+extern char *appexepath;
+extern char *appexefullpath;
 
 extern int debug ;          /* 1 if running in debug mode                    */
 

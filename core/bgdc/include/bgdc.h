@@ -77,6 +77,10 @@
 
 extern char * main_path ;
 
+extern char * appexename ;
+extern char * appexepath ;
+extern char * appexefullpath ;
+
 extern int autoinclude ;    /* Incluye ficheros en el DCB automáticamente */
 extern int imports[] ;      /* Códigos de cadena con nombres de imports */
 extern int nimports ;       /* Número de imports */

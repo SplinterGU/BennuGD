@@ -35,7 +35,7 @@
 
 #include "files.h"
 
-#define MAX_POSSIBLE_PATHS  32
+#define MAX_POSSIBLE_PATHS  128
 
 char * possible_paths[MAX_POSSIBLE_PATHS] = { "", 0 } ;
 
@@ -818,3 +818,50 @@ FILE * file_fp( file * f )
 
     return f->fp ;
 }
+
+/* ------------------------------------------------------------------------------------ */
+
+char * getfullpath( char *rel_path )
+{
+    char fullpath[ __MAX_PATH ] = "";
+#ifdef _WIN32
+    GetFullPathName( rel_path, sizeof( fullpath ), &fullpath, NULL );
+#else
+    realpath( rel_path, fullpath );
+#endif
+    if ( *fullpath ) return strdup( fullpath );
+    return NULL;
+}
+
+/* ------------------------------------------------------------------------------------ */
+
+#ifdef _WIN32
+    #define ENV_PATH_SEP    ';'
+#else
+    #define ENV_PATH_SEP    ':'
+#endif
+
+char * whereis( char *file )
+{
+    char * path = getenv( "PATH" ), *pact = path, *p;
+    char fullname[ __MAX_PATH ];
+
+    while ( pact && *pact && ( p = strchr( pact, ENV_PATH_SEP ) ) )
+    {
+        *p = '\0';
+        sprintf( fullname, "%s/%s", pact, file );
+        if ( file_exists( fullname ) )
+        {
+            pact = strdup( pact );
+            *p = ENV_PATH_SEP;
+            return ( pact );
+        }
+
+        *p = ENV_PATH_SEP;
+        pact = p + 1;
+    }
+
+    return NULL;
+}
+
+/* ------------------------------------------------------------------------------------ */

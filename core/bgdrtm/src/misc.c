@@ -46,11 +46,14 @@
 
 /* --------------------------------------------------------------------------- */
 
-char * appname = NULL;
+char * appname          = NULL;
+char * appexename       = NULL;
+char * appexepath       = NULL;
+char * appexefullpath   = NULL;
 
 /* --------------------------------------------------------------------------- */
 
-int debug     = 0;  /* 1 if running in debug mode      */
+int debug = 0;  /* 1 if running in debug mode      */
 
 /* --------------------------------------------------------------------------- */
 

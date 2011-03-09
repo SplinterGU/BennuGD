@@ -443,6 +443,19 @@ static char * modules_exts[] =
     NULL
 } ;
 
+static char * dlsearchpath[] =
+{
+    "runtime",
+    "modules",
+    "mod",
+    "mods",
+    "lib",
+    "libs",
+    "extensions",
+    "plugins",
+    NULL
+};
+
 static void import_module( const char * filename )
 {
     int         libid ;
@@ -455,7 +468,7 @@ static void import_module( const char * filename )
     char        ** modules_dependency = NULL;
     char        ** types_def = NULL;
 
-    char        soname[1024];
+    char        soname[ __MAX_PATH ], fullsoname[ __MAX_PATH ], **spath ;
     char        * ptr;
     char        ** pex;
 
@@ -505,7 +518,18 @@ static void import_module( const char * filename )
 
     strcat( soname, DLLEXT );
 
+    fullsoname[0] = '\0';
+
     library  = dlibopen( filename ) ;
+
+    spath = dlsearchpath;
+    while( !library && spath && *spath )
+    {
+        sprintf( fullsoname, "%s%s/%s", appexepath, *spath, filename );
+        library  = dlibopen( fullsoname ) ;
+        spath++;
+    }
+
     if ( !library ) compile_error( MSG_LIBRARY_NOT_FOUND, filename ) ;
 
     modules_dependency = ( char ** ) _dlibaddr( library, "modules_dependency" ) ;

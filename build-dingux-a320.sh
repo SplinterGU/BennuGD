@@ -39,7 +39,7 @@ RANLIB="${DINGUX}/bin/${HOST}-ranlib"
 LD="${DINGUX}/bin/${HOST}-ld"
 
 # -msoft-float -funroll-loops -ffast-math -fomit-frame-pointer -fno-strength-reduce -finline-functions -G0 -march=mips32 -mtune=r4600 -mno-mips16
-CFLAGS="-D_REENTRANT -DTARGET_DINGUX_A320 -O2 -I${DINGUX}/include -msoft-float -funroll-loops -ffast-math -fomit-frame-pointer -fno-strength-reduce -finline-functions -G0 -march=mips32 -mtune=r4600 -mno-mips16"
+CFLAGS="-DNO_ZLIB -D_REENTRANT -DTARGET_DINGUX_A320 -O2 -I${DINGUX}/include -msoft-float -funroll-loops -ffast-math -fomit-frame-pointer -fno-strength-reduce -finline-functions -G0 -march=mips32 -mtune=r4600 -mno-mips16"
 LDFLAGS="-L${DINGUX}/lib -D_REENTRANT"
 PKG_CONFIG="${DINGUX}/bin/pkg-config"
 

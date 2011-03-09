@@ -66,6 +66,7 @@ static int dlibclose( dlibhandle * handle )
 
 static dlibhandle * dlibopen( const char * fname )
 {
+    char *f;
 #ifdef _WIN32
     void * hnd = LoadLibrary( fname );
 #else
@@ -90,7 +91,9 @@ static dlibhandle * dlibopen( const char * fname )
             return NULL;
         }
 
-        dlib->fname = strdup( fname );
+        f = fname + strlen( fname );
+        while ( f > fname && f[-1] != '\\' && f[-1] != '/' ) f-- ;
+        dlib->fname = strdup( f );
         if ( !dlib->fname )
         {
             __dliberr = "Could not load library." ;
