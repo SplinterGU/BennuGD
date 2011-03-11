@@ -66,6 +66,7 @@ typedef struct _procdef
 
     int         imported; /* this proc is a libproc */
 
+    BASETYPE    paramname[MAX_PARAMS] ;
     BASETYPE    paramtype[MAX_PARAMS] ;
     BASETYPE    type ;
 
