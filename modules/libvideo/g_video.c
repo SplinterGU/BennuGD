@@ -69,49 +69,60 @@ int * scale_resolution_table_h = NULL;
 int scale_resolution_aspectratio = 0;
 int scale_resolution_orientation = 0;
 
+int scale_resolution_aspectratio_offx = 0;
+int scale_resolution_aspectratio_offy = 0;
+
 /* --------------------------------------------------------------------------- */
 
 DLCONSTANT  __bgdexport( libvideo, constants_def )[] =
 {
-    { "M320X200",           TYPE_DWORD, 3200200             },
-    { "M320X240",           TYPE_DWORD, 3200240             },
-    { "M320X400",           TYPE_DWORD, 3200400             },
-    { "M360X240",           TYPE_DWORD, 3600240             },
-    { "M376X282",           TYPE_DWORD, 3760282             },
-    { "M400X300",           TYPE_DWORD, 4000300             },
-    { "M512X384",           TYPE_DWORD, 5120384             },
-    { "M640X400",           TYPE_DWORD, 6400400             },
-    { "M640X480",           TYPE_DWORD, 6400480             },
-    { "M800X600",           TYPE_DWORD, 8000600             },
-    { "M1024X768",          TYPE_DWORD, 10240768            },
-    { "M1280X1024",         TYPE_DWORD, 12801024            },
+    { "M320X200"            , TYPE_DWORD    , 3200200               },
+    { "M320X240"            , TYPE_DWORD    , 3200240               },
+    { "M320X400"            , TYPE_DWORD    , 3200400               },
+    { "M360X240"            , TYPE_DWORD    , 3600240               },
+    { "M376X282"            , TYPE_DWORD    , 3760282               },
+    { "M400X300"            , TYPE_DWORD    , 4000300               },
+    { "M512X384"            , TYPE_DWORD    , 5120384               },
+    { "M640X400"            , TYPE_DWORD    , 6400400               },
+    { "M640X480"            , TYPE_DWORD    , 6400480               },
+    { "M800X600"            , TYPE_DWORD    , 8000600               },
+    { "M1024X768"           , TYPE_DWORD    , 10240768              },
+    { "M1280X1024"          , TYPE_DWORD    , 12801024              },
 
-    { "MODE_WINDOW",        TYPE_DWORD, MODE_WINDOW         },
-    { "MODE_2XSCALE",       TYPE_DWORD, MODE_2XSCALE        },
-    { "MODE_FULLSCREEN",    TYPE_DWORD, MODE_FULLSCREEN     },
-    { "MODE_DOUBLEBUFFER",  TYPE_DWORD, MODE_DOUBLEBUFFER   },
-    { "MODE_HARDWARE",      TYPE_DWORD, MODE_HARDWARE       },
+    { "MODE_WINDOW"         , TYPE_DWORD    , MODE_WINDOW           },
+    { "MODE_2XSCALE"        , TYPE_DWORD    , MODE_2XSCALE          },
+    { "MODE_FULLSCREEN"     , TYPE_DWORD    , MODE_FULLSCREEN       },
+    { "MODE_DOUBLEBUFFER"   , TYPE_DWORD    , MODE_DOUBLEBUFFER     },
+    { "MODE_HARDWARE"       , TYPE_DWORD    , MODE_HARDWARE         },
 
-    { "MODE_WAITVSYNC",     TYPE_DWORD, MODE_WAITVSYNC      },
-    { "WAITVSYNC",          TYPE_DWORD, MODE_WAITVSYNC      },
+    { "MODE_WAITVSYNC"      , TYPE_DWORD    , MODE_WAITVSYNC        },
+    { "WAITVSYNC"           , TYPE_DWORD    , MODE_WAITVSYNC        },
 
-    { "DOUBLE_BUFFER",      TYPE_DWORD, MODE_DOUBLEBUFFER   },  /* Obsolete */
-    { "HW_SURFACE",         TYPE_DWORD, MODE_HARDWARE       },  /* Obsolete */
+    { "DOUBLE_BUFFER"       , TYPE_DWORD    , MODE_DOUBLEBUFFER     },  /* Obsolete */
+    { "HW_SURFACE"          , TYPE_DWORD    , MODE_HARDWARE         },  /* Obsolete */
 
-    { "MODE_8BITS",         TYPE_DWORD, 8                   },
-    { "MODE_16BITS",        TYPE_DWORD, 16                  },
-    { "MODE_32BITS",        TYPE_DWORD, 32                  },
+    { "MODE_8BITS"          , TYPE_DWORD    , 8                     },
+    { "MODE_16BITS"         , TYPE_DWORD    , 16                    },
+    { "MODE_32BITS"         , TYPE_DWORD    , 32                    },
 
-    { "MODE_8BPP",          TYPE_DWORD, 8                   },
-    { "MODE_16BPP",         TYPE_DWORD, 16                  },
-    { "MODE_32BPP",         TYPE_DWORD, 32                  },
+    { "MODE_8BPP"           , TYPE_DWORD    , 8                     },
+    { "MODE_16BPP"          , TYPE_DWORD    , 16                    },
+    { "MODE_32BPP"          , TYPE_DWORD    , 32                    },
 
-    { "MODE_MODAL",         TYPE_DWORD, MODE_MODAL          },  /* GRAB INPU */
-    { "MODE_FRAMELESS",     TYPE_DWORD, MODE_FRAMELESS      },  /* FRAMELESS window */
+    { "MODE_MODAL"          , TYPE_DWORD    , MODE_MODAL            },  /* GRAB INPU */
+    { "MODE_FRAMELESS"      , TYPE_DWORD    , MODE_FRAMELESS        },  /* FRAMELESS window */
 
-    { "SCALE_NONE",         TYPE_DWORD, SCALE_NONE          },
+    { "SCALE_NONE"          , TYPE_DWORD    , SCALE_NONE            },
 
-    { NULL          , 0         ,  0  }
+    { "SRO_NORMAL"          , TYPE_DWORD    , SRO_NORMAL            },
+    { "SRO_LEFT"            , TYPE_DWORD    , SRO_LEFT              },
+    { "SRO_DOWN"            , TYPE_DWORD    , SRO_DOWN              },
+    { "SRO_RIGHT"           , TYPE_DWORD    , SRO_RIGHT             },
+
+    { "SRA_STRETCH"         , TYPE_DWORD    , SRA_STRETCH           },
+    { "SRA_PRESERVE"        , TYPE_DWORD    , SRA_PRESERVE          },
+
+    { NULL                  , 0             , 0                     }
 } ;
 
 /* --------------------------------------------------------------------------- */
@@ -317,7 +328,7 @@ int gr_set_mode( int width, int height, int depth )
         scale_resolution_table_h = NULL;
     }
 
-    if ( scale_resolution != 0 )
+    if ( scale_resolution )
     {
         surface_width  = scale_resolution / 10000 ;
         surface_height = scale_resolution % 10000 ;
@@ -359,12 +370,12 @@ int gr_set_mode( int width, int height, int depth )
     if ( scale_screen ) SDL_FreeSurface( scale_screen ) ;
     if ( screen ) SDL_FreeSurface( screen ) ;
 
-    if ( scale_resolution != 0 )
+    if ( scale_resolution )
     {
         switch ( scale_resolution_orientation )
         {
-            case    1:
-            case    3:
+            case    SRO_LEFT:
+            case    SRO_RIGHT:
             {
                     int aux =  surface_width;
                     surface_width = surface_height;
@@ -391,13 +402,15 @@ int gr_set_mode( int width, int height, int depth )
         int     lim_w = 0, lim_h = 0, pitch_w = 0, pitch_h = 0;
         double  fw = 0.0, fh = 0.0, fx = 0.0, fy = 0.0;
         int     h, w;
-        int     offx = 0, offy = 0;
         int     start_w = 0, start_h = 0, fix = 1;
+
+        scale_resolution_aspectratio_offx = 0;
+        scale_resolution_aspectratio_offy = 0;
 
         switch ( scale_resolution_orientation )
         {
-            case    0:
-            case    2:
+            case    SRO_NORMAL:
+            case    SRO_DOWN:
                     lim_w = screen->w;
                     lim_h = screen->h;
 
@@ -408,8 +421,8 @@ int gr_set_mode( int width, int height, int depth )
                     fh = (double)screen->h / (double)scale_screen->h;
                     break;
 
-            case    1:
-            case    3:
+            case    SRO_LEFT:
+            case    SRO_RIGHT:
                     lim_w = screen->h;
                     lim_h = screen->w;
 
@@ -423,34 +436,34 @@ int gr_set_mode( int width, int height, int depth )
 
         switch ( scale_resolution_orientation )
         {
-            case    0:
-            case    1:
+            case    SRO_NORMAL:
+            case    SRO_LEFT:
                     start_w = 0;
                     start_h = 0;
                     fix = -1;
                     break;
 
-            case    2:
-            case    3:
+            case    SRO_DOWN:
+            case    SRO_RIGHT:
                     start_w = scale_screen->w - 1;
                     start_h = scale_screen->h - 1;
                     fix = 1;
                     break;
         }
 
-        if ( scale_resolution_aspectratio )
+        if ( scale_resolution_aspectratio == SRA_PRESERVE )
         {
             if ( scale_screen->w > scale_screen->h )
             {
                 fw = fh;
-                offx = ( scale_screen->w - lim_w / fw ) / 2 ;
-                offy = 0;
+                scale_resolution_aspectratio_offx = ( scale_screen->w - lim_w / fw ) / 2 ;
+                scale_resolution_aspectratio_offy = 0;
             }
             else
             {
                 fh = fw;
-                offx = 0;
-                offy = ( scale_screen->h - lim_h / fh ) / 2 ;
+                scale_resolution_aspectratio_offx = 0;
+                scale_resolution_aspectratio_offy = ( scale_screen->h - lim_h / fh ) / 2 ;
             }
         }
 
@@ -459,7 +472,7 @@ int gr_set_mode( int width, int height, int depth )
 
         for ( w = 0; w < scale_screen->w; w++ )
         {
-            if ( w < offx )
+            if ( w < scale_resolution_aspectratio_offx )
                 scale_resolution_table_w[ start_w - w * fix ] = -1;
             else
             {
@@ -470,7 +483,7 @@ int gr_set_mode( int width, int height, int depth )
 
         for ( h = 0; h < scale_screen->h; h++ )
         {
-            if ( h < offy )
+            if ( h < scale_resolution_aspectratio_offy )
                 scale_resolution_table_h[ start_h - h * fix ] = -1;
             else
             {

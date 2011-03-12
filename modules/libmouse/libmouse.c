@@ -141,7 +141,7 @@ static void do_mouse_events()
         ( last_mouse_x != -1 && GLOINT32( libmouse, MOUSEX ) != last_mouse_x ) ||
         ( last_mouse_y != -1 && GLOINT32( libmouse, MOUSEY ) != last_mouse_y ) )
     {
-        if ( scale_resolution != 0 )
+        if ( scale_resolution )
         {
             SDL_WarpMouse( GLOINT32( libmouse, MOUSEX ) / ( (double)screen->w / (double)scale_screen->w ), GLOINT32( libmouse, MOUSEY ) / ( (double)screen->h / (double)scale_screen->h ) ) ;
         }
@@ -165,10 +165,86 @@ static void do_mouse_events()
         switch ( e.type )
         {
             case SDL_MOUSEMOTION:
-                if ( scale_resolution != 0 )
+                if ( scale_resolution )
                 {
-                    GLOINT32( libmouse, MOUSEX ) = e.motion.x * ( (double)screen->w / (double)scale_screen->w );
-                    GLOINT32( libmouse, MOUSEY ) = e.motion.y * ( (double)screen->h / (double)scale_screen->h );
+                    if ( scale_resolution_aspectratio == SRA_PRESERVE )
+                    {
+                        if ( scale_screen->w > scale_screen->h )
+                        {
+                            switch( scale_resolution_orientation )
+                            {
+                                case    SRO_NORMAL:
+                                        GLOINT32( libmouse, MOUSEX ) = (                           e.motion.x - scale_resolution_aspectratio_offx ) * ( (double)screen->w / ( (double)scale_screen->w - scale_resolution_aspectratio_offx * 2 ) );
+                                        GLOINT32( libmouse, MOUSEY ) = (                           e.motion.y - scale_resolution_aspectratio_offy ) * ( (double)screen->h / ( (double)scale_screen->h - scale_resolution_aspectratio_offy * 2 ) );
+                                        break;
+
+                                case    SRO_LEFT:
+                                        GLOINT32( libmouse, MOUSEX ) = ( (double)scale_screen->h - e.motion.y - scale_resolution_aspectratio_offy ) * ( (double)screen->w / ( (double)scale_screen->h - scale_resolution_aspectratio_offy * 2 ) );
+                                        GLOINT32( libmouse, MOUSEY ) = (                           e.motion.x - scale_resolution_aspectratio_offx ) * ( (double)screen->h / ( (double)scale_screen->w - scale_resolution_aspectratio_offx * 2 ) );
+                                        break;
+
+                                case    SRO_DOWN:
+                                        GLOINT32( libmouse, MOUSEX ) = ( (double)scale_screen->w - e.motion.x - scale_resolution_aspectratio_offx ) * ( (double)screen->w / ( (double)scale_screen->w - scale_resolution_aspectratio_offx * 2 ) );
+                                        GLOINT32( libmouse, MOUSEY ) = ( (double)scale_screen->h - e.motion.y - scale_resolution_aspectratio_offy ) * ( (double)screen->h / ( (double)scale_screen->h - scale_resolution_aspectratio_offy * 2 ) );
+                                        break;
+
+                                case    SRO_RIGHT:
+                                        GLOINT32( libmouse, MOUSEX ) = (                           e.motion.y - scale_resolution_aspectratio_offy ) * ( (double)screen->w / ( (double)scale_screen->h - scale_resolution_aspectratio_offy * 2 ) );
+                                        GLOINT32( libmouse, MOUSEY ) = ( (double)scale_screen->w - e.motion.x - scale_resolution_aspectratio_offx ) * ( (double)screen->h / ( (double)scale_screen->w - scale_resolution_aspectratio_offx * 2 ) );
+                                        break;
+                            }
+                        }
+                        else
+                        {
+                            switch( scale_resolution_orientation )
+                            {
+                                case    SRO_NORMAL:
+                                        GLOINT32( libmouse, MOUSEX ) = (                           e.motion.x - scale_resolution_aspectratio_offx ) * ( (double)screen->w / ( (double)scale_screen->w - scale_resolution_aspectratio_offx * 2 ) );
+                                        GLOINT32( libmouse, MOUSEY ) = (                           e.motion.y - scale_resolution_aspectratio_offy ) * ( (double)screen->h / ( (double)scale_screen->h - scale_resolution_aspectratio_offy * 2 ) );
+                                        break;
+
+                                case    SRO_LEFT:
+                                        GLOINT32( libmouse, MOUSEX ) = ( (double)scale_screen->h - e.motion.y - scale_resolution_aspectratio_offy ) * ( (double)screen->w / ( (double)scale_screen->h - scale_resolution_aspectratio_offy * 2 ) );
+                                        GLOINT32( libmouse, MOUSEY ) = (                           e.motion.x - scale_resolution_aspectratio_offx ) * ( (double)screen->h / ( (double)scale_screen->w - scale_resolution_aspectratio_offx * 2 ) );
+                                        break;
+
+                                case    SRO_DOWN:
+                                        GLOINT32( libmouse, MOUSEX ) = ( (double)scale_screen->w - e.motion.x - scale_resolution_aspectratio_offx ) * ( (double)screen->w / ( (double)scale_screen->w - scale_resolution_aspectratio_offx * 2 ) );
+                                        GLOINT32( libmouse, MOUSEY ) = ( (double)scale_screen->h - e.motion.y - scale_resolution_aspectratio_offy ) * ( (double)screen->h / ( (double)scale_screen->h - scale_resolution_aspectratio_offy * 2 ) );
+                                        break;
+
+                                case    SRO_RIGHT:
+                                        GLOINT32( libmouse, MOUSEX ) = (                           e.motion.y - scale_resolution_aspectratio_offy ) * ( (double)screen->w / ( (double)scale_screen->h - scale_resolution_aspectratio_offy * 2 ) );
+                                        GLOINT32( libmouse, MOUSEY ) = ( (double)scale_screen->w - e.motion.x - scale_resolution_aspectratio_offx ) * ( (double)screen->h / ( (double)scale_screen->w - scale_resolution_aspectratio_offx * 2 ) );
+                                        break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        switch( scale_resolution_orientation )
+                        {
+                            case    SRO_NORMAL:
+                                    GLOINT32( libmouse, MOUSEX ) = (                           e.motion.x ) * ( (double)screen->w / (double)scale_screen->w );
+                                    GLOINT32( libmouse, MOUSEY ) = (                           e.motion.y ) * ( (double)screen->h / (double)scale_screen->h );
+                                    break;
+
+                            case    SRO_LEFT:
+                                    GLOINT32( libmouse, MOUSEX ) = ( (double)scale_screen->h - e.motion.y ) * ( (double)screen->w / (double)scale_screen->h );
+                                    GLOINT32( libmouse, MOUSEY ) = (                           e.motion.x ) * ( (double)screen->h / (double)scale_screen->w );
+                                    break;
+
+                            case    SRO_DOWN:
+                                    GLOINT32( libmouse, MOUSEX ) = ( (double)scale_screen->w - e.motion.x ) * ( (double)screen->w / (double)scale_screen->w );
+                                    GLOINT32( libmouse, MOUSEY ) = ( (double)scale_screen->h - e.motion.y ) * ( (double)screen->h / (double)scale_screen->h );
+                                    break;
+
+                            case    SRO_RIGHT:
+                                    GLOINT32( libmouse, MOUSEX ) = (                           e.motion.y ) * ( (double)screen->w / (double)scale_screen->h );
+                                    GLOINT32( libmouse, MOUSEY ) = ( (double)scale_screen->w - e.motion.x ) * ( (double)screen->h / (double)scale_screen->w );
+                                    break;
+                        }
+                    }
                 }
                 else if ( enable_scale || scale_mode != SCALE_NONE )
                 {

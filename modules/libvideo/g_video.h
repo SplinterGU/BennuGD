@@ -49,6 +49,16 @@
 #define SCALE_NONE          0x0000
 #define SCALE_SCALE2X       0x0001
 
+/* Scale resolution orientation */
+#define SRO_NORMAL          0
+#define SRO_LEFT            1
+#define SRO_DOWN            2
+#define SRO_RIGHT           3
+
+/* Scale resolution aspectratio */
+#define SRA_STRETCH         0
+#define SRA_PRESERVE        1
+
 /* --------------------------------------------------------------------------- */
 
 extern GRAPH * icon ;
@@ -80,6 +90,9 @@ extern int * scale_resolution_table_h;
 
 extern int scale_resolution_aspectratio;
 extern int scale_resolution_orientation;
+
+extern int scale_resolution_aspectratio_offx;
+extern int scale_resolution_aspectratio_offy;
 
 /* --------------------------------------------------------------------------- */
 
