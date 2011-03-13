@@ -55,7 +55,7 @@ case "$target_os" in
     mingw32)
         INCLUDES="-I/usr/local/include"
 	    COMMON_CFLAGS="$INCLUDES -DTARGET_WIN32 -DWIN32 -D_WIN32 -DUSE_OPENSSL"
-	    COMMON_LDFLAGS="-L/usr/local/lib -lshlwapi"
+	    COMMON_LDFLAGS="-L/usr/local/lib -lshlwapi -lkernel32 -Wl,--enable-auto-import"
 	    LIBSSL="eay32"
         USE_OPENSSL=yes
 	    ;;
