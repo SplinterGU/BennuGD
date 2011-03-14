@@ -72,8 +72,10 @@ void dcb_add_file( const char * filename )
         if ( !fp ) return;
         while ( !file_eof( fp ) )
         {
+            char *p;
             file_qgets( fp, buffer, sizeof( buffer ) );
-            if ( strchr( buffer, '\n' ) ) *strchr( buffer, '\n' ) = 0;
+            if ( ( p = strchr( buffer, '\n' ) ) ) *p = '\0';
+            if ( ( p = strchr( buffer, '\r' ) ) ) *p = '\0';
             if ( buffer[0] == '#' || !buffer[0] ) continue;
             dcb_add_file( buffer );
         }

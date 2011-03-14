@@ -438,14 +438,12 @@ static char * modules_exts[] =
 
 static char * dlsearchpath[] =
 {
-    "runtime",
     "modules",
     "mod",
     "mods",
-    "lib",
-    "libs",
     "extensions",
     "plugins",
+    "data",
     NULL
 };
 
@@ -516,7 +514,11 @@ static void import_module( const char * filename )
     spath = dlsearchpath;
     while( !library && spath && *spath )
     {
+#ifdef _WIN32
+        sprintf( fullsoname, "%s%s\\%s", appexepath, *spath, filename );
+#else
         sprintf( fullsoname, "%s%s/%s", appexepath, *spath, filename );
+#endif
         library  = dlibopen( fullsoname ) ;
         spath++;
     }

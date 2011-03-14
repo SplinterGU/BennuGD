@@ -246,7 +246,7 @@ int main( int argc, char *argv[] )
                     /* -f "file": Embed a file to the DCB */
 
                     if ( argv[i][j + 1] )
-                        dcb_add_file( argv[i + j] + 1 );
+                        dcb_add_file( &argv[i][j + 1] );
                     else while ( argv[i + 1] )
                         {
                             if ( argv[i + 1][0] == '-' ) break;
@@ -271,7 +271,7 @@ int main( int argc, char *argv[] )
                         i++;
                         break;
                     }
-                    file_addp( argv[i] + j + 1 );
+                    file_addp( &argv[i][j + 1] );
                     break;
                 }
 
@@ -288,7 +288,7 @@ int main( int argc, char *argv[] )
                         i++;
                         break;
                     }
-                    strcpy( langinfo, argv[i] + j + 1 );
+                    strcpy( langinfo, &argv[i][j + 1] );
                     break;
                 }
 
@@ -336,7 +336,7 @@ int main( int argc, char *argv[] )
                     int r = 1;
                     char * f;
                     if ( argv[i][j + 1] )
-                        r = dcb_load_lib( ( f = argv[i + j] + 1 ) );
+                        r = dcb_load_lib( ( f = &argv[i][j + 1] ) );
                     else if ( argv[i + 1] && argv[i + 1][0] != '-' )
                     {
                         r = dcb_load_lib( ( f = argv[i + 1] ) );

@@ -380,14 +380,12 @@ void sysproc_add_tab( DLSYSFUNCS * functions_exports )
 
 static char * dlsearchpath[] =
 {
-    "runtime",
     "modules",
     "mod",
     "mods",
-    "lib",
-    "libs",
     "extensions",
     "plugins",
+    "data",
     NULL
 };
 

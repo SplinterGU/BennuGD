@@ -151,7 +151,7 @@ int main( int argc, char *argv[] )
                             i++ ;
                             break ;
                         }
-                        file_addp( argv[i] + j + 1 ) ;
+                        file_addp( &argv[i][j + 1] ) ;
                         break ;
                     }
                     j++ ;
