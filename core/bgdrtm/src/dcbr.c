@@ -205,7 +205,7 @@ DCB_VAR * read_and_arrange_varspace( file * fp, int count )
 
 /* ---------------------------------------------------------------------- */
 
-int dcb_load_from( file * fp, int offset )
+int dcb_load_from( file * fp, char * dcbname, int offset )
 {
     unsigned int n ;
     uint32_t size;
@@ -339,7 +339,7 @@ int dcb_load_from( file * fp, int offset )
             ARRANGE_DWORD( &dcbfile.OFile );
 
             file_read( fp, &fname, dcbfile.SName ) ;
-            file_add_xfile( fp, offset + dcbfile.OFile, fname, dcbfile.SFile ) ;
+            file_add_xfile( fp, dcbname, offset + dcbfile.OFile, fname, dcbfile.SFile ) ;
         }
     }
 

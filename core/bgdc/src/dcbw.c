@@ -1241,7 +1241,7 @@ int dcb_load_lib( const char * filename )
             ARRANGE_DWORD( &dcbfile.OFile );
 
             file_read( fp, &fname, dcbfile.SName ) ;
-            file_add_xfile( fp, dcbfile.OFile, fname, dcbfile.SFile ) ;
+            file_add_xfile( fp, NULL, dcbfile.OFile, fname, dcbfile.SFile ) ;
         }
     }
 */

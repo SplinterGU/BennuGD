@@ -733,7 +733,6 @@ static int modmap_pal_get( INSTANCE * my, int * params )
 static int modmap_load_fpg( INSTANCE * my, int * params )
 {
     int r;
-
     r = gr_load_fpg( string_get( params[0] ) ) ;
     string_discard( params[0] ) ;
     return r ;
