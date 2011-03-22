@@ -71,7 +71,7 @@ extern INSTANCE * trace_instance;
 extern int strncmpi( char * str1, char * str2, int sz );
 
 extern int dcb_load( const char * filename ) ;
-extern int dcb_load_from( file * fp, int offset ) ;
+extern int dcb_load_from( file * fp, char * dcbname, int offset ) ;
 
 extern char * getid_name( unsigned int code );
 

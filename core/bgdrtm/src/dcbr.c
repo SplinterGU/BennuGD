@@ -181,7 +181,7 @@ int dcb_load( const char * filename )
         exit( 1 );
     }
 
-    return dcb_load_from( fp, 0 );
+    return dcb_load_from( fp, filename, 0 );
 }
 
 /* ---------------------------------------------------------------------- */
@@ -205,7 +205,7 @@ DCB_VAR * read_and_arrange_varspace( file * fp, int count )
 
 /* ---------------------------------------------------------------------- */
 
-int dcb_load_from( file * fp, char * dcbname, int offset )
+int dcb_load_from( file * fp, char * filename, int offset )
 {
     unsigned int n ;
     uint32_t size;
@@ -339,7 +339,7 @@ int dcb_load_from( file * fp, char * dcbname, int offset )
             ARRANGE_DWORD( &dcbfile.OFile );
 
             file_read( fp, &fname, dcbfile.SName ) ;
-            file_add_xfile( fp, dcbname, offset + dcbfile.OFile, fname, dcbfile.SFile ) ;
+            file_add_xfile( fp, filename, offset + dcbfile.OFile, fname, dcbfile.SFile ) ;
         }
     }
 
@@ -402,7 +402,7 @@ int dcb_load_from( file * fp, char * dcbname, int offset )
 
     if ( dcb.data.NSourceFiles )
     {
-        char filename[__MAX_PATH] ;
+        char fname[__MAX_PATH] ;
 
         dcb.sourcecount = ( uint32_t * ) calloc( dcb.data.NSourceFiles, sizeof( uint32_t ) ) ;
         dcb.sourcelines = ( uint8_t *** ) calloc( dcb.data.NSourceFiles, sizeof( char ** ) ) ;
@@ -411,8 +411,8 @@ int dcb_load_from( file * fp, char * dcbname, int offset )
         for ( n = 0; n < dcb.data.NSourceFiles; n++ )
         {
             file_readUint32( fp, &size ) ;
-            file_read( fp, filename, size ) ;
-            if ( !load_file( filename, n ) ) fprintf( stdout, "WARNING: Runtime warning - file not found (%s)\n", filename ) ;
+            file_read( fp, fname, size ) ;
+            if ( !load_file( fname, n ) ) fprintf( stdout, "WARNING: Runtime warning - file not found (%s)\n", fname ) ;
         }
     }
 
