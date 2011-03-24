@@ -504,6 +504,7 @@ static int load_wav( const char * filename )
 
     if ( !( music = Mix_LoadWAV_RW( SDL_RWFromBGDFP( fp ), 1 ) ) )
     {
+        file_close( fp );
         fprintf( stderr, "Couldn't load %s: %s\n", filename, SDL_GetError() );
         return( 0 );
     }
