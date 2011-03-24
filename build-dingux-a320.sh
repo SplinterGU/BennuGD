@@ -84,11 +84,6 @@ echo "### Building BennuGD Core ###"
 cd core
 ./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared
 make clean
-#cd -
-#cd core/bgdrtm
-#make
-#cd -
-#cd core/bgdi
 make
 cd -
 
