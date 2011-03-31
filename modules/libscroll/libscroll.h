@@ -63,9 +63,6 @@ typedef struct _scrolldata
 
     int active ;
 
-    GRAPH  * graph ;
-    GRAPH  * back ;
-
     struct _scrolldata * follows ;
 }
 __PACKED
