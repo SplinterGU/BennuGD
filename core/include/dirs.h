@@ -80,6 +80,7 @@ typedef struct __DIR_ST
 #else
     glob_t globd;
     int currFile;
+    char *pattern;
 #endif
     __DIR_FILEINFO_ST info;
 } __DIR_ST;

@@ -203,13 +203,13 @@ __DIR_ST * dir_open( const char * path )
 
 #ifdef _WIN32
     hDir->handle = FindFirstFile( hDir->path, &hDir->data );
-    hDir->eod = ( hDir->handle == INVALID_HANDLE_VALUE ) ;
+    hDir->eod = ( hDir->handle == INVALID_HANDLE_VALUE );
 #else
-    char * final_path = malloc( strlen( path ) * 4 );
-    const char * ptr = hDir->path ;
-    char * fptr = final_path ;
+    const char * ptr = hDir->path;
+    char * fptr;
 
-    if ( !final_path )
+    hDir->pattern = malloc( strlen( path ) * 4 );
+    if ( !hDir->pattern )
     {
         free ( hDir->path );
         free ( hDir );
@@ -218,6 +218,7 @@ __DIR_ST * dir_open( const char * path )
 
     /* Clean the path creating a case-insensitive match pattern */
 
+    fptr = hDir->pattern;
     while ( *ptr )
     {
         if ( *ptr == '\\' )
@@ -245,15 +246,13 @@ __DIR_ST * dir_open( const char * path )
     *fptr = 0;
 
     /* Convert '*.*' to '*' */
-    if ( fptr > final_path + 2 && fptr[ -1 ] == '*' && fptr[ -2 ] == '.' && fptr[ -3 ] == '*' ) fptr[ -2 ] = 0;
+    if ( fptr > hDir->pattern + 2 && fptr[ -1 ] == '*' && fptr[ -2 ] == '.' && fptr[ -3 ] == '*' ) fptr[ -2 ] = 0;
 
 #if defined(TARGET_MAC) || defined(TARGET_BEOS)
-    glob( final_path, GLOB_ERR | GLOB_NOSORT, NULL, &hDir->globd );
+    glob( hDir->pattern, GLOB_ERR | GLOB_NOSORT, NULL, &hDir->globd );
 #else
-    glob( final_path, GLOB_ERR | GLOB_PERIOD | GLOB_NOSORT, NULL, &hDir->globd );
+    glob( hDir->pattern, GLOB_ERR | GLOB_PERIOD | GLOB_NOSORT, NULL, &hDir->globd );
 #endif
-
-    free( final_path );
 
     hDir->currFile = 0;
 #endif
@@ -271,6 +270,7 @@ void dir_close ( __DIR_ST * hDir )
     FindClose( hDir->handle );
 #else
     globfree( &hDir->globd );
+    free( hDir->final_pattern );
 #endif
 
     free ( hDir );
