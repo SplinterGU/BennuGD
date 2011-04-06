@@ -270,7 +270,7 @@ void dir_close ( __DIR_ST * hDir )
     FindClose( hDir->handle );
 #else
     globfree( &hDir->globd );
-    free( hDir->final_pattern );
+    free( hDir->pattern );
 #endif
 
     free ( hDir );
