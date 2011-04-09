@@ -44,7 +44,7 @@
 #ifdef _WIN32
 #define __MAX_PATH          32768
 #else
-#define __MAX_PATH          260
+#define __MAX_PATH          4096
 #endif
 
 /*

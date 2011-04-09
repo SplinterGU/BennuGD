@@ -287,10 +287,10 @@ int instance_go( INSTANCE * r )
 
         switch ( *ptr )
         {
-                /* Manipulación de la pila */
-
+            /* Manipulación de la pila */
             case MN_DUP:
-                *r->stack_ptr++ = r->stack_ptr[-1] ;
+                *r->stack_ptr = r->stack_ptr[-1] ;
+                r->stack_ptr++;
                 ptr++ ;
                 break ;
 
@@ -2030,7 +2030,7 @@ int instance_go( INSTANCE * r )
             case MN_CASE_R | MN_STRING:
                 r->stack_ptr -= 2;
                 if ( string_comp( r->switchval_string, r->stack_ptr[0] ) >= 0 &&
-                        string_comp( r->switchval_string, r->stack_ptr[1] ) <= 0 )
+                     string_comp( r->switchval_string, r->stack_ptr[1] ) <= 0 )
                     r->cased = 1;
                 string_discard( r->stack_ptr[0] );
                 string_discard( r->stack_ptr[1] );
