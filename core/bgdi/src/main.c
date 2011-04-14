@@ -35,6 +35,10 @@
 #include <string.h>
 #include <time.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 #include "bgdi.h"
 #include "bgdrtm.h"
 #include "xstrings.h"
@@ -64,29 +68,50 @@ static int embedded    = 0;  /* 1 only if this is a stub with an embedded DCB */
 
 int main( int argc, char *argv[] )
 {
-    char * filename = NULL, dcbname[ __MAX_PATH ], *ptr ;
+    char * filename = NULL, dcbname[ __MAX_PATH ], *ptr, *arg0, *ext ;
     int i, j, ret = -1;
     file * fp = NULL;
     INSTANCE * mainproc_running;
     dcb_signature dcb_signature;
 
     /* get my executable name */
-    ptr = argv[0] + strlen( argv[0] );
-    while ( ptr > argv[0] && ptr[-1] != '\\' && ptr[-1] != '/' ) ptr-- ;
+
+#ifdef _WIN32
+    if ( strlen( argv[0] ) < 4 || strncmpi( &argv[0][strlen( argv[0] ) - 4], ".exe", 4 ) )
+    {
+        arg0 = malloc( strlen( argv[0] ) + 5 );
+        sprintf( arg0, "%s.exe", argv[0] );
+    }
+    else
+    {
+#endif
+        arg0 = strdup( argv[0] );
+#ifdef _WIN32
+    }
+#endif
+
+    ptr = arg0 + strlen( arg0 );
+    while ( ptr > arg0 && ptr[-1] != '\\' && ptr[-1] != '/' ) ptr-- ;
+
     appexename = strdup( ptr );
 
     /* get executable full pathname  */
-    appexefullpath = getfullpath( argv[0] );
-    if ( ( !strchr( argv[0], '\\' ) && !strchr( argv[0], '/' ) ) && !file_exists( appexefullpath ) )
+    fp = NULL;
+    appexefullpath = getfullpath( arg0 );
+    if ( ( !strchr( arg0, '\\' ) && !strchr( arg0, '/' ) ) )
     {
-        char *p = whereis( appexename );
-        if ( p )
+        struct stat st;
+        if ( stat( appexefullpath, &st ) || !S_ISREG( st.st_mode ) )
         {
-            char * tmp = calloc( 1, strlen( p ) + strlen( appexename ) + 2 );
-            free( appexefullpath );
-            sprintf( tmp, "%s/%s", p, appexename );
-            appexefullpath = getfullpath( tmp );
-            free( tmp );
+            char *p = whereis( appexename );
+            if ( p )
+            {
+                char * tmp = calloc( 1, strlen( p ) + strlen( appexename ) + 2 );
+                free( appexefullpath );
+                sprintf( tmp, "%s/%s", p, appexename );
+                appexefullpath = getfullpath( tmp );
+                free( tmp );
+            }
         }
     }
 
@@ -94,13 +119,6 @@ int main( int argc, char *argv[] )
     ptr = strstr( appexefullpath, appexename );
     appexepath = calloc( 1, ptr - appexefullpath + 1 );
     strncpy( appexepath, appexefullpath, ptr - appexefullpath );
-
-#ifdef _WIN32
-    appname = calloc( 1, strlen( appexename ) - 3 );
-    strncpy( appname, appexename, strlen( appexename ) - 4 );
-#else
-    appname = strdup( appexename );
-#endif
 
     standalone = ( strncmpi( appexename, "bgdi", 4 ) == 0 ) ;
 
@@ -110,7 +128,7 @@ int main( int argc, char *argv[] )
     if ( !standalone )
     {
         /* Hand-made interpreter: search for DCB at EOF */
-        fp = file_open( argv[0], "rb0" );
+        fp = file_open( appexefullpath, "rb0" );
         if ( fp )
         {
             file_seek( fp, -( int )sizeof( dcb_signature ), SEEK_END );
@@ -123,7 +141,7 @@ int main( int argc, char *argv[] )
             }
         }
 
-        filename = appname;
+        filename = appexefullpath;
     }
 
     if ( standalone )
@@ -185,7 +203,7 @@ int main( int argc, char *argv[] )
                     "Permission granted to distribute and/or modify as stated in the license\n"
                     "agreement (GNU GPL version 2 or later).\n"
                     "See COPYING for license details.\n",
-                    argv[0] ) ;
+                    appexename ) ;
             return -1 ;
         }
     }
@@ -199,12 +217,38 @@ int main( int argc, char *argv[] )
 
     strcpy( dcbname, filename ) ;
 
-    if ( appname && filename != appname )
-    {
-        free( appname );
-        appname = strdup( filename ) ;
-    }
+    ptr = filename + strlen( filename );
+    while ( ptr > filename && ptr[-1] != '\\' && ptr[-1] != '/' ) ptr-- ;
 
+    appname = strdup( ptr ) ;
+    if ( strlen( appname ) > 3 )
+    {
+        char ** dcbext = dcb_exts, *ext = &appname[ strlen( appname ) - 4 ];
+#ifdef _WIN32
+        if ( !strncmpi( ext, ".exe", 4 ) )
+        {
+            *ext = '\0';
+        }
+        else
+#endif
+        while ( dcbext && *dcbext )
+        {
+            if ( !strncmpi( ext, *dcbext, 4 ) )
+            {
+                *ext = '\0';
+                break;
+            }
+            dcbext++;
+        }
+    }
+/*
+printf( "appname        %s\n", appname);
+printf( "appexename     %s\n", appexename);
+printf( "appexepath     %s\n", appexepath);
+printf( "appexefullpath %s\n", appexefullpath);
+printf( "dcbname        %s\n", dcbname);
+fflush(stdout);
+*/
     if ( !embedded )
     {
         /* First try to load directly (we expect myfile.dcb) */

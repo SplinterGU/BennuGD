@@ -37,6 +37,10 @@
 
 #include <stdint.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 #include "files.h"
 
 #define MAX_POSSIBLE_PATHS  128
@@ -852,16 +856,21 @@ char * whereis( char *file )
     char * path = getenv( "PATH" ), *pact = path, *p;
     char fullname[ __MAX_PATH ];
 
-    while ( pact && *pact && ( p = strchr( pact, ENV_PATH_SEP ) ) )
+    while ( pact && *pact )
     {
-        *p = '\0';
-        sprintf( fullname, "%s/%s", pact, file );
-        if ( file_exists( fullname ) )
+        struct stat st;
+
+        if ( ( p = strchr( pact, ENV_PATH_SEP ) ) ) *p = '\0';
+        sprintf( fullname, "%s%s%s", pact, ( pact[ strlen( pact ) - 1 ] == ENV_PATH_SEP ) ? "" : PATH_SEP, file );
+
+        if ( !stat( fullname, &st ) && S_ISREG( st.st_mode ) )
         {
             pact = strdup( pact );
-            *p = ENV_PATH_SEP;
+            if ( p ) *p = ENV_PATH_SEP;
             return ( pact );
         }
+
+        if ( !p ) break;
 
         *p = ENV_PATH_SEP;
         pact = p + 1;
