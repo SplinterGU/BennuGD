@@ -5,21 +5,27 @@
  *
  *  This file is part of Bennu - Game Development
  *
- *  Bennu is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ *  This software is provided 'as-is', without any express or implied
+ *  warranty. In no event will the authors be held liable for any damages
+ *  arising from the use of this software.
  *
- *  Bennu is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  Permission is granted to anyone to use this software for any purpose,
+ *  including commercial applications, and to alter it and redistribute it
+ *  freely, subject to the following restrictions:
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+ *     1. The origin of this software must not be misrepresented; you must not
+ *     claim that you wrote the original software. If you use this software
+ *     in a product, an acknowledgment in the product documentation would be
+ *     appreciated but is not required.
+ *
+ *     2. Altered source versions must be plainly marked as such, and must not be
+ *     misrepresented as being the original software.
+ *
+ *     3. This notice may not be removed or altered from any source
+ *     distribution.
  *
  */
+
 #ifndef __MESSAGES_H
 #define __MESSAGES_H
 
@@ -50,11 +56,24 @@
     "                   a    Enable automatic declare functions\n" \
     "\n"
 #define MSG_LICENSE                             \
-    "This program is free software. You can distribute and/or modify it\n" \
-    "under the terms of the GNU General Public License as published by the\n" \
-    "Free Software Foundation; either the version 2 of the license or\n" \
-    "(at your will) any later version.\n\n" \
-    "Read the file COPYING for details\n\n"
+                    "This software is provided 'as-is', without any express or implied\n" \
+                    "warranty. In no event will the authors be held liable for any damages\n" \
+                    "arising from the use of this software.\n" \
+                    "\n" \
+                    "Permission is granted to anyone to use this software for any purpose,\n" \
+                    "including commercial applications, and to alter it and redistribute it\n" \
+                    "freely, subject to the following restrictions:\n" \
+                    "\n" \
+                    "   1. The origin of this software must not be misrepresented; you must not\n" \
+                    "   claim that you wrote the original software. If you use this software\n" \
+                    "   in a product, an acknowledgment in the product documentation would be\n" \
+                    "   appreciated but is not required.\n" \
+                    "\n" \
+                    "   2. Altered source versions must be plainly marked as such, and must not be\n" \
+                    "   misrepresented as being the original software.\n" \
+                    "\n" \
+                    "   3. This notice may not be removed or altered from any source\n" \
+                    "   distribution.\n"
 #define MSG_COMPILE_ERROR                       "%s%s:%d: error: %s"
 #define MSG_COMPILE_WARNING                     "%s%s:%d: warning: %s"
 #define MSG_CONSTANT_NAME_EXP                   "Constant name expected"

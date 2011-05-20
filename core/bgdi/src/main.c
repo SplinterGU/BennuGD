@@ -5,19 +5,24 @@
  *
  *  This file is part of Bennu - Game Development
  *
- *  Bennu is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ *  This software is provided 'as-is', without any express or implied
+ *  warranty. In no event will the authors be held liable for any damages
+ *  arising from the use of this software.
  *
- *  Bennu is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  Permission is granted to anyone to use this software for any purpose,
+ *  including commercial applications, and to alter it and redistribute it
+ *  freely, subject to the following restrictions:
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+ *     1. The origin of this software must not be misrepresented; you must not
+ *     claim that you wrote the original software. If you use this software
+ *     in a product, an acknowledgment in the product documentation would be
+ *     appreciated but is not required.
+ *
+ *     2. Altered source versions must be plainly marked as such, and must not be
+ *     misrepresented as being the original software.
+ *
+ *     3. This notice may not be removed or altered from any source
+ *     distribution.
  *
  */
 
@@ -190,20 +195,36 @@ int main( int argc, char *argv[] )
         if ( !filename )
         {
             printf( BGDI_VERSION "\n"
+                    "Bennu Game Development Interpreter\n"
+                    "\n"
                     "Copyright (c) 2006-2011 SplinterGU (Fenix/BennuGD)\n"
                     "Copyright (c) 2002-2006 Fenix Team (Fenix)\n"
                     "Copyright (c) 1999-2002 José Luis Cebrián Pagüe (Fenix)\n"
-                    "Bennu Game Development comes with ABSOLUTELY NO WARRANTY;\n"
-                    "see COPYING for details\n\n"
-                    "Usage: %s [options] <data code block file>[.dcb]\n\n"
+                    "\n"
+                    "Usage: %s [options] <data code block file>[.dcb]\n"
+                    "\n"
                     "   -d       Activate DEBUG mode\n"
                     "   -i dir   Adds the directory to the PATH\n"
-                    "\nThis program is free software distributed under.\n\n"
-                    "GNU General Public License published by Free Software Foundation.\n"
-                    "Permission granted to distribute and/or modify as stated in the license\n"
-                    "agreement (GNU GPL version 2 or later).\n"
-                    "See COPYING for license details.\n",
-                    appexename ) ;
+                    "\n"
+                    "This software is provided 'as-is', without any express or implied\n"
+                    "warranty. In no event will the authors be held liable for any damages\n"
+                    "arising from the use of this software.\n"
+                    "\n"
+                    "Permission is granted to anyone to use this software for any purpose,\n"
+                    "including commercial applications, and to alter it and redistribute it\n"
+                    "freely, subject to the following restrictions:\n"
+                    "\n"
+                    "   1. The origin of this software must not be misrepresented; you must not\n"
+                    "   claim that you wrote the original software. If you use this software\n"
+                    "   in a product, an acknowledgment in the product documentation would be\n"
+                    "   appreciated but is not required.\n"
+                    "\n"
+                    "   2. Altered source versions must be plainly marked as such, and must not be\n"
+                    "   misrepresented as being the original software.\n"
+                    "\n"
+                    "   3. This notice may not be removed or altered from any source\n"
+                    "   distribution.\n"
+                    , appexename ) ;
             return -1 ;
         }
     }
