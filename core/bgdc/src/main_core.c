@@ -70,6 +70,7 @@ constants_def[] =
     { "OS_CAANOO"       , TYPE_DWORD, OS_CAANOO           },
     { "OS_DINGUX_A320"  , TYPE_DWORD, OS_DINGUX_A320      },
     { "OS_WII"          , TYPE_DWORD, OS_WII              },
+    { "OS_IOS"          , TYPE_DWORD, OS_IOS              },
 
     { "MIN_INT"         , TYPE_INT  , -2147483647L - 1    },
     { "MAX_INT"         , TYPE_INT  , 2147483647L         },
