@@ -221,6 +221,246 @@ static int compare_by_distance( const void * ptr1, const void * ptr2 )
 
 /* --------------------------------------------------------------------------- */
 
+#define M7_8bpp() \
+                baseline = ptr ; \
+ \
+                for ( x = 0 ; x < width ; x++ ) \
+                { \
+                    sx = fixtoi( bmp_x ) ; \
+                    sy = fixtoi( bmp_y ) ; \
+ \
+                    if ( indoor && sx >= 0 && sx < indoor->width && sy >= 0 && sy < indoor->height ) \
+                    { \
+                        c = (( uint8_t* )indoor->data )[indoor->pitch*sy + sx] ; \
+                        if ( c > 0 ) *ptr   = c ; \
+                        ptr++ ; \
+                    } \
+                    else \
+                    { \
+                        if ( outdoor ) c = (( uint8_t* )outdoor->data )[outdoor->pitch*( sy & outdoor_vmask ) + ( sx & outdoor_hmask )] ; \
+                        else           c = dat->color ; \
+                        if ( c > 0 ) *ptr   = c ; \
+                        ptr++ ; \
+                    } \
+ \
+                    bmp_x += hinc ; \
+                    bmp_y += vinc ; \
+                } \
+ \
+                ptr = baseline + (( jump > 0 ) ? dest->pitch : -( int )dest->pitch ) ;
+
+
+#define M7_16bpp() \
+                baseline = ( uint8_t * ) ptr16 ; \
+ \
+                for ( x = 0 ; x < width ; x++ ) \
+                { \
+                    sx = fixtoi( bmp_x ) ; \
+                    sy = fixtoi( bmp_y ) ; \
+ \
+                    if ( indoor && sx >= 0 && sx < indoor->width && sy >= 0 && sy < indoor->height ) \
+                    { \
+                        c16 = *( uint16_t* )&((( uint8_t* )indoor->data )[indoor->pitch*sy + (sx<<1)]) ; \
+                        if ( c16 > 0 ) *ptr16 = c16 ; \
+                        ptr16++ ; \
+                    } \
+                    else \
+                    { \
+                        if ( outdoor ) c16 = *( uint16_t* )&((( uint8_t* )outdoor->data )[outdoor->pitch*( sy & outdoor_vmask ) + (( sx & outdoor_hmask ) << 1)]) ; \
+                        else           c16 = dat->color ; \
+                        if ( c16 > 0 ) *ptr16 = c16 ; \
+                        ptr16++ ; \
+                    } \
+ \
+                    bmp_x += hinc ; \
+                    bmp_y += vinc ; \
+                } \
+ \
+                ptr16 = ( uint16_t * ) ( baseline + (( jump > 0 ) ? dest->pitch : -( int )dest->pitch ) );
+
+
+#define M7_32bpp() \
+                baseline = ( uint8_t * ) ptr32 ; \
+ \
+                for ( x = 0 ; x < width ; x++ ) \
+                { \
+                    sx = fixtoi( bmp_x ) ; \
+                    sy = fixtoi( bmp_y ) ; \
+ \
+                    if ( indoor && sx >= 0 && sx < indoor->width && sy >= 0 && sy < indoor->height ) \
+                    { \
+                        c32 = *( uint32_t* )&((( uint8_t* )indoor->data )[indoor->pitch*sy + (sx<<2)]) ; \
+                        if ( c32 > 0 ) *ptr32 = c32 ; \
+                        ptr32++ ; \
+                    } \
+                    else \
+                    { \
+                        if ( outdoor ) c32 = *( uint32_t* )&((( uint8_t* )outdoor->data )[outdoor->pitch*( sy & outdoor_vmask ) + (( sx & outdoor_hmask ) << 2)]) ; \
+                        else           c32 = dat->color ; \
+                        if ( c32 > 0 ) *ptr32 = c32 ; \
+                        ptr32++ ; \
+                    } \
+ \
+                    bmp_x += hinc ; \
+                    bmp_y += vinc ; \
+                } \
+ \
+                ptr32 = ( uint32_t * ) ( baseline + (( jump > 0 ) ? dest->pitch : -( int )dest->pitch ) );
+
+
+#define M7_t8bpp() \
+                baseline = ptr ; \
+ \
+                for ( x = 0 ; x < width ; x++ ) \
+                { \
+                    sx = fixtoi( bmp_x ) ; \
+                    sy = fixtoi( bmp_y ) ; \
+ \
+                    if ( indoor && sx >= 0 && sx < indoor->width && sy >= 0 && sy < indoor->height ) \
+                    { \
+                        *ptr = trans_table[(( uint8_t* )indoor->data )[indoor->pitch*sy + sx]][*ptr] ; \
+                        ptr++ ; \
+                    } \
+                    else \
+                    { \
+                        if ( outdoor ) *ptr = trans_table[(( uint8_t* )outdoor->data )[outdoor->pitch*( sy & outdoor_vmask ) + ( sx & outdoor_hmask )]][*ptr] ; \
+                        else           *ptr = trans_table[dat->color][*ptr] ; \
+                        ptr++ ; \
+                    } \
+ \
+                    bmp_x += hinc ; \
+                    bmp_y += vinc ; \
+                } \
+ \
+                ptr = baseline + (( jump > 0 ) ? dest->pitch : -( int )dest->pitch ) ;
+
+
+#define M7_t16bpp() \
+                baseline = ( uint8_t * ) ptr16 ; \
+ \
+                for ( x = 0 ; x < width ; x++ ) \
+                { \
+                    sx = fixtoi( bmp_x ) ; \
+                    sy = fixtoi( bmp_y ) ; \
+ \
+                    if ( indoor && sx >= 0 && sx < indoor->width && sy >= 0 && sy < indoor->height ) \
+                    { \
+                        *ptr16 = colorghost[*ptr16]+colorghost[*( uint16_t* )&((( uint8_t* )indoor->data )[indoor->pitch*sy + (sx<<1)])]; \
+                        ptr16++ ; \
+                    } \
+                    else \
+                    { \
+                        if ( outdoor ) *ptr16 = colorghost[*ptr16]+colorghost[*( uint16_t* )&((( uint8_t* )outdoor->data )[outdoor->pitch*( sy & outdoor_vmask ) + ((sx& outdoor_hmask)<<1)])]; \
+                        else           *ptr16 = colorghost[*ptr16]+colorghost[dat->color]; \
+                        ptr16++ ; \
+                    } \
+ \
+                    bmp_x += hinc ; \
+                    bmp_y += vinc ; \
+                } \
+ \
+                ptr16 = ( uint16_t * ) ( baseline + (( jump > 0 ) ? dest->pitch : -( int )dest->pitch ) ); \
+
+
+#define M7_t32bpp() \
+                baseline = ( uint8_t * ) ptr32 ; \
+ \
+                for ( x = 0 ; x < width ; x++ ) \
+                { \
+                    sx = fixtoi( bmp_x ) ; \
+                    sy = fixtoi( bmp_y ) ; \
+ \
+                    if ( indoor && sx >= 0 && sx < indoor->width && sy >= 0 && sy < indoor->height ) \
+                    { \
+                        c32 = *( uint32_t* )&((( uint8_t* )indoor->data )[indoor->pitch*sy + (sx<<2)]); \
+                        _f = c32 & 0xff000000; \
+                        if ( _f != 0xff000000 ) \
+                        { \
+                            _f = ( _f >> 24 ) * 128 / 255 ; \
+                            _f2 = 255 - _f ; \
+ \
+                            r = ((( c32 & 0x00ff0000 ) * _f ) + (( *ptr32 & 0x00ff0000 ) * _f2 ) ) >> 8 ; \
+                            g = ((( c32 & 0x0000ff00 ) * _f ) + (( *ptr32 & 0x0000ff00 ) * _f2 ) ) >> 8 ; \
+                            b = ((( c32 & 0x000000ff ) * _f ) + (( *ptr32 & 0x000000ff ) * _f2 ) ) >> 8 ; \
+                        } \
+                        else \
+                        { \
+                            r = ((( c32 & 0x00ff0000 ) * 128 ) + (( *ptr32 & 0x00ff0000 ) * 128 ) ) >> 8 ; \
+                            g = ((( c32 & 0x0000ff00 ) * 128 ) + (( *ptr32 & 0x0000ff00 ) * 128 ) ) >> 8 ; \
+                            b = ((( c32 & 0x000000ff ) * 128 ) + (( *ptr32 & 0x000000ff ) * 128 ) ) >> 8 ; \
+                        } \
+ \
+                        if ( r > 0x00ff0000 ) r = 0x00ff0000 ; else r &= 0x00ff0000 ; \
+                        if ( g > 0x0000ff00 ) g = 0x0000ff00 ; else g &= 0x0000ff00 ; \
+                        if ( b > 0x000000ff ) b = 0x000000ff ; else b &= 0x000000ff ; \
+ \
+                        *ptr32 = ( MAX( c32 & 0xff000000, *ptr32 & 0xff000000 ) ) | r | g | b ; \
+                        ptr32++ ; \
+                    } \
+                    else \
+                    { \
+                        if ( outdoor ) \
+                        { \
+                            c32 = *( uint32_t* )&((( uint8_t* )outdoor->data )[outdoor->pitch*( sy & outdoor_vmask ) + (( sx & outdoor_hmask ) << 2)]) ; \
+                            _f = c32 & 0xff000000; \
+                            if ( _f != 0xff000000 ) \
+                            { \
+                                _f = ( _f >> 24 ) * 128 / 255 ; \
+                                _f2 = 255 - _f ; \
+ \
+                                r = ((( c32 & 0x00ff0000 ) * _f ) + (( *ptr32 & 0x00ff0000 ) * _f2 ) ) >> 8 ; \
+                                g = ((( c32 & 0x0000ff00 ) * _f ) + (( *ptr32 & 0x0000ff00 ) * _f2 ) ) >> 8 ; \
+                                b = ((( c32 & 0x000000ff ) * _f ) + (( *ptr32 & 0x000000ff ) * _f2 ) ) >> 8 ; \
+                            } \
+                            else \
+                            { \
+                                r = ((( c32 & 0x00ff0000 ) * 128 ) + (( *ptr32 & 0x00ff0000 ) * 128 ) ) >> 8 ; \
+                                g = ((( c32 & 0x0000ff00 ) * 128 ) + (( *ptr32 & 0x0000ff00 ) * 128 ) ) >> 8 ; \
+                                b = ((( c32 & 0x000000ff ) * 128 ) + (( *ptr32 & 0x000000ff ) * 128 ) ) >> 8 ; \
+                            } \
+ \
+                            if ( r > 0x00ff0000 ) r = 0x00ff0000 ; else r &= 0x00ff0000 ; \
+                            if ( g > 0x0000ff00 ) g = 0x0000ff00 ; else g &= 0x0000ff00 ; \
+                            if ( b > 0x000000ff ) b = 0x000000ff ; else b &= 0x000000ff ; \
+ \
+                            *ptr32 = ( MAX( c32 & 0xff000000, *ptr32 & 0xff000000 ) ) | r | g | b ; \
+                        } \
+                        else \
+                        { \
+                            c32 = dat->color ; \
+                            _f = c32 & 0xff000000; \
+                            if ( _f != 0xff000000 ) \
+                            { \
+                                _f = ( _f >> 24 ) * 128 / 255 ; \
+                                _f2 = 255 - _f ; \
+ \
+                                r = ((( c32 & 0x00ff0000 ) * _f ) + (( *ptr32 & 0x00ff0000 ) * _f2 ) ) >> 8 ; \
+                                g = ((( c32 & 0x0000ff00 ) * _f ) + (( *ptr32 & 0x0000ff00 ) * _f2 ) ) >> 8 ; \
+                                b = ((( c32 & 0x000000ff ) * _f ) + (( *ptr32 & 0x000000ff ) * _f2 ) ) >> 8 ; \
+                            } \
+                            else \
+                            { \
+                                r = ((( c32 & 0x00ff0000 ) * 128 ) + (( *ptr32 & 0x00ff0000 ) * 128 ) ) >> 8 ; \
+                                g = ((( c32 & 0x0000ff00 ) * 128 ) + (( *ptr32 & 0x0000ff00 ) * 128 ) ) >> 8 ; \
+                                b = ((( c32 & 0x000000ff ) * 128 ) + (( *ptr32 & 0x000000ff ) * 128 ) ) >> 8 ; \
+                            } \
+ \
+                            if ( r > 0x00ff0000 ) r = 0x00ff0000 ; else r &= 0x00ff0000 ; \
+                            if ( g > 0x0000ff00 ) g = 0x0000ff00 ; else g &= 0x0000ff00 ; \
+                            if ( b > 0x000000ff ) b = 0x000000ff ; else b &= 0x000000ff ; \
+ \
+                            *ptr32 = ( MAX( c32 & 0xff000000, *ptr32 & 0xff000000 ) ) | r | g | b ; \
+                        } \
+                        ptr32++ ; \
+                    } \
+ \
+                    bmp_x += hinc ; \
+                    bmp_y += vinc ; \
+                } \
+ \
+                ptr32 = ( uint32_t * ) ( baseline + (( jump > 0 ) ? dest->pitch : -( int )dest->pitch ) ); \
+
+
 static void draw_mode7( int n, REGION * clip )
 {
     fixed   bmp_x, bmp_y ;
@@ -242,7 +482,9 @@ static void draw_mode7( int n, REGION * clip )
 
     uint32_t  sx, sy ;
     int x, y, z, height, width ;
-    uint8_t * ptr, * baseline, c ;
+    uint8_t  * ptr  , * baseline  , c ;
+    uint16_t * ptr16,               c16 ;
+    uint32_t * ptr32,               c32 ;
 
     MODE7 * mode7   = &mode7_inf[n] ;
     GRAPH * indoor  = mode7->indoor ;
@@ -260,10 +502,9 @@ static void draw_mode7( int n, REGION * clip )
 
     INSTANCE * i ;
 
-    /* 8 bits only */
-    if ( dest->format->depth != 8 ) return; // gr_error ("Profundidad de color no soportada\n(mode7, dest)") ;
-    if ( outdoor && outdoor->format->depth != 8 ) return; // gr_error ("Profundidad de color no soportada\n(mode7, out)") ;
-    if ( indoor && indoor->format->depth != 8 ) return; // gr_error ("Profundidad de color no soportada\n(mode7, in)") ;
+    /* only if scr_depth == outdoor depth == indoor_depth */
+    if ( ( outdoor && outdoor->format->depth != dest->format->depth ) ||
+         (  indoor &&  indoor->format->depth != dest->format->depth ) ) return;
 
     /* Averigua la posición inicial de dibujo */
 
@@ -350,7 +591,7 @@ static void draw_mode7( int n, REGION * clip )
     if ( horizon_y == -1 ) return ;
 
     y = horizon_y ;
-    ptr = ( uint8_t * )dest->data + dest->pitch * y + mode7->region->x ;
+    ptr32 = ( uint32_t * ) ( ptr16 = ( uint16_t * ) ( ptr = ( uint8_t * )dest->data + dest->pitch * y + mode7->region->x ) ) ;
 
     if ( outdoor )
     {
@@ -362,106 +603,189 @@ static void draw_mode7( int n, REGION * clip )
     }
 
     jump = ( camera_z < 0 ) ? -1 : 1 ;
-    ptr += (( jump > 0 ) ? dest->pitch : -( int )dest->pitch ) ;
+    ptr32 = ( uint32_t * ) ( ptr16 = ( uint16_t * ) ( ptr += (( jump > 0 ) ? dest->pitch : -( int )dest->pitch ) ) ) ;
     y   += jump ;
 
     if ( !( dat->flags & B_TRANSLUCENT ) )
-        for ( ; y < height && y >= 0 ; y += jump )
+    {
+        if ( dat->flags & B_HMIRROR )
         {
-            if ( dat->flags & B_HMIRROR )
+            switch( dest->format->depth )
             {
-                bmp_x = lines[y].right_bmp_x ;
-                bmp_y = lines[y].right_bmp_y ;
-                hinc  = -lines[y].hinc ;
-                vinc  = -lines[y].vinc ;
+                case    8:
+                        for ( ; y < height && y >= 0 ; y += jump )
+                        {
+                            bmp_x = lines[y].right_bmp_x ;
+                            bmp_y = lines[y].right_bmp_y ;
+                            hinc  = -lines[y].hinc ;
+                            vinc  = -lines[y].vinc ;
+
+                            M7_8bpp();
+                        }
+                        break;
+
+                case    16:
+                        for ( ; y < height && y >= 0 ; y += jump )
+                        {
+                            bmp_x = lines[y].right_bmp_x ;
+                            bmp_y = lines[y].right_bmp_y ;
+                            hinc  = -lines[y].hinc ;
+                            vinc  = -lines[y].vinc ;
+
+                            M7_16bpp();
+                        }
+                        break;
+
+                case    32:
+                        for ( ; y < height && y >= 0 ; y += jump )
+                        {
+                            bmp_x = lines[y].right_bmp_x ;
+                            bmp_y = lines[y].right_bmp_y ;
+                            hinc  = -lines[y].hinc ;
+                            vinc  = -lines[y].vinc ;
+
+                            M7_32bpp();
+                        }
+                        break;
             }
-            else
-            {
-                bmp_x = lines[y].left_bmp_x ;
-                bmp_y = lines[y].left_bmp_y ;
-                hinc  = lines[y].hinc ;
-                vinc  = lines[y].vinc ;
-            }
-
-            baseline = ptr ;
-
-            for ( x = 0 ; x < width ; x++ )
-            {
-                sx = fixtoi( bmp_x ) ;
-                sy = fixtoi( bmp_y ) ;
-
-                if ( indoor &&
-                        sx >= 0 && sx < indoor->width &&
-                        sy >= 0 && sy < indoor->height )
-                {
-                    c = (( uint8_t* )indoor->data )[indoor->pitch*sy + sx] ;
-                    if ( c > 0 ) *ptr   = c ;
-                    ptr++ ;
-                }
-                else
-                {
-                    if ( outdoor ) c = (( uint8_t* )outdoor->data )[outdoor->pitch*( sy & outdoor_vmask ) + ( sx & outdoor_hmask )] ;
-                    else           c = dat->color ;
-                    if ( c > 0 ) *ptr   = c ;
-                    ptr++ ;
-                }
-
-                bmp_x += hinc ;
-                bmp_y += vinc ;
-            }
-
-            ptr = baseline + (( jump > 0 ) ? dest->pitch : -( int )dest->pitch ) ;
         }
-    else
-        for ( ; y < height && y >= 0 ; y += jump )
+        else
         {
-            if ( dat->flags & B_HMIRROR )
+            switch( dest->format->depth )
             {
-                bmp_x = lines[y].right_bmp_x ;
-                bmp_y = lines[y].right_bmp_y ;
-                hinc  = -lines[y].hinc ;
-                vinc  = -lines[y].vinc ;
+                case    8:
+                        for ( ; y < height && y >= 0 ; y += jump )
+                        {
+                            bmp_x = lines[y].left_bmp_x ;
+                            bmp_y = lines[y].left_bmp_y ;
+                            hinc  = lines[y].hinc ;
+                            vinc  = lines[y].vinc ;
+
+                            M7_8bpp();
+                        }
+                        break;
+
+                case    16:
+                        for ( ; y < height && y >= 0 ; y += jump )
+                        {
+                            bmp_x = lines[y].left_bmp_x ;
+                            bmp_y = lines[y].left_bmp_y ;
+                            hinc  = lines[y].hinc ;
+                            vinc  = lines[y].vinc ;
+
+                            M7_16bpp();
+                        }
+                        break;
+
+                case    32:
+                        for ( ; y < height && y >= 0 ; y += jump )
+                        {
+                            bmp_x = lines[y].left_bmp_x ;
+                            bmp_y = lines[y].left_bmp_y ;
+                            hinc  = lines[y].hinc ;
+                            vinc  = lines[y].vinc ;
+
+                            M7_32bpp();
+                        }
+                        break;
             }
-            else
-            {
-                bmp_x = lines[y].left_bmp_x ;
-                bmp_y = lines[y].left_bmp_y ;
-                hinc  = lines[y].hinc ;
-                vinc  = lines[y].vinc ;
-            }
-
-            baseline = ptr ;
-
-            for ( x = 0 ; x < width ; x++ )
-            {
-                sx = fixtoi( bmp_x ) ;
-                sy = fixtoi( bmp_y ) ;
-
-                if ( indoor && sx >= 0 && sx < indoor->width && sy >= 0 && sy < indoor->height )
-                {
-                    *ptr = trans_table[(( uint8_t* )indoor->data )[indoor->pitch*sy + sx]][*ptr] ;
-                    ptr++;
-                }
-                else
-                {
-                    if ( outdoor )
-                    {
-                        *ptr = trans_table[(( uint8_t* )outdoor->data )[outdoor->pitch*( sy & outdoor_vmask ) + ( sx & outdoor_hmask )]][*ptr] ;
-                        ptr++;
-                    }
-                    else
-                    {
-                        *ptr = trans_table[dat->color][*ptr] ;
-                        ptr++;
-                    }
-                }
-
-                bmp_x += hinc ;
-                bmp_y += vinc ;
-            }
-
-            ptr = baseline + (( jump > 0 ) ? dest->pitch : -( int )dest->pitch ) ;
         }
+    }
+    else /* translucent */
+    {
+        if ( dat->flags & B_HMIRROR )
+        {
+            switch( dest->format->depth )
+            {
+                case    8:
+                        for ( ; y < height && y >= 0 ; y += jump )
+                        {
+                            bmp_x = lines[y].right_bmp_x ;
+                            bmp_y = lines[y].right_bmp_y ;
+                            hinc  = -lines[y].hinc ;
+                            vinc  = -lines[y].vinc ;
+
+                            M7_t8bpp();
+                        }
+                        break;
+
+                case    16:
+                        for ( ; y < height && y >= 0 ; y += jump )
+                        {
+                            bmp_x = lines[y].right_bmp_x ;
+                            bmp_y = lines[y].right_bmp_y ;
+                            hinc  = -lines[y].hinc ;
+                            vinc  = -lines[y].vinc ;
+
+                            M7_t16bpp();
+                        }
+                        break;
+
+                case    32:
+                    {
+                        unsigned int _f, _f2;
+                        int r, g, b;
+
+                        for ( ; y < height && y >= 0 ; y += jump )
+                        {
+                            bmp_x = lines[y].right_bmp_x ;
+                            bmp_y = lines[y].right_bmp_y ;
+                            hinc  = -lines[y].hinc ;
+                            vinc  = -lines[y].vinc ;
+
+                            M7_t32bpp();
+                        }
+                        break;
+                    }
+            }
+        }
+        else
+        {
+            switch( dest->format->depth )
+            {
+                case    8:
+                        for ( ; y < height && y >= 0 ; y += jump )
+                        {
+                            bmp_x = lines[y].left_bmp_x ;
+                            bmp_y = lines[y].left_bmp_y ;
+                            hinc  = lines[y].hinc ;
+                            vinc  = lines[y].vinc ;
+
+                            M7_t8bpp();
+                        }
+                        break;
+
+                case    16:
+                        for ( ; y < height && y >= 0 ; y += jump )
+                        {
+                            bmp_x = lines[y].left_bmp_x ;
+                            bmp_y = lines[y].left_bmp_y ;
+                            hinc  = lines[y].hinc ;
+                            vinc  = lines[y].vinc ;
+
+                            M7_t16bpp();
+                        }
+                        break;
+
+                case    32:
+                    {
+                        unsigned int _f, _f2;
+                        int r, g, b;
+
+                        for ( ; y < height && y >= 0 ; y += jump )
+                        {
+                            bmp_x = lines[y].left_bmp_x ;
+                            bmp_y = lines[y].left_bmp_y ;
+                            hinc  = lines[y].hinc ;
+                            vinc  = lines[y].vinc ;
+
+                            M7_t32bpp();
+                        }
+                        break;
+                    }
+            }
+        }
+    }
 
     /* Crea una lista ordenada de instancias a dibujar */
 
