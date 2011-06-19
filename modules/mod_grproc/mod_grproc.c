@@ -427,23 +427,23 @@ static void draw_at( GRAPH * dest, int x, int y, REGION * r, INSTANCE * i )
     {
         if ( LOCDWORD( mod_grproc, i, XGRAPH ) && scalex == 100 && scaley == 100 )
         {
-            gr_blit( dest, r, x, y, LOCDWORD( mod_grproc, i, FLAGS ), map ) ;
+            gr_blit( dest, r, x, y, LOCDWORD( mod_grproc, i, FLAGS ) & ( B_HMIRROR | B_VMIRROR ), map ) ;
         }
         else
         {
             if ( LOCDWORD( mod_grproc, i, XGRAPH ) )
             {
-                gr_rotated_blit( dest, r, x, y, LOCDWORD( mod_grproc, i, FLAGS ), 0, scalex, scaley, map ) ;
+                gr_rotated_blit( dest, r, x, y, LOCDWORD( mod_grproc, i, FLAGS ) & ( B_HMIRROR | B_VMIRROR ), 0, scalex, scaley, map ) ;
             }
             else
             {
-                gr_rotated_blit( dest, r, x, y, LOCDWORD( mod_grproc, i, FLAGS ), LOCINT32( mod_grproc, i, ANGLE ), scalex, scaley, map ) ;
+                gr_rotated_blit( dest, r, x, y, LOCDWORD( mod_grproc, i, FLAGS ) & ( B_HMIRROR | B_VMIRROR ), LOCINT32( mod_grproc, i, ANGLE ), scalex, scaley, map ) ;
             }
         }
     }
     else
     {
-        gr_blit( dest, r, x, y, LOCDWORD( mod_grproc, i, FLAGS ), map ) ;
+        gr_blit( dest, r, x, y, LOCDWORD( mod_grproc, i, FLAGS ) & ( B_HMIRROR | B_VMIRROR ), map ) ;
     }
 }
 
@@ -467,7 +467,7 @@ static int get_bbox( REGION * bbox, INSTANCE * proc )
 
     RESOLXY( mod_grproc, proc, x, y );
 
-    gr_get_bbox( bbox, 0, x, y, LOCDWORD( mod_grproc, proc, FLAGS ), LOCINT32( mod_grproc, proc, ANGLE ), scalex, scaley, b ) ;
+    gr_get_bbox( bbox, 0, x, y, LOCDWORD( mod_grproc, proc, FLAGS ) & ( B_HMIRROR | B_VMIRROR ), LOCINT32( mod_grproc, proc, ANGLE ), scalex, scaley, b ) ;
 
     return 1 ;
 }
