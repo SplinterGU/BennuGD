@@ -56,6 +56,9 @@ am__objects_1 = main.$(OBJEXT)
 bgdi_OBJECTS = $(am_bgdi_OBJECTS)
 am__DEPENDENCIES_1 =
 bgdi_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+bgdi_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(bgdi_LDFLAGS) \
+	$(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -200,8 +203,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 INCLUDES = $(COMMON_CFLAGS) -I../../include -I../include -I../../bgdrtm/include -DDEBUG -D__BGDI__
 bgdi_LDADD = $(COMMON_LDFLAGS) -L../../bgdrtm/src/.libs -lbgdrtm $(CRYPT_LDFLAGS)
-
-#bgdi_LDFLAGS = --as-needed
+bgdi_LDFLAGS = --as-needed
 SOURCE_FILES = main.c
 noinst_HEADERS = ../include/bgdi.h \
                  ../../bgdrtm/include/bgdrtm.h \
@@ -289,7 +291,7 @@ clean-binPROGRAMS:
 	rm -f $$list
 bgdi$(EXEEXT): $(bgdi_OBJECTS) $(bgdi_DEPENDENCIES) 
 	@rm -f bgdi$(EXEEXT)
-	$(LINK) $(bgdi_OBJECTS) $(bgdi_LDADD) $(LIBS)
+	$(bgdi_LINK) $(bgdi_OBJECTS) $(bgdi_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

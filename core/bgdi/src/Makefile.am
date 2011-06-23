@@ -7,7 +7,7 @@ INCLUDES = $(COMMON_CFLAGS) -I../../include -I../include -I../../bgdrtm/include 
 
 bgdi_LDADD = $(COMMON_LDFLAGS) -L../../bgdrtm/src/.libs -lbgdrtm $(CRYPT_LDFLAGS)
 
-#bgdi_LDFLAGS = --as-needed
+bgdi_LDFLAGS = --as-needed
 
 SOURCE_FILES = main.c
 
