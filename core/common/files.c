@@ -559,6 +559,17 @@ int file_pos( file * fp )
     return ftell( fp->fp ) ;
 }
 
+int file_flush( file * fp )
+{
+    if ( fp->type == F_XFILE ) return 0 ;
+
+#ifndef NO_ZLIB
+    if ( fp->type == F_GZFILE ) return 0 ;
+#endif
+
+    return fflush( fp->fp ) ;
+}
+
 /* Set current file pointer position */
 
 int file_seek( file * fp, int pos, int where )
@@ -571,12 +582,12 @@ int file_seek( file * fp, int pos, int where )
         else if ( where == SEEK_CUR )
             pos += ( fp->pos - x_file[fp->n].offset );
 
-        if ( x_file[fp->n].size < pos ) pos = x_file[fp->n].size ;
+        if ( x_file[fp->n].size < pos ) return -1; // pos = x_file[fp->n].size ;
 
-        if ( pos < 0 ) pos = 0 ;
+        if ( pos < 0 ) return -1; // pos = 0 ;
 
         fp->pos = pos + x_file[fp->n].offset ;
-        return pos ;
+        return 0; //pos ;
     }
 
 #ifndef NO_ZLIB

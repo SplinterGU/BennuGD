@@ -151,6 +151,11 @@ static int modfile_ftell( INSTANCE * my, int * params )
     return file_pos(( file * )params[0] ) ;
 }
 
+static int modfile_fflush( INSTANCE * my, int * params )
+{
+    return file_flush(( file * )params[0] ) ;
+}
+
 static int modfile_filelength( INSTANCE * my, int * params )
 {
     return file_size(( file * )params[0] ) ;
@@ -266,6 +271,8 @@ DLSYSFUNCS  __bgdexport( mod_file, functions_exports)[] =
     { "FSEEK"       , "III"  , TYPE_INT         , modfile_fseek       },
     { "FREWIND"     , "I"    , TYPE_UNDEFINED   , modfile_frewind     },
     { "FTELL"       , "I"    , TYPE_INT         , modfile_ftell       },
+    { "FFLUSH"      , "I"    , TYPE_INT         , modfile_fflush      },
+    { "FLUSH"       , "I"    , TYPE_INT         , modfile_fflush      },
     { "FLENGTH"     , "I"    , TYPE_INT         , modfile_filelength  },
     { "FPUTS"       , "IS"   , TYPE_INT         , modfile_fputs       },
     { "FGETS"       , "I"    , TYPE_STRING      , modfile_fgets       },

@@ -82,6 +82,7 @@ extern int    file_gets        (file * fp, char * buffer, int len) ;
 extern int    file_puts        (file * fp, char * buffer) ;
 extern int    file_size        (file * fp) ;
 extern int    file_pos         (file * fp) ;
+extern int    file_flush       (file * fp) ;
 extern int    file_seek        (file * fp, int pos, int where) ;
 extern void   file_rewind      (file * fp) ;
 extern void   file_addp        (const char * path) ;

@@ -96,8 +96,9 @@ DLVARFIXUP  __bgdexport( mod_sound, globals_fixup )[] =
 
 static int SDLCALL __modsound_seek_cb( SDL_RWops *context, int offset, int whence )
 {
-    if ( file_seek( context->hidden.unknown.data1, offset, whence ) < 0 ) return ( -1 );
-    return( file_pos( context->hidden.unknown.data1 ) );
+//    if ( file_seek( context->hidden.unknown.data1, offset, whence ) < 0 ) return ( -1 );
+//    return( file_pos( context->hidden.unknown.data1 ) );
+    return ( file_seek( context->hidden.unknown.data1, offset, whence ) );
 }
 
 static int SDLCALL __modsound_read_cb( SDL_RWops *context, void *ptr, int size, int maxnum )
@@ -864,6 +865,7 @@ static int reverse_stereo( int canal, int flip )
 
 static int modsound_load_song( INSTANCE * my, int * params )
 {
+#ifndef TARGET_DINGUX_A320
     int var;
     const char * filename ;
 
@@ -873,6 +875,9 @@ static int modsound_load_song( INSTANCE * my, int * params )
     string_discard( params[0] );
 
     return ( var );
+#else
+    return -1;
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
@@ -894,8 +899,12 @@ static int modsound_load_song( INSTANCE * my, int * params )
 
 static int modsound_play_song( INSTANCE * my, int * params )
 {
+#ifndef TARGET_DINGUX_A320
     if ( params[0] == -1 ) return -1;
     return( play_song( params[0], params[1] ) );
+#else
+    return -1;
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
@@ -916,8 +925,12 @@ static int modsound_play_song( INSTANCE * my, int * params )
 
 static int modsound_unload_song( INSTANCE * my, int * params )
 {
+#ifndef TARGET_DINGUX_A320
     if ( params[0] == -1 ) return ( -1 );
     return( unload_song( params[0] ) );
+#else
+    return -1;
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
@@ -938,11 +951,15 @@ static int modsound_unload_song( INSTANCE * my, int * params )
 
 static int modsound_unload_song2( INSTANCE * my, int * params )
 {
+#ifndef TARGET_DINGUX_A320
     int *s = params[0], r;
     if ( !s || *s == -1 ) return ( -1 );
     r = unload_song( *s );
     *s = 0;
     return( r );
+#else
+    return -1;
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
@@ -964,7 +981,11 @@ static int modsound_unload_song2( INSTANCE * my, int * params )
 
 static int modsound_stop_song( INSTANCE * my, int * params )
 {
+#ifndef TARGET_DINGUX_A320
     return( stop_song() );
+#else
+    return -1;
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
@@ -986,7 +1007,11 @@ static int modsound_stop_song( INSTANCE * my, int * params )
 
 static int modsound_pause_song( INSTANCE * my, int * params )
 {
+#ifndef TARGET_DINGUX_A320
     return( pause_song() );
+#else
+    return -1;
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1008,7 +1033,11 @@ static int modsound_pause_song( INSTANCE * my, int * params )
 
 static int modsound_resume_song( INSTANCE * my, int * params )
 {
+#ifndef TARGET_DINGUX_A320
     return( resume_song() );
+#else
+    return -1;
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1052,7 +1081,11 @@ static int modsound_is_playing_song( INSTANCE * my, int * params )
 
 static int modsound_set_song_volume( INSTANCE * my, int * params )
 {
+#ifndef TARGET_DINGUX_A320
     return ( set_song_volume( params[0] ) );
+#else
+    return -1;
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1074,8 +1107,12 @@ static int modsound_set_song_volume( INSTANCE * my, int * params )
 
 static int modsound_fade_music_in( INSTANCE * my, int * params )
 {
+#ifndef TARGET_DINGUX_A320
     if ( params[0] == -1 ) return -1;
     return ( fade_music_in( params[0], params[1], params[2] ) );
+#else
+    return -1;
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1096,7 +1133,9 @@ static int modsound_fade_music_in( INSTANCE * my, int * params )
 
 static int modsound_fade_music_off( INSTANCE * my, int * params )
 {
+#ifndef TARGET_DINGUX_A320
     return ( fade_music_off( params[0] ) );
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1116,6 +1155,7 @@ static int modsound_fade_music_off( INSTANCE * my, int * params )
 
 static int modsound_load_wav( INSTANCE * my, int * params )
 {
+#ifndef TARGET_DINGUX_A320
     int var;
     const char * filename ;
 
@@ -1125,6 +1165,9 @@ static int modsound_load_wav( INSTANCE * my, int * params )
     string_discard( params[0] );
 
     return ( var );
+#else
+    return -1;
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1146,8 +1189,12 @@ static int modsound_load_wav( INSTANCE * my, int * params )
 
 static int modsound_play_wav( INSTANCE * my, int * params )
 {
+#ifndef TARGET_DINGUX_A320
     if ( params[0] == -1 ) return -1;
     return( play_wav( params[0], params[1], -1 ) );
+#else
+    return -1;
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1170,8 +1217,12 @@ static int modsound_play_wav( INSTANCE * my, int * params )
 
 static int modsound_play_wav_channel( INSTANCE * my, int * params )
 {
+#ifndef TARGET_DINGUX_A320
     if ( params[0] == -1 ) return -1;
     return( play_wav( params[0], params[1], params[2] ) );
+#else
+    return -1;
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1193,8 +1244,12 @@ static int modsound_play_wav_channel( INSTANCE * my, int * params )
 
 static int modsound_unload_wav( INSTANCE * my, int * params )
 {
+#ifndef TARGET_DINGUX_A320
     if ( params[0] == -1 ) return -1;
     return( unload_wav( params[0] ) );
+#else
+    return -1;
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1216,11 +1271,15 @@ static int modsound_unload_wav( INSTANCE * my, int * params )
 
 static int modsound_unload_wav2( INSTANCE * my, int * params )
 {
+#ifndef TARGET_DINGUX_A320
     int *s = params[0], r;
     if ( !s || *s == -1 ) return ( -1 );
     r = unload_wav( *s );
     *s = 0;
     return( r );
+#else
+    return -1;
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1242,7 +1301,11 @@ static int modsound_unload_wav2( INSTANCE * my, int * params )
 
 static int modsound_stop_wav( INSTANCE * my, int * params )
 {
+#ifndef TARGET_DINGUX_A320
     return( stop_wav( params[0] ) );
+#else
+    return -1;
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1264,7 +1327,11 @@ static int modsound_stop_wav( INSTANCE * my, int * params )
 
 static int modsound_pause_wav( INSTANCE * my, int * params )
 {
+#ifndef TARGET_DINGUX_A320
     return ( pause_wav( params[0] ) );
+#else
+    return -1;
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1286,7 +1353,11 @@ static int modsound_pause_wav( INSTANCE * my, int * params )
 
 static int modsound_resume_wav( INSTANCE * my, int * params )
 {
+#ifndef TARGET_DINGUX_A320
     return ( resume_wav( params[0] ) );
+#else
+    return -1;
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1309,7 +1380,11 @@ static int modsound_resume_wav( INSTANCE * my, int * params )
 
 static int modsound_is_playing_wav( INSTANCE * my, int * params )
 {
+#ifndef TARGET_DINGUX_A320
     return ( is_playing_wav( params[0] ) );
+#else
+    return -1;
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1332,7 +1407,11 @@ static int modsound_is_playing_wav( INSTANCE * my, int * params )
 
 static int modsound_set_channel_volume( INSTANCE * my, int * params )
 {
+#ifndef TARGET_DINGUX_A320
     return( set_channel_volume( params[0], params[1] ) );
+#else
+    return -1;
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1353,7 +1432,11 @@ static int modsound_set_channel_volume( INSTANCE * my, int * params )
 
 static int modsound_reserve_channels( INSTANCE * my, int * params )
 {
+#ifndef TARGET_DINGUX_A320
     return ( reserve_channels( params[0] ) );
+#else
+    return -1;
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1376,7 +1459,11 @@ static int modsound_reserve_channels( INSTANCE * my, int * params )
 
 static int modsound_set_wav_volume( INSTANCE * my, int * params )
 {
+#ifndef TARGET_DINGUX_A320
     return( set_wav_volume( params[0], params[1] ) );
+#else
+    return -1;
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1395,7 +1482,11 @@ static int modsound_set_wav_volume( INSTANCE * my, int * params )
 
 static int modsound_set_panning( INSTANCE * my, int * params )
 {
+#ifndef TARGET_DINGUX_A320
     return( set_panning( params[0], params[1], params[2] ) );
+#else
+    return -1;
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1414,7 +1505,11 @@ static int modsound_set_panning( INSTANCE * my, int * params )
 
 static int modsound_set_position( INSTANCE * my, int * params )
 {
+#ifndef TARGET_DINGUX_A320
     return( set_position( params[0], params[1], params[2] ) );
+#else
+    return -1;
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1434,7 +1529,11 @@ static int modsound_set_position( INSTANCE * my, int * params )
 
 static int modsound_set_distance( INSTANCE * my, int * params )
 {
+#ifndef TARGET_DINGUX_A320
     return( set_distance( params[0], params[1] ) );
+#else
+    return -1;
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1453,29 +1552,45 @@ static int modsound_set_distance( INSTANCE * my, int * params )
 
 static int modsound_reverse_stereo( INSTANCE * my, int * params )
 {
+#ifndef TARGET_DINGUX_A320
     return( reverse_stereo( params[0], params[1] ) );
+#else
+    return -1;
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
 
 static int modsound_set_music_position( INSTANCE * my, int * params )
 {
+#ifndef TARGET_DINGUX_A320
     return ( Mix_SetMusicPosition( ( double ) *( float * ) &params[0] ) );
+#else
+    return -1;
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
 
 static int modsound_init( INSTANCE * my, int * params )
 {
+#ifndef TARGET_DINGUX_A320
     return( sound_init() );
+#else
+    return -1;
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
 
 static int modsound_close( INSTANCE * my, int * params )
 {
+#ifndef TARGET_DINGUX_A320
     sound_close();
     return( 0 );
+#else
+    return -1;
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1520,14 +1635,18 @@ DLSYSFUNCS  __bgdexport( mod_sound, functions_exports )[] =
 
 void  __bgdexport( mod_sound, module_initialize )()
 {
+#ifndef TARGET_DINGUX_A320
     if ( !SDL_WasInit( SDL_INIT_AUDIO ) ) SDL_InitSubSystem( SDL_INIT_AUDIO );
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
 
 void __bgdexport( mod_sound, module_finalize )()
 {
+#ifndef TARGET_DINGUX_A320
     if ( SDL_WasInit( SDL_INIT_AUDIO ) ) SDL_QuitSubSystem( SDL_INIT_AUDIO );
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
