@@ -67,9 +67,6 @@ bgdc_OBJECTS = $(am_bgdc_OBJECTS)
 am__DEPENDENCIES_1 =
 bgdc_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
-bgdc_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
-	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(bgdc_LDFLAGS) \
-	$(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -213,7 +210,8 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 INCLUDES = $(COMMON_CFLAGS) -I../../include -I../include -D__BGDC__
 bgdc_LDADD = $(COMMON_LDFLAGS) $(ZLIBS) $(CRYPT_LDFLAGS)
-bgdc_LDFLAGS = --as-needed
+
+#bgdc_LDFLAGS = --as-needed
 SOURCE_FILES = main.c main_core.c token.c identifier.c segment.c \
               constants.c strings.c varspace.c procedure.c codeblock.c \
               c_main.c c_data.c c_code.c c_debug.c dcbw.c \
@@ -305,7 +303,7 @@ clean-binPROGRAMS:
 	rm -f $$list
 bgdc$(EXEEXT): $(bgdc_OBJECTS) $(bgdc_DEPENDENCIES) 
 	@rm -f bgdc$(EXEEXT)
-	$(bgdc_LINK) $(bgdc_OBJECTS) $(bgdc_LDADD) $(LIBS)
+	$(LINK) $(bgdc_OBJECTS) $(bgdc_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
