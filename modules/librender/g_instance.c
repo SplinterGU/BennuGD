@@ -221,13 +221,6 @@ void draw_instance( INSTANCE * i, REGION * clip )
             flags |= B_ALPHA | ( alpha << B_ALPHA_SHIFT );
     }
 
-    if (( alpha = LOCDWORD( librender, i, ALPHA ) ) != 255 )
-    {
-        if ( alpha <= 0 ) return ;
-        else if ( alpha < 255 )
-            flags |= B_ALPHA | ( alpha << B_ALPHA_SHIFT );
-    }
-
     scalex = LOCINT32( librender, i, GRAPHSIZEX );
     scaley = LOCINT32( librender, i, GRAPHSIZEY );
     if ( scalex == 100 && scaley == 100 ) scalex = scaley = LOCINT32( librender, i, GRAPHSIZE );
