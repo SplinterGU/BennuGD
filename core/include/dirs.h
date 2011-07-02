@@ -71,8 +71,10 @@ typedef struct __DIR_FILEINFO_ST
     char filename[__MAX_PATH];
     long attributes;
     long size;
-    struct tm creation_time;
-    struct tm modified_time;
+    struct tm crtime; /* creation time (unix not available) */
+    struct tm mtime; /* last modification time */
+    struct tm atime; /* last access time */
+    struct tm ctime; /* last status change time (windows not available) */
 } __DIR_FILEINFO_ST;
 
 typedef struct __DIR_ST

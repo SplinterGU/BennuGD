@@ -203,7 +203,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 INCLUDES = $(COMMON_CFLAGS) -I../../include -I../include -I../../bgdrtm/include -DDEBUG -D__BGDI__
 bgdi_LDADD = $(COMMON_LDFLAGS) -L../../bgdrtm/src/.libs -lbgdrtm $(CRYPT_LDFLAGS)
-bgdi_LDFLAGS = --as-needed
+bgdi_LDFLAGS = 
 SOURCE_FILES = main.c
 noinst_HEADERS = ../include/bgdi.h \
                  ../../bgdrtm/include/bgdrtm.h \

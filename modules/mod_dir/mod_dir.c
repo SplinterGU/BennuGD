@@ -66,7 +66,9 @@ enum
     FILE_READONLY,
     FILE_SIZE,
     FILE_CREATED,
-    FILE_MODIFIED
+    FILE_MODIFIED,
+    FILE_ACCESSED,
+    FILE_STATECHG
 } ;
 
 /* ----------------------------------------------------------------- */
@@ -82,6 +84,8 @@ char * __bgdexport( mod_dir, globals_def )=
     "    size;\n"
     "    STRING created;\n"
     "    STRING modified;\n"
+    "    STRING accessed;\n"
+    "    STRING statechg;\n"
     "END\n";
 
 /* ----------------------------------------------------------------- */
@@ -100,6 +104,8 @@ DLVARFIXUP __bgdexport( mod_dir, globals_fixup)[] =
         { "fileinfo.size" , NULL, -1, -1 },
         { "fileinfo.created" , NULL, -1, -1 },
         { "fileinfo.modified" , NULL, -1, -1 },
+        { "fileinfo.accessed" , NULL, -1, -1 },
+        { "fileinfo.statechg" , NULL, -1, -1 },
         { NULL, NULL, -1, -1 }
     };
 
@@ -166,6 +172,8 @@ static int __moddir_read(__DIR_ST * dh )
     string_discard( GLODWORD( mod_dir, FILE_PATH ) );
     string_discard( GLODWORD( mod_dir, FILE_CREATED ) );
     string_discard( GLODWORD( mod_dir, FILE_MODIFIED ) );
+    string_discard( GLODWORD( mod_dir, FILE_ACCESSED ) );
+    string_discard( GLODWORD( mod_dir, FILE_STATECHG ) );
 
     GLODWORD( mod_dir, FILE_NAME        ) = string_new( dif->filename ); string_use( GLODWORD( mod_dir, FILE_NAME ) );
     GLODWORD( mod_dir, FILE_PATH        ) = string_new( dif->fullpath ); string_use( GLODWORD( mod_dir, FILE_PATH ) );
@@ -176,11 +184,25 @@ static int __moddir_read(__DIR_ST * dh )
     GLODWORD( mod_dir, FILE_SIZE        ) = dif->size;
 
     /* Store file times */
-    strftime( buffer, 20, "%d/%m/%Y %H:%M:S", &dif->modified_time );
+#ifdef _WIN32
+    strftime( buffer, 20, "%d/%m/%Y %H:%M:S", &dif->mtime );
     GLODWORD( mod_dir, FILE_CREATED     ) = string_new( buffer ); string_use( GLODWORD( mod_dir, FILE_CREATED  ) );
+#else
+    GLODWORD( mod_dir, FILE_CREATED     ) = string_new( "" ); string_use( GLODWORD( mod_dir, FILE_CREATED  ) );
+#endif
 
-    strftime( buffer, 20, "%d/%m/%Y %H:%M:S", &dif->creation_time );
+    strftime( buffer, 20, "%d/%m/%Y %H:%M:S", &dif->crtime );
     GLODWORD( mod_dir, FILE_MODIFIED    ) = string_new( buffer ); string_use( GLODWORD( mod_dir, FILE_MODIFIED ) );
+
+    strftime( buffer, 20, "%d/%m/%Y %H:%M:S", &dif->atime );
+    GLODWORD( mod_dir, FILE_ACCESSED    ) = string_new( buffer ); string_use( GLODWORD( mod_dir, FILE_ACCESSED ) );
+
+#ifndef _WIN32
+    strftime( buffer, 20, "%d/%m/%Y %H:%M:S", &dif->ctime );
+    GLODWORD( mod_dir, FILE_STATECHG    ) = string_new( buffer ); string_use( GLODWORD( mod_dir, FILE_STATECHG ) );
+#else
+    GLODWORD( mod_dir, FILE_STATECHG    ) = string_new( "" ); string_use( GLODWORD( mod_dir, FILE_STATECHG ) );
+#endif
 
     /* Return */
     result = GLODWORD( mod_dir, FILE_NAME );
