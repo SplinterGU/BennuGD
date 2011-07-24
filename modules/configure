@@ -10312,11 +10312,10 @@ case "$target_os" in
 	    ;;
 
     mingw32)
-	    COMMON_CFLAGS="-I/usr/local/include -DTARGET_WIN32 -DWIN32 -D_WIN32"
-	    COMMON_LDFLAGS="-L/usr/local/lib -lshlwapi"
-	    LIBSSL="eay32"
+	    COMMON_CFLAGS="-I/usr/local/include -DTARGET_WIN32 -DWIN32 -D_WIN32 -I`pwd`/../3rdparty/des-4.04b"
+	    COMMON_LDFLAGS="-L/usr/local/lib -lshlwapi -L`pwd`/../3rdparty/des-4.04b -ldes"
         LM=-lm
-        USE_OPENSSL=yes
+        USE_OPENSSL=no
 	    ;;
 
     mingw32msvc)

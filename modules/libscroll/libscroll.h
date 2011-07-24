@@ -66,6 +66,9 @@ typedef struct _scrolldata
     REGION * region1 ;
     REGION * region2 ;
 
+    int destfile;
+    int destid;
+
     int active ;
 
     struct _scrolldata * follows ;
@@ -103,7 +106,7 @@ extern scrolldata  scrolls[10] ;
 
 /* --------------------------------------------------------------------------- */
 
-extern void scroll_start( int n, int fileid, int graphid, int backid, int region, int flags ) ;
+extern void scroll_start( int n, int fileid, int graphid, int backid, int region, int flags, int destfile, int destid ) ;
 extern void scroll_stop( int n ) ;
 extern void scroll_update( int n );
 extern void scroll_draw( int n, REGION * clipping ) ;

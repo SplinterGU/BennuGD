@@ -39,8 +39,8 @@
 /* ----------------------------------------------------------------- */
 
 int onlyfenixexport = 0;
-
 int interactive = 1;
+int all = 1, functions = 0, locals = 0, globals = 0, types = 0, constants = 0, hooks_callbacks = 0, dependencies = 0, locals_dep = 0, globals_dep = 0;
 
 /* ----------------------------------------------------------------- */
 
@@ -227,138 +227,168 @@ void describe_module( char *filename )
 
     printf( "Module name: %s\n\n", filename );
 
-    constants_def = ( DLCONSTANT * ) _dlibaddr( library, "constants_def" ) ;
-    if ( constants_def )
+    if ( all || constants )
     {
-        printf( "Constants:\n\n" ); fflush( stdout );
-        while ( constants_def->name )
+        constants_def = ( DLCONSTANT * ) _dlibaddr( library, "constants_def" ) ;
+        if ( constants_def )
         {
-            describe_type( constants_def->type ); fflush( stdout );
-            printf( " %s = %d\n", constants_def->name, constants_def->code ); fflush( stdout );
-            constants_def++ ;
+            printf( "Constants:\n\n" ); fflush( stdout );
+            while ( constants_def->name )
+            {
+                describe_type( constants_def->type ); fflush( stdout );
+                printf( " %s = %d\n", constants_def->name, constants_def->code ); fflush( stdout );
+                constants_def++ ;
+            }
+            printf( "\n\n" );
         }
-        printf( "\n\n" );
     }
 
-    types_def = ( char ** ) _dlibaddr( library, "types_def" ) ;
-    if ( types_def && *types_def )
+    if ( all || types )
     {
-        printf( "Types:\n\n%s\n\n", *types_def );
-    }
-
-    globals_def = ( char ** ) _dlibaddr( library, "globals_def" ) ;
-    if ( globals_def && *globals_def )
-    {
-        printf( "Globals:\n\n%s\n\n", *globals_def );
-    }
-
-    locals_def  = ( char ** ) _dlibaddr( library, "locals_def" ) ;
-    if ( locals_def && *locals_def )
-    {
-        printf( "Locals:\n\n%s\n\n", *locals_def );
-    }
-
-    functions_exports = ( DLSYSFUNCS * ) _dlibaddr( library, "functions_exports" ) ;
-    if ( functions_exports )
-    {
-        printf( "Functions:\n\n" );
-        while ( functions_exports->name )
+        types_def = ( char ** ) _dlibaddr( library, "types_def" ) ;
+        if ( types_def && *types_def )
         {
-            describe_func( functions_exports->name, functions_exports->paramtypes, functions_exports->type, NULL );
-            functions_exports++;
+            printf( "Types:\n\n%s\n\n", *types_def );
         }
-        printf( "\n\n" );
     }
 
-    modules_dependency = ( char ** ) _dlibaddr( library, "modules_dependency" ) ;
-    if ( modules_dependency )
+    if ( all || globals )
     {
-        printf( "Module Dependency:\n\n" );
-        while ( *modules_dependency )
+        globals_def = ( char ** ) _dlibaddr( library, "globals_def" ) ;
+        if ( globals_def && *globals_def )
         {
-            printf( "%s\n", *modules_dependency );
-            modules_dependency++;
+            printf( "Globals:\n\n%s\n\n", *globals_def );
         }
-        printf( "\n\n" );
     }
 
-    globals_fixup     = ( DLVARFIXUP * ) _dlibaddr( library, "globals_fixup" ) ;
-    if ( globals_fixup )
+    if ( all || locals )
     {
-        printf( "Globals vars dependency:\n\n" );
-        while ( globals_fixup->var )
+        locals_def  = ( char ** ) _dlibaddr( library, "locals_def" ) ;
+        if ( locals_def && *locals_def )
         {
-            printf( "%s\n", globals_fixup->var );
-            globals_fixup++;
+            printf( "Locals:\n\n%s\n\n", *locals_def );
         }
-        printf( "\n\n" );
     }
 
-    locals_fixup      = ( DLVARFIXUP * ) _dlibaddr( library, "locals_fixup" ) ;
-    if ( locals_fixup )
+    if ( all || functions )
     {
-        printf( "Locals vars dependency:\n\n" );
-        while ( locals_fixup->var )
+        functions_exports = ( DLSYSFUNCS * ) _dlibaddr( library, "functions_exports" ) ;
+        if ( functions_exports )
         {
-            printf( "%s\n", locals_fixup->var );
-            locals_fixup++;
+            printf( "Functions:\n\n" );
+            while ( functions_exports->name )
+            {
+                describe_func( functions_exports->name, functions_exports->paramtypes, functions_exports->type, NULL );
+                functions_exports++;
+            }
+            printf( "\n\n" );
         }
-        printf( "\n\n" );
     }
 
-#define CallbackHeaders() if (!misc) { misc = 1; printf ("Internals callbacks:\n\n"); }
-
-    if ( _dlibaddr( library, "module_initialize" ) )
+    if ( all || dependencies )
     {
-        CallbackHeaders(); printf( "module_initialize\n" );
-    }
-    if ( _dlibaddr( library, "module_finalize" ) )
-    {
-        CallbackHeaders(); printf( "module_finalize\n" );
-    }
-    if ( _dlibaddr( library, "instance_create_hook" ) )
-    {
-        CallbackHeaders(); printf( "instance_create_hook\n" );
-    }
-    if ( _dlibaddr( library, "instance_destroy_hook" ) )
-    {
-        CallbackHeaders(); printf( "instance_destroy_hook\n" );
-    }
-    if ( _dlibaddr( library, "instance_pre_execute_hook" ) )
-    {
-        CallbackHeaders(); printf( "instance_pre_execute_hook\n" );
-    }
-    if ( _dlibaddr( library, "instance_pos_execute_hook" ) )
-    {
-        CallbackHeaders(); printf( "instance_pos_execute_hook\n" );
-    }
-    if ( _dlibaddr( library, "process_exec_hook" ) )
-    {
-        CallbackHeaders(); printf( "process_exec_hook\n" );
-    }
-
-    if ( misc ) printf( "\n\n" );
-
-    handler_hooks = ( HOOK * ) _dlibaddr( library, "handler_hooks" ) ;
-    if ( handler_hooks )
-    {
-        int i = 0;
-        printf( "Hooks at priorities: " );
-        while ( handler_hooks->hook )
+        modules_dependency = ( char ** ) _dlibaddr( library, "modules_dependency" ) ;
+        if ( modules_dependency )
         {
-            printf( "%d", handler_hooks->prio );
-            handler_hooks++;
-            if ( handler_hooks->hook ) printf( ", " );
-            i++;
+            printf( "Module Dependency:\n\n" );
+            while ( *modules_dependency )
+            {
+                printf( "%s\n", *modules_dependency );
+                modules_dependency++;
+            }
+            printf( "\n\n" );
         }
-        printf( "\n\n" );
     }
 
-    RegisterFunctions = _dlibaddr( library, "RegisterFunctions" ) ;
-    if ( RegisterFunctions )
+    if ( all || globals_dep )
     {
-        printf( "Fenix support:\n\n" );
-        ( *RegisterFunctions )( fnc_import, describe_func ) ;
+        globals_fixup     = ( DLVARFIXUP * ) _dlibaddr( library, "globals_fixup" ) ;
+        if ( globals_fixup )
+        {
+            printf( "Globals vars dependency:\n\n" );
+            while ( globals_fixup->var )
+            {
+                printf( "%s\n", globals_fixup->var );
+                globals_fixup++;
+            }
+            printf( "\n\n" );
+        }
+    }
+
+    if ( all || locals_dep )
+    {
+        locals_fixup      = ( DLVARFIXUP * ) _dlibaddr( library, "locals_fixup" ) ;
+        if ( locals_fixup )
+        {
+            printf( "Locals vars dependency:\n\n" );
+            while ( locals_fixup->var )
+            {
+                printf( "%s\n", locals_fixup->var );
+                locals_fixup++;
+            }
+            printf( "\n\n" );
+        }
+    }
+
+    if ( all || hooks_callbacks )
+    {
+        #define CallbackHeaders() if (!misc) { misc = 1; printf ("Internals callbacks:\n\n"); }
+
+        if ( _dlibaddr( library, "module_initialize" ) )
+        {
+            CallbackHeaders(); printf( "module_initialize\n" );
+        }
+        if ( _dlibaddr( library, "module_finalize" ) )
+        {
+            CallbackHeaders(); printf( "module_finalize\n" );
+        }
+        if ( _dlibaddr( library, "instance_create_hook" ) )
+        {
+            CallbackHeaders(); printf( "instance_create_hook\n" );
+        }
+        if ( _dlibaddr( library, "instance_destroy_hook" ) )
+        {
+            CallbackHeaders(); printf( "instance_destroy_hook\n" );
+        }
+        if ( _dlibaddr( library, "instance_pre_execute_hook" ) )
+        {
+            CallbackHeaders(); printf( "instance_pre_execute_hook\n" );
+        }
+        if ( _dlibaddr( library, "instance_pos_execute_hook" ) )
+        {
+            CallbackHeaders(); printf( "instance_pos_execute_hook\n" );
+        }
+        if ( _dlibaddr( library, "process_exec_hook" ) )
+        {
+            CallbackHeaders(); printf( "process_exec_hook\n" );
+        }
+
+        if ( misc ) printf( "\n\n" );
+
+        handler_hooks = ( HOOK * ) _dlibaddr( library, "handler_hooks" ) ;
+        if ( handler_hooks )
+        {
+            int i = 0;
+            printf( "Hooks at priorities: " );
+            while ( handler_hooks->hook )
+            {
+                printf( "%d", handler_hooks->prio );
+                handler_hooks++;
+                if ( handler_hooks->hook ) printf( ", " );
+                i++;
+            }
+            printf( "\n\n" );
+        }
+    }
+
+    if ( all )
+    {
+        RegisterFunctions = _dlibaddr( library, "RegisterFunctions" ) ;
+        if ( RegisterFunctions )
+        {
+            printf( "Fenix support:\n\n" );
+            ( *RegisterFunctions )( fnc_import, describe_func ) ;
+        }
     }
 }
 
@@ -369,7 +399,15 @@ void help( char *argv[] )
     printf( "Usage: %s [options] modulename \n"
             "\n"
             "    -e     On fenix, only report exported functions\n"
-            "    -i[-]  Enable/disable interactive mode (default: on) (only Win32)\n"
+            "    -L     only report locals\n"
+            "    -G     only report globals\n"
+            "    -T     only report types\n"
+            "    -C     only report constants\n"
+            "    -H     only report hooks\n"
+            "    -C     only report callbacks\n"
+            "    -D     only report modules/libs dependencies\n"
+            "    -l     only report locals dependencies\n"
+            "    -g     only report globals dependencies\n"
             "    -h     This help\n"
             "\n", argv[0] ) ;
 
@@ -411,17 +449,49 @@ int main( int argc, char *argv[] )
                     onlyfenixexport = 1 ;
                     break;
 
-                case 'i':
-                    switch ( argv[i][2] )
-                    {
-                        case '-':
-                            interactive = 0 ;
-                            break;
+                case 'F':
+                    all = 0;
+                    functions = 1;
+                    break;
 
-                        default:
-                            interactive = 1 ;
-                            break;
-                    }
+                case 'L':
+                    all = 0;
+                    locals = 1;
+                    break;
+
+                case 'G':
+                    all = 0;
+                    globals = 1;
+                    break;
+
+                case 'T':
+                    all = 0;
+                    types = 1;
+                    break;
+
+                case 'C':
+                    all = 0;
+                    constants = 1;
+                    break;
+
+                case 'H':
+                    all = 0;
+                    hooks_callbacks = 1;
+                    break;
+
+                case 'D':
+                    all = 0;
+                    dependencies = 1;
+                    break;
+
+                case 'l':
+                    all = 0;
+                    locals_dep = 1;
+                    break;
+
+                case 'g':
+                    all = 0;
+                    globals_dep = 1;
                     break;
 
                 default:
@@ -445,14 +515,7 @@ int main( int argc, char *argv[] )
     }
 
     describe_module( modname );
-#if _WIN32
-    if ( interactive )
-    {
-        printf( "\nPress any key to continue...\n" );
-        fflush( stdout );
-        char a; scanf( "%c", &a ) ;
-    }
-#endif
+
     exit( 0 );
 }
 

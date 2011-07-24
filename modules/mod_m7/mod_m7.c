@@ -103,6 +103,7 @@ typedef struct _mode7
     REGION * region ;
     GRAPH * indoor ;
     GRAPH * outdoor ;
+    GRAPH * dest ;
 }
 MODE7 ;
 
@@ -489,7 +490,7 @@ static void draw_mode7( int n, REGION * clip )
     MODE7 * mode7   = &mode7_inf[n] ;
     GRAPH * indoor  = mode7->indoor ;
     GRAPH * outdoor = mode7->outdoor ;
-    GRAPH * dest    = scrbitmap ;
+    GRAPH * dest ;
     GRAPH * pgr ;
 
     MODE7_INFO * dat  = &(( MODE7_INFO * ) & GLODWORD( mod_m7, M7STRUCTS ) )[n] ;
@@ -501,6 +502,9 @@ static void draw_mode7( int n, REGION * clip )
     int proclist_count, nproc ;
 
     INSTANCE * i ;
+
+    dest = mode7->dest ? mode7->dest : scrbitmap ;
+    if ( dest ) gr_clear_region( dest, clip );
 
     /* only if scr_depth == outdoor depth == indoor_depth */
     if ( ( outdoor && outdoor->format->depth != dest->format->depth ) ||
@@ -865,7 +869,7 @@ static void draw_mode7( int n, REGION * clip )
 
             x = LOCINT32( mod_m7, proclist[nproc], GRAPHSIZE ) ;
             LOCINT32( mod_m7, proclist[nproc], GRAPHSIZE ) = dat->focus * 8 / fixtof( LOCDWORD( mod_m7, proclist[nproc], DISTANCE_1 ) ) ;
-            draw_instance_at( proclist[nproc], mode7->region, mode7->region->x + width / 2  + bmp_x, mode7->region->y + height / 2 + bmp_y ) ;
+            draw_instance_at( proclist[nproc], mode7->region, mode7->region->x + width / 2  + bmp_x, mode7->region->y + height / 2 + bmp_y, mode7->dest ) ;
             LOCINT32( mod_m7, proclist[nproc], GRAPHSIZE ) = x ;
         }
     }
@@ -887,16 +891,9 @@ static int info_mode7( int n, REGION * clip, int * z, int * drawme )
 /* --------------------------------------------------------------------------- */
 /* Mode 7                                                            */
 
-static int modm7_start( INSTANCE * my, int * params )
+static int __m7_start( int n, int fileid, int inid, int outid, int region, int horizon, int destfile, int destid )
 {
     MODE7_INFO * dat ;
-
-    int n       = params[0];
-    int fileid  = params[1];
-    int inid    = params[2];
-    int outid   = params[3];
-    int region  = params[4];
-    int horizon = params[5];
 
     if ( n < 0 || n > 9 ) return 0;
 
@@ -910,6 +907,7 @@ static int modm7_start( INSTANCE * my, int * params )
     dat->color      = 0;
     dat->flags      = 0;
 
+    mode7_inf[n].dest    = bitmap_get( destfile, destid ) ;
     mode7_inf[n].indoor  = bitmap_get( fileid, inid ) ;
     mode7_inf[n].outdoor = bitmap_get( fileid, outid ) ;
     mode7_inf[n].region  = region_get( region ) ;
@@ -918,6 +916,16 @@ static int modm7_start( INSTANCE * my, int * params )
     mode7_inf[n].id = gr_new_object( dat->z, info_mode7, draw_mode7, n );
 
     return 1;
+}
+
+static int modm7_start( INSTANCE * my, int * params )
+{
+    return __m7_start( params[0], params[1], params[2], params[3], params[4], params[5], 0, 0 );
+}
+
+static int modm7_start2( INSTANCE * my, int * params )
+{
+    return __m7_start( params[0], params[1], params[2], params[3], params[4], params[5], params[6], params[7] );
 }
 
 /* --------------------------------------------------------------------------- */
@@ -950,13 +958,15 @@ void __bgdexport( mod_m7, module_initialize )()
 
 DLSYSFUNCS  __bgdexport( mod_m7, functions_exports )[] =
 {
-    { "MODE7_START" , "IIIIII", TYPE_INT , modm7_start  },
-    { "MODE7_STOP"  , "I"     , TYPE_INT , modm7_stop   },
+    { "MODE7_START" , "IIIIIIII"    , TYPE_INT , modm7_start2 },
+    { "MODE7_START" , "IIIIII"      , TYPE_INT , modm7_start  },
+    { "MODE7_STOP"  , "I"           , TYPE_INT , modm7_stop   },
 
-    { "START_MODE7" , "IIIIII", TYPE_INT , modm7_start  },
-    { "STOP_MODE7"  , "I"     , TYPE_INT , modm7_stop   },
+    { "START_MODE7" , "IIIIIIII"    , TYPE_INT , modm7_start2 },
+    { "START_MODE7" , "IIIIII"      , TYPE_INT , modm7_start  },
+    { "STOP_MODE7"  , "I"           , TYPE_INT , modm7_stop   },
 
-    { NULL          , NULL    , 0        , NULL         }
+    { NULL          , NULL          , 0        , NULL         }
 };
 
 /* --------------------------------------------------------------------------- */

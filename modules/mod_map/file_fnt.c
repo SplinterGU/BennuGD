@@ -387,7 +387,7 @@ int gr_font_save( int fontid, const char * filename )
                     }
                     else if ( gr->format->depth == 32 )
                     {
-                        file_writeUint32A( file, block, gr->width );
+                        file_writeUint32A( file, ( uint32_t * ) block, gr->width );
                     }
                 }
                 else

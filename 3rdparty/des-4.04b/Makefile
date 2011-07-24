@@ -102,7 +102,12 @@ LIBDES=	$(LIBDES_FULL)
 
 ALL=	$(GENERAL) $(TESTING_SRC) $(LIBDES) $(PERL) $(HEADERS)
 
+ifeq ($(TARGET),gnu-win32)
+DLIB=	libdes.dll
+else
 DLIB=	libdes.so
+endif
+
 all: $(DLIB) $(TESTING)
 
 cc:

@@ -114,8 +114,8 @@ char * __bgdexport( libscroll, globals_def ) =
     "flags1;\n"
     "flags2;\n"
     "follow = -1;\n"
-    "reserved[6];\n"  /* size: 20 dwords */
-    "END \n";
+    "reserved[6];\n"
+    "END \n"; /* total size: 20 dwords */
 
 /* --------------------------------------------------------------------------- */
 
@@ -162,7 +162,7 @@ void scroll_region( int n, REGION * r )
 
 /* --------------------------------------------------------------------------- */
 
-void scroll_start( int n, int fileid, int graphid, int backid, int region, int flags )
+void scroll_start( int n, int fileid, int graphid, int backid, int region, int flags, int destfile, int destid )
 {
     SCROLL_EXTRA_DATA * data;
 
@@ -170,12 +170,14 @@ void scroll_start( int n, int fileid, int graphid, int backid, int region, int f
     {
         if ( region < 0 || region > 31 ) region = 0 ;
 
-        scrolls[n].active  = 1 ;
-        scrolls[n].fileid  = fileid ;
-        scrolls[n].graphid = graphid ;
-        scrolls[n].backid  = backid ;
-        scrolls[n].region  = &regions[region] ;
-        scrolls[n].flags   = flags ;
+        scrolls[n].active   = 1 ;
+        scrolls[n].fileid   = fileid ;
+        scrolls[n].graphid  = graphid ;
+        scrolls[n].backid   = backid ;
+        scrolls[n].region   = &regions[region] ;
+        scrolls[n].flags    = flags ;
+        scrolls[n].destfile = destfile;
+        scrolls[n].destid   = destid;
 
         data = &(( SCROLL_EXTRA_DATA * ) &GLODWORD( libscroll, SCROLLS ) )[n] ;
 
@@ -379,7 +381,7 @@ void scroll_draw( int n, REGION * clipping )
     REGION r;
     int status;
 
-    GRAPH * graph, * back;
+    GRAPH * graph, * back, * dest = NULL;
 
     SCROLL_EXTRA_DATA * data;
     INSTANCE * i;
@@ -388,11 +390,15 @@ void scroll_draw( int n, REGION * clipping )
 
     if ( !scrolls[n].active || !scrolls[n].region || !scrolls[n].graphid ) return ;
 
-    graph = scrolls[n].graphid ? bitmap_get( scrolls[n].fileid, scrolls[n].graphid ) : 0 ;
-    back  = scrolls[n].backid  ? bitmap_get( scrolls[n].fileid, scrolls[n].backid )  : 0 ;
+    graph = scrolls[n].graphid ? bitmap_get( scrolls[n].fileid, scrolls[n].graphid ) : NULL ;
+    back  = scrolls[n].backid  ? bitmap_get( scrolls[n].fileid, scrolls[n].backid )  : NULL ;
 
     if (                        !graph ) return ; // El fondo de scroll no existe
     if (  scrolls[n].backid  && !back  ) return ; // Grafico no existe
+
+    dest = scrolls[n].destid ? bitmap_get( scrolls[n].destfile, scrolls[n].destid ) : NULL ;
+
+    if ( dest ) gr_clear_region( dest, clipping );
 
     data = &(( SCROLL_EXTRA_DATA * ) & GLODWORD( libscroll, SCROLLS ) )[n] ;
 
@@ -421,7 +427,7 @@ void scroll_draw( int n, REGION * clipping )
             x = scrolls[n].region->x - scrolls[n].x1 ;
             while ( x < scrolls[n].region->x2 )
             {
-                gr_blit( 0, &r, x + cx, y + cy, data->flags2, back ) ;
+                gr_blit( dest, &r, x + cx, y + cy, data->flags2, back ) ;
                 x += back->width ;
             }
             y += back->height ;
@@ -447,7 +453,7 @@ void scroll_draw( int n, REGION * clipping )
         x = scrolls[n].region->x - scrolls[n].x0 ;
         while ( x < scrolls[n].region->x2 )
         {
-            gr_blit( 0, &r, x + cx, y + cy, data->flags1, graph ) ;
+            gr_blit( dest, &r, x + cx, y + cy, data->flags1, graph ) ;
             x += graph->width ;
         }
         y += graph->height ;
@@ -498,7 +504,7 @@ void scroll_draw( int n, REGION * clipping )
 
             RESOLXY( libscroll, proclist[nproc], x, y );
 
-            draw_instance_at( proclist[nproc], &r, x - scrolls[n].posx0 + scrolls[n].region->x, y - scrolls[n].posy0 + scrolls[n].region->y ) ;
+            draw_instance_at( proclist[nproc], &r, x - scrolls[n].posx0 + scrolls[n].region->x, y - scrolls[n].posy0 + scrolls[n].region->y, dest ) ;
         }
     }
 }

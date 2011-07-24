@@ -134,7 +134,7 @@ void instance_get_bbox( INSTANCE * i, GRAPH * gr, REGION * dest )
 
 /* ---------------------------------------------------------------------- */
 
-void draw_instance_at( INSTANCE * i, REGION * region, int x, int y )
+void draw_instance_at( INSTANCE * i, REGION * region, int x, int y, GRAPH * dest )
 {
     GRAPH * map ;
     int16_t * blend_table = NULL ;
@@ -177,11 +177,11 @@ void draw_instance_at( INSTANCE * i, REGION * region, int x, int y )
        WARNING: don't remove "scalex != 100 || scaley != 100 ||" from begin the next condition */
     if ( scalex != 100 || scaley != 100 || ( LOCINT32( librender, i, ANGLE ) && !LOCDWORD( librender, i, XGRAPH ) ) )
     {
-        gr_rotated_blit( 0, region, x, y, flags, LOCDWORD( librender, i, XGRAPH ) ? 0 : LOCINT32( librender, i, ANGLE ), scalex, scaley, map ) ;
+        gr_rotated_blit( dest, region, x, y, flags, LOCDWORD( librender, i, XGRAPH ) ? 0 : LOCINT32( librender, i, ANGLE ), scalex, scaley, map ) ;
     }
     else
     {
-        gr_blit( 0, region, x, y, flags, map ) ;
+        gr_blit( dest, region, x, y, flags, map ) ;
     }
 
     if ( paletteid ) map->format->palette = palette;

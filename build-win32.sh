@@ -2,11 +2,11 @@
 
 TARGET=gnu-win32
 
-#echo "### Building 3rd party software ###"
-#cd 3rdparty/des-4.04b
-#make clean
-#make
-#cd -
+echo "### Building 3rd party software ###"
+cd 3rdparty/des-4.04b
+make clean -e TARGET=$TARGET
+make gcc -e TARGET=$TARGET
+cd -
 
 echo "### Building BennuGD Core ###"
 
