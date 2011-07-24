@@ -11,25 +11,31 @@ TARGET=gnu-linux
 echo "### Building BennuGD Core ###"
 
 cd core
-./configure
-make clean
-make
+./configure && make clean && make
+if [ $? -ne 0 ]; then
+    echo "*** ABORT ***"
+    exit 1
+fi
 cd -
 
 echo "### Building BennuGD Modules ###"
 
 cd modules
-./configure
-make clean
-make
+./configure && make clean && make
+if [ $? -ne 0 ]; then
+    echo "*** ABORT ***"
+    exit 1
+fi
 cd -
 
 echo "### Building BennuGD Tools ###"
 
 cd tools/moddesc
-./configure
-make clean
-make
+./configure && make clean && make
+if [ $? -ne 0 ]; then
+    echo "*** ABORT ***"
+    exit 1
+fi
 cd -
 
 echo "### Copying files to bin folder ###"
@@ -44,3 +50,5 @@ cp modules/lib*/.libs/lib*.so bin/$TARGET
 cp tools/moddesc/moddesc bin/$TARGET
 
 echo "### Build done! ###"
+
+exit 0

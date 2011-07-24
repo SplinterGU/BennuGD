@@ -398,8 +398,6 @@ void scroll_draw( int n, REGION * clipping )
 
     dest = scrolls[n].destid ? bitmap_get( scrolls[n].destfile, scrolls[n].destid ) : NULL ;
 
-    if ( dest ) gr_clear_region( dest, clipping );
-
     data = &(( SCROLL_EXTRA_DATA * ) & GLODWORD( libscroll, SCROLLS ) )[n] ;
 
     /* Dibuja el fondo */
@@ -524,6 +522,10 @@ static int info_scroll( int n, REGION * clip, int * z, int * drawme )
     * drawme = 1;
     * clip = * scrolls[n].region;
     scroll_update( n );
+
+    // Force clean map (need optimization)
+    if ( scrolls[n].destid ) gr_clear_region( bitmap_get( scrolls[n].destfile, scrolls[n].destid ), scrolls[n].region );
+
     return 1;
 }
 

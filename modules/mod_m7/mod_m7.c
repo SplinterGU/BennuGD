@@ -473,7 +473,10 @@ static void draw_mode7( int n, REGION * clip )
     fixed   hinc, vinc ;
 
     if ( n < 0 || n > 9 ) return ;
-    if ( !mode7_inf[n].id ) return ;
+
+    MODE7 * mode7 = &mode7_inf[n];
+
+    if ( !mode7->id ) return ;
 
     int horizon_y   = -1;
     int jump ;
@@ -487,7 +490,6 @@ static void draw_mode7( int n, REGION * clip )
     uint16_t * ptr16,               c16 ;
     uint32_t * ptr32,               c32 ;
 
-    MODE7 * mode7   = &mode7_inf[n] ;
     GRAPH * indoor  = mode7->indoor ;
     GRAPH * outdoor = mode7->outdoor ;
     GRAPH * dest ;
@@ -504,7 +506,6 @@ static void draw_mode7( int n, REGION * clip )
     INSTANCE * i ;
 
     dest = mode7->dest ? mode7->dest : scrbitmap ;
-    if ( dest ) gr_clear_region( dest, clip );
 
     /* only if scr_depth == outdoor depth == indoor_depth */
     if ( ( outdoor && outdoor->format->depth != dest->format->depth ) ||
@@ -879,11 +880,14 @@ static void draw_mode7( int n, REGION * clip )
 
 static int info_mode7( int n, REGION * clip, int * z, int * drawme )
 {
-    MODE7_INFO * dat = &(( MODE7_INFO * ) & GLODWORD( mod_m7, M7STRUCTS ) )[n];
+    MODE7_INFO * dat   = &(( MODE7_INFO * ) & GLODWORD( mod_m7, M7STRUCTS ) )[n];
 
     * z = dat->z;
     * drawme = 1;
     * clip = * mode7_inf[n].region;
+
+    // Force clean map (need optimization)
+    if ( mode7_inf[n].dest /*&& !( mode7_inf[n].dest->info_flags & GI_CLEAN )*/ ) gr_clear_region( mode7_inf[n].dest, mode7_inf[n].region );
 
     return 1;
 }
@@ -907,7 +911,7 @@ static int __m7_start( int n, int fileid, int inid, int outid, int region, int h
     dat->color      = 0;
     dat->flags      = 0;
 
-    mode7_inf[n].dest    = bitmap_get( destfile, destid ) ;
+    mode7_inf[n].dest    = destid ? bitmap_get( destfile, destid ) : NULL ;
     mode7_inf[n].indoor  = bitmap_get( fileid, inid ) ;
     mode7_inf[n].outdoor = bitmap_get( fileid, outid ) ;
     mode7_inf[n].region  = region_get( region ) ;

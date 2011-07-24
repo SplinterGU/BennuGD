@@ -79,25 +79,31 @@ cd -
 echo "### Building BennuGD Core ###"
 
 cd core
-./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared
-make clean
-make
+./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared && make clean && make
+if [ $? -ne 0 ]; then
+    echo "*** ABORT ***"
+    exit 1
+fi
 cd -
 
 echo "### Building BennuGD Modules ###"
 
 cd modules
-./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared
-make clean
-make
+./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared && make clean && make
+if [ $? -ne 0 ]; then
+    echo "*** ABORT ***"
+    exit 1
+fi
 cd -
 
 echo "### Building BennuGD Tools ###"
 
 cd tools/moddesc
-./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared
-make clean
-make
+./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared && make clean && make
+if [ $? -ne 0 ]; then
+    echo "*** ABORT ***"
+    exit 1
+fi
 cd -
 
 echo "### Copying files to bin folder ###"
@@ -112,3 +118,5 @@ cp modules/lib*/.libs/lib*.so bin/$TARGET
 cp tools/moddesc/moddesc bin/$TARGET
 
 echo "### Build done! ###"
+
+exit 0
