@@ -417,7 +417,7 @@ int compile_varspace( VARSPACE * n, segment * data, int additive, int copies, in
     int signed_prefix = 0;
 
     BASETYPE basetype = TYPE_UNDEFINED ;
-    TYPEDEF type;
+    TYPEDEF type, typeaux;
     segment * segm = NULL ;
     PROCDEF * proc = NULL;
 
@@ -697,18 +697,12 @@ int compile_varspace( VARSPACE * n, segment * data, int additive, int copies, in
             }
             token_back() ;
 
-            /* Da la vuelta a los índices ([3][2] -> [2][3]) */
+            /* Da la vuelta a los índices [10][5] -> [5][10] */
 
-            for ( i = 0 ; i < type.depth ; i++ )
-                if ( type.chunk[i].type != TYPE_ARRAY ) break ;
-
-            for ( j = --i ; j > i - j ; j-- )
-            {
-                TYPECHUNK n ;
-                n = type.chunk[j] ;
-                type.chunk[j] = type.chunk[i-j] ;
-                type.chunk[i-j] = n ;
-            }
+            for ( i = 0 ; i < type.depth ; i++ ) if ( type.chunk[i].type != TYPE_ARRAY ) break ;
+            i--;
+            for ( j = 0 ; j <= i ; j++ ) typeaux.chunk[ j ] = type.chunk[ i - j ];
+            for ( j = 0 ; j <= i ; j++ ) type.chunk[ j ]    = typeaux.chunk[ j ];
 
             members = ( VARSPACE * )calloc( 1, sizeof( VARSPACE ) ) ;
             if ( !members )
@@ -781,16 +775,10 @@ int compile_varspace( VARSPACE * n, segment * data, int additive, int copies, in
 
             /* Da la vuelta a los índices [10][5] -> [5][10] */
 
-            for ( i = 0 ; i < type.depth ; i++ )
-                if ( type.chunk[i].type != TYPE_ARRAY ) break ;
-
-            for ( j = --i; j > i - j; j-- )
-            {
-                TYPECHUNK n ;
-                n = type.chunk[j] ;
-                type.chunk[j] = type.chunk[i-j] ;
-                type.chunk[i-j] = n ;
-            }
+            for ( i = 0 ; i < type.depth ; i++ ) if ( type.chunk[i].type != TYPE_ARRAY ) break ;
+            i--;
+            for ( j = 0 ; j <= i ; j++ ) typeaux.chunk[ j ] = type.chunk[ i - j ];
+            for ( j = 0 ; j <= i ; j++ ) type.chunk[ j ]    = typeaux.chunk[ j ];
 
             if ( segm && token.type == IDENTIFIER && token.code == identifier_equal )
             {

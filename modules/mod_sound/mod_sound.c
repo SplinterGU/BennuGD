@@ -96,9 +96,9 @@ DLVARFIXUP  __bgdexport( mod_sound, globals_fixup )[] =
 
 static int SDLCALL __modsound_seek_cb( SDL_RWops *context, int offset, int whence )
 {
-//    if ( file_seek( context->hidden.unknown.data1, offset, whence ) < 0 ) return ( -1 );
-//    return( file_pos( context->hidden.unknown.data1 ) );
-    return ( file_seek( context->hidden.unknown.data1, offset, whence ) );
+    if ( file_seek( context->hidden.unknown.data1, offset, whence ) < 0 ) return ( -1 );
+    return( file_pos( context->hidden.unknown.data1 ) );
+//    return ( file_seek( context->hidden.unknown.data1, offset, whence ) );
 }
 
 static int SDLCALL __modsound_read_cb( SDL_RWops *context, void *ptr, int size, int maxnum )

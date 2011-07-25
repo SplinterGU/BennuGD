@@ -689,6 +689,7 @@ file * file_open( const char * filename, char * mode )
         return f ;
     }
 
+
     /* if real file don't exists in disk */
     if (  strchr( mode, 'r' ) &&  strchr( mode, 'b' ) &&  /* Only read-only files */
          !strchr( mode, '+' ) && !strchr( mode, 'w' ) )

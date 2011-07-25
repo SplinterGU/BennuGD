@@ -170,7 +170,7 @@ test:	all
 	./destest
 
 $(DLIB): $(OBJ)
-	/bin/rm -f $(DLIB)
+	/bin/rm -f $(DLIB) || /bin/true
 	$(CC) -fPIC --shared -o $(DLIB) $(OBJ)
 #	$(AR) cr $(DLIB) $(OBJ)
 #	$(RANLIB) $(DLIB)
