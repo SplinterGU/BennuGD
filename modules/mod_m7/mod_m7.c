@@ -912,8 +912,8 @@ static int __m7_start( int n, int fileid, int inid, int outid, int region, int h
     dat->flags      = 0;
 
     mode7_inf[n].dest    = destid ? bitmap_get( destfile, destid ) : NULL ;
-    mode7_inf[n].indoor  = bitmap_get( fileid, inid ) ;
-    mode7_inf[n].outdoor = bitmap_get( fileid, outid ) ;
+    mode7_inf[n].indoor  = inid ? bitmap_get( fileid, inid ) : NULL ;
+    mode7_inf[n].outdoor = outid ? bitmap_get( fileid, outid ) : NULL ;
     mode7_inf[n].region  = region_get( region ) ;
 
     if ( mode7_inf[n].id ) gr_destroy_object( mode7_inf[n].id );
