@@ -58,11 +58,17 @@ REGION regions[ 32 ] ;
 void region_define( int region, int x, int y, int width, int height )
 {
     if ( region < 1 || region > 31 ) return ;
-
+#if 1
+    regions[ region ].x = x;
+    regions[ region ].y = y ;
+    regions[ region ].x2 = ( x + width ) - 1 ;
+    regions[ region ].y2 = ( y + height ) - 1 ;
+#else
     regions[ region ].x = MAX( x, 0 ) ;
     regions[ region ].y = MAX( y, 0 ) ;
     regions[ region ].x2 = MIN( scr_width, x + width ) - 1 ;
     regions[ region ].y2 = MIN( scr_height, y + height ) - 1 ;
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
@@ -148,11 +154,17 @@ int region_is_out( REGION * a, REGION * b )
 REGION * region_new( int x, int y, int width, int height )
 {
     REGION * region = malloc( sizeof( REGION ) ) ;
-
+#if 1
+    region->x = x ;
+    region->y = y ;
+    region->x2 = ( x + width ) - 1 ;
+    region->y2 = ( y + height ) - 1 ;
+#else
     region->x = MAX( x, 0 ) ;
     region->y = MAX( y, 0 ) ;
     region->x2 = MIN( scr_width, x + width ) - 1 ;
     region->y2 = MIN( scr_height, y + height ) - 1 ;
+#endif
     return region ;
 }
 

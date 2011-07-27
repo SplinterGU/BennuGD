@@ -403,7 +403,7 @@ void scroll_draw( int n, REGION * clipping )
     /* Dibuja el fondo */
 
     r = *scrolls[n].region;
-    if ( clipping ) region_union( &r, clipping );
+    if ( !dest && clipping ) region_union( &r, clipping );
 
     if ( back )
     {
