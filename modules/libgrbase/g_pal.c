@@ -430,6 +430,9 @@ void pal_refresh( PALETTE * pal )
             for ( n = 256; n--; ) pal->colorequiv[ n ] = gr_map_rgb( sys_pixel_format, pal->rgb[ n ].r, pal->rgb[ n ].g, pal->rgb[ n ].b );
         }
     }
+    else
+        if ( !pal || pal == sys_pixel_format->palette ) palette_changed = 1 ;
+
 }
 
 /* --------------------------------------------------------------------------- */
