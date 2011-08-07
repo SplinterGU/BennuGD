@@ -624,7 +624,7 @@ int gr_text_put( GRAPH * dest, REGION * clip, int fontid, int x, int y, const un
 
     if ( fntcolor8 == -1 )
     {
-        gr_setcolor(( dest->format->depth == 8 ) ? gr_find_nearest_color( 255, 255, 255 ) : gr_rgb( 255, 255, 255 ) );
+        gr_setcolor(( dest->format->depth == 8 ) ? gr_find_nearest_color( 255, 255, 255 ) : gr_rgb_depth( dest->format->depth, 255, 255, 255 ) );
     }
     else
     {
