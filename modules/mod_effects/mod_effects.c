@@ -54,22 +54,6 @@
 #define GSCALE_OFF     -1
 
 /* --------------------------------------------------------------------------- */
-/* Esto podria/deberia estar en una liberia general */
-
-#ifdef __GNUC__
-#define _inline inline
-#endif
-
-_inline void _Pixel8( uint8_t * ptr, int color )
-{
-    *ptr = color ;
-}
-
-_inline void _Pixel16( uint16_t * ptr, uint16_t color, uint16_t color_alpha )
-{
-    *ptr = color ;
-}
-
 /*
  *  FUNCTION : _get_pixel
  *
@@ -91,10 +75,13 @@ static int _get_pixel( GRAPH * dest, int x, int y )
     switch ( dest->format->depth )
     {
         case 8:
-            return (( uint8_t * )dest->data )[x + dest->pitch * y] ;
+            return *((( uint8_t * )dest->data ) + x + dest->pitch * y) ;
 
         case 16:
-            return (( uint16_t * )dest->data )[x + dest->pitch * y / 2] ;
+            return *( uint16_t * )((( uint8_t *)dest->data) + ( x << 1 ) + dest->pitch * y) ;
+
+        case 32:
+            return *( uint32_t * )((( uint8_t *)dest->data) + ( x << 2 ) + dest->pitch * y) ;
 
         case 1:
             return ((( uint8_t * )dest->data )[x / 8 + dest->pitch * y] & ( 0x80 >> ( x & 7 ) ) ) ? 1 : 0;
@@ -127,11 +114,15 @@ static void _put_pixel( GRAPH * dest, int x, int y, int color )
     switch ( dest->format->depth )
     {
         case 8:
-            _Pixel8((( uint8_t * )dest->data ) + x + dest->pitch * y, color );
+            *((( uint8_t * )dest->data ) + x + dest->pitch * y) = color ;
             break;
 
         case 16:
-            _Pixel16((( uint16_t * )dest->data ) + x + dest->pitch * y / 2, color, 0 ) ;
+            *( uint16_t * )((( uint8_t *)dest->data) + ( x << 1 ) + dest->pitch * y) = color ;
+            break;
+
+        case 32:
+            *( uint32_t * )((( uint8_t *)dest->data) + ( x << 2 ) + dest->pitch * y) = color ;
             break;
 
         case 1:
@@ -147,16 +138,15 @@ static void _put_pixel( GRAPH * dest, int x, int y, int color )
 
 static int modeffects_filter( INSTANCE *my, int *params )
 { //fpg,map,tabla10
-
     GRAPH * map = bitmap_get( params[0], params[1] ), * map2;
     int *tabla = ( int* )params[2];
     int x, y, i, j;
-    int r, g, b, r2, g2, b2, c;
+    int r, g, b, a, r2, g2, b2, c;
     float r1, g1, b1;
     int color;
 
     if ( !map ) return 0;
-    if ( map->format->depth != 16 ) return 0;
+    if ( map->format->depth < 16 ) return 0;
 
     map2 = bitmap_clone( map );
 
@@ -170,6 +160,8 @@ static int modeffects_filter( INSTANCE *my, int *params )
         {
             color = _get_pixel( map, i, j );
             if ( !color ) continue;
+
+            gr_get_rgba_depth( map->format->depth, color, &r, &g, &b, &a ); // only need alpha
 
             for ( y = j - 1;y < j + 2;y++ )
             {
@@ -188,16 +180,18 @@ static int modeffects_filter( INSTANCE *my, int *params )
                         continue;
                     }
 
-                    gr_get_rgb( color, &r2, &g2, &b2 );
+                    gr_get_rgb_depth( map->format->depth, color, &r2, &g2, &b2 );
 
                     r1 += ( float )( r2 * tabla[c] );
                     g1 += ( float )( g2 * tabla[c] );
                     b1 += ( float )( b2 * tabla[c] );
                 }
             }
+
             r1 /= tabla[9];
             g1 /= tabla[9];
             b1 /= tabla[9];
+
             r = ((( int )r1 ) > 255 ) ? 255 : ( int )r1;
             g = ((( int )g1 ) > 255 ) ? 255 : ( int )g1;
             b = ((( int )b1 ) > 255 ) ? 255 : ( int )b1;
@@ -209,9 +203,10 @@ static int modeffects_filter( INSTANCE *my, int *params )
             if ( !r && !g && !b )
                 c = 0;
             else
-                c = gr_rgb( r, g, b );
+                c = gr_rgba_depth( map->format->depth, r, g, b, a );
 
             _put_pixel( map2, i, j, c );
+
             r1 = 0;
             g1 = 0;
             b1 = 0;
@@ -224,46 +219,45 @@ static int modeffects_filter( INSTANCE *my, int *params )
     return 1 ;
 }
 
-static int modeffects_blur( INSTANCE *my, int *params ) // fpg,map,tipo
-{
-
+static int modeffects_blur( INSTANCE *my, int *params )
+{ // fpg,map,tipo
     GRAPH * map = bitmap_get( params[0], params[1] ), *map2;
 
     int x, y, i, j, c;
-    int r, g, b, r2, g2, b2;
+    int r, g, b, a, r2, g2, b2, a2;
     int color;
 
     if ( !map ) return 0;
-    if ( map->format->depth != 16 ) return 0;
+    if ( map->format->depth < 16 ) return 0;
 
     switch ( params[2] )
     {
         case BLUR_NORMAL:
             //METODO 1 "RAPIDO" izq y arriba
-            for ( i = 0;i < map->width;i++ )
-                for ( j = 0;j < map->height;j++ )
+            for ( i = 0; i < map->width; i++ )
+                for ( j = 0; j < map->height; j++ )
                 {
                     color = _get_pixel( map, i, j ) ;
                     if ( !color ) continue;
-                    gr_get_rgb( color, &r, &g, &b );
+                    gr_get_rgba_depth( map->format->depth, color, &r, &g, &b, &a );
                     if ( i > 0 )
                     {
-                        gr_get_rgb( _get_pixel( map, i - 1, j ), &r2, &g2, &b2 );
+                        gr_get_rgba_depth( map->format->depth, _get_pixel( map, i - 1, j ), &r2, &g2, &b2, &a2 );
                     }
                     else
                     {
-                        gr_get_rgb( _get_pixel( map, i + 1, j ), &r2, &g2, &b2 );
+                        gr_get_rgba_depth( map->format->depth, _get_pixel( map, i + 1, j ), &r2, &g2, &b2, &a2 );
                     }
                     r += r2;
                     g += g2;
                     b += b2;
                     if ( j > 0 )
                     {
-                        gr_get_rgb( _get_pixel( map, i, j - 1 ), &r2, &g2, &b2 );
+                        gr_get_rgba_depth( map->format->depth, _get_pixel( map, i, j - 1 ), &r2, &g2, &b2, &a2 );
                     }
                     else
                     {
-                        gr_get_rgb( _get_pixel( map, i, j + 1 ), &r2, &g2, &b2 );
+                        gr_get_rgba_depth( map->format->depth, _get_pixel( map, i, j + 1 ), &r2, &g2, &b2, &a2 );
                     }
                     r += r2;
                     g += g2;
@@ -271,7 +265,7 @@ static int modeffects_blur( INSTANCE *my, int *params ) // fpg,map,tipo
                     r /= 3;
                     g /= 3;
                     b /= 3;
-                    _put_pixel( map, i, j, gr_rgb( r, g, b ) );
+                    _put_pixel( map, i, j, gr_rgba_depth( map->format->depth, r, g, b, a ) );
                 }
             break;
 
@@ -286,14 +280,14 @@ static int modeffects_blur( INSTANCE *my, int *params ) // fpg,map,tipo
                 {
                     color = _get_pixel( map, i, j ) ;
                     if ( !color ) continue;
-                    gr_get_rgb( color, &r, &g, &b );
+                    gr_get_rgba_depth( map->format->depth, color, &r, &g, &b, &a );
                     c++;
                     for ( x = i - 1;x < i + 2;x++ )
                     {
                         for ( y = j - 1;y < j + 2;y++ )
                         {
                             if ( x < 0 || x > map->width - 1 || y < 0 || y > map->height - 1 ) continue;
-                            gr_get_rgb( _get_pixel( map, x, y ), &r2, &g2, &b2 );
+                            gr_get_rgba_depth( map->format->depth, _get_pixel( map, x, y ), &r2, &g2, &b2, &a2 );
                             r += r2;
                             g += g2;
                             b += b2;
@@ -304,7 +298,7 @@ static int modeffects_blur( INSTANCE *my, int *params ) // fpg,map,tipo
                     r /= c;
                     g /= c;
                     b /= c;
-                    _put_pixel( map, i, j, gr_rgb( r, g, b ) );
+                    _put_pixel( map, i, j, gr_rgba_depth( map->format->depth, r, g, b, a ) );
                     r = 0;
                     g = 0;
                     b = 0;
@@ -324,14 +318,14 @@ static int modeffects_blur( INSTANCE *my, int *params ) // fpg,map,tipo
                 {
                     color = _get_pixel( map, i, j ) ;
                     if ( !color ) continue;
-                    gr_get_rgb( color, &r, &g, &b );
+                    gr_get_rgba_depth( map->format->depth, color, &r, &g, &b, &a );
                     c++;
                     for ( x = i - 2;x < i + 3;x++ )
                     {
                         for ( y = j - 2;y < j + 3;y++ )
                         {
                             if ( x < 0 || x > map->width - 1 || y < 0 || y > map->height - 1 ) continue;
-                            gr_get_rgb( _get_pixel( map, x, y ), &r2, &g2, &b2 );
+                            gr_get_rgba_depth( map->format->depth, _get_pixel( map, x, y ), &r2, &g2, &b2, &a2 );
                             r += r2;
                             g += g2;
                             b += b2;
@@ -342,7 +336,7 @@ static int modeffects_blur( INSTANCE *my, int *params ) // fpg,map,tipo
                     r /= c;
                     g /= c;
                     b /= c;
-                    _put_pixel( map, i, j, gr_rgb( r, g, b ) );
+                    _put_pixel( map, i, j, gr_rgba_depth( map->format->depth, r, g, b, a ) );
                     r = 0;
                     g = 0;
                     b = 0;
@@ -364,14 +358,14 @@ static int modeffects_blur( INSTANCE *my, int *params ) // fpg,map,tipo
                 {
                     color = _get_pixel( map, i, j ) ;
                     if ( !color ) continue;
-                    gr_get_rgb( color, &r, &g, &b );
+                    gr_get_rgba_depth( map->format->depth, color, &r, &g, &b, &a );
                     c++;
                     for ( x = i - 2;x < i + 3;x++ )
                     {
                         for ( y = j - 2;y < j + 3;y++ )
                         {
                             if ( x < 0 || x > map->width - 1 || y < 0 || y > map->height - 1 ) continue;
-                            gr_get_rgb( _get_pixel( map, x, y ), &r2, &g2, &b2 );
+                            gr_get_rgba_depth( map->format->depth, _get_pixel( map, x, y ), &r2, &g2, &b2, &a2 );
                             r += r2;
                             g += g2;
                             b += b2;
@@ -382,7 +376,7 @@ static int modeffects_blur( INSTANCE *my, int *params ) // fpg,map,tipo
                     r /= c;
                     g /= c;
                     b /= c;
-                    _put_pixel( map2, i, j, gr_rgb( r, g, b ) );
+                    _put_pixel( map2, i, j, gr_rgba_depth( map->format->depth, r, g, b, a ) );
                     r = 0;
                     g = 0;
                     b = 0;
@@ -399,55 +393,55 @@ static int modeffects_blur( INSTANCE *my, int *params ) // fpg,map,tipo
     return 1 ;
 }
 
-static int modeffects_grayscale( INSTANCE *my, int *params ) //fpg,map,tipo
-{
+static int modeffects_grayscale( INSTANCE *my, int *params )
+{ //fpg,map,tipo
     GRAPH * map = bitmap_get( params[0], params[1] ) ;
     uint32_t i, j, c;
-    int r, g, b;
+    int r, g, b, a;
 
     if ( !map ) return 0;
-    if ( map->format->depth != 16 ) return 0;
+    if ( map->format->depth < 16 ) return 0;
 
     for ( i = 0;i < map->height;i++ )
         for ( j = 0;j < map->width;j++ )
         {
-            gr_get_rgb( _get_pixel( map, j, i ), &r, &g, &b );
+            gr_get_rgba_depth( map->format->depth, _get_pixel( map, j, i ), &r, &g, &b, &a );
             if ( !r && !g && !b )continue;
             c = ( int )( 0.3 * r + 0.59 * g + 0.11 * b );
             switch ( params[2] )
             {
                 case GSCALE_RGB: // RGB
-                    c = gr_rgb( c, c, c );
+                    c = gr_rgba_depth( map->format->depth, c, c, c, a );
                     break;
 
                 case GSCALE_R: // R
-                    c = gr_rgb( c, 0, 0 );
+                    c = gr_rgba_depth( map->format->depth, c, 0, 0, a );
                     break;
 
                 case GSCALE_G: // G
-                    c = gr_rgb( 0, c, 0 );
+                    c = gr_rgba_depth( map->format->depth, 0, c, 0, a );
                     break;
 
                 case GSCALE_B: // B
-                    c = gr_rgb( 0, 0, c );
+                    c = gr_rgba_depth( map->format->depth, 0, 0, c, a );
                     break;
 
                 case GSCALE_RG: // RG
-                    c = gr_rgb( c, c, 0 );
+                    c = gr_rgba_depth( map->format->depth, c, c, 0, a );
                     break;
 
                 case GSCALE_RB: // RB
-                    c = gr_rgb( c, 0, c );
+                    c = gr_rgba_depth( map->format->depth, c, 0, c, a );
                     break;
 
 
                 case GSCALE_GB: // GB
-                    c = gr_rgb( 0, c, c );
+                    c = gr_rgba_depth( map->format->depth, 0, c, c, a );
                     break;
 
                 case GSCALE_OFF:
                 default:
-                    c = gr_rgb( r, g, b );
+                    c = gr_rgba_depth( map->format->depth, r, g, b, a );
             }
             _put_pixel( map, j, i, c );
         }
@@ -455,24 +449,26 @@ static int modeffects_grayscale( INSTANCE *my, int *params ) //fpg,map,tipo
     return 1 ;
 }
 
-static int modeffects_rgbscale( INSTANCE *my, int *params ) //fpg, map, r, g, b
-{
+static int modeffects_rgbscale( INSTANCE *my, int *params )
+{ //fpg, map, r, g, b
     GRAPH * map = bitmap_get( params[0], params[1] ) ;
     uint32_t i, j, c;
-    int r, g, b;
+    int r, g, b, a;
 
     if ( !map ) return 0;
-    if ( map->format->depth != 16 ) return 0;
+    if ( map->format->depth < 16 ) return 0;
 
     for ( i = 0;i < map->height;i++ )
         for ( j = 0;j < map->width;j++ )
         {
-            gr_get_rgb( _get_pixel( map, j, i ), &r, &g, &b );
+            gr_get_rgba_depth( map->format->depth, _get_pixel( map, j, i ), &r, &g, &b, &a );
             if ( !r && !g && !b )continue;
             c = ( int )( 0.3 * r + 0.59 * g + 0.11 * b );
-            c = gr_rgb(( int )( c**( float * )( &params[2] ) ),
-                    ( int )( c**( float * )( &params[3] ) ),
-                    ( int )( c**( float * )( &params[4] ) ) );
+            c = gr_rgba_depth( map->format->depth,
+                               ( int )( c * *( float * )( &params[2] ) ),
+                               ( int )( c * *( float * )( &params[3] ) ),
+                               ( int )( c * *( float * )( &params[4] ) ),
+                               a );
             _put_pixel( map, j, i, c );
         }
 
