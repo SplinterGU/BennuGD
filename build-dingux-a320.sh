@@ -75,7 +75,15 @@ echo PKG_CONFIG = $PKG_CONFIG
 echo "### Building 3rd party software ###"
 
 cd 3rdparty/des-4.04b
-make clean && make
+case $1 in
+    release)
+        make clean && make
+        ;;
+
+    *)
+        make
+        ;;
+esac
 if [ $? -ne 0 ]; then
     echo "*** ABORT ***"
     exit 1
@@ -85,7 +93,15 @@ cd -
 echo "### Building BennuGD Core ###"
 
 cd core
-./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared && make clean && make
+case $1 in
+    release)
+        ./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared && make clean && make
+        ;;
+
+    *)
+        make
+        ;;
+esac
 if [ $? -ne 0 ]; then
     echo "*** ABORT ***"
     exit 1
@@ -95,7 +111,15 @@ cd -
 echo "### Building BennuGD Modules ###"
 
 cd modules
-./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared --libdir=$PREFIX/lib && make clean && make
+case $1 in
+    release)
+        ./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared && make clean && make
+        ;;
+
+    *)
+        make
+        ;;
+esac
 if [ $? -ne 0 ]; then
     echo "*** ABORT ***"
     exit 1
@@ -105,7 +129,15 @@ cd -
 echo "### Building BennuGD Tools ###"
 
 cd tools/moddesc
-./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared --libdir=$PREFIX/lib && make clean && make
+case $1 in
+    release)
+        ./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared && make clean && make
+        ;;
+
+    *)
+        make
+        ;;
+esac
 if [ $? -ne 0 ]; then
     echo "*** ABORT ***"
     exit 1

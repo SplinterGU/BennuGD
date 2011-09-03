@@ -29,7 +29,8 @@
 #ifndef __G_RECTS
 #define __G_RECTS
 
-extern uint8_t zonearray[ 128 / 8 ];
+#define DIRTYCOLS  32 /* max: 32 */
+#define DIRTYROWS  16 /* max: 32 */
 
 void gr_mark_rect( int x, int y, int width, int height ) ;
 int gr_mark_rects( REGION * rects ) ;

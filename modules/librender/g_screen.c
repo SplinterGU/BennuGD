@@ -37,8 +37,8 @@
 static GRAPH * scrbitmap_extra = NULL ;
 
 static int updaterects_count = 0;
-static REGION updaterects[128];
-static SDL_Rect rects[128];
+static REGION updaterects[ DIRTYCOLS * DIRTYROWS ];
+static SDL_Rect rects[ DIRTYCOLS * DIRTYROWS ];
 
 /* --------------------------------------------------------------------------- */
 /*
@@ -488,10 +488,10 @@ void gr_unlock_screen()
         if ( double_buffer ||
                 (
                     updaterects_count == 1 &&
-                    rects->x == 0 &&
-                    rects->y == 0 &&
-                    rects->w == scr_width - 1 &&
-                    rects->h == scr_height - 1
+                    updaterects[0].x == 0 &&
+                    updaterects[0].y == 0 &&
+                    updaterects[0].x2 == scr_width - 1 &&
+                    updaterects[0].y2 == scr_height - 1
                 )
            )
         {
@@ -503,7 +503,6 @@ void gr_unlock_screen()
         {
             if ( updaterects_count )
             {
-                SDL_Rect rects[ 128 ];
                 int i;
 
                 for ( i = 0 ; i < updaterects_count ; i++ )

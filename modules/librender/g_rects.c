@@ -32,7 +32,12 @@
 
 /* --------------------------------------------------------------------------- */
 
-uint8_t zonearray[ 128 / 8 ];
+//uint8_t zonearray[ 128 / 8 ];
+#ifdef __USE_BIT_MASK
+static uint32_t zonearray[ /* DIRTYROWS * */ DIRTYCOLS ];
+#else
+static uint32_t zonearray[ DIRTYROWS ][ DIRTYCOLS ];
+#endif
 
 /* --------------------------------------------------------------------------- */
 
@@ -58,12 +63,13 @@ void gr_rects_clear()
 
 void gr_mark_rect( int x, int y, int width, int height )
 {
+#ifdef __USE_BIT_MASK
     int cx, cy;
     int w, h;
     int iy, lx, ly;
 
-    w = scr_width / 16;
-    h = scr_height / 8;
+    w = scr_width / DIRTYCOLS;
+    h = scr_height / DIRTYROWS;
 
     width = ABS( width ) - 1;
     height = ABS( height ) - 1;
@@ -73,12 +79,38 @@ void gr_mark_rect( int x, int y, int width, int height )
 
     iy = MAX( y / h, 0 );
 
-    lx = MIN(( x + width ) / w, 15 );
-    ly = MIN(( y + height ) / h, 7 );
+    lx = MIN(( x + width ) / w, DIRTYCOLS - 1 );
+    ly = MIN(( y + height ) / h, DIRTYROWS - 1 );
 
     for ( cx = MAX( x / w, 0 ); cx <= lx; cx++ )
         for ( cy = iy; cy <= ly; cy++ )
             zonearray[ cx ] |= ( 1 << cy );
+#else
+    int cx, cy;
+    int w, h;
+    int iy, lx, ly;
+
+    w = scr_width / DIRTYCOLS;
+    h = scr_height / DIRTYROWS;
+
+    if ( w * DIRTYCOLS != scr_width ) w++;
+    if ( h * DIRTYROWS != scr_height ) h++;
+
+    width = ABS( width ) - 1;
+    height = ABS( height ) - 1;
+
+    x = MIN( x, x + width );
+    y = MIN( y, y + height );
+
+    iy = MAX( y / h, 0 );
+
+    lx = MIN(( x + width ) / w, DIRTYCOLS - 1 );
+    ly = MIN(( y + height ) / h, DIRTYROWS - 1 );
+
+    for ( cx = MAX( x / w, 0 ); cx <= lx; cx++ )
+        for ( cy = iy; cy <= ly; cy++ )
+            zonearray[ cy ][ cx ] = 1;
+#endif
 }
 
 /* --------------------------------------------------------------------------- */
@@ -100,42 +132,76 @@ int gr_mark_rects( REGION * rects )
     int count = 0, x, y;
     int w, h, cw, ch, x2;
 
-    w = scr_width / 16;
-    h = scr_height / 8;
+    w = scr_width / DIRTYCOLS;
+    h = scr_height / DIRTYROWS;
 
-    for ( x = 0 ; x < 16 ; x++ )
+    if ( w * DIRTYCOLS != scr_width ) w++;
+    if ( h * DIRTYROWS != scr_height ) h++;
+
+    for ( x = 0; x < DIRTYCOLS; x++ )
     {
+#ifdef __USE_BIT_MASK
         if ( zonearray[ x ] )
         {
-            for ( y = 0 ; y < 8 ; y++ )
+            for ( y = 0; y < DIRTYROWS; y++ )
             {
                 if ( zonearray[ x ] & ( 1 << y ) )
                 {
                     zonearray[ x ] &= ~( 1 << y );
-                    for ( cw = x + 1; ( cw < 16 ) && ( zonearray[ cw ] & ( 1 << y ) ); cw++ )
+                    for ( cw = x + 1; ( cw < DIRTYCOLS ) && ( zonearray[ cw ] & ( 1 << y ) ); cw++ )
                         zonearray[ cw ] &= ~( 1 << y );
 
-                    for ( ch = y + 1 ; ch < 8 ; ch++ )
+                    for ( ch = y + 1; ch < DIRTYROWS; ch++ )
                     {
                         /* Si hay algun hueco en el ancho de las siguiente lineas, corto aca,
                            y deja esta linea para otra recta */
-                        for ( x2 = x ; ( x2 < cw ) && ( zonearray[ x2 ] & ( 1 << ch ) ) ; x2++ ) ;
+                        for ( x2 = x; ( x2 < cw ) && ( zonearray[ x2 ] & ( 1 << ch ) ); x2++ );
 
                         if ( x2 < cw ) break;
 
                         /* Limpio bitmap de la recta actual */
-                        for ( x2 = x ; x2 < cw ; x2++ )
+                        for ( x2 = x; x2 < cw; x2++ )
                             zonearray[ x2 ] &= ~( 1 << ch );
                     }
-                    rects[ count ].x = w * x ;
-                    rects[ count ].y = h * y ;
+                    rects[ count ].x = w * x;
+                    rects[ count ].y = h * y;
                     rects[ count ].x2 = w * cw - 1 /* + rects[ count ].x */;
                     rects[ count ].y2 = h * ch - 1 /* + rects[ count ].y */;
                     count++;
                 }
             }
         }
+#else
+        for ( y = 0; y < DIRTYROWS; y++ )
+        {
+            if ( zonearray[ y ][ x ] )
+            {
+                zonearray[ y ][ x ] = 0;
+                for ( cw = x + 1; ( cw < DIRTYCOLS ) && ( zonearray[ y ][ cw ] ); cw++ ) zonearray[ y ][ cw ] = 0;
+
+                for ( ch = y + 1; ch < DIRTYROWS; ch++ )
+                {
+                    /* Si hay algun hueco en el ancho de las siguiente lineas, corto aca,
+                       y deja esta linea para otra recta */
+                    for ( x2 = x; ( x2 < cw ) && ( zonearray[ ch ][ x2 ] ); x2++ );
+
+                    if ( x2 < cw ) break;
+
+                    /* Limpio bitmap de la recta actual */
+                    for ( x2 = x; x2 < cw; x2++ ) zonearray[ ch ][ x2 ] = 0;
+                }
+
+                rects[ count ].x = w * x;
+                rects[ count ].y = h * y;
+                rects[ count ].x2 = MIN( w * cw - 1, scr_width - 1 );
+                rects[ count ].y2 = MIN( h * ch - 1, scr_height - 1 );
+
+                count++;
+            }
+        }
+#endif
     }
+
     return count;
 }
 
