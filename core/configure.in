@@ -55,19 +55,18 @@ case "$target_os" in
     mingw32)
         INCLUDES="-I/usr/local/include"
         COMMON_CFLAGS="$COMMON_CFLAGS -DUSE_LIBDES $CFLAGS -I`pwd`/../3rdparty/des-4.04b"
-        COMMON_LDFLAGS="$COMMON_LDFLAGS $LDFLAGS -L`pwd`/../3rdparty/des-4.04b -ldes"
+        COMMON_LDFLAGS="$COMMON_LDFLAGS $LDFLAGS -L`pwd`/../3rdparty/des-4.04b -ldes -L/usr/local/lib -lshlwapi -lkernel32 -Wl,--enable-auto-import"
 	    COMMON_CFLAGS="$COMMON_CFLAGS $INCLUDES -DTARGET_WIN32 -DWIN32 -D_WIN32"
-	    COMMON_LDFLAGS="$COMMON_LDFLAGS -L/usr/local/lib -lshlwapi -lkernel32 -Wl,--enable-auto-import"
 #	    LIBSSL="eay32"
         USE_OPENSSL=no
 	    ;;
 
     mingw32msvc)
         INCLUDES="-I/usr/i586-mingw32msvc/include"
-	    COMMON_CFLAGS="$INCLUDES -DTARGET_WIN32 -DWIN32 -D_WIN32 -DUSE_OPENSSL"
-	    COMMON_LDFLAGS="-L/usr/i586-mingw32msvc/lib -lshlwapi"
+	    COMMON_CFLAGS="$INCLUDES -DUSE_LIBDES -DTARGET_WIN32 -DWIN32 -D_WIN32"
+        COMMON_LDFLAGS="$COMMON_LDFLAGS $LDFLAGS -L`pwd`/../3rdparty/des-4.04b -ldes -L/usr/i586-mingw32msvc/lib -lshlwapi -lkernel32 -Wl,--enable-auto-import"
         LIBSSL="crypto"
-        USE_OPENSSL=yes
+        USE_OPENSSL=no
 	    ;;
 
     dragonfly*)

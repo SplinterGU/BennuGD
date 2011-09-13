@@ -30,7 +30,7 @@ echo "You Machine: ${target_cpu} ${target_os}"
 AC_ARG_WITH(bennu-prefix,[  --with-bennu-prefix=PFX Prefix where Bennu is installed (optional)],bennu_prefix="$withval", bennu_prefix="`pwd`/../../core")
 
 case "$target_os" in
-    mingw32)
+    mingw32|mingw32msvc)
 	    CFLAGS+=" -DWIN32 -D_WIN32 "
 	    ;;
 

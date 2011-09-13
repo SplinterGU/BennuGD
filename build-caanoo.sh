@@ -4,7 +4,7 @@
 
 ## CAANOO - This should point to the root of your tool-chain {i.e. folder above the BIN dir}
 
-CAANOO=~/devel/caanoo/GPH_SDK/tools/gcc-4.2.4-glibc-2.7-eabi/arm-gph-linux-gnueabi
+CAANOO=/opt/caanoo/gcc-4.2.4-glibc-2.7-eabi/arm-gph-linux-gnueabi
 
 ## HOST and TARGET - These should be the canonical tool names of your tool.
 ## For the sake of this script HOST and TARGET should be the same.
@@ -13,7 +13,7 @@ CAANOO=~/devel/caanoo/GPH_SDK/tools/gcc-4.2.4-glibc-2.7-eabi/arm-gph-linux-gnuea
 HOST=arm-gph-linux-gnueabi
 TARGET=arm-gph-linux-gnueabi
 BUILD=`uname -m`
-PKG_CONFIG_PATH=~/devel/caanoo/GPH_SDK/tools/gcc-4.2.4-glibc-2.7-eabi/arm-gph-linux-gnueabi/lib/pkgconfig
+PKG_CONFIG_PATH=/opt/caanoo/gcc-4.2.4-glibc-2.7-eabi/arm-gph-linux-gnueabi/lib/pkgconfig
 
 ## -- END CAANOO USER SETTINGS
 
@@ -28,7 +28,7 @@ export PREFIX
 PATH=$CAANOO/bin:$PATH
 export PATH
 
-ln -s `whereis -b pkg-config | sed 's/pkg-config\: //g'` ~/devel/caanoo/GPH_SDK/tools/gcc-4.2.4-glibc-2.7-eabi/arm-gph-linux-gnueabil/bin/pkg-config
+ln -s `whereis -b pkg-config | sed 's/pkg-config\: //g'` /opt/caanoo/gcc-4.2.4-glibc-2.7-eabi/arm-gph-linux-gnueabil/bin/pkg-config
 
 # Do not edit below here
 CC="${CAANOO}/../bin/${HOST}-gcc"

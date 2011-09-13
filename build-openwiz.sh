@@ -4,7 +4,7 @@
 
 ## OPEN2X - This should point to the root of your tool-chain {i.e. folder above the BIN dir}
 
-OPEN2X=~/devel/wizdev/openwiz/toolchain/arm-openwiz-linux-gnu
+OPEN2X=/opt/openwiz/arm-openwiz-linux-gnu
 
 ## HOST and TARGET - These should be the canonical tool names of your tool.
 ## For the sake of this script HOST and TARGET should be the same.
@@ -13,7 +13,7 @@ OPEN2X=~/devel/wizdev/openwiz/toolchain/arm-openwiz-linux-gnu
 HOST=arm-openwiz-linux-gnu
 TARGET=arm-openwiz-linux-gnu
 BUILD=`uname -m`
-PKG_CONFIG_PATH=~/devel/wizdev/openwiz/toolchain/arm-openwiz-linux-gnu/lib/pkgconfig
+PKG_CONFIG_PATH=/opt/openwiz/arm-openwiz-linux-gnu/lib/pkgconfig
 
 ## -- END OPEN2X USER SETTINGS
 
@@ -28,7 +28,7 @@ export PREFIX
 PATH=$PATH:$OPEN2X/bin
 export PATH
 
-ln -s `whereis -b pkg-config | sed 's/pkg-config\: //g'` ~/devel/wizdev/openwiz/toolchain/arm-openwiz-linux-gnu/bin/pkg-config
+ln -s `whereis -b pkg-config | sed 's/pkg-config\: //g'` /opt/openwiz/arm-openwiz-linux-gnu/bin/pkg-config
 
 # Do not edit below here
 CC="${OPEN2X}/bin/${HOST}-gcc"

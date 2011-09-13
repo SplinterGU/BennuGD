@@ -1,63 +1,53 @@
 #!/bin/sh
 
-## -- DINGUX USER SETTINGS
-
-## DINGUX - This should point to the root of your tool-chain {i.e. folder above the BIN dir}
-
-DINGUX=/opt/dingux-a320/mipsel-linux-uclibc/usr
+WIN32CROSS=/usr/i586-mingw32msvc
 
 ## HOST and TARGET - These should be the canonical tool names of your tool.
 ## For the sake of this script HOST and TARGET should be the same.
-## Defaults would be 'mipsel-linux'.
+## Defaults would be 'i586-mingw32msvc' for a normal WIN32CROSS tool-chain.
 
-HOST=mipsel-linux
-TARGET=mipsel-linux
+HOST=i586-mingw32msvc
+TARGET=i586-mingw32msvc
 BUILD=`uname -m`
-PKG_CONFIG_PATH=/opt/dingux-a320/mipsel-linux-uclibc/usr/lib/pkgconfig
+PKG_CONFIG_PATH=/usr/i586-mingw32msvc/lib/pkgconfig
 
-## -- END DINGUX USER SETTINGS
+## -- END WIN32CROSS USER SETTINGS
 
-export DINGUX
+export WIN32CROSS
 export HOST
 export TARGET
 export PKG_CONFIG_PATH
 
-PREFIX=$DINGUX
+PREFIX=$WIN32CROSS
 export PREFIX
 
-PATH=$PATH:$DINGUX/bin
+PATH=$PATH:$WIN32CROSS/bin
 export PATH
 
-ln -s `whereis -b pkg-config | sed 's/pkg-config\: //g'` /opt/dingux-a320/mipsel-linux-uclibc/usr/bin/pkg-config
-
 # Do not edit below here
-CC="${DINGUX}/bin/${HOST}-gcc"
-CXX="${DINGUX}/bin/${HOST}-g++"
-AR="${DINGUX}/bin/${HOST}-ar"
-STRIP="${DINGUX}/bin/${HOST}-strip"
-RANLIB="${DINGUX}/bin/${HOST}-ranlib"
-LD="${DINGUX}/bin/${HOST}-ld"
+CC="${HOST}-gcc"
+CXX="${HOST}-g++"
+AR="${HOST}-ar"
+STRIP="${HOST}-strip"
+RANLIB="${HOST}-ranlib"
 
-# -msoft-float -funroll-loops -ffast-math -fomit-frame-pointer -fno-strength-reduce -finline-functions -G0 -march=mips32 -mtune=r4600 -mno-mips16
-CFLAGS="-DNO_ZLIB -D_REENTRANT -DTARGET_DINGUX_A320 -O2 -I${DINGUX}/include -msoft-float -funroll-loops -ffast-math -fomit-frame-pointer -fno-strength-reduce -finline-functions -G0 -march=mips32 -mtune=r4600 -mno-mips16"
-LDFLAGS="-L${DINGUX}/lib -D_REENTRANT"
-PKG_CONFIG="${DINGUX}/bin/pkg-config"
+CFLAGS="-O2 -I${WIN32CROSS}/include -I${WIN32CROSS}/include/libxml2 -I${WIN32CROSS}/include/SDL"
+LDFLAGS="-L${WIN32CROSS}/lib"
+#PKG_CONFIG="${WIN32CROSS}/bin/pkg-config"
 
 export CC
 export CXX
 export AR
 export STRIP
 export RANLIB
-export LD
-
 export CFLAGS
 export LDFLAGS
 export PKG_CONFIG
 
 echo Current settings.
 echo
-echo Install root/Working dir	= $DINGUX
-echo Tool locations 		    = $DINGUX/bin
+echo Install root/Working dir	= $WIN32CROSS
+echo Tool locations 		    = $WIN32CROSS/bin
 echo Host/Target		        = $HOST / $TARGET
 echo
 
@@ -66,18 +56,16 @@ echo CXX        = $CXX
 echo AR         = $AR
 echo STRIP      = $STRIP
 echo RANLIB     = $RANLIB
-echo LD         = $LD
 
 echo CFLAGS     = $CFLAGS
 echo LDFLAGS    = $LDFLAGS
 echo PKG_CONFIG = $PKG_CONFIG
 
 echo "### Building 3rd party software ###"
-
 cd 3rdparty/des-4.04b
 case $1 in
     release)
-        make clean && make
+        make clean -e TARGET=$TARGET && make gcc -e TARGET=$TARGET
         ;;
 
     *)
@@ -147,13 +135,15 @@ cd -
 echo "### Copying files to bin folder ###"
 
 mkdir -p bin/$TARGET 2>/dev/null
-cp 3rdparty/des-4.04b/libdes.so bin/$TARGET
-cp core/bgdi/src/.libs/bgdi bin/$TARGET
-cp core/bgdc/src/bgdc bin/$TARGET
-cp core/bgdrtm/src/.libs/libbgdrtm.so bin/$TARGET
-cp modules/mod*/.libs/mod*.so bin/$TARGET
-cp modules/lib*/.libs/lib*.so bin/$TARGET
-cp tools/moddesc/moddesc bin/$TARGET
+cp 3rdparty/des-4.04b/libdes.dll bin/$TARGET
+cp core/bgdi/src/.libs/bgdi.exe bin/$TARGET
+cp core/bgdc/src/.libs/bgdc.exe bin/$TARGET
+cp core/bgdrtm/src/.libs/libbgdrtm.dll bin/$TARGET
+cp modules/mod*/.libs/mod*.dll bin/$TARGET
+cp modules/lib*/.libs/lib*.dll bin/$TARGET
+cp tools/moddesc/.libs/moddesc.exe bin/$TARGET
+
+strip bin/$TARGET/*
 
 echo "### Build done! ###"
 
