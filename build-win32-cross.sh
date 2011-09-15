@@ -65,7 +65,7 @@ echo "### Building 3rd party software ###"
 cd 3rdparty/des-4.04b
 case $1 in
     release)
-        make clean -e TARGET=$TARGET && make gcc -e TARGET=$TARGET
+        make clean -e TARGET=$TARGET -e CC=$CC && make gcc -e TARGET=$TARGET -e CC=$CC
         ;;
 
     *)
