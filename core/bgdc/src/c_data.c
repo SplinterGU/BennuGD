@@ -627,7 +627,7 @@ int compile_varspace( VARSPACE * n, segment * data, int additive, int copies, in
                 int skip_all_until_semicolon = 0;
                 int skip_equal = 0;
 
-                if ( debug ) compile_warning( MSG_VARIABLE_REDECLARE ) ;
+                if ( debug ) compile_warning( 0, MSG_VARIABLE_REDECLARE ) ;
 
                 for ( ;; )
                 {

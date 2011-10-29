@@ -53,7 +53,7 @@ typedef struct _expresion_result
 expresion_result ;
 
 extern void compile_error (const char * error, ...) ;
-extern void compile_warning (const char * error, ...) ;
+extern void compile_warning (int, const char * error, ...) ;
 
 /* Compilado de secciones superiores */
 extern void compile_init ();

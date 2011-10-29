@@ -361,7 +361,7 @@ void compile_error( const char *fmt, ... )
 
 /* ---------------------------------------------------------------------- */
 
-void compile_warning( const char *fmt, ... )
+void compile_warning( int notoken, const char *fmt, ... )
 {
     char text[4000] ;
     char * fname = ( import_filename ) ? import_filename : (( current_file != -1 && files[current_file] && *files[current_file] ) ? files[current_file] : NULL );
@@ -376,9 +376,15 @@ void compile_warning( const char *fmt, ... )
             fname ? fname : "N/A",
             ( import_filename ) ? import_line : line_count,
             text ) ;
-    fprintf( stdout, " ( token warning: " );
-    token_dump() ;
-    fprintf( stdout, " ).\n" );
+    if ( !notoken )
+    {
+        fprintf( stdout, " ( token warning: " );
+        token_dump() ;
+        fprintf( stdout, " ).\n" );
+    } else {
+        fprintf( stdout, ".\n" );
+    }
+
 }
 
 /* ---------------------------------------------------------------------- */

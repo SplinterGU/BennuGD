@@ -2604,10 +2604,12 @@ expresion_result compile_subexpresion()
                 right = compile_expresion( 0, 0, 0, TYPE_UNDEFINED ) ;
                 if ( typedef_is_integer( right.type ) )
                 {
+                    compile_warning( 1, "implicit conversion (INTEGER to CHAR[])" );
                     codeblock_add( code, MN_INT2STR | mntype( right.type, 0 ), 0 ) ;
                 }
                 else if ( typedef_is_float( right.type ) )
                 {
+                    compile_warning( 1, "implicit conversion (FLOAT to CHAR[])" );
                     codeblock_add( code, MN_FLOAT2STR, 0 ) ;
                 }
                 else if ( !typedef_is_string( right.type ) )
@@ -2636,6 +2638,7 @@ expresion_result compile_subexpresion()
 
                 if ( typedef_base( right.type ) == TYPE_FLOAT )
                 {
+                    compile_warning( 1, "implicit conversion (FLOAT to POINTER)" );
                     codeblock_add( code, MN_FLOAT2INT, 0 );
                     right.type = base.type;
                 }
@@ -2664,10 +2667,12 @@ expresion_result compile_subexpresion()
 
                 if ( typedef_is_string( right.type ) )
                 {
+                    compile_warning( 1, "implicit conversion (STRING to CHAR)" );
                     codeblock_add( code, MN_STR2CHR, 0 ) ;
                 }
                 else if ( typedef_base( right.type ) == TYPE_FLOAT )
                 {
+                    compile_warning( 1, "implicit conversion (FLOAT to CHAR)" );
                     codeblock_add( code, MN_FLOAT2INT, 0 ) ;
                 }
                 else if ( !typedef_is_numeric( right.type ) )
@@ -2695,18 +2700,22 @@ expresion_result compile_subexpresion()
 
                 if ( typedef_base( right.type ) == TYPE_CHAR )
                 {
+                    compile_warning( 1, "implicit conversion (CHAR to STRING)" );
                     codeblock_add( code, MN_CHR2STR, 0 ) ;
                 }
                 else if ( typedef_is_integer( right.type ) )
                 {
+                    compile_warning( 1, "implicit conversion (INTEGER to STRING)" );
                     codeblock_add( code, MN_INT2STR | mntype( right.type, 0 ), 0 ) ;
                 }
                 else if ( typedef_is_float( right.type ) )
                 {
+                    compile_warning( 1, "implicit conversion (FLOAT to STRING)" );
                     codeblock_add( code, MN_FLOAT2STR, 0 ) ;
                 }
                 else if ( typedef_is_pointer( right.type ) )
                 {
+                    compile_warning( 1, "implicit conversion (POINTER to STRING)" );
                     codeblock_add( code, MN_POINTER2STR, 0 ) ;
                 }
                 else if ( !typedef_is_string( right.type ) )
@@ -2764,14 +2773,17 @@ expresion_result compile_subexpresion()
                 right = compile_expresion( 0, 0, 0, TYPE_UNDEFINED ) ;
                 if ( typedef_is_integer( right.type ) )
                 {
+                    compile_warning( 1, "implicit conversion (INTEGER to CHAR[])" );
                     codeblock_add( code, MN_INT2STR | mntype( right.type, 0 ), 0 ) ;
                 }
                 else if ( typedef_is_float( right.type ) )
                 {
+                    compile_warning( 1, "implicit conversion (FLOAT to CHAR[])" );
                     codeblock_add( code, MN_FLOAT2STR, 0 ) ;
                 }
                 else if ( typedef_base( right.type ) == TYPE_CHAR )
                 {
+                    compile_warning( 1, "implicit conversion (CHAR to CHAR[])" );
                     codeblock_add( code, MN_CHR2STR, 0 );
                 }
                 else if ( !typedef_is_string( right.type ) )
@@ -2790,14 +2802,17 @@ expresion_result compile_subexpresion()
                 right = compile_expresion( 0, 0, 0, TYPE_UNDEFINED ) ;
                 if ( typedef_is_integer( right.type ) )
                 {
+                    compile_warning( 1, "implicit conversion (INTEGER to STRING)" );
                     codeblock_add( code, MN_INT2STR | mntype( right.type, 0 ), 0 ) ;
                 }
                 else if ( typedef_is_float( right.type ) )
                 {
+                    compile_warning( 1, "implicit conversion (FLOAT to STRING)" );
                     codeblock_add( code, MN_FLOAT2STR, 0 ) ;
                 }
                 else if ( typedef_base( right.type ) == TYPE_CHAR )
                 {
+                    compile_warning( 1, "implicit conversion (CHAR to STRING)" );
                     codeblock_add( code, MN_CHR2STR, 0 );
                 }
                 else if ( !typedef_is_string( right.type ) )

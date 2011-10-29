@@ -1135,7 +1135,7 @@ int dcb_load_lib( const char * filename )
             {
                 token.type = IDENTIFIER;
                 token.code = newid[dcb.proc[n].data.ID];
-                compile_warning(MSG_PROC_ALREADY_DEFINED);
+                compile_warning(0, MSG_PROC_ALREADY_DEFINED);
             }
             continue;
         }

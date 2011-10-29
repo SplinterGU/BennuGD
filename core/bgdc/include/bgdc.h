@@ -127,7 +127,7 @@ extern SYSPROC * * sysproc_getall (int id) ;
 extern char    *   sysproc_name   (int code) ;
 extern void        sysproc_init() ;
 
-extern void compile_warning( const char *fmt, ... );
+extern void compile_warning( int, const char *fmt, ... );
 extern void compile_error( const char *fmt, ... );
 
 

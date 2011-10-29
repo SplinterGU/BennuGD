@@ -252,7 +252,7 @@ void include_file( int bprepro )
         {
             if ( bprepro )
             {
-                compile_warning( "extra tokens at end of #include directive" );
+                compile_warning( 0,"extra tokens at end of #include directive" );
                 SKIP_ALL_UNTIL_LF_AND_COUNT_LINES;
                 if ( *source_ptr == '\n' ) line_count--;
             }
@@ -733,8 +733,8 @@ void preprocessor()
         SKIP_SPACES_UNTIL_LF_AND_COUNT_LINES;
         if ( *source_ptr && *source_ptr != '\n' )
         {
-            if ( ifdef ) compile_warning( "extra tokens at end of #ifdef directive" );
-            else compile_warning( "extra tokens at end of #ifndef directive" );
+            if ( ifdef ) compile_warning( 0,"extra tokens at end of #ifdef directive" );
+            else compile_warning( 0,"extra tokens at end of #ifndef directive" );
             SKIP_ALL_UNTIL_LF_AND_COUNT_LINES;
         }
 
@@ -756,8 +756,8 @@ void preprocessor()
         SKIP_SPACES_UNTIL_LF_AND_COUNT_LINES;
         if ( *source_ptr && *source_ptr != '\n' )
         {
-            if ( token.code == id_else ) compile_warning( "extra tokens at end of #else directive" );
-            else if ( token.code == id_endif ) compile_warning( "extra tokens at end of #endif directive" );
+            if ( token.code == id_else ) compile_warning( 0,"extra tokens at end of #else directive" );
+            else if ( token.code == id_endif ) compile_warning( 0,"extra tokens at end of #endif directive" );
             SKIP_ALL_UNTIL_LF_AND_COUNT_LINES;
         }
         if ( *source_ptr == '\n' ) line_count--;
@@ -817,7 +817,7 @@ void preprocessor()
         SKIP_SPACES_UNTIL_LF_AND_COUNT_LINES;
         if ( *source_ptr && *source_ptr != '\n' )
         {
-            compile_warning( "extra tokens at end of #if directive" );
+            compile_warning( 0,"extra tokens at end of #if directive" );
             SKIP_ALL_UNTIL_LF_AND_COUNT_LINES;
         }
         if ( *source_ptr == '\n' ) line_count--;
@@ -831,8 +831,8 @@ void preprocessor()
             SKIP_SPACES_UNTIL_LF_AND_COUNT_LINES;
             if ( *source_ptr && *source_ptr != '\n' )
             {
-                if ( token.code == id_else ) compile_warning( "extra tokens at end of #else directive" );
-                else if ( token.code == id_endif ) compile_warning( "extra tokens at end of #endif directive" );
+                if ( token.code == id_else ) compile_warning( 0,"extra tokens at end of #else directive" );
+                else if ( token.code == id_endif ) compile_warning( 0,"extra tokens at end of #endif directive" );
                 SKIP_ALL_UNTIL_LF_AND_COUNT_LINES;
             }
             if ( *source_ptr == '\n' ) line_count--;
@@ -871,7 +871,7 @@ void preprocessor()
         SKIP_SPACES_UNTIL_LF_AND_COUNT_LINES;
         if ( *source_ptr && *source_ptr != '\n' )
         {
-            compile_warning( "extra tokens at end of #else directive" );
+            compile_warning( 0,"extra tokens at end of #else directive" );
             SKIP_ALL_UNTIL_LF_AND_COUNT_LINES;
         }
         if ( *source_ptr == '\n' ) line_count--;
@@ -881,7 +881,7 @@ void preprocessor()
         SKIP_SPACES_UNTIL_LF_AND_COUNT_LINES;
         if ( *source_ptr && *source_ptr != '\n' )
         {
-            compile_warning( "extra tokens at end of #endif directive" );
+            compile_warning( 0,"extra tokens at end of #endif directive" );
             SKIP_ALL_UNTIL_LF_AND_COUNT_LINES;
         }
         if ( *source_ptr == '\n' ) line_count--;
