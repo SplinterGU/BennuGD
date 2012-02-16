@@ -180,10 +180,14 @@
 #define MN_BOR                  (0x4A| MN_0_PARAMS)
 #define MN_BXOR                 (0x4B| MN_0_PARAMS)
 
+/*** Free 4C, 4D, 4E, 4F ***/
+
 /* Funciones de conversión */
 
 #define MN_INT2FLOAT            (0x50| MN_1_PARAMS)
 #define MN_FLOAT2INT            (0x51| MN_1_PARAMS)
+
+/*** Free 52, 53, 54, 55, 56, 57, 58, 59, 5A, 5B, 5C, 5D, 5E, 5F ****/
 
 #define MN_A2STR                (0x60| MN_1_PARAMS)
 #define MN_STR2A                (0x61| MN_1_PARAMS)
@@ -194,11 +198,15 @@
 /* Funciones de control de flujo */
 #define MN_NCALL                (0x65| MN_1_PARAMS)
 
+/*** Free 66, 67, 68, 69 ****/
+
 /* Handlers */
 #define MN_EXITHNDLR            (0x6A| MN_1_PARAMS)
 #define MN_ERRHNDLR             (0x6B| MN_1_PARAMS)
 #define MN_RESUME               (0x6C| MN_1_PARAMS)
 #define MN_RESUMEGOTO           (0x6D| MN_1_PARAMS)
+
+/*** Free 6E, 6F ****/
 
 /* Mnemónicos inexistentes - usados por el compilador internamente */
 
