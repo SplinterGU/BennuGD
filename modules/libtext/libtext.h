@@ -71,10 +71,15 @@ extern int fntcolor ;          /* Color for drawing bitmap text    */
 /* --------------------------------------------------------------------------- */
 
 extern void gr_text_setcolor( int c ) ;
+extern void gr_text_setcolor2( int textid, int c ) ;
 extern int gr_text_getcolor() ;
+extern int gr_text_getcolor2( int textid ) ;
 extern int gr_text_new( int fontid, int x, int y, int centered, const char * text ) ;
+extern int gr_text_new2( int fontid, int x, int y, int z, int centered, const char * text ) ;
 extern int gr_text_new_var( int fontid, int x, int y, int centered, const void * var, int type ) ;
+extern int gr_text_new_var2( int fontid, int x, int y, int z, int centered, const void * var, int type ) ;
 extern void gr_text_move( int textid, int x, int y ) ;
+extern void gr_text_move2( int textid, int x, int y, int z ) ;
 extern void gr_text_destroy( int textid ) ;
 extern int gr_text_margintop( int fontid, const unsigned char * text ) ;
 extern int gr_text_width( int fontid, const unsigned char * text ) ;

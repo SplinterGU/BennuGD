@@ -67,6 +67,7 @@ typedef struct _text
     int last_value ;
     char * text ;           /* Memoria dinámica */
     const void * var  ;  /* CHANGED TO VOID to allow diff. data types */
+    int last_z ;
     /* Internals, for speed up */
     int _x ;
     int _y ;
@@ -207,6 +208,7 @@ static int info_text( TEXT * text, REGION * bbox, int * z, int * drawme )
     const char * str = get_text( text );
     REGION prev = *bbox;
     FONT * font;
+    int changed = 0;
 
     * drawme = 0;
 
@@ -231,6 +233,8 @@ static int info_text( TEXT * text, REGION * bbox, int * z, int * drawme )
     }
 
     * drawme = 1;
+
+    * z = text->z;
 
     /* Calculate the text dimensions */
 
@@ -294,34 +298,37 @@ static int info_text( TEXT * text, REGION * bbox, int * z, int * drawme )
 
     /* Check if the var has changed since last call */
 
-    if (
+    changed =
+        text->z != text->last_z ||
         bbox->x  != prev.x  || bbox->y  != prev.y ||
-        bbox->x2 != prev.x2 || bbox->y2 != prev.y2 ) return 1;
+        bbox->x2 != prev.x2 || bbox->y2 != prev.y2;
+
+    text->last_z = text->z;
 
     switch ( text->on )
     {
         case TEXT_TEXT:
-            return 0;
+            return changed;
 
         case TEXT_STRING:
         case TEXT_FLOAT:
         case TEXT_INT:
         case TEXT_DWORD:
         case TEXT_POINTER:
-            if ( text->last_value == *( int * )text->var ) return 0;
+            if ( text->last_value == *( int * )text->var ) return changed;
             text->last_value = *( int * )text->var;
             return 1;
 
         case TEXT_BYTE:
         case TEXT_SBYTE:
         case TEXT_CHAR:
-            if ( text->last_value == *( uint8_t * )text->var ) return 0;
+            if ( text->last_value == *( uint8_t * )text->var ) return changed;
             text->last_value = *( uint8_t * )text->var;
             return 1;
 
         case TEXT_WORD:
         case TEXT_SHORT:
-            if ( text->last_value == *( uint16_t * )text->var ) return 0;
+            if ( text->last_value == *( uint16_t * )text->var ) return changed;
             text->last_value = *( uint16_t * )text->var;
             return 1;
 
@@ -329,7 +336,7 @@ static int info_text( TEXT * text, REGION * bbox, int * z, int * drawme )
             return 1;
     }
 
-    return 0;
+    return changed;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -382,22 +389,22 @@ void draw_text( TEXT * text, REGION * clip )
 
 /* --------------------------------------------------------------------------- */
 /*
- *  FUNCTION : gr_text_new
+ *  FUNCTION : gr_text_new2
  *
  *  Create a new text, using a fixed text string
  *
  *  PARAMS :
- *  fontid   Font number
- *  x, y   Screen coordinates
- *  alignment  Alignment
- *  text   Pointer to text
+ *  fontid      Font number
+ *  x, y, z     Screen coordinates
+ *  alignment   Alignment
+ *  text        Pointer to text
  *
  *  RETURN VALUE :
  *      None
  *
  */
 
-int gr_text_new( int fontid, int x, int y, int alignment, const char * text )
+int gr_text_new2( int fontid, int x, int y, int z, int alignment, const char * text )
 {
     int textid = text_nextid ;
 
@@ -417,7 +424,7 @@ int gr_text_new( int fontid, int x, int y, int alignment, const char * text )
     texts[textid].fontid = fontid ;
     texts[textid].x = x ;
     texts[textid].y = y ;
-    texts[textid].z = GLOINT32( libtext, TEXTZ ) ;
+    texts[textid].z = z ;
     texts[textid].alignment = alignment ;
     texts[textid].text = text ? strdup( text ) : 0 ;
     texts[textid].color8 = fntcolor8 ;
@@ -425,8 +432,31 @@ int gr_text_new( int fontid, int x, int y, int alignment, const char * text )
     texts[textid].color32 = fntcolor32 ;
     texts[textid].objectid = gr_new_object( texts[textid].z, info_text, draw_text, &texts[textid] );
     texts[textid].last_value = 0 ;
+    texts[textid].last_z = 0 ;
 
     return textid ;
+}
+
+/* --------------------------------------------------------------------------- */
+/*
+ *  FUNCTION : gr_text_new
+ *
+ *  Create a new text, using a fixed text string
+ *
+ *  PARAMS :
+ *  fontid     Font number
+ *  x, y       Screen coordinates
+ *  alignment  Alignment
+ *  text       Pointer to text
+ *
+ *  RETURN VALUE :
+ *      None
+ *
+ */
+
+int gr_text_new( int fontid, int x, int y, int alignment, const char * text )
+{
+    return gr_text_new2( fontid, x, y, GLOINT32( libtext, TEXTZ ), alignment, text );
 }
 
 /* --------------------------------------------------------------------------- */
@@ -442,12 +472,35 @@ int gr_text_new_var( int fontid, int x, int y, int alignment, const void * var, 
 
 /* --------------------------------------------------------------------------- */
 
+int gr_text_new_var2( int fontid, int x, int y, int z, int alignment, const void * var, int type )
+{
+    int textid = gr_text_new2( fontid, x, y, z, alignment, 0 ) ;
+    if ( !textid ) return 0 ;
+    texts[textid].on = type ;
+    if ( type > TEXT_TEXT ) texts[textid].var = var ;
+    return textid ;
+}
+
+/* --------------------------------------------------------------------------- */
+
 void gr_text_move( int textid, int x, int y )
 {
     if ( textid > 0 && textid < text_nextid )
     {
         texts[textid].x = x ;
         texts[textid].y = y ;
+    }
+}
+
+/* --------------------------------------------------------------------------- */
+
+void gr_text_move2( int textid, int x, int y, int z )
+{
+    if ( textid > 0 && textid < text_nextid )
+    {
+        texts[textid].x = x ;
+        texts[textid].y = y ;
+        texts[textid].z = z ;
     }
 }
 
@@ -781,6 +834,49 @@ void gr_text_setcolor( int c )
 
 /* --------------------------------------------------------------------------- */
 
+void gr_text_setcolor2( int textid, int c )
+{
+    int r, g, b;
+
+    if ( textid > 0 && textid < text_nextid )
+    {
+        if ( !c )
+        {
+            texts[textid].color8 = 0;
+            texts[textid].color16 = 0;
+            texts[textid].color32 = 0;
+        }
+        else
+        {
+            switch ( sys_pixel_format->depth )
+            {
+                case    8:
+                {
+                    texts[textid].color8 = c ;
+                    break;
+                }
+
+                case    16:
+                {
+                    gr_get_rgb( c, &r, &g, &b );
+                    texts[textid].color8 = gr_find_nearest_color( r, g, b );
+                    texts[textid].color16 = c ;
+                    break;
+                }
+                case    32:
+                {
+                    gr_get_rgb( c, &r, &g, &b );
+                    texts[textid].color8 = gr_find_nearest_color( r, g, b );
+                    texts[textid].color32 = c ;
+                    break;
+                }
+            }
+        }
+    }
+}
+
+/* --------------------------------------------------------------------------- */
+
 int gr_text_getcolor()
 {
     switch ( sys_pixel_format->depth )
@@ -797,6 +893,33 @@ int gr_text_getcolor()
         case    32:
         {
             return fntcolor32 ;
+        }
+    }
+
+    return 0;
+}
+
+/* --------------------------------------------------------------------------- */
+
+int gr_text_getcolor2( int textid )
+{
+    if ( textid > 0 && textid < text_nextid )
+    {
+        switch ( sys_pixel_format->depth )
+        {
+            case    8:
+            {
+                return texts[textid].color8 ;
+            }
+
+            case    16:
+            {
+                return texts[textid].color16 ;
+            }
+            case    32:
+            {
+                return texts[textid].color32 ;
+            }
         }
     }
 
