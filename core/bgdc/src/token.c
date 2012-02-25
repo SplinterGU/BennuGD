@@ -192,6 +192,7 @@ static int token_endfile();
 
 int n_files = 0;                        /* Includes */
 char files[MAX_SOURCES][__MAX_PATH];    /* Includes */
+char *source_data[MAX_SOURCES];             /* Includes */
 
 /* ---------------------------------------------------------------------- */
 
@@ -199,24 +200,28 @@ int load_file( char * filename )
 {
     long   size;
     file * fp = file_open( filename, "rb0" );
-    char * source;
+    int n;
 
-    if ( n_files == MAX_SOURCES ) compile_error( MSG_TOO_MANY_FILES );
-    strcpy( files[n_files++], filename );
+    for( n = 0; n < n_files; n++ ) if ( !strcmp( files[n], filename ) ) break;
 
-    if ( !fp ) compile_error( MSG_FILE_NOT_FOUND, filename );
+    if ( n >= n_files )
+    {
+        if ( n_files == MAX_SOURCES ) compile_error( MSG_TOO_MANY_FILES );
+        strcpy( files[n_files], filename );
+        if ( !fp ) compile_error( MSG_FILE_NOT_FOUND, filename );
+        size = file_size( fp );
+        source_data[n_files] = ( char * ) calloc( size + 1, sizeof( char ) );
+        if ( !source_data[n_files] ) compile_error( MSG_FILE_TOO_BIG, filename );
+        if ( size == 0 ) compile_error( MSG_FILE_EMPTY, filename );
+        if ( !file_read( fp, source_data[n_files], size ) ) compile_error( MSG_READ_ERROR, filename );
 
-    size = file_size( fp );
-    source = ( char * ) calloc( size + 1, sizeof( char ) );
-    if ( !source ) compile_error( MSG_FILE_TOO_BIG, filename );
-    if ( size == 0 ) compile_error( MSG_FILE_EMPTY, filename );
-    if ( !file_read( fp, source, size ) ) compile_error( MSG_READ_ERROR, filename );
+        source_data[n_files][size] = 0;
+        file_close( fp );
+        n = n_files++;
+    }
 
-    source[size] = 0;
-    file_close( fp );
-
-    token_init( source, n_files - 1 );
-    return n_files -1;
+    token_init( source_data[n], n );
+    return n;
 }
 
 /* ---------------------------------------------------------------------- */
@@ -1390,3 +1395,30 @@ void token_back()
 
     use_saved = 1;
 }
+
+tok_pos token_pos()
+{
+    tok_pos tp;
+
+    tp.use_saved    = use_saved;
+    tp.token_saved  = token_saved;
+    tp.token        = token;
+    tp.line_count   = line_count;
+    tp.current_file = current_file;
+    tp.token_prev   = token_prev;
+    tp.source_ptr   = source_ptr;
+
+    return tp;
+}
+
+void token_set_pos( tok_pos tp )
+{
+    use_saved       = tp.use_saved;
+    token_saved     = tp.token_saved;
+    token           = tp.token;
+    line_count      = tp.line_count;
+    current_file    = tp.current_file;
+    token_prev      = tp.token_prev;
+    source_ptr      = tp.source_ptr;
+}
+

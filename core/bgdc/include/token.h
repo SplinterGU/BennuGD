@@ -53,10 +53,24 @@ extern struct _token
         int line;
     } token ;
 
+typedef struct _tok_pos
+    {
+        int             use_saved;
+        struct _token   token;
+        struct _token   token_saved;
+        struct _token   token_prev;
+        int             line_count;
+        int             current_file;
+        char            *source_ptr;
+    } tok_pos;
+
 extern void token_init( const char * source, int file ) ;
 extern void token_next() ;
 extern void token_back() ;
 extern void token_dump() ;
+
+extern tok_pos token_pos();
+extern void token_set_pos( tok_pos tp );
 
 extern int line_count ;
 extern int current_file ;

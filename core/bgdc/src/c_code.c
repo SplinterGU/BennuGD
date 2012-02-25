@@ -718,6 +718,12 @@ SYSPROC * compile_bestproc( SYSPROC ** procs )
     int min_params = 0 ;
     const char * proc_name = procs[0]->name ;
 
+    int param_diff, params = 0;
+    CODEBLOCK_POS code_pos_code;
+    tok_pos token_save;
+
+    /* --------------------------------------------------- */
+
     while ( procs[proc_count] ) proc_count++ ;
 
     /* Get the minimum number of parameters */
@@ -725,6 +731,61 @@ SYSPROC * compile_bestproc( SYSPROC ** procs )
     for ( n = 0 ; n < proc_count ; n++ )
         if ( procs[n]->params > min_params )
             min_params = procs[n]->params ;
+
+    /* --------------------------------------------------- */
+
+    /* count function params */
+
+    code_pos_code = codeblock_pos( code );
+    token_save = token_pos();
+
+    params = 0;
+
+    for ( ;; )
+    {
+        token_next() ;
+        if ( token.type == IDENTIFIER && token.code == identifier_rightp ) /* ")" */
+        {
+            token_back() ;
+            break ;
+        }
+        token_back() ;
+
+        params++ ;
+
+        res = compile_expresion( 0, 0, 0, TYPE_UNDEFINED ) ;
+
+        token_next() ;
+        if ( token.type != IDENTIFIER || token.code != identifier_comma ) /* "," */
+        {
+            token_back() ;
+            break ;
+        }
+    }
+
+    codeblock_setpos(code, code_pos_code);
+    token_set_pos(token_save);
+
+    /* Eliminate any process that has not as many parameters */
+
+    param_diff = 0;
+    for ( n = 0 ; n < proc_count ; n++ )
+    {
+        char * p = procs[n]->paramtypes;
+
+        param_diff = 0;
+
+        while( ( *p ) ) if ( *(p++) == '+' ) param_diff++;
+
+        if ( procs[n]->params - param_diff != params )
+        {
+            memmove( &procs[n], &procs[n+1], sizeof( SYSPROC* ) *( proc_count - n ) ) ;
+            proc_count-- ;
+            n-- ;
+        }
+    }
+
+    count = 0;
 
     for ( ;; )
     {
@@ -739,7 +800,7 @@ SYSPROC * compile_bestproc( SYSPROC ** procs )
         count++ ;
 
         /* Eliminate any process that has not as many parameters */
-
+/*
         for ( n = 0 ; n < proc_count ; n++ )
         {
             if ( procs[n]->params < count )
@@ -749,7 +810,7 @@ SYSPROC * compile_bestproc( SYSPROC ** procs )
                 n-- ;
             }
         }
-
+*/
         if ( proc_count == 0 ) compile_error( MSG_INCORRECT_PARAMC, proc_name, min_params ) ;
 
         /* Find all the available types */
@@ -892,6 +953,8 @@ SYSPROC * compile_bestproc( SYSPROC ** procs )
                     n-- ;
                 }
             }
+
+            if ( strlen( validtypes ) > 1 ) continue ;
 
             /* Convert the result to the appropiate type, if needed */
 
