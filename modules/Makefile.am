@@ -14,6 +14,7 @@ SUBDIRS = \
     libmouse        \
     libjoy          \
     libscroll       \
+    libbgload       \
     mod_scroll      \
     mod_mouse       \
     mod_map         \

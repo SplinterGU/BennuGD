@@ -37,7 +37,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-subdir = mod_map
+subdir = libbgload
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.in
@@ -70,15 +70,12 @@ am__base_list = \
 am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-mod_map_la_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
-am_mod_map_la_OBJECTS = mod_map_la-file_pcx.lo mod_map_la-file_png.lo \
-	mod_map_la-file_map.lo mod_map_la-file_pal.lo \
-	mod_map_la-file_fpg.lo mod_map_la-file_fnt.lo \
-	mod_map_la-mod_map.lo
-mod_map_la_OBJECTS = $(am_mod_map_la_OBJECTS)
-mod_map_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(mod_map_la_CFLAGS) \
-	$(CFLAGS) $(mod_map_la_LDFLAGS) $(LDFLAGS) -o $@
+libbgload_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
+am_libbgload_la_OBJECTS = libbgload_la-bgload.lo
+libbgload_la_OBJECTS = $(am_libbgload_la_OBJECTS)
+libbgload_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libbgload_la_CFLAGS) \
+	$(CFLAGS) $(libbgload_la_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -92,8 +89,8 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(mod_map_la_SOURCES)
-DIST_SOURCES = $(mod_map_la_SOURCES)
+SOURCES = $(libbgload_la_SOURCES)
+DIST_SOURCES = $(libbgload_la_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -226,12 +223,12 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-lib_LTLIBRARIES = mod_map.la
-mod_map_la_SOURCES = file_pcx.c file_png.c file_map.c file_pal.c file_fpg.c file_fnt.c mod_map.c
-mod_map_la_CFLAGS = $(COMMON_CFLAGS) $(SDL_CFLAGS) -I$(BGD_PATH)/include -I$(BGD_PATH)/bgdrtm/include -I. -I../libbgload/ -I../librender/ -I../libfont/ -I../libblit/ -I../libvideo/ -I../libgrbase/
-mod_map_la_LDFLAGS = -s -module -no-undefined -avoid-version
-mod_map_la_LIBADD = $(COMMON_LDFLAGS) $(PNGLIBS) -lSDL -L../libbgload/.libs -lbgload -L$(BGD_PATH)/bgdrtm/src/.libs -lbgdrtm -L../librender/.libs -lrender -L../libfont/.libs -lfont -L../libblit/.libs -lblit -L../libvideo/.libs -lvideo -L../libgrbase/.libs -lgrbase -lpng
-CLEANFILES = mod_map.la
+lib_LTLIBRARIES = libbgload.la
+libbgload_la_SOURCES = bgload.c
+libbgload_la_CFLAGS = $(COMMON_CFLAGS) $(SDL_CFLAGS) -I$(BGD_PATH)/include -I$(BGD_PATH)/bgdrtm/include
+libbgload_la_LDFLAGS = -s -module -no-undefined -avoid-version
+libbgload_la_LIBADD = $(COMMON_LDFLAGS) -lSDL -L$(BGD_PATH)/bgdrtm/src/.libs -lbgdrtm
+CLEANFILES = libbgload.la
 all: all-am
 
 .SUFFIXES:
@@ -245,9 +242,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu mod_map/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu libbgload/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu mod_map/Makefile
+	  $(AUTOMAKE) --gnu libbgload/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -297,8 +294,8 @@ clean-libLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-mod_map.la: $(mod_map_la_OBJECTS) $(mod_map_la_DEPENDENCIES) 
-	$(mod_map_la_LINK) -rpath $(libdir) $(mod_map_la_OBJECTS) $(mod_map_la_LIBADD) $(LIBS)
+libbgload.la: $(libbgload_la_OBJECTS) $(libbgload_la_DEPENDENCIES) 
+	$(libbgload_la_LINK) -rpath $(libdir) $(libbgload_la_OBJECTS) $(libbgload_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -306,13 +303,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mod_map_la-file_fnt.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mod_map_la-file_fpg.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mod_map_la-file_map.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mod_map_la-file_pal.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mod_map_la-file_pcx.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mod_map_la-file_png.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mod_map_la-mod_map.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libbgload_la-bgload.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -335,54 +326,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
-mod_map_la-file_pcx.lo: file_pcx.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mod_map_la_CFLAGS) $(CFLAGS) -MT mod_map_la-file_pcx.lo -MD -MP -MF $(DEPDIR)/mod_map_la-file_pcx.Tpo -c -o mod_map_la-file_pcx.lo `test -f 'file_pcx.c' || echo '$(srcdir)/'`file_pcx.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/mod_map_la-file_pcx.Tpo $(DEPDIR)/mod_map_la-file_pcx.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='file_pcx.c' object='mod_map_la-file_pcx.lo' libtool=yes @AMDEPBACKSLASH@
+libbgload_la-bgload.lo: bgload.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libbgload_la_CFLAGS) $(CFLAGS) -MT libbgload_la-bgload.lo -MD -MP -MF $(DEPDIR)/libbgload_la-bgload.Tpo -c -o libbgload_la-bgload.lo `test -f 'bgload.c' || echo '$(srcdir)/'`bgload.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libbgload_la-bgload.Tpo $(DEPDIR)/libbgload_la-bgload.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='bgload.c' object='libbgload_la-bgload.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mod_map_la_CFLAGS) $(CFLAGS) -c -o mod_map_la-file_pcx.lo `test -f 'file_pcx.c' || echo '$(srcdir)/'`file_pcx.c
-
-mod_map_la-file_png.lo: file_png.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mod_map_la_CFLAGS) $(CFLAGS) -MT mod_map_la-file_png.lo -MD -MP -MF $(DEPDIR)/mod_map_la-file_png.Tpo -c -o mod_map_la-file_png.lo `test -f 'file_png.c' || echo '$(srcdir)/'`file_png.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/mod_map_la-file_png.Tpo $(DEPDIR)/mod_map_la-file_png.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='file_png.c' object='mod_map_la-file_png.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mod_map_la_CFLAGS) $(CFLAGS) -c -o mod_map_la-file_png.lo `test -f 'file_png.c' || echo '$(srcdir)/'`file_png.c
-
-mod_map_la-file_map.lo: file_map.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mod_map_la_CFLAGS) $(CFLAGS) -MT mod_map_la-file_map.lo -MD -MP -MF $(DEPDIR)/mod_map_la-file_map.Tpo -c -o mod_map_la-file_map.lo `test -f 'file_map.c' || echo '$(srcdir)/'`file_map.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/mod_map_la-file_map.Tpo $(DEPDIR)/mod_map_la-file_map.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='file_map.c' object='mod_map_la-file_map.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mod_map_la_CFLAGS) $(CFLAGS) -c -o mod_map_la-file_map.lo `test -f 'file_map.c' || echo '$(srcdir)/'`file_map.c
-
-mod_map_la-file_pal.lo: file_pal.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mod_map_la_CFLAGS) $(CFLAGS) -MT mod_map_la-file_pal.lo -MD -MP -MF $(DEPDIR)/mod_map_la-file_pal.Tpo -c -o mod_map_la-file_pal.lo `test -f 'file_pal.c' || echo '$(srcdir)/'`file_pal.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/mod_map_la-file_pal.Tpo $(DEPDIR)/mod_map_la-file_pal.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='file_pal.c' object='mod_map_la-file_pal.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mod_map_la_CFLAGS) $(CFLAGS) -c -o mod_map_la-file_pal.lo `test -f 'file_pal.c' || echo '$(srcdir)/'`file_pal.c
-
-mod_map_la-file_fpg.lo: file_fpg.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mod_map_la_CFLAGS) $(CFLAGS) -MT mod_map_la-file_fpg.lo -MD -MP -MF $(DEPDIR)/mod_map_la-file_fpg.Tpo -c -o mod_map_la-file_fpg.lo `test -f 'file_fpg.c' || echo '$(srcdir)/'`file_fpg.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/mod_map_la-file_fpg.Tpo $(DEPDIR)/mod_map_la-file_fpg.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='file_fpg.c' object='mod_map_la-file_fpg.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mod_map_la_CFLAGS) $(CFLAGS) -c -o mod_map_la-file_fpg.lo `test -f 'file_fpg.c' || echo '$(srcdir)/'`file_fpg.c
-
-mod_map_la-file_fnt.lo: file_fnt.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mod_map_la_CFLAGS) $(CFLAGS) -MT mod_map_la-file_fnt.lo -MD -MP -MF $(DEPDIR)/mod_map_la-file_fnt.Tpo -c -o mod_map_la-file_fnt.lo `test -f 'file_fnt.c' || echo '$(srcdir)/'`file_fnt.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/mod_map_la-file_fnt.Tpo $(DEPDIR)/mod_map_la-file_fnt.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='file_fnt.c' object='mod_map_la-file_fnt.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mod_map_la_CFLAGS) $(CFLAGS) -c -o mod_map_la-file_fnt.lo `test -f 'file_fnt.c' || echo '$(srcdir)/'`file_fnt.c
-
-mod_map_la-mod_map.lo: mod_map.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mod_map_la_CFLAGS) $(CFLAGS) -MT mod_map_la-mod_map.lo -MD -MP -MF $(DEPDIR)/mod_map_la-mod_map.Tpo -c -o mod_map_la-mod_map.lo `test -f 'mod_map.c' || echo '$(srcdir)/'`mod_map.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/mod_map_la-mod_map.Tpo $(DEPDIR)/mod_map_la-mod_map.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='mod_map.c' object='mod_map_la-mod_map.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mod_map_la_CFLAGS) $(CFLAGS) -c -o mod_map_la-mod_map.lo `test -f 'mod_map.c' || echo '$(srcdir)/'`mod_map.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libbgload_la_CFLAGS) $(CFLAGS) -c -o libbgload_la-bgload.lo `test -f 'bgload.c' || echo '$(srcdir)/'`bgload.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

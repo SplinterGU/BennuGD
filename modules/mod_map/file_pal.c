@@ -32,14 +32,11 @@
 
 /* --------------------------------------------------------------------------- */
 
-static uint8_t colors[256*3] ;
-
-/* --------------------------------------------------------------------------- */
-
 PALETTE * gr_read_pal( file * fp )
 {
     PALETTE * pal;
     int i;
+    uint8_t colors[256*3] ;
 
     if ( !file_read( fp, colors, sizeof( colors ) ) ) return NULL ;
 
@@ -87,6 +84,10 @@ PALETTE * gr_read_pal_with_gamma( file * fp )
 
 int gr_save_pal( const char * filename, PALETTE * pal )
 {
+    if ( !filename ) return 0;
+
+    uint8_t colors[256*3] ;
+
     file * fp ;
     char header[8] = PAL_MAGIC;
     int i;
@@ -132,6 +133,8 @@ int gr_save_system_pal( const char * filename )
 
     if ( !fp ) return 0;
 
+    uint8_t colors[256*3] ;
+
     memmove( colors, sys_pixel_format->palette ? ( uint8_t * ) sys_pixel_format->palette->rgb : default_palette, sizeof( colors ) );
     for ( i = 0; i < sizeof( colors ); i++ ) colors[i] >>= 2;
 
@@ -150,6 +153,8 @@ int gr_save_system_pal( const char * filename )
 
 int gr_load_pal( const char * filename )
 {
+    if ( !filename ) return 0;
+
     file * fp = file_open( filename, "rb" ) ;
     char header[8] ;
     PALETTE * r = NULL ;

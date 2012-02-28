@@ -56,10 +56,6 @@ typedef struct
 
 /* --------------------------------------------------------------------------- */
 
-static uint8_t colors[256 * 3] ;
-
-/* --------------------------------------------------------------------------- */
-
 /*
  *  FUNCTION : gr_read_pcx
  *
@@ -149,6 +145,7 @@ GRAPH * gr_read_pcx( const char * filename )
 
         if ( file_read( file, &ch, 1 ) == 1 && ch == 0x0c )
         {
+            uint8_t colors[256 * 3] ;
             if ( file_read( file, colors, sizeof( colors ) ) )
             {
                 bitmap->format->palette = pal_new_rgb(( uint8_t * )colors );

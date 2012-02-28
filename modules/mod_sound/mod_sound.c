@@ -47,6 +47,8 @@
 
 #include "dlvaracc.h"
 
+#include "bgload.h"
+
 /* --------------------------------------------------------------------------- */
 
 static int audio_initialized = 0 ;
@@ -882,6 +884,31 @@ static int modsound_load_song( INSTANCE * my, int * params )
 
 /* --------------------------------------------------------------------------- */
 /*
+ *  FUNCTION : modsound_load_song2
+ *
+ *  Load a MOD from a file
+ *
+ *  PARAMS:
+ *      file name
+ *      pointer mod id
+ *
+ *  RETURN VALUE:
+ *
+ *
+ */
+
+static int modsound_bgload_song( INSTANCE * my, int * params )
+{
+#ifndef TARGET_DINGUX_A320
+    bgload( load_song, params );
+#else
+    *(int *)(params[1]) = -1;
+#endif
+    return 0;
+}
+
+/* --------------------------------------------------------------------------- */
+/*
  *  FUNCTION : modsound_play_song
  *
  *  Play a MOD
@@ -952,7 +979,7 @@ static int modsound_unload_song( INSTANCE * my, int * params )
 static int modsound_unload_song2( INSTANCE * my, int * params )
 {
 #ifndef TARGET_DINGUX_A320
-    int *s = params[0], r;
+    int *s = (int *)(params[0]), r;
     if ( !s || *s == -1 ) return ( -1 );
     r = unload_song( *s );
     *s = 0;
@@ -1172,6 +1199,31 @@ static int modsound_load_wav( INSTANCE * my, int * params )
 
 /* --------------------------------------------------------------------------- */
 /*
+ *  FUNCTION : modsound_load_wav2
+ *
+ *  Load a WAV from a file
+ *
+ *  PARAMS:
+ *      file name
+ *      pointer wav id
+ *
+ *  RETURN VALUE:
+ *
+ *
+ */
+
+static int modsound_bgload_wav( INSTANCE * my, int * params )
+{
+#ifndef TARGET_DINGUX_A320
+    bgload( load_wav, params );
+#else
+    *(int *)(params[1]) = -1;
+#endif
+    return 0;
+}
+
+/* --------------------------------------------------------------------------- */
+/*
  *  FUNCTION : modsound_play_wav
  *
  *  Play a WAV
@@ -1272,7 +1324,7 @@ static int modsound_unload_wav( INSTANCE * my, int * params )
 static int modsound_unload_wav2( INSTANCE * my, int * params )
 {
 #ifndef TARGET_DINGUX_A320
-    int *s = params[0], r;
+    int *s = (int *)(params[0]), r;
     if ( !s || *s == -1 ) return ( -1 );
     r = unload_wav( *s );
     *s = 0;
@@ -1599,34 +1651,50 @@ DLSYSFUNCS  __bgdexport( mod_sound, functions_exports )[] =
 {
     { "SOUND_INIT"          , ""     , TYPE_INT , modsound_init               },
     { "SOUND_CLOSE"         , ""     , TYPE_INT , modsound_close              },
+
     { "LOAD_SONG"           , "S"    , TYPE_INT , modsound_load_song          },
-    { "PLAY_SONG"           , "II"   , TYPE_INT , modsound_play_song          },
+    { "LOAD_SONG"           , "SP"   , TYPE_INT , modsound_bgload_song        },
     { "UNLOAD_SONG"         , "I"    , TYPE_INT , modsound_unload_song        },
+    { "UNLOAD_SONG"         , "P"    , TYPE_INT , modsound_unload_song2       },
+
+    { "PLAY_SONG"           , "II"   , TYPE_INT , modsound_play_song          },
     { "STOP_SONG"           , ""     , TYPE_INT , modsound_stop_song          },
     { "PAUSE_SONG"          , ""     , TYPE_INT , modsound_pause_song         },
     { "RESUME_SONG"         , ""     , TYPE_INT , modsound_resume_song        },
+
     { "SET_SONG_VOLUME"     , "I"    , TYPE_INT , modsound_set_song_volume    },
+
     { "IS_PLAYING_SONG"     , ""     , TYPE_INT , modsound_is_playing_song    },
+
     { "LOAD_WAV"            , "S"    , TYPE_INT , modsound_load_wav           },
-    { "PLAY_WAV"            , "II"   , TYPE_INT , modsound_play_wav           },
+    { "LOAD_WAV"            , "SP"   , TYPE_INT , modsound_bgload_wav         },
     { "UNLOAD_WAV"          , "I"    , TYPE_INT , modsound_unload_wav         },
+    { "UNLOAD_WAV"          , "P"    , TYPE_INT , modsound_unload_wav2        },
+
+    { "PLAY_WAV"            , "II"   , TYPE_INT , modsound_play_wav           },
+    { "PLAY_WAV"            , "III"  , TYPE_INT , modsound_play_wav_channel   },
     { "STOP_WAV"            , "I"    , TYPE_INT , modsound_stop_wav           },
     { "PAUSE_WAV"           , "I"    , TYPE_INT , modsound_pause_wav          },
     { "RESUME_WAV"          , "I"    , TYPE_INT , modsound_resume_wav         },
+
     { "IS_PLAYING_WAV"      , "I"    , TYPE_INT , modsound_is_playing_wav     },
-    { "SET_WAV_VOLUME"      , "II"   , TYPE_INT , modsound_set_wav_volume     },
+
     { "FADE_MUSIC_IN"       , "III"  , TYPE_INT , modsound_fade_music_in      },
     { "FADE_MUSIC_OFF"      , "I"    , TYPE_INT , modsound_fade_music_off     },
+
+    { "SET_WAV_VOLUME"      , "II"   , TYPE_INT , modsound_set_wav_volume     },
     { "SET_CHANNEL_VOLUME"  , "II"   , TYPE_INT , modsound_set_channel_volume },
+
     { "RESERVE_CHANNELS"    , "I"    , TYPE_INT , modsound_reserve_channels   },
+
     { "SET_PANNING"         , "III"  , TYPE_INT , modsound_set_panning        },
     { "SET_POSITION"        , "III"  , TYPE_INT , modsound_set_position       },
     { "SET_DISTANCE"        , "II"   , TYPE_INT , modsound_set_distance       },
+
     { "REVERSE_STEREO"      , "II"   , TYPE_INT , modsound_reverse_stereo     },
-    { "PLAY_WAV"            , "III"  , TYPE_INT , modsound_play_wav_channel   },
+
     { "SET_MUSIC_POSITION"  , "F"    , TYPE_INT , modsound_set_music_position },
-    { "UNLOAD_SONG"         , "P"    , TYPE_INT , modsound_unload_song2       },
-    { "UNLOAD_WAV"          , "P"    , TYPE_INT , modsound_unload_wav2        },
+
     { 0                     , 0      , 0        , 0                           }
 };
 

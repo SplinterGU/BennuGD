@@ -156,6 +156,7 @@ libkey/Makefile
 libmouse/Makefile
 libjoy/Makefile
 libscroll/Makefile
+libbgload/Makefile
 mod_scroll/Makefile
 mod_mouse/Makefile
 mod_map/Makefile
