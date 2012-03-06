@@ -64,16 +64,14 @@ DLVARFIXUP __bgdexport( mod_video, globals_fixup )[] =
 
 static int modvideo_set_mode( INSTANCE * my, int * params )
 {
-    gr_set_mode( params[0] / 10000, params[0] % 10000, 0 ) ;
-    return 1 ;
+    return gr_set_mode( params[0] / 10000, params[0] % 10000, 0 ) ;
 }
 
 /* --------------------------------------------------------------------------- */
 
 static int modvideo_set_mode_2( INSTANCE * my, int * params )
 {
-    gr_set_mode( params[0], params[1], 0 ) ;
-    return 1 ;
+    return gr_set_mode( params[0], params[1], 0 ) ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -81,8 +79,7 @@ static int modvideo_set_mode_2( INSTANCE * my, int * params )
 static int modvideo_set_mode_3( INSTANCE * my, int * params )
 {
     GLODWORD( mod_video, GRAPH_MODE ) = (( GLODWORD( mod_video, GRAPH_MODE ) & 0xFF00 ) | params[2] );
-    gr_set_mode( params[0], params[1], 0 ) ;
-    return 1 ;
+    return gr_set_mode( params[0], params[1], 0 ) ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -90,8 +87,7 @@ static int modvideo_set_mode_3( INSTANCE * my, int * params )
 static int modvideo_set_mode_4( INSTANCE * my, int * params )
 {
     GLODWORD( mod_video, GRAPH_MODE ) = ( params[2] | params[3] );
-    gr_set_mode( params[0], params[1], 0 ) ;
-    return 1 ;
+    return gr_set_mode( params[0], params[1], 0 ) ;
 }
 
 /* --------------------------------------------------------------------------- */
