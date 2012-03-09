@@ -1,7 +1,7 @@
 /*
  *  Copyright © 2001, 2002, 2003, 2004 Andrea Mazzoleni
  *
- *  Copyright © 2006-2011 SplinterGU (Fenix/Bennugd)
+ *  Copyright © 2006-2012 SplinterGU (Fenix/Bennugd)
  *  Copyright © 2002-2006 Fenix Team (Fenix)
  *  Copyright © 1999-2002 José Luis Cebrián Pagüe (Fenix)
  *

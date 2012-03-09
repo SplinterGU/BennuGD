@@ -1,5 +1,5 @@
 /*
- *  Copyright © 2006-2011 SplinterGU (Fenix/Bennugd)
+ *  Copyright © 2006-2012 SplinterGU (Fenix/Bennugd)
  *  Copyright © 2002-2006 Fenix Team (Fenix)
  *  Copyright © 1999-2002 José Luis Cebrián Pagüe (Fenix)
  *
@@ -120,7 +120,7 @@ int main( int argc, char *argv[] )
     printf( BGDC_VERSION "\n"
             "Bennu Game Development Compiler\n"
             "\n"
-            "Copyright © 2006-2011 SplinterGU (Fenix/BennuGD)\n"
+            "Copyright © 2006-2012 SplinterGU (Fenix/BennuGD)\n"
             "Copyright © 2002-2006 Fenix Team (Fenix)\n"
             "Copyright © 1999-2002 José Luis Cebrián Pagüe (Fenix)\n"
             "\n" );
