@@ -924,6 +924,12 @@ void gr_set_rgb( int color, int r, int g, int b )
 {
     if ( color < 0 || color > 255 ) return ;
 
+    if ( !sys_pixel_format->palette )
+    {
+        sys_pixel_format->palette = pal_new( NULL );
+        memset ( sys_pixel_format->palette->rgb, '\0', sizeof( sys_pixel_format->palette->rgb ) );
+    }
+
     sys_pixel_format->palette->rgb[ color ].r = r << 2;
     sys_pixel_format->palette->rgb[ color ].g = g << 2;
     sys_pixel_format->palette->rgb[ color ].b = b << 2;
@@ -962,7 +968,11 @@ void gr_set_colors( int color, int num, uint8_t * pal )
     if ( num < 1 || color < 0 || color > 255 ) return ;
     if ( color + num > 256 ) num = 256 - color ;
 
-    if ( !sys_pixel_format->palette ) sys_pixel_format->palette = pal_new( NULL );
+    if ( !sys_pixel_format->palette )
+    {
+        sys_pixel_format->palette = pal_new( NULL );
+        memset ( sys_pixel_format->palette->rgb, '\0', sizeof( sys_pixel_format->palette->rgb ) );
+    }
 
     while ( num-- )
     {
