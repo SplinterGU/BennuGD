@@ -693,7 +693,7 @@ static int modmap_pal_map_getid( INSTANCE * my, int * params )
 
 static int modmap_set_system_pal( INSTANCE * my, int * params )
 {
-    if ( pal_set(( PALETTE * )NULL, 0, 256, ( uint8_t * )(( PALETTE * )params[3])->rgb ) )
+    if ( pal_set(( PALETTE * )NULL, 0, 256, ( uint8_t * )(( PALETTE * )params[0])->rgb ) )
     {
         pal_refresh( sys_pixel_format->palette );
         return 1;
@@ -705,7 +705,7 @@ static int modmap_set_system_pal( INSTANCE * my, int * params )
 
 static int modmap_set_system_pal_raw( INSTANCE * my, int * params )
 {
-    if ( pal_set(( PALETTE * )NULL, 0, 256, ( uint8_t * )params[3] ) )
+    if ( pal_set(( PALETTE * )NULL, 0, 256, ( uint8_t * )params[0] ) )
     {
         pal_refresh( sys_pixel_format->palette );
         return 1;
