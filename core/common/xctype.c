@@ -88,7 +88,7 @@ int  c_type_initialized = 0 ;
 
 unsigned char convert (unsigned char c)
 {
-    return dos_chars ? c:win_to_dos[c] ;
+    return dos_chars ? c : win_to_dos[c] ;
 }
 
 static void set_c_range (int first, int last, int type)
