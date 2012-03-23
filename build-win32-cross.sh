@@ -83,7 +83,7 @@ echo "### Building BennuGD Core ###"
 cd core
 case $1 in
     release)
-        ./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared && make clean && make
+        ./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared PKG_CONFIG_LIBDIR=${PKG_CONFIG_PATH} && make clean && make
         ;;
 
     *)
@@ -101,7 +101,7 @@ echo "### Building BennuGD Modules ###"
 cd modules
 case $1 in
     release)
-        ./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared && make clean && make
+        ./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared PKG_CONFIG_LIBDIR=${PKG_CONFIG_PATH} && make clean && make
         ;;
 
     *)
@@ -119,7 +119,7 @@ echo "### Building BennuGD Tools ###"
 cd tools/moddesc
 case $1 in
     release)
-        ./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared && make clean && make
+        ./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared PKG_CONFIG_LIBDIR=${PKG_CONFIG_PATH} && make clean && make
         ;;
 
     *)

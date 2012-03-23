@@ -28,7 +28,7 @@ export PREFIX
 PATH=$PATH:$DINGUX/bin
 export PATH
 
-ln -s `whereis -b pkg-config | sed 's/pkg-config\: //g'` /opt/dingux-a320/mipsel-linux-uclibc/usr/bin/pkg-config
+#ln -s `whereis -b pkg-config | sed 's/pkg-config\: //g'` /opt/dingux-a320/mipsel-linux-uclibc/usr/bin/pkg-config
 
 # Do not edit below here
 CC="${DINGUX}/bin/${HOST}-gcc"
@@ -41,7 +41,7 @@ LD="${DINGUX}/bin/${HOST}-ld"
 # -msoft-float -funroll-loops -ffast-math -fomit-frame-pointer -fno-strength-reduce -finline-functions -G0 -march=mips32 -mtune=r4600 -mno-mips16
 CFLAGS="-DNO_ZLIB -D_REENTRANT -DTARGET_DINGUX_A320 -O2 -I${DINGUX}/include -msoft-float -funroll-loops -ffast-math -fomit-frame-pointer -fno-strength-reduce -finline-functions -G0 -march=mips32 -mtune=r4600 -mno-mips16"
 LDFLAGS="-L${DINGUX}/lib -D_REENTRANT"
-PKG_CONFIG="${DINGUX}/bin/pkg-config"
+#PKG_CONFIG="${DINGUX}/bin/pkg-config"
 
 export CC
 export CXX
@@ -95,7 +95,7 @@ echo "### Building BennuGD Core ###"
 cd core
 case $1 in
     release)
-        ./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared && make clean && make
+        ./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared PKG_CONFIG_LIBDIR=${PKG_CONFIG_PATH} && make clean && make
         ;;
 
     *)
@@ -113,7 +113,7 @@ echo "### Building BennuGD Modules ###"
 cd modules
 case $1 in
     release)
-        ./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared && make clean && make
+        ./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared PKG_CONFIG_LIBDIR=${PKG_CONFIG_PATH} && make clean && make
         ;;
 
     *)
@@ -131,7 +131,7 @@ echo "### Building BennuGD Tools ###"
 cd tools/moddesc
 case $1 in
     release)
-        ./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared && make clean && make
+        ./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared PKG_CONFIG_LIBDIR=${PKG_CONFIG_PATH} && make clean && make
         ;;
 
     *)

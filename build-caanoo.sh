@@ -28,7 +28,7 @@ export PREFIX
 PATH=$CAANOO/bin:$PATH
 export PATH
 
-ln -s `whereis -b pkg-config | sed 's/pkg-config\: //g'` /opt/caanoo/gcc-4.2.4-glibc-2.7-eabi/arm-gph-linux-gnueabil/bin/pkg-config
+#ln -s `whereis -b pkg-config | sed 's/pkg-config\: //g'` /opt/caanoo/gcc-4.2.4-glibc-2.7-eabi/arm-gph-linux-gnueabil/bin/pkg-config
 
 # Do not edit below here
 CC="${CAANOO}/../bin/${HOST}-gcc"
@@ -40,9 +40,8 @@ RANLIB="${CAANOO}/../bin/${HOST}-ranlib"
 #CFLAGS="-DTARGET_CAANOO -O2 -ffast-math -fomit-frame-pointer -mcpu=arm920t -DARM -D_ARM_ASSEM_ -I${CAANOO}/include -I${CAANOO}/include/libxml2 -I${CAANOO}/include/SDL"
 #CFLAGS="-DTARGET_CAANOO -mcpu=arm926ej-s -mtune=arm926ej-s -fsigned-char -O3 -msoft-float -fomit-frame-pointer -fstrict-aliasing -mstructure-size-boundary=32 -fexpensive-optimizations -fweb -frename-registers -falign-functions=16 -falign-loops -falign-labels -falign-jumps -finline -finline-functions -fno-common -fno-builtin -fsingle-precision-constant -DARM -D_ARM_ASSEM_ -I${CAANOO}/include -I${CAANOO}/include/libxml2 -I${CAANOO}/include/SDL"
 CFLAGS="-DTARGET_CAANOO -mcpu=arm926ej-s -mtune=arm926ej-s -O3 -DARM -D_ARM_ASSEM_ -I${CAANOO}/include -I${CAANOO}/include/libxml2 -I${CAANOO}/include/SDL"
-
 LDFLAGS="-L${CAANOO}/lib"
-PKG_CONFIG="${CAANOO}/bin/pkg-config"
+#PKG_CONFIG="${CAANOO}/bin/pkg-config"
 
 export CC
 export CXX
@@ -92,7 +91,7 @@ echo "### Building BennuGD Core ###"
 cd core
 case $1 in
     release)
-        ./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared && make clean && make
+        ./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared PKG_CONFIG_LIBDIR=${PKG_CONFIG_PATH} && make clean && make
         ;;
 
     *)
@@ -110,7 +109,7 @@ echo "### Building BennuGD Modules ###"
 cd modules
 case $1 in
     release)
-        ./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared && make clean && make
+        ./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared PKG_CONFIG_LIBDIR=${PKG_CONFIG_PATH} && make clean && make
         ;;
 
     *)
@@ -128,7 +127,7 @@ echo "### Building BennuGD Tools ###"
 cd tools/moddesc
 case $1 in
     release)
-        ./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared && make clean && make
+        ./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared PKG_CONFIG_LIBDIR=${PKG_CONFIG_PATH} && make clean && make
         ;;
 
     *)
