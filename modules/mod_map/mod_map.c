@@ -271,7 +271,7 @@ static int modmap_map_put( INSTANCE * my, int * params )
 
     if ( !dest || !orig ) return 0 ;
 
-    gr_blit( dest, 0, params[3], params[4], 0, orig ) ;
+    gr_blit( dest, NULL, params[3], params[4], 0, orig ) ;
     return 1 ;
 }
 

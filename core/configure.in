@@ -1,5 +1,7 @@
 AC_INIT([bennu],[1.0.0])
 
+PKG_PROG_PKG_CONFIG()
+
 AC_CONFIG_MACRO_DIR([m4])
 
 AC_CANONICAL_TARGET
@@ -108,7 +110,7 @@ fi
 
 dnl librerias para todos
 
-AC_CHECK_LIB(z, gzsetparams, [AC_CHECK_HEADER(zlib.h,ZLIBS="-lz",)], [AC_MSG_ERROR(zlib not found!)])
+PKG_CHECK_MODULES(ZLIB, [ zlib ])
 
 if test "$USE_OPENSSL" = "yes"; then
 AC_CHECK_LIB($LIBSSL, DES_ecb_encrypt, [AC_CHECK_HEADER(openssl/des.h,CRYPT_LDFLAGS=-l$LIBSSL,)], [AC_MSG_ERROR($LIBSSL not found!)])
@@ -121,7 +123,6 @@ COMMON_CFLAGS="$CFLAGS $COMMON_CFLAGS"
 
 AC_SUBST(COMMON_CFLAGS)
 AC_SUBST(COMMON_LDFLAGS)
-AC_SUBST(ZLIBS)
 AC_SUBST(CRYPT_LDFLAGS)
 
 AC_CONFIG_FILES([

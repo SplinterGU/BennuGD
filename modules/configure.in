@@ -1,5 +1,7 @@
 AC_INIT(bennu,1.0.0)
 
+PKG_PROG_PKG_CONFIG()
+
 AC_CONFIG_MACRO_DIR([m4])
 
 AC_CANONICAL_SYSTEM
@@ -121,16 +123,20 @@ fi
 dnl librerias para todos
 
 dnl Check for SDL library
-SDL_VERSION=1.2.0
-AM_PATH_SDL($SDL_VERSION, :, AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!]))
 
-AC_CHECK_LIB(z, gzsetparams, [AC_CHECK_HEADER(zlib.h,ZLIBS="-lz",)], [AC_MSG_ERROR(zlib not found!)])
-AC_CHECK_LIB(png, png_read_info, [AC_CHECK_HEADER(png.h,PNGLIBS="-lpng",)], AC_MSG_ERROR(PNG library not found!), -lz $LM)
+PKG_CHECK_MODULES([SDL], [sdl >= 1.2])
+PKG_CHECK_MODULES(ZLIB, [ zlib ])
+PKG_CHECK_MODULES([PNG], [libpng >= 1.2])
+PKG_CHECK_MODULES([SDL_mixer], [SDL_mixer])
+
 if test "$USE_OPENSSL" = "yes"; then
 AC_CHECK_LIB($LIBSSL, DES_ecb_encrypt, [AC_CHECK_HEADER(openssl/des.h,CRYPT_LDFLAGS=-l$LIBSSL,)], [AC_MSG_ERROR($LIBSSL not found!)])
 fi
 
+#AC_CHECK_LIB(z, gzsetparams, [AC_CHECK_HEADER(zlib.h,ZLIBS="-lz",)], [AC_MSG_ERROR(zlib not found!)])
+#AC_CHECK_LIB(png, png_read_info, [AC_CHECK_HEADER(png.h,PNGLIBS="-lpng",)], AC_MSG_ERROR(PNG library not found!), -lz $LM)
 #AC_CHECK_LIB(SDL_mixer, Mix_AllocateChannels, [AC_CHECK_HEADER(SDL_mixer.h,LIBS+="-lSDL_mixer",)], [AC_MSG_ERROR(libSDL_mixer not found!)], $SDL_MIXER_DEPS)
+
 AC_CHECK_LIB(X11, [XQueryTree,XMoveWindow],X11LIBS="-lX11",)
 
 AC_SUBST(COMMON_LDFLAGS)

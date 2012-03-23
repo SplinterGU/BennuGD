@@ -3,11 +3,11 @@ bin_PROGRAMS = bgdc
 .rc.o:
 	$(WINDRES) $< -I../../include -o $@
 
-INCLUDES = $(COMMON_CFLAGS) -I../../include -I../include -D__BGDC__
+INCLUDES = $(COMMON_CFLAGS) $(ZLIB_CFLAGS) -I../../include -I../include -D__BGDC__
 
-bgdc_LDADD = $(COMMON_LDFLAGS) $(ZLIBS) $(CRYPT_LDFLAGS)
+bgdc_LDADD = $(COMMON_LDFLAGS) $(ZLIB_LIBS) $(CRYPT_LDFLAGS)
 
-bgdc_LDFLAGS = 
+bgdc_LDFLAGS =
 
 SOURCE_FILES = main.c main_core.c token.c identifier.c segment.c \
               constants.c strings.c varspace.c procedure.c codeblock.c \
