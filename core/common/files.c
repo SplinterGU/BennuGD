@@ -50,7 +50,7 @@
 
 #define MAX_POSSIBLE_PATHS  128
 
-char * possible_paths[MAX_POSSIBLE_PATHS] = { "", 0 } ;
+char * possible_paths[MAX_POSSIBLE_PATHS] = { NULL } ;
 
 int opened_files = 0;
 
@@ -772,6 +772,8 @@ void file_addp( const char * path )
     char truepath[__MAX_PATH];
     int n ;
 
+    if ( !path || !*path ) return;
+
     strcpy( truepath, path ) ;
 
     for ( n = 0 ; truepath[n] ; n++ ) if ( truepath[n] == '\\' ) truepath[n] = '/' ;
@@ -780,7 +782,7 @@ void file_addp( const char * path )
     for ( n = 0 ; n < MAX_POSSIBLE_PATHS - 1 && possible_paths[n] ; n++ ) ;
 
     possible_paths[n] = strdup( truepath ) ;
-    possible_paths[n+1] = 0 ;
+    possible_paths[n+1] = NULL ;
 }
 
 /* --- */

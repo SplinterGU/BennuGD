@@ -200,7 +200,11 @@ int strncmpi( char * str1, char * str2, int sz )
 {
     while (( *str1 || *str2 ) && sz )
     {
+#ifdef _WIN32
         if ( toupper( *str1 ) != toupper( *str2 ) ) return toupper( *str1 ) - toupper( *str2 );
+#else
+        if ( *str1 != *str2 ) return *str1 - *str2;
+#endif
         str1++; str2++; sz--;
     }
 
