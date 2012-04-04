@@ -29,11 +29,7 @@
 #ifndef __FADE_H
 #define __FADE_H
 
-#ifdef TARGET_MAC
-#include <SDL/SDL.h>
-#else
 #include <SDL.h>
-#endif
 
 extern int fade_on ;               /* ¿Hay un fade activo?                  */
 extern int fade_set ;              /* ¿Hay un fade seteado pero inactivo?   */

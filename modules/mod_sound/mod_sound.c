@@ -34,11 +34,7 @@
 
 #include "bgddl.h"
 
-#ifdef TARGET_MAC
-#include <SDL/SDL.h>
-#else
 #include <SDL.h>
-#endif
 
 #include "SDL_mixer.h"
 

@@ -34,11 +34,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#ifdef TARGET_MAC
-#include <SDL/SDL.h>
-#else
 #include <SDL.h>
-#endif
 
 #include "bgdcore.h"
 #include "bgdrtm.h"

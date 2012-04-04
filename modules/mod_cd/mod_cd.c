@@ -32,11 +32,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef TARGET_MAC
-#include <SDL/SDL.h>
-#else
 #include <SDL.h>
-#endif
 
 #include "bgddl.h"
 #include "bgdrtm.h"

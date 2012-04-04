@@ -33,11 +33,7 @@
 #include "files.h"
 #include "xstrings.h"
 
-#ifdef TARGET_MAC
-#include <SDL/SDL_types.h>
-#else
 #include <SDL_types.h>
-#endif
 
 #ifndef __GNUC__
 #define __PACKED

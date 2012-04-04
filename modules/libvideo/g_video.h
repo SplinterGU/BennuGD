@@ -29,11 +29,7 @@
 #ifndef __G_VIDEO_H
 #define __G_VIDEO_H
 
-#ifdef TARGET_MAC
-#include <SDL/SDL.h>
-#else
 #include <SDL.h>
-#endif
 
 #include "libgrbase.h"
 

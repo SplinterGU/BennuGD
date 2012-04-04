@@ -37,11 +37,7 @@
 #include "libgrbase.h"
 #include "libvideo.h"
 
-#ifdef TARGET_MAC
-#include <SDL/SDL.h>
-#else
 #include <SDL.h>
-#endif
 
 #if defined( WIN32 ) || ( __linux && ( defined( SDL_VIDEO_DRIVER_X11 ) ) )
 #include <SDL_syswm.h>
