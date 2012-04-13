@@ -73,7 +73,8 @@ am__base_list = \
 am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-libsdlhandler_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
+libsdlhandler_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 am_libsdlhandler_la_OBJECTS = libsdlhandler_la-libsdlhandler.lo
 libsdlhandler_la_OBJECTS = $(am_libsdlhandler_la_OBJECTS)
 libsdlhandler_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -239,7 +240,7 @@ lib_LTLIBRARIES = libsdlhandler.la
 libsdlhandler_la_SOURCES = libsdlhandler.c
 libsdlhandler_la_CFLAGS = $(COMMON_CFLAGS) $(SDL_CFLAGS) -I$(BGD_PATH)/include
 libsdlhandler_la_LDFLAGS = -s -module -no-undefined -avoid-version
-libsdlhandler_la_LIBADD = $(COMMON_LDFLAGS) -lSDL
+libsdlhandler_la_LIBADD = $(COMMON_LDFLAGS) $(SDL_LIBS)
 CLEANFILES = libsdlhandler.la
 all: all-am
 

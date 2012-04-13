@@ -73,7 +73,7 @@ am__base_list = \
 am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-mod_time_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
+mod_time_la_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am_mod_time_la_OBJECTS = mod_time_la-mod_time.lo
 mod_time_la_OBJECTS = $(am_mod_time_la_OBJECTS)
 mod_time_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -239,7 +239,7 @@ lib_LTLIBRARIES = mod_time.la
 mod_time_la_SOURCES = mod_time.c
 mod_time_la_CFLAGS = $(COMMON_CFLAGS) $(SDL_CFLAGS) -I$(BGD_PATH)/include
 mod_time_la_LDFLAGS = -s -module -no-undefined -avoid-version
-mod_time_la_LIBADD = $(COMMON_LDFLAGS) -lSDL -L$(BGD_PATH)/bgdrtm/src/.libs -lbgdrtm
+mod_time_la_LIBADD = $(COMMON_LDFLAGS) $(SDL_LIBS) -L$(BGD_PATH)/bgdrtm/src/.libs -lbgdrtm
 CLEANFILES = mod_time.la
 all: all-am
 

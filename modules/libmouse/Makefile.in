@@ -73,7 +73,7 @@ am__base_list = \
 am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-libmouse_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
+libmouse_la_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am_libmouse_la_OBJECTS = libmouse_la-libmouse.lo
 libmouse_la_OBJECTS = $(am_libmouse_la_OBJECTS)
 libmouse_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -239,7 +239,7 @@ lib_LTLIBRARIES = libmouse.la
 libmouse_la_SOURCES = libmouse.c
 libmouse_la_CFLAGS = $(COMMON_CFLAGS) $(SDL_CFLAGS) -I$(BGD_PATH)/include -I. -I../libdraw/ -I../librender/ -I../libblit/ -I../libvideo/ -I../libgrbase/
 libmouse_la_LDFLAGS = -s -module -no-undefined -avoid-version
-libmouse_la_LIBADD = $(COMMON_LDFLAGS) -lSDL -L$(BGD_PATH)/bgdrtm/src/.libs -L../libdraw/.libs -ldraw -L../librender/.libs -lrender -L../libblit/.libs -lblit -L../libvideo/.libs -lvideo -L../libgrbase/.libs -lgrbase
+libmouse_la_LIBADD = $(COMMON_LDFLAGS) $(SDL_LIBS) -L$(BGD_PATH)/bgdrtm/src/.libs -L../libdraw/.libs -ldraw -L../librender/.libs -lrender -L../libblit/.libs -lblit -L../libvideo/.libs -lvideo -L../libgrbase/.libs -lgrbase
 CLEANFILES = libmouse.la
 all: all-am
 

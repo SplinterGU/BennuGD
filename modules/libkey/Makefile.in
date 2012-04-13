@@ -73,7 +73,7 @@ am__base_list = \
 am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-libkey_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
+libkey_la_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am_libkey_la_OBJECTS = libkey_la-libkey.lo
 libkey_la_OBJECTS = $(am_libkey_la_OBJECTS)
 libkey_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -239,7 +239,7 @@ lib_LTLIBRARIES = libkey.la
 libkey_la_SOURCES = libkey.c
 libkey_la_CFLAGS = $(COMMON_CFLAGS) $(SDL_CFLAGS) -I$(BGD_PATH)/include
 libkey_la_LDFLAGS = -s -module -no-undefined -avoid-version
-libkey_la_LIBADD = $(COMMON_LDFLAGS) -lSDL -L$(BGD_PATH)/bgdrtm/src/.libs -lbgdrtm
+libkey_la_LIBADD = $(COMMON_LDFLAGS) $(SDL_LIBS) -L$(BGD_PATH)/bgdrtm/src/.libs -lbgdrtm
 CLEANFILES = libkey.la
 all: all-am
 

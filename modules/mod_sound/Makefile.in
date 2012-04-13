@@ -73,7 +73,8 @@ am__base_list = \
 am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-mod_sound_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
+mod_sound_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am_mod_sound_la_OBJECTS = mod_sound_la-mod_sound.lo
 mod_sound_la_OBJECTS = $(am_mod_sound_la_OBJECTS)
 mod_sound_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -237,9 +238,9 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_LTLIBRARIES = mod_sound.la
 mod_sound_la_SOURCES = mod_sound.c
-mod_sound_la_CFLAGS = $(COMMON_CFLAGS) $(SDL_CFLAGS) -I$(BGD_PATH)/include -I$(BGD_PATH)/bgdrtm/include -I../libbgload/
+mod_sound_la_CFLAGS = $(COMMON_CFLAGS) $(SDL_CFLAGS) $(SDL_mixer_CFLAGS) -I$(BGD_PATH)/include -I$(BGD_PATH)/bgdrtm/include -I../libbgload/
 mod_sound_la_LDFLAGS = -s -module -no-undefined -avoid-version
-mod_sound_la_LIBADD = $(COMMON_LDFLAGS) -lSDL -L$(BGD_PATH)/bgdrtm/src/.libs -L../libbgload/.libs -lbgload -lbgdrtm -lSDL_mixer
+mod_sound_la_LIBADD = $(COMMON_LDFLAGS) $(SDL_LIBS) -L$(BGD_PATH)/bgdrtm/src/.libs -L../libbgload/.libs -lbgload -lbgdrtm $(SDL_mixer_LIBS)
 CLEANFILES = mod_sound.la
 all: all-am
 

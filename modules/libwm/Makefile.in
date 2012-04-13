@@ -73,7 +73,7 @@ am__base_list = \
 am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-libwm_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
+libwm_la_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am_libwm_la_OBJECTS = libwm_la-libwm.lo
 libwm_la_OBJECTS = $(am_libwm_la_OBJECTS)
 libwm_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
@@ -239,7 +239,7 @@ lib_LTLIBRARIES = libwm.la
 libwm_la_SOURCES = libwm.c
 libwm_la_CFLAGS = $(COMMON_CFLAGS) $(SDL_CFLAGS) -I$(BGD_PATH)/include -I$(BGD_PATH)/bgdrtm/include
 libwm_la_LDFLAGS = -s -module -no-undefined -avoid-version
-libwm_la_LIBADD = $(COMMON_LDFLAGS) -lSDL -L$(BGD_PATH)/bgdrtm/src/.libs -lbgdrtm
+libwm_la_LIBADD = $(COMMON_LDFLAGS) $(SDL_LIBS) -L$(BGD_PATH)/bgdrtm/src/.libs -lbgdrtm
 CLEANFILES = libwm.la
 all: all-am
 

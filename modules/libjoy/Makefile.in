@@ -73,7 +73,7 @@ am__base_list = \
 am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-libjoy_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
+libjoy_la_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am_libjoy_la_OBJECTS = libjoy_la-libjoy.lo
 libjoy_la_OBJECTS = $(am_libjoy_la_OBJECTS)
 libjoy_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -239,7 +239,7 @@ lib_LTLIBRARIES = libjoy.la
 libjoy_la_SOURCES = libjoy.c
 libjoy_la_CFLAGS = $(COMMON_CFLAGS) $(SDL_CFLAGS) -I$(BGD_PATH)/include -I$(BGD_PATH)/bgdrtm/include
 libjoy_la_LDFLAGS = -s -module -no-undefined -avoid-version
-libjoy_la_LIBADD = $(COMMON_LDFLAGS) -lSDL -L$(BGD_PATH)/bgdrtm/src/.libs -lbgdrtm
+libjoy_la_LIBADD = $(COMMON_LDFLAGS) $(SDL_LIBS) -L$(BGD_PATH)/bgdrtm/src/.libs -lbgdrtm
 CLEANFILES = libjoy.la
 all: all-am
 

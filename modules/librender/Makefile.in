@@ -73,7 +73,8 @@ am__base_list = \
 am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-librender_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
+librender_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 am_librender_la_OBJECTS = librender_la-librender.lo \
 	librender_la-g_fade.lo librender_la-g_frame.lo \
 	librender_la-g_instance.lo librender_la-g_object.lo \
@@ -246,7 +247,7 @@ librender_la_SOURCES = librender.c g_fade.c g_frame.c g_instance.c g_object.c g_
 
 librender_la_CFLAGS = $(COMMON_CFLAGS) $(SDL_CFLAGS) -I$(BGD_PATH)/include -I$(BGD_PATH)/bgdrtm/include -I. -I../libgrbase/ -I../libvideo/ -I../libblit/
 librender_la_LDFLAGS = -s -module -no-undefined -avoid-version
-librender_la_LIBADD = $(COMMON_LDFLAGS) -lSDL -L$(BGD_PATH)/bgdrtm/src/.libs -lbgdrtm -L../libvideo/.libs -lvideo -L../libblit/.libs -lblit -L../libgrbase/.libs -lgrbase
+librender_la_LIBADD = $(COMMON_LDFLAGS) $(SDL_LIBS) -L$(BGD_PATH)/bgdrtm/src/.libs -lbgdrtm -L../libvideo/.libs -lvideo -L../libblit/.libs -lblit -L../libgrbase/.libs -lgrbase
 CLEANFILES = librender.la
 all: all-am
 

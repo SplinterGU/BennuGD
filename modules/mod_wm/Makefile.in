@@ -73,7 +73,8 @@ am__base_list = \
 am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-mod_wm_la_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+mod_wm_la_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 am_mod_wm_la_OBJECTS = mod_wm_la-mod_wm.lo
 mod_wm_la_OBJECTS = $(am_mod_wm_la_OBJECTS)
 mod_wm_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -239,7 +240,7 @@ lib_LTLIBRARIES = mod_wm.la
 mod_wm_la_SOURCES = mod_wm.c
 mod_wm_la_CFLAGS = $(COMMON_CFLAGS) $(SDL_CFLAGS) -I$(BGD_PATH)/include -I$(BGD_PATH)/bgdrtm/include -I../libvideo/ -I../libgrbase/
 mod_wm_la_LDFLAGS = -s -module -no-undefined -avoid-version
-mod_wm_la_LIBADD = $(COMMON_LDFLAGS) -lSDL $(X11LIBS) -L$(BGD_PATH)/bgdrtm/src/.libs -lbgdrtm -L../libvideo/.libs -lvideo -L../libgrbase/.libs -lgrbase
+mod_wm_la_LIBADD = $(COMMON_LDFLAGS) $(SDL_LIBS) $(X11LIBS) -L$(BGD_PATH)/bgdrtm/src/.libs -lbgdrtm -L../libvideo/.libs -lvideo -L../libgrbase/.libs -lgrbase
 CLEANFILES = mod_wm.la
 all: all-am
 
