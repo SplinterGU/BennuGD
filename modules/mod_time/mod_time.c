@@ -213,18 +213,6 @@ static int modtime_ftime( INSTANCE * my, int * params )
 }
 
 /* --------------------------------------------------------------------------- */
-/* Declaracion de funciones                                                    */
-
-DLSYSFUNCS __bgdexport( mod_time, functions_exports )[] =
-{
-    /* Fecha/Hora */
-    { "GET_TIMER"   , ""    , TYPE_INT      , modtime_get_timer     },
-    { "TIME"        , ""    , TYPE_INT      , modtime_time          },
-    { "FTIME"       , "SI"  , TYPE_STRING   , modtime_ftime         },
-    { 0             , 0     , 0             , 0                     }
-};
-
-/* --------------------------------------------------------------------------- */
 
 void __bgdexport( mod_time, module_initialize )()
 {
@@ -241,5 +229,11 @@ void __bgdexport( mod_time, module_finalize )()
     if ( SDL_WasInit( SDL_INIT_TIMER ) ) SDL_QuitSubSystem( SDL_INIT_TIMER );
 #endif
 }
+
+/* --------------------------------------------------------------------------- */
+/* exports                                                                     */
+/* --------------------------------------------------------------------------- */
+
+#include "mod_time_exports.h"
 
 /* --------------------------------------------------------------------------- */

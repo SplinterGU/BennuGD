@@ -323,64 +323,10 @@ static int modjoy_get_accel_specific( INSTANCE * my, int * params )
     return ( libjoy_get_accel_specific( params[0], ( int * ) params[1], ( int * ) params[2], ( int * ) params[3] ) );
 }
 
-/* ---------------------------------------------------------------------- */
-
-DLSYSFUNCS  __bgdexport( mod_joy, functions_exports )[] =
-{
-    { "JOY_AXES"            , ""      , TYPE_INT    , modjoy_axes                  },
-    { "JOY_AXES"            , "I"     , TYPE_INT    , modjoy_axes_specific         },
-    { "JOY_NUMAXES"         , ""      , TYPE_INT    , modjoy_axes                  },
-    { "JOY_NUMAXES"         , "I"     , TYPE_INT    , modjoy_axes_specific         },
-    { "JOY_GETAXIS"         , "I"     , TYPE_INT    , modjoy_get_position          },
-    { "JOY_GETAXIS"         , "II"    , TYPE_INT    , modjoy_get_position_specific },
-
-    { "JOY_BUTTONS"         , ""      , TYPE_INT    , modjoy_buttons               },
-    { "JOY_BUTTONS"         , "I"     , TYPE_INT    , modjoy_buttons_specific      },
-
-    { "JOY_NAME"            , "I"     , TYPE_STRING , modjoy_name                  },
-
-    { "JOY_NUMBUTTONS"      , ""      , TYPE_INT    , modjoy_buttons               },
-    { "JOY_NUMBUTTONS"      , "I"     , TYPE_INT    , modjoy_buttons_specific      },
-
-    { "JOY_NUMBER"          , ""      , TYPE_INT    , modjoy_num                   },
-    { "JOY_NUMJOYSTICKS"    , ""      , TYPE_INT    , modjoy_num                   },
-
-    { "JOY_SELECT"          , "I"     , TYPE_INT    , modjoy_select                },
-
-    { "JOY_GETBUTTON"       , "I"     , TYPE_INT    , modjoy_get_button            },
-    { "JOY_GETBUTTON"       , "II"    , TYPE_INT    , modjoy_get_button_specific   },
-    { "JOY_GETPOSITION"     , "I"     , TYPE_INT    , modjoy_get_position          },
-    { "JOY_GETPOSITION"     , "II"    , TYPE_INT    , modjoy_get_position_specific },
-
-    { "JOY_NUMHATS"         , ""      , TYPE_INT    , modjoy_hats                  },
-    { "JOY_NUMHATS"         , "I"     , TYPE_INT    , modjoy_hats_specific         },   /* Added by Sandman */
-    { "JOY_NUMBALLS"        , ""      , TYPE_INT    , modjoy_balls                 },
-    { "JOY_NUMBALLS"        , "I"     , TYPE_INT    , modjoy_balls_specific        },   /* Added by Sandman */
-    { "JOY_GETHAT"          , "I"     , TYPE_INT    , modjoy_get_hat               },
-    { "JOY_GETHAT"          , "II"    , TYPE_INT    , modjoy_get_hat_specific      },   /* Added by Sandman */
-    { "JOY_GETBALL"         , "IPP"   , TYPE_INT    , modjoy_get_ball              },
-    { "JOY_GETBALL"         , "IIPP"  , TYPE_INT    , modjoy_get_ball_specific     },   /* Added by Sandman */
-
-    { "JOY_GETACCEL"        , "PPP"   , TYPE_INT    , modjoy_get_accel             },
-    { "JOY_GETACCEL"        , "IPPP"  , TYPE_INT    , modjoy_get_accel_specific    },
-
-    /* Compatibility */
-
-    { "NUMBER_JOY"          , ""      , TYPE_INT    , modjoy_num                   },
-    { "SELECT_JOY"          , "I"     , TYPE_INT    , modjoy_select                },
-    { "GET_JOY_BUTTON"      , "I"     , TYPE_INT    , modjoy_get_button            },
-    { "GET_JOY_BUTTON"      , "II"    , TYPE_INT    , modjoy_get_button_specific   },
-    { "GET_JOY_POSITION"    , "I"     , TYPE_INT    , modjoy_get_position          },
-    { "GET_JOY_POSITION"    , "II"    , TYPE_INT    , modjoy_get_position_specific },
-    { 0                     , 0       , 0           , 0                             }
-};
-
+/* ----------------------------------------------------------------- */
+/* exports                                                           */
 /* ----------------------------------------------------------------- */
 
-char * __bgdexport( mod_joy, modules_dependency )[] =
-{
-    "libjoy",
-    NULL
-};
+#include "mod_joy_exports.h"
 
 /* ----------------------------------------------------------------- */

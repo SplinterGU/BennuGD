@@ -68,13 +68,17 @@ extern void systext_puts( GRAPH * map, int x, int y, char * str, int len );
 
 /* --------------------------------------------------------------------------- */
 
-#define PROCESS_ID      0
-#define FATHER          1
-#define BIGBRO          2
-#define SON             3
-#define STATUS          4
+enum {
+    PROCESS_ID = 0,
+    FATHER,
+    BIGBRO,
+    SON,
+    STATUS
+};
 
-#define SHIFTSTATUS     0
+enum {
+    SHIFTSTATUS = 0
+};
 
 /* --------------------------------------------------------------------------- */
 
@@ -2711,20 +2715,6 @@ static int console_info( INSTANCE * i, REGION * clip, int * z, int * drawme )
 }
 
 /* --------------------------------------------------------------------------- */
-/* For externals debugger must use hooks */
-
-/* Bigest priority first execute
-   Lowest priority last execute */
-
-/*
-HOOK __bgdexport( mod_debug, handler_hooks )[] =
-{
-    { 1900, console_draw       },
-    {    0, NULL               }
-} ;
-*/
-
-/* --------------------------------------------------------------------------- */
 
 void __bgdexport( mod_debug, process_exec_hook )( INSTANCE * r )
 {
@@ -2756,12 +2746,9 @@ void __bgdexport( mod_debug, module_finalize )()
 }
 
 /* --------------------------------------------------------------------------- */
+/* exports                                                                     */
+/* --------------------------------------------------------------------------- */
 
-char * __bgdexport( mod_debug, modules_dependency )[] =
-{
-    "libkey",
-    "librender",
-    NULL
-};
+#include "mod_debug_exports.h"
 
 /* --------------------------------------------------------------------------- */

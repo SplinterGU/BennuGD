@@ -26,8 +26,26 @@
  *
  */
 
-#ifndef _LIBKEY_H
-    #define _LIBKEY_H
+#ifndef __LIBKEY_H
+    #define __LIBKEY_H
+
+    /* ---------------------------------------------------------------------- */
+
+    #define STAT_RSHIFT             0x0000001
+    #define STAT_LSHIFT             0x0000002
+    #define STAT_CTRL               0x0000004
+    #define STAT_ALT                0x0000008
+    #define STAT_RCTRL              0x0000010
+    #define STAT_LCTRL              0x0000020
+    #define STAT_RALT               0x0000040
+    #define STAT_LALT               0x0000080
+    #define STAT_NUM                0x0000100
+    #define STAT_CAPS               0x0000200
+    #define STAT_SHIFT              0x0000400
+
+    /* ---------------------------------------------------------------------- */
+
+    #ifndef __BGDC__
 
     #include <SDL.h>
 
@@ -38,11 +56,13 @@
 
     typedef int (* HOTKEY_CALLBACK) (SDL_keysym);
 
-    #ifndef _LIBKEY_C
+    #ifndef __LIBKEY
     extern DLLIMPORT void hotkey_add(int mod, int sym, HOTKEY_CALLBACK callback);
 
     extern DLLIMPORT key_equiv key_table[] ;           /* Now we have a search table with equivs */
     extern DLLIMPORT unsigned char * keystate ;        /* Pointer to key states */
+    #endif
+
     #endif
 
 #endif

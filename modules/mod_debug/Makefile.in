@@ -73,14 +73,14 @@ am__base_list = \
 am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-mod_debug_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+libmod_debug_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
-am_mod_debug_la_OBJECTS = mod_debug_la-mod_debug.lo \
-	mod_debug_la-systexts.lo
-mod_debug_la_OBJECTS = $(am_mod_debug_la_OBJECTS)
-mod_debug_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(mod_debug_la_CFLAGS) \
-	$(CFLAGS) $(mod_debug_la_LDFLAGS) $(LDFLAGS) -o $@
+am_libmod_debug_la_OBJECTS = libmod_debug_la-mod_debug.lo \
+	libmod_debug_la-systexts.lo
+libmod_debug_la_OBJECTS = $(am_libmod_debug_la_OBJECTS)
+libmod_debug_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libmod_debug_la_CFLAGS) \
+	$(CFLAGS) $(libmod_debug_la_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -94,8 +94,8 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(mod_debug_la_SOURCES)
-DIST_SOURCES = $(mod_debug_la_SOURCES)
+SOURCES = $(libmod_debug_la_SOURCES)
+DIST_SOURCES = $(libmod_debug_la_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -237,12 +237,12 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-lib_LTLIBRARIES = mod_debug.la
-mod_debug_la_SOURCES = mod_debug.c systexts.c
-mod_debug_la_CFLAGS = $(COMMON_CFLAGS) $(SDL_CFLAGS) -I$(BGD_PATH)/include -I$(BGD_PATH)/bgdrtm/include -I. -I../libkey -I../librender/ -I../libgrbase
-mod_debug_la_LDFLAGS = -s -module -no-undefined -avoid-version
-mod_debug_la_LIBADD = $(COMMON_LDFLAGS) -L../libkey/.libs -lkey -L../librender/.libs -lrender -L../libgrbase/.libs -lgrbase $(SDL_LIBS) -L$(BGD_PATH)/bgdrtm/src/.libs -lbgdrtm
-CLEANFILES = mod_debug.la
+lib_LTLIBRARIES = libmod_debug.la
+libmod_debug_la_SOURCES = mod_debug.c systexts.c
+libmod_debug_la_CFLAGS = $(COMMON_CFLAGS) $(SDL_CFLAGS) -I$(BGD_PATH)/include -I$(BGD_PATH)/bgdrtm/include -I. -I../libkey -I../librender/ -I../libgrbase
+libmod_debug_la_LDFLAGS = -s -module -no-undefined -avoid-version
+libmod_debug_la_LIBADD = $(COMMON_LDFLAGS) -L../libkey/.libs -lkey -L../librender/.libs -lrender -L../libgrbase/.libs -lgrbase $(SDL_LIBS) -L$(BGD_PATH)/bgdrtm/src/.libs -lbgdrtm
+CLEANFILES = libmod_debug.la
 all: all-am
 
 .SUFFIXES:
@@ -308,8 +308,8 @@ clean-libLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-mod_debug.la: $(mod_debug_la_OBJECTS) $(mod_debug_la_DEPENDENCIES) 
-	$(mod_debug_la_LINK) -rpath $(libdir) $(mod_debug_la_OBJECTS) $(mod_debug_la_LIBADD) $(LIBS)
+libmod_debug.la: $(libmod_debug_la_OBJECTS) $(libmod_debug_la_DEPENDENCIES) 
+	$(libmod_debug_la_LINK) -rpath $(libdir) $(libmod_debug_la_OBJECTS) $(libmod_debug_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -317,8 +317,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mod_debug_la-mod_debug.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mod_debug_la-systexts.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmod_debug_la-mod_debug.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmod_debug_la-systexts.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -341,19 +341,19 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
-mod_debug_la-mod_debug.lo: mod_debug.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mod_debug_la_CFLAGS) $(CFLAGS) -MT mod_debug_la-mod_debug.lo -MD -MP -MF $(DEPDIR)/mod_debug_la-mod_debug.Tpo -c -o mod_debug_la-mod_debug.lo `test -f 'mod_debug.c' || echo '$(srcdir)/'`mod_debug.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/mod_debug_la-mod_debug.Tpo $(DEPDIR)/mod_debug_la-mod_debug.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='mod_debug.c' object='mod_debug_la-mod_debug.lo' libtool=yes @AMDEPBACKSLASH@
+libmod_debug_la-mod_debug.lo: mod_debug.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmod_debug_la_CFLAGS) $(CFLAGS) -MT libmod_debug_la-mod_debug.lo -MD -MP -MF $(DEPDIR)/libmod_debug_la-mod_debug.Tpo -c -o libmod_debug_la-mod_debug.lo `test -f 'mod_debug.c' || echo '$(srcdir)/'`mod_debug.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libmod_debug_la-mod_debug.Tpo $(DEPDIR)/libmod_debug_la-mod_debug.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='mod_debug.c' object='libmod_debug_la-mod_debug.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mod_debug_la_CFLAGS) $(CFLAGS) -c -o mod_debug_la-mod_debug.lo `test -f 'mod_debug.c' || echo '$(srcdir)/'`mod_debug.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmod_debug_la_CFLAGS) $(CFLAGS) -c -o libmod_debug_la-mod_debug.lo `test -f 'mod_debug.c' || echo '$(srcdir)/'`mod_debug.c
 
-mod_debug_la-systexts.lo: systexts.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mod_debug_la_CFLAGS) $(CFLAGS) -MT mod_debug_la-systexts.lo -MD -MP -MF $(DEPDIR)/mod_debug_la-systexts.Tpo -c -o mod_debug_la-systexts.lo `test -f 'systexts.c' || echo '$(srcdir)/'`systexts.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/mod_debug_la-systexts.Tpo $(DEPDIR)/mod_debug_la-systexts.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='systexts.c' object='mod_debug_la-systexts.lo' libtool=yes @AMDEPBACKSLASH@
+libmod_debug_la-systexts.lo: systexts.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmod_debug_la_CFLAGS) $(CFLAGS) -MT libmod_debug_la-systexts.lo -MD -MP -MF $(DEPDIR)/libmod_debug_la-systexts.Tpo -c -o libmod_debug_la-systexts.lo `test -f 'systexts.c' || echo '$(srcdir)/'`systexts.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libmod_debug_la-systexts.Tpo $(DEPDIR)/libmod_debug_la-systexts.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='systexts.c' object='libmod_debug_la-systexts.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mod_debug_la_CFLAGS) $(CFLAGS) -c -o mod_debug_la-systexts.lo `test -f 'systexts.c' || echo '$(srcdir)/'`systexts.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmod_debug_la_CFLAGS) $(CFLAGS) -c -o libmod_debug_la-systexts.lo `test -f 'systexts.c' || echo '$(srcdir)/'`systexts.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

@@ -38,6 +38,10 @@
 
 /* --------------------------------------------------------------------------- */
 
+#include "mod_path.h"
+
+/* --------------------------------------------------------------------------- */
+
 typedef struct _node
 {
     unsigned int x, y ;
@@ -65,21 +69,6 @@ static int startup_x, startup_y ;
 static GRAPH * map ;
 
 static int block_if = 1 ;
-
-/* --------------------------------------------------------------------------- */
-
-#define PF_NODIAG       1
-#define PF_REVERSE      2
-
-/* --------------------------------------------------------------------------- */
-
-DLCONSTANT __bgdexport( mod_path, constants_def )[] =
-{
-    { "PF_NODIAG"   , TYPE_INT, PF_NODIAG   }, /* Prohibit the pathfinding from using diagonal paths. */
-    { "PF_REVERSE"  , TYPE_INT, PF_REVERSE  }, /* Return the path found in reverse order.             */
-
-    { NULL          , 0       , 0           }
-} ;
 
 /* --------------------------------------------------------------------------- */
 
@@ -397,24 +386,10 @@ static int modpathfind_path_wall( INSTANCE * my, int * params )
     return path_set_wall( params[0] ) ;
 }
 
-/* --------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------- */
+/* exports                                                           */
+/* ----------------------------------------------------------------- */
 
-DLSYSFUNCS __bgdexport( mod_path, functions_exports )[] =
-{
-    /* Búsqueda de caminos*/
-    { "PATH_FIND"   , "IIIIIII", TYPE_INT   , modpathfind_path_find     },
-    { "PATH_GETXY"  , "PP"     , TYPE_INT   , modpathfind_path_getxy    },
-    { "PATH_WALL"   , "I"      , TYPE_INT   , modpathfind_path_wall     },
+#include "mod_path_exports.h"
 
-    { 0             , 0        , 0          , 0                         }
-};
-
-/* --------------------------------------------------------------------------- */
-
-char * __bgdexport( mod_path, modules_dependency )[] =
-{
-    "libgrbase",
-    NULL
-};
-
-/* --------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------- */

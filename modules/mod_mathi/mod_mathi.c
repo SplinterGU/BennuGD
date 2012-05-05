@@ -36,14 +36,6 @@
 #include "bgddl.h"
 
 /* --------------------------------------------------------------------------- */
-
-DLCONSTANT __bgdexport( mod_mathi, constants_def )[] =
-{
-    { "PI"  , TYPE_INT  , 180000    },
-    { NULL  , 0         , 0         }
-} ;
-
-/* --------------------------------------------------------------------------- */
 /* Funciones matemáticas */
 /* --------------------------------------------------------------------------- */
 
@@ -214,34 +206,10 @@ static int math_get_distx( INSTANCE * my, int * params )
     return ( int )( params[1] * cos( angle ) ) ;
 }
 
-/* --------------------------------------------------------------------------- */
-/* Declaracion de funciones                                                    */
+/* ----------------------------------------------------------------- */
+/* exports                                                           */
+/* ----------------------------------------------------------------- */
 
-DLSYSFUNCS __bgdexport( mod_mathi, functions_exports )[] =
-{
-    { "ABS"         , "F"       , TYPE_FLOAT    , math_abs          },
-    { "POW"         , "FF"      , TYPE_FLOAT    , math_pow          },
-    { "SQRT"        , "F"       , TYPE_FLOAT    , math_sqrt         },
+#include "mod_mathi_exports.h"
 
-    { "COS"         , "I"       , TYPE_FLOAT    , math_cos          },
-    { "SIN"         , "I"       , TYPE_FLOAT    , math_sin          },
-    { "TAN"         , "I"       , TYPE_FLOAT    , math_tan          },
-    { "ACOS"        , "I"       , TYPE_FLOAT    , math_acos         },
-    { "ASIN"        , "I"       , TYPE_FLOAT    , math_asin         },
-    { "ATAN"        , "I"       , TYPE_FLOAT    , math_atan         },
-    { "ATAN2"       , "II"      , TYPE_FLOAT    , math_atan2        },
-
-    { "ISINF"       , "F"       , TYPE_INT      , math_isinf        },
-    { "ISNAN"       , "F"       , TYPE_INT      , math_isnan        },
-    { "FINITE"      , "F"       , TYPE_INT      , math_finite       },
-
-    { "FGET_ANGLE"  , "IIII"    , TYPE_INT      , math_fget_angle   },
-    { "FGET_DIST"   , "IIII"    , TYPE_INT      , math_fget_dist    },
-    { "NEAR_ANGLE"  , "III"     , TYPE_INT      , math_near_angle   },
-    { "GET_DISTX"   , "II"      , TYPE_INT      , math_get_distx    },
-    { "GET_DISTY"   , "II"      , TYPE_INT      , math_get_disty    },
-
-    { 0             , 0         , 0             , 0                 }
-};
-
-/* --------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------- */

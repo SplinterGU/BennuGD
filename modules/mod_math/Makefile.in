@@ -73,12 +73,12 @@ am__base_list = \
 am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-mod_math_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
-am_mod_math_la_OBJECTS = mod_math_la-mod_math.lo
-mod_math_la_OBJECTS = $(am_mod_math_la_OBJECTS)
-mod_math_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(mod_math_la_CFLAGS) \
-	$(CFLAGS) $(mod_math_la_LDFLAGS) $(LDFLAGS) -o $@
+libmod_math_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
+am_libmod_math_la_OBJECTS = libmod_math_la-mod_math.lo
+libmod_math_la_OBJECTS = $(am_libmod_math_la_OBJECTS)
+libmod_math_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libmod_math_la_CFLAGS) \
+	$(CFLAGS) $(libmod_math_la_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -92,8 +92,8 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(mod_math_la_SOURCES)
-DIST_SOURCES = $(mod_math_la_SOURCES)
+SOURCES = $(libmod_math_la_SOURCES)
+DIST_SOURCES = $(libmod_math_la_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -235,12 +235,12 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-lib_LTLIBRARIES = mod_math.la
-mod_math_la_SOURCES = mod_math.c
-mod_math_la_CFLAGS = $(COMMON_CFLAGS) -I$(BGD_PATH)/include
-mod_math_la_LDFLAGS = -s -module -no-undefined -avoid-version
-mod_math_la_LIBADD = $(COMMON_LDFLAGS) -lm
-CLEANFILES = mod_math.la
+lib_LTLIBRARIES = libmod_math.la
+libmod_math_la_SOURCES = mod_math.c
+libmod_math_la_CFLAGS = $(COMMON_CFLAGS) -I$(BGD_PATH)/include
+libmod_math_la_LDFLAGS = -s -module -no-undefined -avoid-version
+libmod_math_la_LIBADD = $(COMMON_LDFLAGS) -lm
+CLEANFILES = libmod_math.la
 all: all-am
 
 .SUFFIXES:
@@ -306,8 +306,8 @@ clean-libLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-mod_math.la: $(mod_math_la_OBJECTS) $(mod_math_la_DEPENDENCIES) 
-	$(mod_math_la_LINK) -rpath $(libdir) $(mod_math_la_OBJECTS) $(mod_math_la_LIBADD) $(LIBS)
+libmod_math.la: $(libmod_math_la_OBJECTS) $(libmod_math_la_DEPENDENCIES) 
+	$(libmod_math_la_LINK) -rpath $(libdir) $(libmod_math_la_OBJECTS) $(libmod_math_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -315,7 +315,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mod_math_la-mod_math.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmod_math_la-mod_math.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -338,12 +338,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
-mod_math_la-mod_math.lo: mod_math.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mod_math_la_CFLAGS) $(CFLAGS) -MT mod_math_la-mod_math.lo -MD -MP -MF $(DEPDIR)/mod_math_la-mod_math.Tpo -c -o mod_math_la-mod_math.lo `test -f 'mod_math.c' || echo '$(srcdir)/'`mod_math.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/mod_math_la-mod_math.Tpo $(DEPDIR)/mod_math_la-mod_math.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='mod_math.c' object='mod_math_la-mod_math.lo' libtool=yes @AMDEPBACKSLASH@
+libmod_math_la-mod_math.lo: mod_math.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmod_math_la_CFLAGS) $(CFLAGS) -MT libmod_math_la-mod_math.lo -MD -MP -MF $(DEPDIR)/libmod_math_la-mod_math.Tpo -c -o libmod_math_la-mod_math.lo `test -f 'mod_math.c' || echo '$(srcdir)/'`mod_math.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libmod_math_la-mod_math.Tpo $(DEPDIR)/libmod_math_la-mod_math.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='mod_math.c' object='libmod_math_la-mod_math.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mod_math_la_CFLAGS) $(CFLAGS) -c -o mod_math_la-mod_math.lo `test -f 'mod_math.c' || echo '$(srcdir)/'`mod_math.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmod_math_la_CFLAGS) $(CFLAGS) -c -o libmod_math_la-mod_math.lo `test -f 'mod_math.c' || echo '$(srcdir)/'`mod_math.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

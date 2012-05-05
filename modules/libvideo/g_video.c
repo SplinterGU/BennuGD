@@ -79,77 +79,14 @@ int scale_resolution_aspectratio_offy = 0;
 
 /* --------------------------------------------------------------------------- */
 
-DLCONSTANT  __bgdexport( libvideo, constants_def )[] =
-{
-    { "M320X200"            , TYPE_DWORD    , 3200200               },
-    { "M320X240"            , TYPE_DWORD    , 3200240               },
-    { "M320X400"            , TYPE_DWORD    , 3200400               },
-    { "M360X240"            , TYPE_DWORD    , 3600240               },
-    { "M376X282"            , TYPE_DWORD    , 3760282               },
-    { "M400X300"            , TYPE_DWORD    , 4000300               },
-    { "M512X384"            , TYPE_DWORD    , 5120384               },
-    { "M640X400"            , TYPE_DWORD    , 6400400               },
-    { "M640X480"            , TYPE_DWORD    , 6400480               },
-    { "M800X600"            , TYPE_DWORD    , 8000600               },
-    { "M1024X768"           , TYPE_DWORD    , 10240768              },
-    { "M1280X1024"          , TYPE_DWORD    , 12801024              },
-
-    { "MODE_WINDOW"         , TYPE_DWORD    , MODE_WINDOW           },
-    { "MODE_2XSCALE"        , TYPE_DWORD    , MODE_2XSCALE          },
-    { "MODE_FULLSCREEN"     , TYPE_DWORD    , MODE_FULLSCREEN       },
-    { "MODE_DOUBLEBUFFER"   , TYPE_DWORD    , MODE_DOUBLEBUFFER     },
-    { "MODE_HARDWARE"       , TYPE_DWORD    , MODE_HARDWARE         },
-
-    { "MODE_WAITVSYNC"      , TYPE_DWORD    , MODE_WAITVSYNC        },
-    { "WAITVSYNC"           , TYPE_DWORD    , MODE_WAITVSYNC        },
-
-    { "DOUBLE_BUFFER"       , TYPE_DWORD    , MODE_DOUBLEBUFFER     },  /* Obsolete */
-    { "HW_SURFACE"          , TYPE_DWORD    , MODE_HARDWARE         },  /* Obsolete */
-
-    { "MODE_8BITS"          , TYPE_DWORD    , 8                     },
-    { "MODE_16BITS"         , TYPE_DWORD    , 16                    },
-    { "MODE_32BITS"         , TYPE_DWORD    , 32                    },
-
-    { "MODE_8BPP"           , TYPE_DWORD    , 8                     },
-    { "MODE_16BPP"          , TYPE_DWORD    , 16                    },
-    { "MODE_32BPP"          , TYPE_DWORD    , 32                    },
-
-    { "MODE_MODAL"          , TYPE_DWORD    , MODE_MODAL            },  /* GRAB INPU */
-    { "MODE_FRAMELESS"      , TYPE_DWORD    , MODE_FRAMELESS        },  /* FRAMELESS window */
-
-    { "SCALE_NONE"          , TYPE_DWORD    , SCALE_NONE            },
-
-    { "SRO_NORMAL"          , TYPE_DWORD    , SRO_NORMAL            },
-    { "SRO_LEFT"            , TYPE_DWORD    , SRO_LEFT              },
-    { "SRO_DOWN"            , TYPE_DWORD    , SRO_DOWN              },
-    { "SRO_RIGHT"           , TYPE_DWORD    , SRO_RIGHT             },
-
-    { "SRA_STRETCH"         , TYPE_DWORD    , SRA_STRETCH           },
-    { "SRA_PRESERVE"        , TYPE_DWORD    , SRA_PRESERVE          },
-
-    { NULL                  , 0             , 0                     }
-} ;
-
-/* --------------------------------------------------------------------------- */
-
-#define GRAPH_MODE                      0
-#define SCALE_MODE                      1
-#define FULL_SCREEN                     2
-#define SCALE_RESOLUTION                3
-#define SCALE_RESOLUTION_ASPECTRATIO    4
-#define SCALE_RESOLUTION_ORIENTATION    5
-
-/* --------------------------------------------------------------------------- */
-/* Definicion de variables globales (usada en tiempo de compilacion) */
-
-char * __bgdexport( libvideo, globals_def ) =
-    "graph_mode = 0;\n"
-    "scale_mode = 0;\n"
-    "full_screen = 0;\n"
-    "scale_resolution = 0;\n"
-    "scale_resolution_aspectratio = 0;\n"
-    "scale_resolution_orientation = 0;\n"
-    ;
+enum {
+    GRAPH_MODE = 0,
+    SCALE_MODE,
+    FULL_SCREEN,
+    SCALE_RESOLUTION,
+    SCALE_RESOLUTION_ASPECTRATIO,
+    SCALE_RESOLUTION_ORIENTATION
+};
 
 /* --------------------------------------------------------------------------- */
 /* Son las variables que se desea acceder.                           */
@@ -634,11 +571,9 @@ void __bgdexport( libvideo, module_finalize )()
 }
 
 /* --------------------------------------------------------------------------- */
+/* exports                                                                     */
+/* --------------------------------------------------------------------------- */
 
-char * __bgdexport( libvideo, modules_dependency )[] =
-{
-    "libgrbase",
-    NULL
-};
+#include "libvideo_exports.h"
 
 /* --------------------------------------------------------------------------- */

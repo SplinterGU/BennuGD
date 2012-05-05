@@ -73,13 +73,13 @@ am__base_list = \
 am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-mod_sound_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+libmod_sound_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
-am_mod_sound_la_OBJECTS = mod_sound_la-mod_sound.lo
-mod_sound_la_OBJECTS = $(am_mod_sound_la_OBJECTS)
-mod_sound_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(mod_sound_la_CFLAGS) \
-	$(CFLAGS) $(mod_sound_la_LDFLAGS) $(LDFLAGS) -o $@
+am_libmod_sound_la_OBJECTS = libmod_sound_la-mod_sound.lo
+libmod_sound_la_OBJECTS = $(am_libmod_sound_la_OBJECTS)
+libmod_sound_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libmod_sound_la_CFLAGS) \
+	$(CFLAGS) $(libmod_sound_la_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -93,8 +93,8 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(mod_sound_la_SOURCES)
-DIST_SOURCES = $(mod_sound_la_SOURCES)
+SOURCES = $(libmod_sound_la_SOURCES)
+DIST_SOURCES = $(libmod_sound_la_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -236,12 +236,12 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-lib_LTLIBRARIES = mod_sound.la
-mod_sound_la_SOURCES = mod_sound.c
-mod_sound_la_CFLAGS = $(COMMON_CFLAGS) $(SDL_CFLAGS) $(SDL_mixer_CFLAGS) -I$(BGD_PATH)/include -I$(BGD_PATH)/bgdrtm/include -I../libbgload/
-mod_sound_la_LDFLAGS = -s -module -no-undefined -avoid-version
-mod_sound_la_LIBADD = $(COMMON_LDFLAGS) $(SDL_LIBS) -L$(BGD_PATH)/bgdrtm/src/.libs -L../libbgload/.libs -lbgload -lbgdrtm $(SDL_mixer_LIBS)
-CLEANFILES = mod_sound.la
+lib_LTLIBRARIES = libmod_sound.la
+libmod_sound_la_SOURCES = mod_sound.c
+libmod_sound_la_CFLAGS = $(COMMON_CFLAGS) $(SDL_CFLAGS) $(SDL_mixer_CFLAGS) -I$(BGD_PATH)/include -I$(BGD_PATH)/bgdrtm/include -I../libbgload/
+libmod_sound_la_LDFLAGS = -s -module -no-undefined -avoid-version
+libmod_sound_la_LIBADD = $(COMMON_LDFLAGS) $(SDL_LIBS) -L$(BGD_PATH)/bgdrtm/src/.libs -L../libbgload/.libs -lbgload -lbgdrtm $(SDL_mixer_LIBS)
+CLEANFILES = libmod_sound.la
 all: all-am
 
 .SUFFIXES:
@@ -307,8 +307,8 @@ clean-libLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-mod_sound.la: $(mod_sound_la_OBJECTS) $(mod_sound_la_DEPENDENCIES) 
-	$(mod_sound_la_LINK) -rpath $(libdir) $(mod_sound_la_OBJECTS) $(mod_sound_la_LIBADD) $(LIBS)
+libmod_sound.la: $(libmod_sound_la_OBJECTS) $(libmod_sound_la_DEPENDENCIES) 
+	$(libmod_sound_la_LINK) -rpath $(libdir) $(libmod_sound_la_OBJECTS) $(libmod_sound_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -316,7 +316,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mod_sound_la-mod_sound.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmod_sound_la-mod_sound.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -339,12 +339,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
-mod_sound_la-mod_sound.lo: mod_sound.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mod_sound_la_CFLAGS) $(CFLAGS) -MT mod_sound_la-mod_sound.lo -MD -MP -MF $(DEPDIR)/mod_sound_la-mod_sound.Tpo -c -o mod_sound_la-mod_sound.lo `test -f 'mod_sound.c' || echo '$(srcdir)/'`mod_sound.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/mod_sound_la-mod_sound.Tpo $(DEPDIR)/mod_sound_la-mod_sound.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='mod_sound.c' object='mod_sound_la-mod_sound.lo' libtool=yes @AMDEPBACKSLASH@
+libmod_sound_la-mod_sound.lo: mod_sound.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmod_sound_la_CFLAGS) $(CFLAGS) -MT libmod_sound_la-mod_sound.lo -MD -MP -MF $(DEPDIR)/libmod_sound_la-mod_sound.Tpo -c -o libmod_sound_la-mod_sound.lo `test -f 'mod_sound.c' || echo '$(srcdir)/'`mod_sound.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libmod_sound_la-mod_sound.Tpo $(DEPDIR)/libmod_sound_la-mod_sound.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='mod_sound.c' object='libmod_sound_la-mod_sound.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mod_sound_la_CFLAGS) $(CFLAGS) -c -o mod_sound_la-mod_sound.lo `test -f 'mod_sound.c' || echo '$(srcdir)/'`mod_sound.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmod_sound_la_CFLAGS) $(CFLAGS) -c -o libmod_sound_la-mod_sound.lo `test -f 'mod_sound.c' || echo '$(srcdir)/'`mod_sound.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

@@ -30,13 +30,21 @@
 /* --------------------------------------------------------------------------- */
 
 #ifndef __BGDC__
+  #if defined(WIN32) && !defined( __STATIC__ )
+    #define DLLEXPORT   __declspec(dllexport)
+    #define DLLIMPORT   __declspec(dllimport)
+  #else
+    #define DLLEXPORT
+    #define DLLIMPORT
+  #endif
+#endif
 
-#ifdef WIN32
-#define DLLEXPORT   __declspec(dllexport)
-#define DLLIMPORT   __declspec(dllimport)
+/* --------------------------------------------------------------------------- */
+
+#ifdef __BGDC__
+#define FUNC(a,b,c,d)     { a, b, c, NULL }
 #else
-#define DLLEXPORT
-#define DLLIMPORT
+#define FUNC(a,b,c,d)     { a, b, c, d }
 #endif
 
 /* --------------------------------------------------------------------------- */
@@ -44,6 +52,7 @@
 #define __bgdexport(m,a)    m##_##a
 
 /* --------------------------------------------------------------------------- */
+
 /*
  *  ENDIANESS TRICKS
  */
@@ -55,8 +64,6 @@
 #include <sysprocs_st.h>
 
 #include <commons_defs.h>
-
-#endif
 
 /* --------------------------------------------------------------------------- */
 

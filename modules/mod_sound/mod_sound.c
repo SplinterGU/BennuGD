@@ -56,25 +56,6 @@ static int audio_initialized = 0 ;
 #define SOUND_CHANNELS          2
 
 /* --------------------------------------------------------------------------- */
-/* Definicion de constantes (usada en tiempo de compilacion)                   */
-
-DLCONSTANT  __bgdexport( mod_sound, constants_def )[] =
-{
-    { "MODE_MONO"   , TYPE_INT, 0  },
-    { "MODE_STEREO" , TYPE_INT, 1  },
-    { "ALL_SOUND"   , TYPE_INT, -1 },
-    { NULL          , 0       , 0  }
-} ;
-
-/* --------------------------------------------------------------------------- */
-/* Definicion de variables globales (usada en tiempo de compilacion)           */
-
-char * __bgdexport( mod_sound, globals_def ) =
-    "   sound_freq = 22050 ;\n"
-    "   sound_mode = MODE_STEREO ;\n"
-    "   sound_channels = 8 ;\n";
-
-/* --------------------------------------------------------------------------- */
 /* Son las variables que se desea acceder.                                     */
 /* El interprete completa esta estructura, si la variable existe.              */
 /* (usada en tiempo de ejecucion)                                              */
@@ -1642,59 +1623,6 @@ static int modsound_close( INSTANCE * my, int * params )
 }
 
 /* --------------------------------------------------------------------------- */
-
-DLSYSFUNCS  __bgdexport( mod_sound, functions_exports )[] =
-{
-    { "SOUND_INIT"          , ""     , TYPE_INT , modsound_init               },
-    { "SOUND_CLOSE"         , ""     , TYPE_INT , modsound_close              },
-
-    { "LOAD_SONG"           , "S"    , TYPE_INT , modsound_load_song          },
-    { "LOAD_SONG"           , "SP"   , TYPE_INT , modsound_bgload_song        },
-    { "UNLOAD_SONG"         , "I"    , TYPE_INT , modsound_unload_song        },
-    { "UNLOAD_SONG"         , "P"    , TYPE_INT , modsound_unload_song2       },
-
-    { "PLAY_SONG"           , "II"   , TYPE_INT , modsound_play_song          },
-    { "STOP_SONG"           , ""     , TYPE_INT , modsound_stop_song          },
-    { "PAUSE_SONG"          , ""     , TYPE_INT , modsound_pause_song         },
-    { "RESUME_SONG"         , ""     , TYPE_INT , modsound_resume_song        },
-
-    { "SET_SONG_VOLUME"     , "I"    , TYPE_INT , modsound_set_song_volume    },
-
-    { "IS_PLAYING_SONG"     , ""     , TYPE_INT , modsound_is_playing_song    },
-
-    { "LOAD_WAV"            , "S"    , TYPE_INT , modsound_load_wav           },
-    { "LOAD_WAV"            , "SP"   , TYPE_INT , modsound_bgload_wav         },
-    { "UNLOAD_WAV"          , "I"    , TYPE_INT , modsound_unload_wav         },
-    { "UNLOAD_WAV"          , "P"    , TYPE_INT , modsound_unload_wav2        },
-
-    { "PLAY_WAV"            , "II"   , TYPE_INT , modsound_play_wav           },
-    { "PLAY_WAV"            , "III"  , TYPE_INT , modsound_play_wav_channel   },
-    { "STOP_WAV"            , "I"    , TYPE_INT , modsound_stop_wav           },
-    { "PAUSE_WAV"           , "I"    , TYPE_INT , modsound_pause_wav          },
-    { "RESUME_WAV"          , "I"    , TYPE_INT , modsound_resume_wav         },
-
-    { "IS_PLAYING_WAV"      , "I"    , TYPE_INT , modsound_is_playing_wav     },
-
-    { "FADE_MUSIC_IN"       , "III"  , TYPE_INT , modsound_fade_music_in      },
-    { "FADE_MUSIC_OFF"      , "I"    , TYPE_INT , modsound_fade_music_off     },
-
-    { "SET_WAV_VOLUME"      , "II"   , TYPE_INT , modsound_set_wav_volume     },
-    { "SET_CHANNEL_VOLUME"  , "II"   , TYPE_INT , modsound_set_channel_volume },
-
-    { "RESERVE_CHANNELS"    , "I"    , TYPE_INT , modsound_reserve_channels   },
-
-    { "SET_PANNING"         , "III"  , TYPE_INT , modsound_set_panning        },
-    { "SET_POSITION"        , "III"  , TYPE_INT , modsound_set_position       },
-    { "SET_DISTANCE"        , "II"   , TYPE_INT , modsound_set_distance       },
-
-    { "REVERSE_STEREO"      , "II"   , TYPE_INT , modsound_reverse_stereo     },
-
-    { "SET_MUSIC_POSITION"  , "F"    , TYPE_INT , modsound_set_music_position },
-
-    { 0                     , 0      , 0        , 0                           }
-};
-
-/* --------------------------------------------------------------------------- */
 /* Funciones de inicializacion del modulo/plugin                               */
 
 void  __bgdexport( mod_sound, module_initialize )()
@@ -1713,4 +1641,10 @@ void __bgdexport( mod_sound, module_finalize )()
 #endif
 }
 
-/* --------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------- */
+/* exports                                                           */
+/* ----------------------------------------------------------------- */
+
+#include "mod_sound_exports.h"
+
+/* ----------------------------------------------------------------- */

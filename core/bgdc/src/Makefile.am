@@ -3,7 +3,7 @@ bin_PROGRAMS = bgdc
 .rc.o:
 	$(WINDRES) $< -I../../include -o $@
 
-INCLUDES = $(COMMON_CFLAGS) $(ZLIB_CFLAGS) -I../../include -I../include -D__BGDC__
+INCLUDES = $(COMMON_CFLAGS) $(ZLIB_CFLAGS) -I../../include -I../include -D__BGDC__ ${EXTRA_STATIC_CFLAGS}
 
 bgdc_LDADD = $(COMMON_LDFLAGS) $(ZLIB_LIBS) $(CRYPT_LDFLAGS)
 

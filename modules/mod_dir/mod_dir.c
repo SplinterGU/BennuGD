@@ -72,23 +72,6 @@ enum
 } ;
 
 /* ----------------------------------------------------------------- */
-/* Definicion de variables globales (usada en tiempo de compilacion) */
-
-char * __bgdexport( mod_dir, globals_def )=
-    "STRUCT fileinfo\n"
-    "    STRING path;\n"
-    "    STRING name;\n"
-    "    directory;\n"
-    "    hidden;\n"
-    "    readonly;\n"
-    "    size;\n"
-    "    STRING created;\n"
-    "    STRING modified;\n"
-    "    STRING accessed;\n"
-    "    STRING statechg;\n"
-    "END\n";
-
-/* ----------------------------------------------------------------- */
 /* Son las variables que se desea acceder.                           */
 /* El interprete completa esta estructura, si la variable existe.    */
 /* (usada en tiempo de ejecucion)                                    */
@@ -277,24 +260,10 @@ static int moddir_read( INSTANCE * my, int * params )
     return ( __moddir_read((__DIR_ST *) params[ 0 ] ) ) ;
 }
 
-/* ---------------------------------------------------------------------- */
+/* ----------------------------------------------------------------- */
+/* exports                                                           */
+/* ----------------------------------------------------------------- */
 
-DLSYSFUNCS __bgdexport( mod_dir, functions_exports)[] =
-    {
-        /* Archivos y directorios */
-        { "CD"      , ""  , TYPE_STRING , moddir_cd     },
-        { "CHDIR"   , "S" , TYPE_INT    , moddir_chdir  },
-        { "MKDIR"   , "S" , TYPE_INT    , moddir_mkdir  },
-        { "RMDIR"   , "S" , TYPE_INT    , moddir_rmdir  },
-        { "GLOB"    , "S" , TYPE_STRING , moddir_glob   },
-        { "CD"      , "S" , TYPE_STRING , moddir_chdir  },
-        { "RM"      , "S" , TYPE_INT    , moddir_rm     },
+#include "mod_dir_exports.h"
 
-        { "DIROPEN" , "S" , TYPE_INT    , moddir_open   },
-        { "DIRCLOSE", "I" , TYPE_INT    , moddir_close  },
-        { "DIRREAD" , "I" , TYPE_STRING , moddir_read   },
-
-        { 0         , 0   , 0           , 0             }
-    };
-
-/* ---------------------------------------------------------------------- */
+/* ----------------------------------------------------------------- */

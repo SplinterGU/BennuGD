@@ -44,10 +44,14 @@
 
 /* --------------------------------------------------------------------------- */
 
-#define CTYPE           0
-#define CNUMBER         1
+enum {
+    CTYPE = 0,
+    CNUMBER
+};
 
-#define SCROLLS         0
+enum {
+    SCROLLS = 0
+};
 
 /* --------------------------------------------------------------------------- */
 
@@ -208,48 +212,10 @@ static int modscreen_get_screen( INSTANCE * my, int * params )
     return map->code ;
 }
 
-/* --------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------- */
+/* exports                                                           */
+/* ----------------------------------------------------------------- */
 
-DLSYSFUNCS  __bgdexport( mod_screen, functions_exports )[] =
-{
-    /* Regiones */
-    { "REGION_DEFINE"        , "IIIII"      , TYPE_INT      , modscreen_define_region   },
-    { "REGION_OUT"           , "II"         , TYPE_INT      , modscreen_out_region      },
+#include "mod_screen_exports.h"
 
-    /* Fondo de pantalla */
-    { "PUT"                  , "IIII"       , TYPE_INT      , modscreen_put             },
-    { "XPUT"                 , "IIIIIIII"   , TYPE_INT      , modscreen_xput            },
-    { "SCREEN_PUT"           , "II"         , TYPE_INT      , modscreen_put_screen      },
-    { "SCREEN_CLEAR"         , ""           , TYPE_INT      , modscreen_clear_screen    },
-
-    /* Video */
-    { "SCREEN_GET"           , ""           , TYPE_INT      , modscreen_get_screen      },
-
-    /* ------------ Compatibility ------------ */
-
-    /* Regiones */
-    { "DEFINE_REGION"        , "IIIII"      , TYPE_INT      , modscreen_define_region   },
-    { "OUT_REGION"           , "II"         , TYPE_INT      , modscreen_out_region      },
-
-    /* Fondo de pantalla */
-    { "PUT_SCREEN"           , "II"         , TYPE_INT      , modscreen_put_screen      },
-    { "CLEAR_SCREEN"         , ""           , TYPE_INT      , modscreen_clear_screen    },
-
-    /* Video */
-    { "GET_SCREEN"           , ""           , TYPE_INT      , modscreen_get_screen      },
-
-    { 0                     , 0             , 0             , 0                         }
-};
-
-/* --------------------------------------------------------------------------- */
-
-char * __bgdexport( mod_screen, modules_dependency )[] =
-{
-    "libgrbase",
-    "libvideo",
-    "libblit",
-    "librender",
-    NULL
-};
-
-/* --------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------- */

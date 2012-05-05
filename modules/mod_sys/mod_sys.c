@@ -43,27 +43,7 @@
 
 /* ---------------------------------------------------------------------- */
 
-#ifndef _P_WAIT
-#define _P_WAIT     0
-#endif
-
-#ifndef _P_NOWAIT
-#define _P_NOWAIT   1
-#endif
-
-/*
-#define _P_OVERLAY  2
-#define _OLD_P_OVERLAY  _P_OVERLAY
-#define _P_NOWAITO  3
-#define _P_DETACH   4
-*/
-
-DLCONSTANT __bgdexport( mod_sys, constants_def )[] =
-{
-    { "_P_WAIT"     , TYPE_DWORD,  _P_WAIT   },
-    { "_P_NOWAIT"   , TYPE_DWORD,  _P_NOWAIT },
-    { NULL          , 0         ,  0         }
-} ;
+#include "mod_sys.h"
 
 /* ---------------------------------------------------------------------- */
 
@@ -147,13 +127,9 @@ static int modsys_getenv( INSTANCE * my, int * params )
 }
 
 /* ----------------------------------------------------------------- */
-/* Declaracion de funciones                                          */
+/* exports                                                           */
+/* ----------------------------------------------------------------- */
 
-DLSYSFUNCS __bgdexport( mod_sys, functions_exports )[] =
-{
-    { "GETENV"  , "S"    , TYPE_STRING, modsys_getenv },
-    { "EXEC"    , "ISIP" , TYPE_INT   , modsys_exec   },
-    { 0         , 0      , 0          , 0             }
-};
+#include "mod_sys_exports.h"
 
 /* ----------------------------------------------------------------- */

@@ -26,14 +26,14 @@
  *
  */
 
-/* --------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------- */
 
 #include "bgdrtm.h"
 #include "bgddl.h"
 
 #include "libgrbase.h"
 
-/* --------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------- */
 /*
  *  FUNCTION : modblendop_create_blendop
  *
@@ -60,7 +60,7 @@ static int modblendop_create_blendop( INSTANCE * my, int * params )
     return ( int ) blend_create();
 }
 
-/* --------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------- */
 /*
  *  FUNCTION : modblendop_apply
  *
@@ -85,7 +85,7 @@ static int modblendop_apply( INSTANCE * my, int * params )
 
 }
 
-/* --------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------- */
 /*
  *  FUNCTION : modblendop_assign
  *
@@ -108,7 +108,7 @@ static int modblendop_assign( INSTANCE * my, int * params )
     return 1;
 }
 
-/* --------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------- */
 /*
  *  FUNCTION : modblendop_free
  *
@@ -127,7 +127,7 @@ static int modblendop_free( INSTANCE * my, int * params )
     return 1;
 }
 
-/* --------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------- */
 /*
  *  FUNCTION : modblendop_identity
  *
@@ -146,7 +146,7 @@ static int modblendop_identity( INSTANCE * my, int * params )
     return 1;
 }
 
-/* --------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------- */
 /*
  *  FUNCTION : modblendop_grayscale
  *
@@ -176,7 +176,7 @@ static int modblendop_grayscale( INSTANCE * my, int * params )
     return 1;
 }
 
-/* --------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------- */
 /*
  *  FUNCTION : modblendop_translucency
  *
@@ -199,7 +199,7 @@ static int modblendop_translucency( INSTANCE * my, int * params )
     return 1;
 }
 
-/* --------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------- */
 /*
  *  FUNCTION : modblendop_intensity
  *
@@ -223,7 +223,7 @@ static int modblendop_intensity( INSTANCE * my, int * params )
     return 1;
 }
 
-/* --------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------- */
 /*
  *  FUNCTION : modblendop_swap
  *
@@ -243,7 +243,7 @@ static int modblendop_swap( INSTANCE * my, int * params )
     return 1;
 }
 
-/* --------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------- */
 /*
  *  FUNCTION : modblendop_tint
  *
@@ -271,32 +271,10 @@ static int modblendop_tint( INSTANCE * my, int * params )
     return 1;
 }
 
-/* ---------------------------------------------------------------------- */
+/* ----------------------------------------------------------------- */
+/* exports                                                           */
+/* ----------------------------------------------------------------- */
 
-DLSYSFUNCS __bgdexport( mod_blendop, functions_exports)[] =
-{
-    /* Blendops */
-    { "BLENDOP_NEW"          , ""      , TYPE_INT   , modblendop_create_blendop },
-    { "BLENDOP_IDENTITY"     , "I"     , TYPE_INT   , modblendop_identity       },
-    { "BLENDOP_TINT"         , "IFIII" , TYPE_INT   , modblendop_tint           },
-    { "BLENDOP_TRANSLUCENCY" , "IF"    , TYPE_INT   , modblendop_translucency   },
-    { "BLENDOP_INTENSITY"    , "IF"    , TYPE_INT   , modblendop_intensity      },
-    { "BLENDOP_SWAP"         , "I"     , TYPE_INT   , modblendop_swap           },
-    { "BLENDOP_ASSIGN"       , "III"   , TYPE_INT   , modblendop_assign         },
-    { "BLENDOP_APPLY"        , "III"   , TYPE_INT   , modblendop_apply          },
-    { "BLENDOP_FREE"         , "I"     , TYPE_INT   , modblendop_free           },
-    { "BLENDOP_GRAYSCALE"    , "II"    , TYPE_INT   , modblendop_grayscale      },
+#include "mod_blendop_exports.h"
 
-    { 0                      , 0       , 0          , 0                                 }
-};
-
-/* --------------------------------------------------------------------------- */
-
-char * __bgdexport( mod_blendop, modules_dependency )[] =
-{
-    "libgrbase",
-    NULL
-};
-
-/* --------------------------------------------------------------------------- */
-
+/* ----------------------------------------------------------------- */

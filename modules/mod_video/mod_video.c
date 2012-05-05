@@ -43,7 +43,9 @@
 
 /* --------------------------------------------------------------------------- */
 
-#define GRAPH_MODE  0
+enum {
+    GRAPH_MODE = 0
+};
 
 /* --------------------------------------------------------------------------- */
 
@@ -176,31 +178,9 @@ static int modvideo_mode_is_ok( INSTANCE * my, int * params )
 }
 
 /* --------------------------------------------------------------------------- */
-
-DLSYSFUNCS  __bgdexport( mod_video, functions_exports )[] =
-{
-
-    /* Video */
-    { "SET_MODE"        , "I"     , TYPE_INT        , modvideo_set_mode         },
-    { "SET_MODE"        , "II"    , TYPE_INT        , modvideo_set_mode_2       },
-    { "SET_MODE"        , "III"   , TYPE_INT        , modvideo_set_mode_3       },
-    { "SET_MODE"        , "IIII"  , TYPE_INT        , modvideo_set_mode_4       },
-    { "SET_FPS"         , "II"    , TYPE_INT        , modvideo_set_fps          },
-
-    { "GET_MODES"       , "II"    , TYPE_POINTER    , modvideo_list_modes       },
-    { "MODE_IS_OK"      , "IIII"  , TYPE_INT        , modvideo_mode_is_ok       },
-
-    { 0                 , 0       , 0               , 0                         }
-};
-
+/* exports                                                                     */
 /* --------------------------------------------------------------------------- */
 
-char * __bgdexport( mod_video, modules_dependency )[] =
-{
-    "libgrbase",
-    "libvideo",
-    "librender",
-    NULL
-};
+#include "mod_video_exports.h"
 
 /* --------------------------------------------------------------------------- */

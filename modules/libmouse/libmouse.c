@@ -58,36 +58,26 @@ static GRAPH * mouse_map = NULL;
 
 /* --------------------------------------------------------------------------- */
 
-#define MOUSEX              0
-#define MOUSEY              1
-#define MOUSEZ              2
-#define MOUSEFILE           3
-#define MOUSEGRAPH          4
-#define MOUSEANGLE          5
-#define MOUSESIZE           6
-#define MOUSEFLAGS          7
-#define MOUSEREGION         8
-#define MOUSELEFT           9
-#define MOUSEMIDDLE         10
-#define MOUSERIGHT          11
-#define MOUSEWHEELUP        12
-#define MOUSEWHEELDOWN      13
+#include "libmouse_exports.h"
 
 /* --------------------------------------------------------------------------- */
 
-char * __bgdexport( libmouse, globals_def ) =
-    "STRUCT mouse\n"
-    "x = 99999, y = 99999;\n"
-    "z = -512;\n"
-    "file;\n"
-    "graph;\n"
-    "angle;\n"
-    "size = 100;\n"
-    "flags;\n"
-    "region;\n"
-    "left, middle, right;\n"
-    "wheelup, wheeldown;\n"
-    "END\n";
+enum {
+    MOUSEX = 0,
+    MOUSEY,
+    MOUSEZ,
+    MOUSEFILE,
+    MOUSEGRAPH,
+    MOUSEANGLE,
+    MOUSESIZE,
+    MOUSEFLAGS,
+    MOUSEREGION,
+    MOUSELEFT,
+    MOUSEMIDDLE,
+    MOUSERIGHT,
+    MOUSEWHEELUP,
+    MOUSEWHEELDOWN
+};
 
 /* --------------------------------------------------------------------------- */
 
@@ -448,19 +438,6 @@ HOOK __bgdexport( libmouse, handler_hooks )[] =
     { 4800, do_mouse_events },
     { 0, NULL }
 } ;
-
-/* --------------------------------------------------------------------------- */
-
-char * __bgdexport( libmouse, modules_dependency )[] =
-{
-    "libsdlhandler",
-    "libgrbase",
-    "libvideo",
-    "libblit",
-    "librender", // Add by Sandman
-    NULL
-};
-
 /* --------------------------------------------------------------------------- */
 
 void __bgdexport( libmouse, module_initialize )()

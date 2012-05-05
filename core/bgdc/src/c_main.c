@@ -476,13 +476,10 @@ static void import_module( const char * filename )
 
 #if defined( WIN32 )
 #define DLLEXT      ".dll"
-#define SIZEDLLEXT  4
 #elif defined(TARGET_MAC)
 #define DLLEXT      ".dylib"
-#define SIZEDLLEXT  6
 #else
 #define DLLEXT      ".so"
-#define SIZEDLLEXT  3
 #endif
 
     strncpy( soname, filename, sizeof( soname ) );
@@ -520,19 +517,15 @@ static void import_module( const char * filename )
 
     fullsoname[0] = '\0';
 
-    library  = dlibopen( filename ) ;
-
     spath = dlsearchpath;
     while( !library && spath && *spath )
     {
-#ifdef _WIN32
-        sprintf( fullsoname, "%s%s\\%s", appexepath, *spath, filename );
-#else
         sprintf( fullsoname, "%s%s/%s", appexepath, *spath, filename );
-#endif
         library  = dlibopen( fullsoname ) ;
         spath++;
     }
+
+    if ( !library ) library  = dlibopen( filename ) ;
 
     if ( !library ) compile_error( MSG_LIBRARY_NOT_FOUND, filename ) ;
 

@@ -309,31 +309,9 @@ static int modstring_formatFI( INSTANCE * my, int * params )
 }
 
 /* ----------------------------------------------------------------- */
-/* Declaracion de funciones                                          */
+/* exports                                                           */
+/* ----------------------------------------------------------------- */
 
-DLSYSFUNCS  __bgdexport( mod_string, functions_exports )[] =
-{
-    { "STRLEN"     , "S"   , TYPE_INT   , modstring_strlen     },
-    { "LEN"        , "S"   , TYPE_INT   , modstring_strlen     },
-    { "UCASE"      , "S"   , TYPE_STRING, modstring_strupper   },
-    { "LCASE"      , "S"   , TYPE_STRING, modstring_strlower   },
-    { "STRCASECMP" , "SS"  , TYPE_INT   , modstring_strcasecmp },
-    { "SUBSTR"     , "SII" , TYPE_STRING, modstring_substr     },
-    { "SUBSTR"     , "SI"  , TYPE_STRING, modstring_substr2    },
-    { "FIND"       , "SS"  , TYPE_INT   , modstring_strfind    },
-    { "FIND"       , "SSI" , TYPE_INT   , modstring_strfindSSI },
-    { "LPAD"       , "SI"  , TYPE_STRING, modstring_lpad       },
-    { "RPAD"       , "SI"  , TYPE_STRING, modstring_rpad       },
-    { "ITOA"       , "I"   , TYPE_STRING, modstring_itos       },
-    { "FTOA"       , "F"   , TYPE_STRING, modstring_ftos       },
-    { "ATOI"       , "S"   , TYPE_INT   , modstring_stoi       },
-    { "ATOF"       , "S"   , TYPE_FLOAT , modstring_stof       },
-    { "ASC"        , "S"   , TYPE_BYTE  , modstring_asc        },
-    { "CHR"        , "I"   , TYPE_STRING, modstring_chr        },
-    { "TRIM"       , "S"   , TYPE_STRING, modstring_trim       },
-    { "STRREV"     , "S"   , TYPE_STRING, modstring_strrev     },
-    { "FORMAT"     , "I"   , TYPE_STRING, modstring_formatI    },
-    { "FORMAT"     , "F"   , TYPE_STRING, modstring_formatF    },
-    { "FORMAT"     , "FI"  , TYPE_STRING, modstring_formatFI   },
-    { 0            , 0     , 0          , 0                    }
-};
+#include "mod_string_exports.h"
+
+/* ----------------------------------------------------------------- */

@@ -40,24 +40,6 @@
 
 /* ----------------------------------------------------------------- */
 
-DLCONSTANT  __bgdexport( mod_file, constants_def)[] =
-{
-    { "O_READ"      , TYPE_INT, 0  },
-    { "O_READWRITE" , TYPE_INT, 1  },
-    { "O_RDWR"      , TYPE_INT, 1  },
-    { "O_WRITE"     , TYPE_INT, 2  },
-    { "O_ZREAD"     , TYPE_INT, 3  },
-    { "O_ZWRITE"    , TYPE_INT, 4  },
-
-    { "SEEK_SET"    , TYPE_INT, 0  },
-    { "SEEK_CUR"    , TYPE_INT, 1  },
-    { "SEEK_END"    , TYPE_INT, 2  },
-
-    { NULL          , 0       , 0  }
-} ;
-
-/* ----------------------------------------------------------------- */
-
 static int modfile_save( INSTANCE * my, int * params )
 {
     file * fp ;
@@ -255,32 +237,9 @@ static int modfile_move( INSTANCE * my, int * params )
 }
 
 /* ----------------------------------------------------------------- */
-/* Declaracion de funciones                                          */
+/* exports                                                           */
+/* ----------------------------------------------------------------- */
 
-DLSYSFUNCS  __bgdexport( mod_file, functions_exports)[] =
-{
-    /* Ficheros */
-    { "SAVE"        , "SV++" , TYPE_INT         , modfile_save        },
-    { "LOAD"        , "SV++" , TYPE_INT         , modfile_load        },
-    { "FOPEN"       , "SI"   , TYPE_INT         , modfile_fopen       },
-    { "FCLOSE"      , "I"    , TYPE_INT         , modfile_fclose      },
-    { "FREAD"       , "IV++" , TYPE_INT         , modfile_fread       },
-    { "FREAD"       , "PII"  , TYPE_INT         , modfile_freadC      },
-    { "FWRITE"      , "IV++" , TYPE_INT         , modfile_fwrite      },
-    { "FWRITE"      , "PII"  , TYPE_INT         , modfile_fwriteC     },
-    { "FSEEK"       , "III"  , TYPE_INT         , modfile_fseek       },
-    { "FREWIND"     , "I"    , TYPE_UNDEFINED   , modfile_frewind     },
-    { "FTELL"       , "I"    , TYPE_INT         , modfile_ftell       },
-    { "FFLUSH"      , "I"    , TYPE_INT         , modfile_fflush      },
-    { "FLUSH"       , "I"    , TYPE_INT         , modfile_fflush      },
-    { "FLENGTH"     , "I"    , TYPE_INT         , modfile_filelength  },
-    { "FPUTS"       , "IS"   , TYPE_INT         , modfile_fputs       },
-    { "FGETS"       , "I"    , TYPE_STRING      , modfile_fgets       },
-    { "FEOF"        , "I"    , TYPE_INT         , modfile_feof        },
-    { "FILE"        , "S"    , TYPE_STRING      , modfile_file        },
-    { "FEXISTS"     , "S"    , TYPE_INT         , modfile_exists      } ,
-    { "FILE_EXISTS" , "S"    , TYPE_INT         , modfile_exists      } ,
-    { "FREMOVE"     , "S"    , TYPE_INT         , modfile_remove      } ,
-    { "FMOVE"       , "SS"   , TYPE_INT         , modfile_move        } ,
-    { 0             , 0      , 0                , 0                   }
-};
+#include "mod_file_exports.h"
+
+/* ----------------------------------------------------------------- */

@@ -49,6 +49,10 @@
 
 /* --------------------------------------------------------------------------- */
 
+#include "libjoy_exports.h"
+
+/* --------------------------------------------------------------------------- */
+
 #ifdef TARGET_CAANOO
 #include "caanoo/te9_tf9_hybrid_driver.c"
 
@@ -455,21 +459,6 @@ int libjoy_get_accel_specific( int joy, int * x, int * y, int * z )
 
 /* --------------------------------------------------------------------------- */
 /* Funciones de inicializacion del modulo/plugin                               */
-
-DLCONSTANT __bgdexport( libjoy, constants_def )[] =
-{
-    { "JOY_HAT_CENTERED"    , TYPE_DWORD, SDL_HAT_CENTERED  },
-    { "JOY_HAT_UP"          , TYPE_DWORD, SDL_HAT_UP        },
-    { "JOY_HAT_RIGHT"       , TYPE_DWORD, SDL_HAT_RIGHT     },
-    { "JOY_HAT_DOWN"        , TYPE_DWORD, SDL_HAT_DOWN      },
-    { "JOY_HAT_LEFT"        , TYPE_DWORD, SDL_HAT_LEFT      },
-    { "JOY_HAT_RIGHTUP"     , TYPE_DWORD, SDL_HAT_RIGHTUP   },
-    { "JOY_HAT_RIGHTDOWN"   , TYPE_DWORD, SDL_HAT_RIGHTDOWN },
-    { "JOY_HAT_LEFTUP"      , TYPE_DWORD, SDL_HAT_LEFTUP    },
-    { "JOY_HAT_LEFTDOWN"    , TYPE_DWORD, SDL_HAT_LEFTDOWN  },
-    { NULL                  , 0         , 0                 }
-} ;
-
 /* --------------------------------------------------------------------------- */
 
 void  __bgdexport( libjoy, module_initialize )()
@@ -526,13 +515,5 @@ void  __bgdexport( libjoy, module_finalize )()
     if ( SDL_WasInit( SDL_INIT_JOYSTICK ) ) SDL_QuitSubSystem( SDL_INIT_JOYSTICK );
 
 }
-
-/* ----------------------------------------------------------------- */
-
-char * __bgdexport( libjoy, modules_dependency )[] =
-{
-    "libsdlhandler",
-    NULL
-};
 
 /* ----------------------------------------------------------------- */

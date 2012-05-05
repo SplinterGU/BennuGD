@@ -28,8 +28,26 @@
 
 /* --------------------------------------------------------------------------- */
 
-#ifndef __MOD_IMAGE_H
-#define __MOD_IMAGE_H
+#ifndef __MOD_MAP_H
+#define __MOD_MAP_H
+
+/* --------------------------------------------------------------------------- */
+
+#define G_WIDE          0
+#define G_WIDTH         0
+#define G_HEIGHT        1
+#define G_CENTER_X      2
+#define G_X_CENTER      2
+#define G_CENTER_Y      3
+#define G_Y_CENTER      3
+#define G_PITCH         4
+#define G_DEPTH         5
+
+#define B_CLEAR         0x00000001
+
+/* --------------------------------------------------------------------------- */
+
+#ifndef __BGDC__
 
 #include <stdio.h>
 
@@ -81,7 +99,7 @@ MAP_HEADER ;
 #pragma pack(pop)
 #endif
 
-/* ------------------------------------------ */
+/* --------------------------------------------------------------------------- */
 
 extern int gr_load_fpg( const char * filename ) ;
 extern int gr_load_map( const char * filename ) ;
@@ -106,4 +124,7 @@ extern int gr_load_bdf( const char * filename ) ;
 extern int gr_load_ttf( const char * filename, int size, int bpp, int fg, int bg ) ;
 extern int gr_font_save( int fontid, const char * filename ) ;
 
+/* --------------------------------------------------------------------------- */
+
+#endif
 #endif

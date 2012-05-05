@@ -46,49 +46,18 @@ static int      sdl_cdnum = -1;
 
 /* ----------------------------------------------------------------- */
 
-#define CD_TRACK        0
-#define CD_FRAME        1
-#define CD_TRACKS       2
-#define CD_MINUTE       3
-#define CD_SECOND       4
-#define CD_SUBFRAME     5
-#define CD_MINUTES      6
-#define CD_SECONDS      7
-#define CD_FRAMES       8
-#define CD_TRACKINFO    9     /* 400 INTs */
-
-/* ----------------------------------------------------------------- */
-/* Definicion de constantes (usada en tiempo de compilacion)         */
-DLCONSTANT  __bgdexport( mod_cd, constants_def )[] =
-{
-    { "CD_TRAYEMPTY", TYPE_INT, 0  },
-    { "CD_STOPPED"  , TYPE_INT, 1  },
-    { "CD_PLAYING"  , TYPE_INT, 2  },
-    { "CD_PAUSED"   , TYPE_INT, 3  },
-    { "CD_ERROR"    , TYPE_INT, -1 },
-    { NULL          , 0       , 0  }
-} ;
-
-/* ----------------------------------------------------------------- */
-/* Definicion de variables globales (usada en tiempo de compilacion) */
-char * __bgdexport( mod_cd, globals_def ) =
-    "STRUCT cdinfo\n"
-    " current_track;\n"
-    " current_frame;\n"
-    " tracks;\n"
-    " minute;\n"
-    " second;\n"
-    " subframe;\n"
-    " minutes;\n"
-    " seconds;\n"
-    " subframes;\n"
-    " STRUCT track[99]\n"
-    "  audio;\n"
-    "  minutes;\n"
-    "  seconds;\n"
-    "  subframes;\n"
-    " END;\n"
-    "END;\n" ;
+enum {
+    CD_TRACK = 0,
+    CD_FRAME,
+    CD_TRACKS,
+    CD_MINUTE,
+    CD_SECOND,
+    CD_SUBFRAME,
+    CD_MINUTES,
+    CD_SECONDS,
+    CD_FRAMES,
+    CD_TRACKINFO
+};
 
 /* ----------------------------------------------------------------- */
 /* Son las variables que se desea acceder.                           */
@@ -330,24 +299,6 @@ static int modcd_stop( INSTANCE * my, int * params )
 }
 
 /* --------------------------------------------------------------------------- */
-
-DLSYSFUNCS  __bgdexport( mod_cd, functions_exports )[] =
-{
-    /* Funciones de manejo de CD */
-    { "CD_DRIVES"   , ""      , TYPE_INT    , modcd_drives     },
-    { "CD_STATUS"   , "I"     , TYPE_INT    , modcd_status     },
-    { "CD_NAME"     , "I"     , TYPE_STRING , modcd_name       },
-    { "CD_GETINFO"  , "I"     , TYPE_INT    , modcd_getinfo    },
-    { "CD_PLAY"     , "II"    , TYPE_INT    , modcd_play       },
-    { "CD_PLAY"     , "III"   , TYPE_INT    , modcd_playtracks },
-    { "CD_STOP"     , "I"     , TYPE_INT    , modcd_stop       },
-    { "CD_PAUSE"    , "I"     , TYPE_INT    , modcd_pause      },
-    { "CD_RESUME"   , "I"     , TYPE_INT    , modcd_resume     },
-    { "CD_EJECT"    , "I"     , TYPE_INT    , modcd_eject      },
-    { 0             , 0       , 0           , 0                }
-};
-
-/* --------------------------------------------------------------------------- */
 /* Funciones de inicializacion del modulo/plugin                               */
 
 void  __bgdexport( mod_cd, module_initialize )()
@@ -361,5 +312,11 @@ void  __bgdexport( mod_cd, module_finalize )()
 {
     if ( SDL_WasInit( SDL_INIT_CDROM ) ) SDL_QuitSubSystem( SDL_INIT_CDROM );
 }
+
+/* --------------------------------------------------------------------------- */
+/* exports                                                                     */
+/* --------------------------------------------------------------------------- */
+
+#include "mod_cd_exports.h"
 
 /* --------------------------------------------------------------------------- */

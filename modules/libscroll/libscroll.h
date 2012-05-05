@@ -35,6 +35,8 @@
 
 /* --------------------------------------------------------------------------- */
 
+#ifndef __BGDC__
+
 #ifndef __GNUC__
 #define __PACKED
 #define inline __inline
@@ -114,4 +116,5 @@ extern void scroll_region( int n, REGION * r ) ;
 
 /* --------------------------------------------------------------------------- */
 
+#endif
 #endif

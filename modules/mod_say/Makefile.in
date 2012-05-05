@@ -73,12 +73,12 @@ am__base_list = \
 am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-mod_say_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
-am_mod_say_la_OBJECTS = mod_say_la-mod_say.lo
-mod_say_la_OBJECTS = $(am_mod_say_la_OBJECTS)
-mod_say_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(mod_say_la_CFLAGS) \
-	$(CFLAGS) $(mod_say_la_LDFLAGS) $(LDFLAGS) -o $@
+libmod_say_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
+am_libmod_say_la_OBJECTS = libmod_say_la-mod_say.lo
+libmod_say_la_OBJECTS = $(am_libmod_say_la_OBJECTS)
+libmod_say_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libmod_say_la_CFLAGS) \
+	$(CFLAGS) $(libmod_say_la_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -92,8 +92,8 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(mod_say_la_SOURCES)
-DIST_SOURCES = $(mod_say_la_SOURCES)
+SOURCES = $(libmod_say_la_SOURCES)
+DIST_SOURCES = $(libmod_say_la_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -235,12 +235,12 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-lib_LTLIBRARIES = mod_say.la
-mod_say_la_SOURCES = mod_say.c
-mod_say_la_CFLAGS = $(COMMON_CFLAGS) -I$(BGD_PATH)/include
-mod_say_la_LDFLAGS = -s -module -no-undefined -avoid-version
-mod_say_la_LIBADD = $(COMMON_LDFLAGS) -L$(BGD_PATH)/bgdrtm/src/.libs -lbgdrtm
-CLEANFILES = mod_say.la
+lib_LTLIBRARIES = libmod_say.la
+libmod_say_la_SOURCES = mod_say.c
+libmod_say_la_CFLAGS = $(COMMON_CFLAGS) -I$(BGD_PATH)/include
+libmod_say_la_LDFLAGS = -s -module -no-undefined -avoid-version
+libmod_say_la_LIBADD = $(COMMON_LDFLAGS) -L$(BGD_PATH)/bgdrtm/src/.libs -lbgdrtm
+CLEANFILES = libmod_say.la
 all: all-am
 
 .SUFFIXES:
@@ -306,8 +306,8 @@ clean-libLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-mod_say.la: $(mod_say_la_OBJECTS) $(mod_say_la_DEPENDENCIES) 
-	$(mod_say_la_LINK) -rpath $(libdir) $(mod_say_la_OBJECTS) $(mod_say_la_LIBADD) $(LIBS)
+libmod_say.la: $(libmod_say_la_OBJECTS) $(libmod_say_la_DEPENDENCIES) 
+	$(libmod_say_la_LINK) -rpath $(libdir) $(libmod_say_la_OBJECTS) $(libmod_say_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -315,7 +315,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mod_say_la-mod_say.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmod_say_la-mod_say.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -338,12 +338,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
-mod_say_la-mod_say.lo: mod_say.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mod_say_la_CFLAGS) $(CFLAGS) -MT mod_say_la-mod_say.lo -MD -MP -MF $(DEPDIR)/mod_say_la-mod_say.Tpo -c -o mod_say_la-mod_say.lo `test -f 'mod_say.c' || echo '$(srcdir)/'`mod_say.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/mod_say_la-mod_say.Tpo $(DEPDIR)/mod_say_la-mod_say.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='mod_say.c' object='mod_say_la-mod_say.lo' libtool=yes @AMDEPBACKSLASH@
+libmod_say_la-mod_say.lo: mod_say.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmod_say_la_CFLAGS) $(CFLAGS) -MT libmod_say_la-mod_say.lo -MD -MP -MF $(DEPDIR)/libmod_say_la-mod_say.Tpo -c -o libmod_say_la-mod_say.lo `test -f 'mod_say.c' || echo '$(srcdir)/'`mod_say.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libmod_say_la-mod_say.Tpo $(DEPDIR)/libmod_say_la-mod_say.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='mod_say.c' object='libmod_say_la-mod_say.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mod_say_la_CFLAGS) $(CFLAGS) -c -o mod_say_la-mod_say.lo `test -f 'mod_say.c' || echo '$(srcdir)/'`mod_say.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmod_say_la_CFLAGS) $(CFLAGS) -c -o libmod_say_la-mod_say.lo `test -f 'mod_say.c' || echo '$(srcdir)/'`mod_say.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

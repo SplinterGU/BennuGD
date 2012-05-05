@@ -556,40 +556,10 @@ static int moddraw_map_put_pixel( INSTANCE * my, int * params )
     return 1 ;
 }
 
-/* --------------------------------------------------------------------------- */
-/* Declaracion de funciones                                                    */
+/* ----------------------------------------------------------------- */
+/* exports                                                           */
+/* ----------------------------------------------------------------- */
 
-DLSYSFUNCS __bgdexport( mod_draw, functions_exports )[] =
-{
-    /* Funciones de primitivas */
-    { "DRAWING_MAP"     , "II"          , TYPE_INT  , moddraw_drawing_map       },
-    { "DRAWING_COLOR"   , "I"           , TYPE_INT  , moddraw_drawing_color     },
-    { "DRAW_LINE"       , "IIII"        , TYPE_INT  , moddraw_line              },
-    { "DRAW_RECT"       , "IIII"        , TYPE_INT  , moddraw_rect              },
-    { "DRAW_BOX"        , "IIII"        , TYPE_INT  , moddraw_box               },
-    { "DRAW_CIRCLE"     , "III"         , TYPE_INT  , moddraw_circle            },
-    { "DRAW_FCIRCLE"    , "III"         , TYPE_INT  , moddraw_fcircle           },
-    { "DRAW_CURVE"      , "IIIIIIIII"   , TYPE_INT  , moddraw_bezier            },
-    { "DRAWING_Z"       , "I"           , TYPE_INT  , moddraw_drawing_at        },
-    { "DELETE_DRAW"     , "I"           , TYPE_INT  , moddraw_delete_drawing    },
-    { "MOVE_DRAW"       , "III"         , TYPE_INT  , moddraw_move_drawing      },
-    { "DRAWING_ALPHA"   , "I"           , TYPE_INT  , moddraw_drawing_alpha     },
-    { "DRAWING_STIPPLE" , "I"           , TYPE_INT  , moddraw_drawing_stipple   },
-    { "PUT_PIXEL"       , "III"         , TYPE_INT  , moddraw_put_pixel         },
-    { "GET_PIXEL"       , "II"          , TYPE_INT  , moddraw_get_pixel         },
-    { "MAP_GET_PIXEL"   , "IIII"        , TYPE_INT  , moddraw_map_get_pixel     },
-    { "MAP_PUT_PIXEL"   , "IIIII"       , TYPE_INT  , moddraw_map_put_pixel     },
-    { NULL              , NULL          , 0         , NULL                      }
-};
+#include "mod_draw_exports.h"
 
-/* --------------------------------------------------------------------------- */
-
-char * __bgdexport( mod_draw, modules_dependency )[] =
-{
-    "libgrbase",
-    "librender",
-    "libdraw",
-    NULL
-};
-
-/* --------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------- */

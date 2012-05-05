@@ -2,14 +2,14 @@
 
 #AUTOMAKE_OPTIONS = no-dependencies foreign
 
-lib_LTLIBRARIES = mod_key.la
+lib_LTLIBRARIES = libmod_key.la
 
-mod_key_la_SOURCES = mod_key.c
-mod_key_la_CFLAGS = $(COMMON_CFLAGS) $(SDL_CFLAGS) -I$(BGD_PATH)/include -I../libkey
-mod_key_la_LDFLAGS = -s -module -no-undefined -avoid-version
-mod_key_la_LIBADD = $(COMMON_LDFLAGS) -L../libkey/.libs -lkey -L$(BGD_PATH)/bgdrtm/src/.libs -lbgdrtm
+libmod_key_la_SOURCES = mod_key.c
+libmod_key_la_CFLAGS = $(COMMON_CFLAGS) $(SDL_CFLAGS) -I$(BGD_PATH)/include -I../libkey
+libmod_key_la_LDFLAGS = -s -module -no-undefined -avoid-version
+libmod_key_la_LIBADD = $(COMMON_LDFLAGS) -L../libkey/.libs -lkey -L$(BGD_PATH)/bgdrtm/src/.libs -lbgdrtm
 
 ## Make sure these will be cleaned even when they're not built by
 ## default.
-CLEANFILES = mod_key.la
+CLEANFILES = libmod_key.la
 

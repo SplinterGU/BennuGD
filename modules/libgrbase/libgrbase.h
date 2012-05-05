@@ -29,8 +29,12 @@
 #ifndef __LIBGRBASE_H
 #define __LIBGRBASE_H
 
+/* --------------------------------------------------------------------------- */
+
 #include <stdlib.h>
 #include <stdint.h>
+
+/* --------------------------------------------------------------------------- */
 
 #include "g_pal.h"
 #include "g_bitmap.h"
@@ -40,6 +44,8 @@
 #include "g_blendop.h"
 #include "g_conversion.h"
 
+/* --------------------------------------------------------------------------- */
+
 extern PIXEL_FORMAT * std_pixel_format8 ;
 extern PIXEL_FORMAT * std_pixel_format16 ;
 extern PIXEL_FORMAT * std_pixel_format32 ;
@@ -48,5 +54,7 @@ extern PIXEL_FORMAT * sys_pixel_format ;
 
 extern GRAPH * background ;
 extern GRAPH * scrbitmap ;
+
+/* --------------------------------------------------------------------------- */
 
 #endif

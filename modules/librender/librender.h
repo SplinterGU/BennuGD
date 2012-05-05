@@ -31,7 +31,7 @@
 
 /* --------------------------------------------------------------------------- */
 
-#ifdef __LIB_RENDER
+#ifdef __LIBRENDER
 #include "bgdrtm.h"
 
 #include "dlvaracc.h"
@@ -42,17 +42,16 @@
 #include "libblit.h"
 #endif
 
+#ifndef __BGDC__
 #include "g_fade.h"
 #include "g_frame.h"
 #include "g_instance.h"
 #include "g_object.h"
 #include "g_rects.h"
 #include "g_screen.h"
+#endif
+
 #include "scaler.h"
-#include "scaler_hq2x.h"
-#include "scaler_normal.h"
-#include "scaler_scale2x.h"
-#include "scaler_scanline.h"
 
 /* --------------------------------------------------------------------------- */
 
@@ -60,65 +59,69 @@
 
 /* --------------------------------------------------------------------------- */
 
-#ifdef __LIB_RENDER
+#ifdef __LIBRENDER
 
 /* Globals */
 
-#define FPS                 0
-#define SPEED_GAUGE         1
-#define FRAME_TIME          2
+enum {
+    FPS = 0,
+    SPEED_GAUGE,
+    FRAME_TIME,
 
-#define SCALE_MODE          3
-#define RESTORETYPE         4
-#define DUMPTYPE            5
+    SCALE_MODE,
+    RESTORETYPE,
+    DUMPTYPE,
 
-#define FADING              6
-#define ALPHA_STEPS         7
+    FADING,
+    ALPHA_STEPS
+};
 
 /* Locals */
 
-#define CTYPE               0
-#define CNUMBER             1
+enum {
+    CTYPE = 0,
+    CNUMBER,
 
-#define COORDX              2
-#define COORDY              3
-#define COORDZ              4
-#define FILEID              5
-#define GRAPHID             6
-#define GRAPHSIZE           7
-#define ANGLE               8
-#define FLAGS               9
-#define ALPHA               10
-#define PALETTEID           11
-#define REGIONID            12
-#define RESOLUTION          13
-#define GRAPHSIZEX          14
-#define GRAPHSIZEY          15
-#define BLENDOP             16
-#define XGRAPH              17
+    COORDX,
+    COORDY,
+    COORDZ,
+    FILEID,
+    GRAPHID,
+    GRAPHSIZE,
+    ANGLE,
+    FLAGS,
+    ALPHA,
+    PALETTEID,
+    REGIONID,
+    RESOLUTION,
+    GRAPHSIZEX,
+    GRAPHSIZEY,
+    BLENDOP,
+    XGRAPH,
 
-#define OBJECTID            18
-#define GRAPHPTR            19
-#define XGRAPH_FLAGS        20
+    OBJECTID,
+    GRAPHPTR,
+    XGRAPH_FLAGS,
 
-#define SAVED_COORDX        21
-#define SAVED_COORDY        22
-#define SAVED_COORDZ        23
-#define SAVED_FILEID        24
-#define SAVED_GRAPHID       25
-#define SAVED_GRAPHSIZE     26
-#define SAVED_ANGLE         27
-#define SAVED_FLAGS         28
-#define SAVED_ALPHA         29
-#define SAVED_PALETTE       30
-#define SAVED_GRAPHSIZEX    31
-#define SAVED_GRAPHSIZEY    32
-#define SAVED_BLENDOP       33
-#define SAVED_XGRAPH        34
-#define SAVED_CENTERX       35
-#define SAVED_CENTERY       36
+    SAVED_COORDX,
+    SAVED_COORDY,
+    SAVED_COORDZ,
+    SAVED_FILEID,
+    SAVED_GRAPHID,
+    SAVED_GRAPHSIZE,
+    SAVED_ANGLE,
+    SAVED_FLAGS,
+    SAVED_ALPHA,
+    SAVED_PALETTE,
+    SAVED_GRAPHSIZEX,
+    SAVED_GRAPHSIZEY,
+    SAVED_BLENDOP,
+    SAVED_XGRAPH,
+    SAVED_CENTERX,
+    SAVED_CENTERY,
 
-#define STATUS              37
+    STATUS
+};
 
 /* --------------------------------------------------------------------------- */
 

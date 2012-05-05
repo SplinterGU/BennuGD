@@ -58,29 +58,11 @@ static int mod_scroll_move( INSTANCE * my, int * params )
     return 1 ;
 }
 
-/* ---------------------------------------------------------------------- */
+/* ----------------------------------------------------------------- */
+/* exports                                                           */
+/* ----------------------------------------------------------------- */
 
-DLSYSFUNCS __bgdexport( mod_scroll, functions_exports )[] =
-{
-    { "SCROLL_START"    , "IIIIIIII", TYPE_INT   , mod_scroll_start2  },
-    { "SCROLL_START"    , "IIIIII"  , TYPE_INT   , mod_scroll_start   },
-    { "SCROLL_STOP"     , "I"       , TYPE_INT   , mod_scroll_stop    },
-    { "SCROLL_MOVE"     , "I"       , TYPE_INT   , mod_scroll_move    },
+#include "mod_scroll_exports.h"
 
-    { "START_SCROLL"    , "IIIIIIII", TYPE_INT   , mod_scroll_start2  },
-    { "START_SCROLL"    , "IIIIII"  , TYPE_INT   , mod_scroll_start   },
-    { "STOP_SCROLL"     , "I"       , TYPE_INT   , mod_scroll_stop    },
-    { "MOVE_SCROLL"     , "I"       , TYPE_INT   , mod_scroll_move    },
+/* ----------------------------------------------------------------- */
 
-    { 0                 , 0         , 0          , 0                  }
-};
-
-/* --------------------------------------------------------------------------- */
-
-char * __bgdexport( mod_scroll, modules_dependency )[] =
-{
-    "libscroll",
-    0
-};
-
-/* --------------------------------------------------------------------------- */

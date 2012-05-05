@@ -42,6 +42,8 @@
 
 #include "libscroll.h"
 
+#include "libscroll_exports.h"
+
 /* --------------------------------------------------------------------------- */
 
 /* Indicadores de bloqueo */
@@ -60,62 +62,22 @@ scrolldata scrolls[ 10 ] ;
 
 /* Locals */
 
-#define CTYPE           0
-#define CNUMBER         1
-#define PROCESS_ID      2
-#define STATUS          3
-#define COORDX          4
-#define COORDY          5
-#define COORDZ          6
-#define RESOLUTION      7
+enum {
+    CTYPE = 0,
+    CNUMBER,
+    PROCESS_ID,
+    STATUS,
+    COORDX,
+    COORDY,
+    COORDZ,
+    RESOLUTION
+};
 
 /* Globals */
 
-#define SCROLLS         0
-
-/* --------------------------------------------------------------------------- */
-
-DLCONSTANT __bgdexport( libscroll, constants_def )[] =
-{
-    { "C_SCROLL",   TYPE_DWORD,     C_SCROLL    },
-
-    { "C_0",        TYPE_DWORD,     0x0001      },
-    { "C_1",        TYPE_DWORD,     0x0002      },
-    { "C_2",        TYPE_DWORD,     0x0004      },
-    { "C_3",        TYPE_DWORD,     0x0008      },
-    { "C_4",        TYPE_DWORD,     0x0010      },
-    { "C_5",        TYPE_DWORD,     0x0020      },
-    { "C_6",        TYPE_DWORD,     0x0040      },
-    { "C_7",        TYPE_DWORD,     0x0080      },
-    { "C_8",        TYPE_DWORD,     0x0100      },
-    { "C_9",        TYPE_DWORD,     0x0200      },
-
-    { NULL,         0,              0           }
+enum {
+    SCROLLS = 0
 };
-
-/* --------------------------------------------------------------------------- */
-
-char * __bgdexport( libscroll, locals_def ) =
-    "ctype;\n"
-    "cnumber;\n";
-
-/* --------------------------------------------------------------------------- */
-
-char * __bgdexport( libscroll, globals_def ) =
-    "STRUCT scroll[9]\n"
-    "x0, y0;\n"
-    "x1, y1;\n"
-    "z = 512;\n"
-    "camera;\n"
-    "ratio = 200;\n"
-    "speed;\n"
-    "region1 = -1;\n"
-    "region2 = -1;\n"
-    "flags1;\n"
-    "flags2;\n"
-    "follow = -1;\n"
-    "reserved[6];\n"
-    "END \n"; /* total size: 20 dwords */
 
 /* --------------------------------------------------------------------------- */
 
@@ -528,16 +490,5 @@ static int info_scroll( int n, REGION * clip, int * z, int * drawme )
 
     return 1;
 }
-
-/* --------------------------------------------------------------------------- */
-
-char * __bgdexport( libscroll, modules_dependency )[] =
-{
-    "libgrbase",
-    "libblit",
-    "librender",
-    "libvideo",
-    NULL
-};
 
 /* --------------------------------------------------------------------------- */

@@ -257,35 +257,10 @@ static int modmem_free( INSTANCE * my, int * params )
     return 1 ;
 }
 
-/* ---------------------------------------------------------------------- */
+/* ----------------------------------------------------------------- */
+/* exports                                                           */
+/* ----------------------------------------------------------------- */
 
-DLSYSFUNCS __bgdexport( mod_mem, functions_exports )[] =
-{
-    /* Manipulacion de Memoria */
-    { "MEM_CALLOC"      , "II"    , TYPE_POINTER, modmem_calloc         },
-    { "MEM_ALLOC"       , "I"     , TYPE_POINTER, modmem_alloc          },
-    { "MEM_FREE"        , "P"     , TYPE_INT    , modmem_free           },
-    { "MEM_REALLOC"     , "PI"    , TYPE_POINTER, modmem_realloc        },
-    { "MEM_CMP"         , "PPI"   , TYPE_INT    , modmem_memcmp         },
-    { "MEM_SET"         , "PBI"   , TYPE_INT    , modmem_memset         },
-    { "MEM_SETW"        , "PWI"   , TYPE_INT    , modmem_memsetw        },
-    { "MEM_SETI"        , "PII"   , TYPE_INT    , modmem_memseti        },
-    { "MEM_COPY"        , "PPI"   , TYPE_INT    , modmem_memcopy        },
-    { "MEM_MOVE"        , "PPI"   , TYPE_INT    , modmem_memmove        },
-    { "MEM_AVAILABLE"   , ""      , TYPE_INT    , modmem_memory_free    },
-    { "MEM_TOTAL"       , ""      , TYPE_INT    , modmem_memory_total   },
+#include "mod_mem_exports.h"
 
-    { "CALLOC"          , "II"    , TYPE_POINTER, modmem_calloc         },
-    { "ALLOC"           , "I"     , TYPE_POINTER, modmem_alloc          },
-    { "FREE"            , "P"     , TYPE_INT    , modmem_free           },
-    { "REALLOC"         , "PI"    , TYPE_POINTER, modmem_realloc        },
-    { "MEMCMP"          , "PPI"   , TYPE_INT    , modmem_memcmp         },
-    { "MEMSET"          , "PBI"   , TYPE_INT    , modmem_memset         },
-    { "MEMSETW"         , "PWI"   , TYPE_INT    , modmem_memsetw        },
-    { "MEMSETI"         , "PII"   , TYPE_INT    , modmem_memseti        },
-    { "MEMCOPY"         , "PPI"   , TYPE_INT    , modmem_memcopy        },
-    { "MEMMOVE"         , "PPI"   , TYPE_INT    , modmem_memmove        },
-    { "MEMORY_FREE"     , ""      , TYPE_INT    , modmem_memory_free    },
-    { "MEMORY_TOTAL"    , ""      , TYPE_INT    , modmem_memory_total   },
-    { 0                 , 0       , 0           , 0                     }
-};
+/* ----------------------------------------------------------------- */

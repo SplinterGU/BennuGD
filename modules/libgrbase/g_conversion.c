@@ -50,20 +50,17 @@ static int alpha16_tables_ok = 0 ;
 static int alpha8_tables_ok = 0 ;
 
 /* --------------------------------------------------------------------------- */
+/* used for variable access                                                    */
+/* --------------------------------------------------------------------------- */
 
-#define ALPHA_STEPS     0
+enum {
+    ALPHA_STEPS = 0
+};
 
 /* --------------------------------------------------------------------------- */
-/* Definicion de variables globales (usada en tiempo de compilacion) */
-
-char * __bgdexport( libgrbase, globals_def ) =
-    "alpha_steps = 16;\n"
-    ;
-
-/* --------------------------------------------------------------------------- */
-/* Son las variables que se desea acceder.                           */
-/* El interprete completa esta estructura, si la variable existe.    */
-/* (usada en tiempo de ejecucion)                                    */
+/* Son las variables que se desea acceder.                                     */
+/* El interprete completa esta estructura, si la variable existe.              */
+/* (usada en tiempo de ejecucion)                                              */
 
 DLVARFIXUP __bgdexport( libgrbase, globals_fixup )[] =
 {

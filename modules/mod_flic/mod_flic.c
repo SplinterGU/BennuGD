@@ -661,8 +661,6 @@ static int modflic_frame( INSTANCE * my, int * params )
 
 /* --------------------------------------------------------------------------- */
 
-/* --------------------------------------------------------------------------- */
-
 static int modflic_startx1( INSTANCE * my, int * params )
 {
     FLIC * flic ;
@@ -800,32 +798,9 @@ static int modflic_getinfo( INSTANCE * my, int * params )
 }
 
 /* ----------------------------------------------------------------- */
-/* Declaracion de funciones                                          */
-
-DLSYSFUNCS  __bgdexport( mod_flic, functions_exports )[] =
-{
-    /* Animaciones FLI */
-    { "START_FLI"       , "SII"         , TYPE_INT , modflic_start        },
-    { "END_FLI"         , ""            , TYPE_INT , modflic_end          },
-    { "FRAME_FLI"       , ""            , TYPE_INT , modflic_frame        },
-    { "RESET_FLI"       , ""            , TYPE_INT , modflic_reset        },
-
-    { "FLI_START"       , "SII"         , TYPE_INT , modflic_startx1      },
-    { "FLI_START"       , "SIIIIII"     , TYPE_INT , modflic_startx2      },
-    { "FLI_END"         , "I"           , TYPE_INT , modflic_endx         },
-    { "FLI_FRAME"       , "I"           , TYPE_INT , modflic_framex       },
-    { "FLI_RESET"       , "I"           , TYPE_INT , modflic_resetx       },
-
-    { "FLI_PARAMS"      , "IIIIIII"     , TYPE_INT , modflic_params       },
-    { "FLI_MOVE"        , "III"         , TYPE_INT , modflic_move         },
-    { "FLI_ANGLE"       , "II"          , TYPE_INT , modflic_angle        },
-    { "FLI_SIZE"        , "II"          , TYPE_INT , modflic_size         },
-    { "FLI_FLAGS"       , "II"          , TYPE_INT , modflic_flags        },
-    { "FLI_Z"           , "II"          , TYPE_INT , modflic_z            },
-    { "FLI_GETINFO"     , "IPPPPPPPPP"  , TYPE_INT , modflic_getinfo      },
-
-    { NULL              , NULL          , 0        , NULL                 }
-};
-
+/* exports                                                           */
 /* ----------------------------------------------------------------- */
 
+#include "mod_flic_exports.h"
+
+/* ----------------------------------------------------------------- */

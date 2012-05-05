@@ -63,8 +63,7 @@ mkdir -p bin/$TARGET 2>/dev/null
 cp core/bgdi/src/.libs/bgdi bin/$TARGET
 cp core/bgdc/src/bgdc bin/$TARGET
 cp core/bgdrtm/src/.libs/libbgdrtm.so bin/$TARGET
-cp modules/mod*/.libs/mod*.so bin/$TARGET
-cp modules/lib*/.libs/lib*.so bin/$TARGET
+cp $(find modules -name '*.so') bin/$TARGET
 cp tools/moddesc/moddesc bin/$TARGET
 
 echo "### Build done! ###"

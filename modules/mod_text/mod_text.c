@@ -42,26 +42,6 @@
 #include "libtext.h"
 
 /* --------------------------------------------------------------------------- */
-
-DLCONSTANT __bgdexport( mod_text, constants_def )[] =
-{
-    { "ALL_TEXT"            , TYPE_INT  , 0                     },
-
-    /* Alineacion de textos */
-    { "ALIGN_TOP_LEFT"      , TYPE_INT  , ALIGN_TOP_LEFT        },
-    { "ALIGN_TOP"           , TYPE_INT  , ALIGN_TOP             },
-    { "ALIGN_TOP_RIGHT"     , TYPE_INT  , ALIGN_TOP_RIGHT       },
-    { "ALIGN_CENTER_LEFT"   , TYPE_INT  , ALIGN_CENTER_LEFT     },
-    { "ALIGN_CENTER"        , TYPE_INT  , ALIGN_CENTER          },
-    { "ALIGN_CENTER_RIGHT"  , TYPE_INT  , ALIGN_CENTER_RIGHT    },
-    { "ALIGN_BOTTOM_LEFT"   , TYPE_INT  , ALIGN_BOTTOM_LEFT     },
-    { "ALIGN_BOTTOM"        , TYPE_INT  , ALIGN_BOTTOM          },
-    { "ALIGN_BOTTOM_RIGHT"  , TYPE_INT  , ALIGN_BOTTOM_RIGHT    },
-
-    { NULL                  , 0         , 0                     }
-} ;
-
-/* --------------------------------------------------------------------------- */
 /* Funciones de visualización de textos */
 
 static int modtext_write( INSTANCE * my, int * params )
@@ -321,45 +301,9 @@ static int modtext_get_text_color2( INSTANCE * my, int * params )
 }
 
 /* --------------------------------------------------------------------------- */
-
-DLSYSFUNCS  __bgdexport( mod_text, functions_exports )[] = {
-
-    /* Textos */
-    { "WRITE"               , "IIIIS"   , TYPE_INT  , modtext_write             },
-    { "WRITE"               , "IIIIIS"  , TYPE_INT  , modtext_write2            },
-    { "WRITE_INT"           , "IIIIP"   , TYPE_INT  , modtext_write_int         },
-    { "WRITE_INT"           , "IIIIIP"  , TYPE_INT  , modtext_write_int2        },
-    { "MOVE_TEXT"           , "III"     , TYPE_INT  , modtext_move_text         },
-    { "MOVE_TEXT"           , "IIII"    , TYPE_INT  , modtext_move_text2        },
-    { "DELETE_TEXT"         , "I"       , TYPE_INT  , modtext_delete_text       },
-    { "WRITE_IN_MAP"        , "ISI"     , TYPE_INT  , modtext_write_in_map      },
-    { "TEXT_WIDTH"          , "IS"      , TYPE_INT  , modtext_text_width        },
-    { "TEXT_HEIGHT"         , "IS"      , TYPE_INT  , modtext_text_height       },
-    { "GET_TEXT_COLOR"      , ""        , TYPE_INT  , modtext_get_text_color    },
-    { "GET_TEXT_COLOR"      , "I"       , TYPE_INT  , modtext_get_text_color2   },
-    { "SET_TEXT_COLOR"      , "I"       , TYPE_INT  , modtext_set_text_color    },
-    { "SET_TEXT_COLOR"      , "II"      , TYPE_INT  , modtext_set_text_color2   },
-
-    /* Extended Write */
-    { "WRITE_VAR"           , "IIIIV++" , TYPE_INT  , modtext_write_var         },
-    { "WRITE_VAR"           , "IIIIIV++", TYPE_INT  , modtext_write_var2        },
-    { "WRITE_FLOAT"         , "IIIIP"   , TYPE_INT  , modtext_write_float       },
-    { "WRITE_FLOAT"         , "IIIIIP"  , TYPE_INT  , modtext_write_float2      },
-    { "WRITE_STRING"        , "IIIIP"   , TYPE_INT  , modtext_write_string      },
-    { "WRITE_STRING"        , "IIIIIP"  , TYPE_INT  , modtext_write_string2     },
-
-    { 0                     , 0         , 0         , 0                     }
-};
-
+/* exports                                                                     */
 /* --------------------------------------------------------------------------- */
 
-char * __bgdexport( mod_text, modules_dependency )[] =
-{
-    "libgrbase",
-    "libblit",
-    "libtext",
-    "libfont",
-    NULL
-};
+#include "mod_text_exports.h"
 
 /* --------------------------------------------------------------------------- */

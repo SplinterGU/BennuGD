@@ -47,6 +47,10 @@ enum
 
 /* -------------------------------------------------------------------------- */
 
+#ifndef __BGDC__
+
+/* -------------------------------------------------------------------------- */
+
 typedef struct _font
 {
     int         charset;
@@ -85,5 +89,7 @@ extern int gr_font_newfrombitmap( GRAPH * map, int charset, int width, int heigh
 extern int gr_font_systemfont( char * chardata ) ;
 
 /* -------------------------------------------------------------------------- */
+
+#endif
 
 #endif

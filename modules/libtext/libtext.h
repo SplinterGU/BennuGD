@@ -31,8 +31,10 @@
 
 /* --------------------------------------------------------------------------- */
 
+#ifndef __BGDC__
 #include "libgrbase.h"
 #include "libfont.h"
+#endif
 
 /* --------------------------------------------------------------------------- */
 
@@ -64,6 +66,8 @@
 #define ALIGN_BOTTOM        7
 #define ALIGN_BOTTOM_RIGHT  8
 
+#ifndef __BGDC__
+
 /* --------------------------------------------------------------------------- */
 
 extern int fntcolor ;          /* Color for drawing bitmap text    */
@@ -89,5 +93,7 @@ extern int gr_text_put( GRAPH * dest, REGION * region, int fontid, int x, int y,
 extern GRAPH * gr_text_bitmap( int fontid, const char * text, int centered ) ;
 
 /* --------------------------------------------------------------------------- */
+
+#endif
 
 #endif

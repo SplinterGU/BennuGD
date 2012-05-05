@@ -6,7 +6,7 @@ lib_LTLIBRARIES = librender.la
 
 librender_la_SOURCES = librender.c g_fade.c g_frame.c g_instance.c g_object.c g_rects.c g_screen.c \
                        scaler_hq2x.c scaler_normal.c scaler_scale2x.c scaler_scanline.c
-librender_la_CFLAGS = $(COMMON_CFLAGS) $(SDL_CFLAGS) -I$(BGD_PATH)/include -I$(BGD_PATH)/bgdrtm/include -I. -I../libgrbase/ -I../libvideo/ -I../libblit/
+librender_la_CFLAGS = $(COMMON_CFLAGS) $(SDL_CFLAGS) -I$(BGD_PATH)/include -I$(BGD_PATH)/bgdrtm/include -I. -I../libgrbase/ -I../libvideo/ -I../libblit/ -D__LIBRENDER
 librender_la_LDFLAGS = -s -module -no-undefined -avoid-version
 librender_la_LIBADD = $(COMMON_LDFLAGS) $(SDL_LIBS) -L$(BGD_PATH)/bgdrtm/src/.libs -lbgdrtm -L../libvideo/.libs -lvideo -L../libblit/.libs -lblit -L../libgrbase/.libs -lgrbase
 

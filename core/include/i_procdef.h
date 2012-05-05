@@ -31,19 +31,17 @@
 
 #include <i_procdef_st.h>
 
-extern int        local_strings ;
-extern int      * localstr ;
+extern int        local_strings;
+extern int      * localstr;
 
-extern PROCDEF  * mainproc ;
-extern PROCDEF  * procs ;
-extern int        procdef_count ;
-
-extern PROCDEF  * procdef_get (int n) ;
-extern PROCDEF  * procdef_get_by_name (char * name) ;
-extern SYSPROC  * sysproc_get (int code) ;
-extern int        sysproc_add (char * name, char * paramtypes, int type, void * func) ;
-extern void       sysproc_init() ;
+extern PROCDEF  * mainproc;
+extern PROCDEF  * procs;
+extern int        procdef_count;
 
 extern PROCDEF  * procdef_get( int n );
+extern PROCDEF  * procdef_get_by_name(char * name );
+extern SYSPROC  * sysproc_get( int code );
+extern int        sysproc_add( char * name, char * paramtypes, int type, void * func );
+extern void       sysproc_init();
 
 #endif

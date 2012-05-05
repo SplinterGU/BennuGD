@@ -55,39 +55,34 @@ enum {
 
 /* Locals */
 
-#define GRPROC_TYPE_SCAN    0
-#define GRPROC_ID_SCAN      1
-#define GRPROC_CONTEXT      2
-#define PROCESS_ID          3
-#define PROCESS_TYPE        4
-#define STATUS              5
-#define CTYPE               6
-#define CNUMBER             7
-#define COORDX              8
-#define COORDY              9
-#define ANGLE               10
-#define GRAPHSIZE           11
-#define GRAPHSIZEX          12
-#define GRAPHSIZEY          13
-#define FLAGS               14
-#define REGIONID            15
-#define RESOLUTION          16
-#define XGRAPH              17
+enum {
+    GRPROC_TYPE_SCAN = 0,
+    GRPROC_ID_SCAN,
+    GRPROC_CONTEXT,
+    PROCESS_ID,
+    PROCESS_TYPE,
+    STATUS,
+    CTYPE,
+    CNUMBER,
+    COORDX,
+    COORDY,
+    ANGLE,
+    GRAPHSIZE,
+    GRAPHSIZEX,
+    GRAPHSIZEY,
+    FLAGS,
+    REGIONID,
+    RESOLUTION,
+    XGRAPH
+};
 
 /* Globals */
 
-#define MOUSEX              0
-#define MOUSEY              1
-#define SCROLLS             2
-
-/* ----------------------------------------------------------------- */
-
-char * __bgdexport( mod_grproc, locals_def ) =
-    "STRUCT _mod_grproc_reserved\n"
-    "int type_scan;\n"
-    "int id_scan;\n"
-    "int context;\n"
-    "END\n";
+enum {
+    MOUSEX = 0,
+    MOUSEY,
+    SCROLLS
+};
 
 /* ----------------------------------------------------------------- */
 
@@ -961,34 +956,10 @@ void __bgdexport( mod_grproc, process_exec_hook )( INSTANCE * r )
     LOCDWORD( mod_grproc, r, GRPROC_CONTEXT ) = 0;
 }
 
-/* ---------------------------------------------------------------------- */
+/* ----------------------------------------------------------------- */
+/* exports                                                           */
+/* ----------------------------------------------------------------- */
 
-DLSYSFUNCS  __bgdexport( mod_grproc, functions_exports )[] =
-{
-    { "ADVANCE"             , "I"   , TYPE_INT  , grproc_advance            },
-    { "XADVANCE"            , "II"  , TYPE_INT  , grproc_xadvance           },
+#include "mod_grproc_exports.h"
 
-    { "GET_ANGLE"           , "I"   , TYPE_INT  , grproc_get_angle          },
-    { "GET_DIST"            , "I"   , TYPE_INT  , grproc_get_dist           },
-    { "COLLISION"           , "I"   , TYPE_INT  , grproc_collision          },
-    { "COLLISION_BOX"       , "I"   , TYPE_INT  , grproc_collision_box      },
-    { "COLLISION_CIRCLE"    , "I"   , TYPE_INT  , grproc_collision_circle   },
-
-    { "GET_REAL_POINT"      , "IPP" , TYPE_INT  , grproc_get_real_point     },
-
-    { 0                     , 0     , 0         , 0                         }
-};
-
-/* --------------------------------------------------------------------------- */
-
-char * __bgdexport( mod_grproc, modules_dependency )[] =
-{
-    "libmouse",
-    "libgrbase",
-    "libvideo",
-    "librender",
-    "libblit",
-    NULL
-};
-
-/* --------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------- */
