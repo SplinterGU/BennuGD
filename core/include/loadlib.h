@@ -166,7 +166,6 @@ static void * dlibaddr( void * _handle, const char * symbol )
 {
     dlibhandle * handle = ( dlibhandle * ) _handle;
     char * ptr, * f;
-printf( "%s:%d (%s) %p\n", __FILE__, __LINE__, __FUNCTION__, handle ); fflush( stdout );
 
 #ifdef _WIN32
     void * addr = GetProcAddress( (HMODULE)handle->hnd, symbol );
@@ -212,8 +211,6 @@ printf( "%s:%d (%s) %p\n", __FILE__, __LINE__, __FUNCTION__, handle ); fflush( s
     }
 #endif
 #endif
-
-    printf( "[%s:%s]->%p\n", handle->fname, symbol, addr );fflush( stdout );
 
     return addr;
 }
