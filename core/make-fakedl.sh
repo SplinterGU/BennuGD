@@ -43,23 +43,24 @@ search_bgdc_includes()
     echo "#ifdef __BGDC__"
     for i in $(for ii in $SCOPE; do find $MODULES_PATH/$ii -maxdepth 1 -regex '.+\(_exports\.h\)'; done); do echo "#include \"$(basename $i)\""; done
     echo "#endif"
-    echo ""
+    echo " "
 }
 
 search_symbols()
 {
-    echo -e "/* ---------- $2 ---------- */\n"
+    echo "/* ---------- $2 ---------- */"
+    echo " "
 
-    for i in $(grep __bgdexport $(for ii in $SCOPE; do find $MODULES_PATH/$ii -maxdepth 1 -regex '.+\(_exports\.h\|\.c\)'; done) /dev/null | cut -f2 -d\( | cut -f1 -d\) | sed -r 's/\s(\w+)[, ]+(\w+)/\1_\2/'| grep $2); do
+    for i in $(grep __bgdexport $(for ii in $SCOPE; do find $MODULES_PATH/$ii -maxdepth 1 -regex '.+\(_exports\.h\|\.c\)'; done) /dev/null | cut -f2 -d "(" | cut -f1 -d ")" | sed -r 's/\s(\w+)[, ]+(\w+)/\1_\2/'| grep $2); do
         echo "extern $1 $i$3;"
     done
 
-    echo ""
+    echo " "
 }
 
 make_fake_dl_item()
 {
-    for i in $(grep __bgdexport $(find $MODULES_PATH/$i -maxdepth 1 -regex '.+\(_exports\.h\|\.c\)') /dev/null | cut -f2 -d\( | cut -f1 -d\) | sed -r 's/\s(\w+)[, ]+(\w+)/\1_\2/' 2>/dev/null| grep $2); do
+    for i in $(grep __bgdexport $(find $MODULES_PATH/$i -maxdepth 1 -regex '.+\(_exports\.h\|\.c\)') /dev/null | cut -f2 -d "(" | cut -f1 -d ")" | sed -r 's/\s(\w+)[, ]+(\w+)/\1_\2/' 2>/dev/null| grep $2); do
         echo -n $i
     done
 }
@@ -85,7 +86,9 @@ make_fake_dl_lib()
     a16=$(make_fake_dl_item $1 modules_dependency)
 
     if [ "$a01" != "" ] || [ "$a02" != "" ] || [ "$a03" != "" ] || [ "$a04" != "" ] || [ "$a05" != "" ] || [ "$a06" != "" ] || [ "$a07" != "" ] || [ "$a08" != "" ] || [ "$a09" != "" ] || [ "$a10" != "" ] || [ "$a11" != "" ] || [ "$a12" != "" ] || [ "$a13 != "" ] || [ "$a14 != "" ] || [ "$a15 != "" ] || [ "$a16 != "" ]; then
-        echo -e "\n    /* -------------------- $1 -------------------- */\n"
+        echo " "
+        echo "    /* -------------------- $1 -------------------- */"
+        echo " "
         echo "    __fake_dl[$count].dlname                       = \"$1\";"
         echo "#ifdef __BGDC__"
         echo "    __fake_dl[$count].constants_def                = $a01;" | sed -r 's/= ;/= NULL;/g'
@@ -123,6 +126,7 @@ make_fake_dl_lib()
         echo "    __fake_dl[$count].handler_hooks                = $a15;" | sed -r 's/= ;/= NULL;/g'
         echo "#endif"
         echo "    __fake_dl[$count].modules_dependency           = $a16;" | sed -r 's/= ;/= NULL;/g'
+        echo " "
         count=$(($count + 1))
     fi
 
@@ -135,48 +139,58 @@ make_fake_dl()
     data=""
     for i in $SCOPE;
     do
-        data+="$(make_fake_dl_lib $i $count)\n"
+        data+="$(make_fake_dl_lib $i $count)"
         count=$?
     done
 
-    echo -e "/* ---------- FAKE DYNAMIC LIBRARY ---------- */\n"
-    echo -e "__FAKE_DL __fake_dl[$(($count+1))];\n"
+    echo "/* ---------- FAKE DYNAMIC LIBRARY ---------- */"
+    echo " "
+    echo "__FAKE_DL __fake_dl[$(($count+1))];"
+    echo " "
 
-    echo -e "/* ------------------------------------------ */\n"
-    echo -e "void fake_dl_init()\n{"
-    echo -e "$data"
-    echo -e "\n    /* -------------------- LAST -------------------- */\n"
-    echo    "    __fake_dl[$count].dlname                       = NULL;"
-    echo    "    __fake_dl[$count].constants_def                = NULL;"
-    echo    "    __fake_dl[$count].types_def                    = NULL;"
-    echo    "    __fake_dl[$count].globals_def                  = NULL;"
-    echo    "    __fake_dl[$count].locals_def                   = NULL;"
-    echo    "    __fake_dl[$count].globals_fixup                = NULL;"
-    echo    "    __fake_dl[$count].locals_fixup                 = NULL;"
-    echo    "    __fake_dl[$count].functions_exports            = NULL;"
-    echo    "    __fake_dl[$count].module_initialize            = NULL;"
-    echo    "    __fake_dl[$count].module_finalize              = NULL;"
-    echo    "    __fake_dl[$count].instance_create_hook         = NULL;"
-    echo    "    __fake_dl[$count].instance_destroy_hook        = NULL;"
-    echo    "    __fake_dl[$count].instance_pre_execute_hook    = NULL;"
-    echo    "    __fake_dl[$count].instance_pos_execute_hook    = NULL;"
-    echo    "    __fake_dl[$count].process_exec_hook            = NULL;"
-    echo    "    __fake_dl[$count].handler_hooks                = NULL;"
-    echo    "    __fake_dl[$count].modules_dependency           = NULL;"
-    echo -e "\n}\n"
-    echo -e "/* ------------------------------------------ */\n"
+    echo "/* ------------------------------------------ */"
+    echo " "
+    echo "void fake_dl_init()"
+    echo "{"
+    echo "$data"
+    echo "    /* -------------------- LAST -------------------- */"
+    echo " "
+    echo "    __fake_dl[$count].dlname                       = NULL;"
+    echo "    __fake_dl[$count].constants_def                = NULL;"
+    echo "    __fake_dl[$count].types_def                    = NULL;"
+    echo "    __fake_dl[$count].globals_def                  = NULL;"
+    echo "    __fake_dl[$count].locals_def                   = NULL;"
+    echo "    __fake_dl[$count].globals_fixup                = NULL;"
+    echo "    __fake_dl[$count].locals_fixup                 = NULL;"
+    echo "    __fake_dl[$count].functions_exports            = NULL;"
+    echo "    __fake_dl[$count].module_initialize            = NULL;"
+    echo "    __fake_dl[$count].module_finalize              = NULL;"
+    echo "    __fake_dl[$count].instance_create_hook         = NULL;"
+    echo "    __fake_dl[$count].instance_destroy_hook        = NULL;"
+    echo "    __fake_dl[$count].instance_pre_execute_hook    = NULL;"
+    echo "    __fake_dl[$count].instance_pos_execute_hook    = NULL;"
+    echo "    __fake_dl[$count].process_exec_hook            = NULL;"
+    echo "    __fake_dl[$count].handler_hooks                = NULL;"
+    echo "    __fake_dl[$count].modules_dependency           = NULL;"
+    echo " "
+    echo "}"
+    echo " "
+    echo "/* ------------------------------------------ */"
+    echo " "
 }
 
 # without mathi
-SCOPE=$(tail -n $(expr $(wc -l $MODULES_PATH/Makefile.am|cut -f1 -d\ ) - $(grep -n SUBDIRS $MODULES_PATH/Makefile.am | cut -f1 -d: )) $MODULES_PATH/Makefile.am | sed 's/\\//g' | grep -v mathi)
+SCOPE=$(tail -n $(expr $(wc -l $MODULES_PATH/Makefile.am|cut -f1 -d " ") - $(grep -n SUBDIRS $MODULES_PATH/Makefile.am | cut -f1 -d ":" )) $MODULES_PATH/Makefile.am | sed 's/\\//g' | grep -v mathi)
 export SCOPE
 
 credits                                                            $FAKE_DL_FNAME
 
-echo    "#ifndef __FAKE_DL_H"                                   >> $FAKE_DL_FNAME
-echo -e "#define __FAKE_DL_H\n"                                 >> $FAKE_DL_FNAME
+echo "#ifndef __FAKE_DL_H"                                      >> $FAKE_DL_FNAME
+echo "#define __FAKE_DL_H"                                      >> $FAKE_DL_FNAME
+echo " "                                                         >> $FAKE_DL_FNAME
 
-echo -e "#include <bgddl.h>\n"                                  >> $FAKE_DL_FNAME
+echo "#include <bgddl.h>"                                       >> $FAKE_DL_FNAME
+echo " "                                                         >> $FAKE_DL_FNAME
 
 search_bgdc_includes                                            >> $FAKE_DL_FNAME
 
@@ -186,6 +200,7 @@ search_bgdc_includes                                            >> $FAKE_DL_FNAM
 #search_symbols "char *" globals_def                             >> $FAKE_DL_FNAME
 #search_symbols "char *" locals_def                              >> $FAKE_DL_FNAME
 #echo "#endif"                                                   >> $FAKE_DL_FNAME
+
 echo "#ifndef __BGDC__"                                         >> $FAKE_DL_FNAME
 search_symbols DLVARFIXUP globals_fixup '[]'                    >> $FAKE_DL_FNAME
 search_symbols DLVARFIXUP locals_fixup '[]'                     >> $FAKE_DL_FNAME
