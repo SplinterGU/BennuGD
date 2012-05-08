@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 FAKE_DL_FNAME=include/fake_dl.h
 MODULES_PATH=../modules
