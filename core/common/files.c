@@ -854,7 +854,7 @@ char * getfullpath( char *rel_path )
 {
     char fullpath[ __MAX_PATH ] = "";
 #ifdef _WIN32
-    GetFullPathName( rel_path, sizeof( fullpath ), &fullpath, NULL );
+    GetFullPathName( rel_path, sizeof( fullpath ), fullpath, NULL );
 #else
     realpath( rel_path, fullpath );
 #endif

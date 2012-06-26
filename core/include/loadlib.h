@@ -37,13 +37,14 @@
 #include <dlfcn.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 
 #define __stdcall
 #define __dllexport
 #define __dllimport
 #endif
+
+#include <stdio.h>
 
 /*******************************************************************************
  * COMMON                                                                      *

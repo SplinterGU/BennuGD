@@ -7,7 +7,7 @@ echo "### Building BennuGD Core ###"
 cd core
 case $1 in
     release)
-        ./configure && make clean && make
+        ./configure --build=i686-pc-linux-gnu && make clean && make
         ;;
 
     *)
@@ -25,7 +25,7 @@ echo "### Building BennuGD Modules ###"
 cd modules
 case $1 in
     release)
-        ./configure && make clean && make
+        ./configure --build=i686-pc-linux-gnu && make clean && make
         ;;
 
     *)
@@ -43,7 +43,7 @@ echo "### Building BennuGD Tools ###"
 cd tools/moddesc
 case $1 in
     release)
-        ./configure && make clean && make
+        ./configure --build=i686-pc-linux-gnu && make clean && make
         ;;
 
     *)

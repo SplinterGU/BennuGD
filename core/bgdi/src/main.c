@@ -262,14 +262,16 @@ int main( int argc, char *argv[] )
             dcbext++;
         }
     }
-/*
+
+#ifdef __DEBUG__
 printf( "appname        %s\n", appname);
 printf( "appexename     %s\n", appexename);
 printf( "appexepath     %s\n", appexepath);
 printf( "appexefullpath %s\n", appexefullpath);
 printf( "dcbname        %s\n", dcbname);
 fflush(stdout);
-*/
+#endif
+
     if ( !embedded )
     {
         /* First try to load directly (we expect myfile.dcb) */
@@ -280,7 +282,7 @@ fflush(stdout);
 
             while ( dcbext && *dcbext )
             {
-                strcpy( dcbname, filename ) ;
+                strcpy( dcbname, appname ) ;
                 strcat( dcbname, *dcbext ) ;
                 if (( dcbloaded = dcb_load( dcbname ) ) ) break;
                 dcbext++;
