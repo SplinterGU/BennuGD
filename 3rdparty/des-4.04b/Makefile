@@ -102,15 +102,26 @@ LIBDES=	$(LIBDES_FULL)
 
 ALL=	$(GENERAL) $(TESTING_SRC) $(LIBDES) $(PERL) $(HEADERS)
 
-ifeq ($(TARGET),gnu-win32)
+ifneq ($(findstring mingw32,$(TARGET)),)
 DLIB=libdes.dll
 else
-ifeq ($(TARGET),i586-mingw32msvc)
+ifneq ($(findstring win32,$(TARGET)),)
 DLIB=libdes.dll
 else
 DLIB=libdes.so
 endif
 endif
+
+
+#ifeq ($(TARGET),gnu-win32)
+#DLIB=libdes.dll
+#else
+#ifeq ($(TARGET),i586-mingw32msvc)
+#DLIB=libdes.dll
+#else
+#DLIB=libdes.so
+#endif
+#endif
 
 all: $(DLIB) $(TESTING)
 
