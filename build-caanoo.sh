@@ -13,7 +13,7 @@ CAANOO=/opt/caanoo/gcc-4.2.4-glibc-2.7-eabi/arm-gph-linux-gnueabi
 HOST=arm-gph-linux-gnueabi
 TARGET=arm-gph-linux-gnueabi
 BUILD=`uname -m`
-PKG_CONFIG_PATH=/opt/caanoo/gcc-4.2.4-glibc-2.7-eabi/arm-gph-linux-gnueabi/lib/pkgconfig
+PKG_CONFIG_PATH=${CAANOO}/lib/pkgconfig
 
 ## -- END CAANOO USER SETTINGS
 

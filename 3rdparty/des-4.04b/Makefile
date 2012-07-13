@@ -112,17 +112,6 @@ DLIB=libdes.so
 endif
 endif
 
-
-#ifeq ($(TARGET),gnu-win32)
-#DLIB=libdes.dll
-#else
-#ifeq ($(TARGET),i586-mingw32msvc)
-#DLIB=libdes.dll
-#else
-#DLIB=libdes.so
-#endif
-#endif
-
 all: $(DLIB) $(TESTING)
 
 cc:
@@ -186,9 +175,7 @@ test:	all
 
 $(DLIB): $(OBJ)
 	/bin/rm -f $(DLIB) || /bin/true
-	$(CC) -fPIC --shared -o $(DLIB) $(OBJ)
-#	$(AR) cr $(DLIB) $(OBJ)
-#	$(RANLIB) $(DLIB)
+	$(CC) -fPIC --shared -o $(DLIB) $(OBJ) $(LDFLAGS)
 
 des_opts: des_opts.o $(DLIB)
 	$(CC) $(CFLAGS) -o des_opts des_opts.o $(DLIB)
