@@ -178,19 +178,19 @@ $(DLIB): $(OBJ)
 	$(CC) -fPIC --shared -o $(DLIB) $(OBJ) $(LDFLAGS)
 
 des_opts: des_opts.o $(DLIB)
-	$(CC) $(CFLAGS) -o des_opts des_opts.o $(DLIB)
+	$(CC) $(CFLAGS) -o des_opts des_opts.o $(LDFLAGS) $(DLIB)
 
 destest: destest.o $(DLIB)
-	$(CC) $(CFLAGS) -o destest destest.o $(DLIB)
+	$(CC) $(CFLAGS) -o destest destest.o $(LDFLAGS) $(DLIB)
 
 rpw: rpw.o $(DLIB)
-	$(CC) $(CFLAGS) -o rpw rpw.o $(DLIB)
+	$(CC) $(CFLAGS) -o rpw rpw.o $(LDFLAGS) $(DLIB)
 
 speed: speed.o $(DLIB)
-	$(CC) $(CFLAGS) -o speed speed.o $(DLIB)
+	$(CC) $(CFLAGS) -o speed speed.o $(LDFLAGS) $(DLIB)
 
 des: des.o $(DLIB)
-	$(CC) $(CFLAGS) -o des des.o $(DLIB)
+	$(CC) $(CFLAGS) -o des des.o $(LDFLAGS) $(DLIB)
 
 tags:
 	ctags $(TESTING_SRC) $(LIBDES)

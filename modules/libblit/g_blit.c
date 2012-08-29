@@ -1775,8 +1775,8 @@ static void gr_calculate_corners( GRAPH * dest, int screen_x, int screen_y, int 
     }
     else
     {
-        center_x = ( dest->width  / 2.0 ) - 0.5 ;
-        center_y = ( dest->height / 2.0 ) - 0.5 ;
+        center_x = ( dest->width  / 2.0 );
+        center_y = ( dest->height / 2.0 );
     }
 
     if ( flags & B_HMIRROR )
@@ -1804,29 +1804,29 @@ static void gr_calculate_corners( GRAPH * dest, int screen_x, int screen_y, int 
     if ( scalex == 100 && scaley == 100 && angle == 0 )
     {
         lef_x = - center_x ;
-        rig_x = + ( dest->width  - 0.5 - center_x ) ;
+        rig_x = + ( dest->width  - center_x ) ;
         top_y = - center_y ;
-        bot_y = + ( dest->height - 0.5 - center_y ) ;
+        bot_y = + ( dest->height - center_y ) ;
 
-        corners[0].x = ( screen_x  + lef_x ) * 1000 ;
-        corners[0].y = ( screen_y  + top_y ) * 1000 ;
+        corners[0].x = ( screen_x  + lef_x ) * 1000.0 ;
+        corners[0].y = ( screen_y  + top_y ) * 1000.0 ;
 
-        corners[1].x = ( screen_x  + rig_x ) * 1000 ;
-        corners[1].y = ( screen_y  + top_y ) * 1000 ;
+        corners[1].x = ( screen_x  + rig_x ) * 1000.0 ;
+        corners[1].y = ( screen_y  + top_y ) * 1000.0 ;
 
-        corners[2].x = ( screen_x  + lef_x ) * 1000 ;
-        corners[2].y = ( screen_y  + bot_y ) * 1000 ;
+        corners[2].x = ( screen_x  + lef_x ) * 1000.0 ;
+        corners[2].y = ( screen_y  + bot_y ) * 1000.0 ;
 
-        corners[3].x = ( screen_x  + rig_x ) * 1000 ;
-        corners[3].y = ( screen_y  + bot_y ) * 1000 ;
+        corners[3].x = ( screen_x  + rig_x ) * 1000.0 ;
+        corners[3].y = ( screen_y  + bot_y ) * 1000.0 ;
 
         return;
     }
 
     /* Adjust size to prevent integer conversion errors */
 
-    if ( scalex <= 0 || ( scalex * dest->width / 100 ) <= 0 ) scalex = 0;
-    if ( scaley <= 0 || ( scaley * dest->height / 100 ) <= 0 ) scaley = 0;
+    if ( scalex < 0 ) scalex = 0;
+    if ( scaley < 0 ) scaley = 0;
     /*
         if ( scalex > 100 && scalex < 250 ) scalex = (( scalex - 4 ) & ~3 ) + 6;
         if ( scaley > 100 && scaley < 250 ) scaley = (( scaley - 4 ) & ~3 ) + 6;
@@ -1839,9 +1839,9 @@ static void gr_calculate_corners( GRAPH * dest, int screen_x, int screen_y, int 
     /* Calculate the non-rotated non-translated coordinates */
 
     lef_x = - center_x * scalexf;
-    rig_x = + ( dest->width  - 0.5 - center_x ) * scalexf ;
+    rig_x = + ( dest->width  * scalexf - center_x * scalexf ) ;
     top_y = - center_y * scaleyf;
-    bot_y = + ( dest->height - 0.5 - center_y ) * scaleyf ;
+    bot_y = + ( dest->height * scaleyf - center_y * scaleyf );
 
     /* Rotate the coordinates */
 
@@ -1850,17 +1850,17 @@ static void gr_calculate_corners( GRAPH * dest, int screen_x, int screen_y, int 
 
     /* Top-left, top-right, bottom-left, bottom-right */
 
-    corners[0].x = ( screen_x + ( cos_angle * lef_x - sin_angle * top_y ) ) * 1000 ;
-    corners[0].y = ( screen_y + ( sin_angle * lef_x + cos_angle * top_y ) ) * 1000 ;
+    corners[0].x = ( screen_x + ( cos_angle * lef_x - sin_angle * top_y ) ) * 1000.0 ;
+    corners[0].y = ( screen_y + ( sin_angle * lef_x + cos_angle * top_y ) ) * 1000.0 ;
 
-    corners[1].x = ( screen_x + ( cos_angle * rig_x - sin_angle * top_y ) ) * 1000 ;
-    corners[1].y = ( screen_y + ( sin_angle * rig_x + cos_angle * top_y ) ) * 1000 ;
+    corners[1].x = ( screen_x + ( cos_angle * rig_x - sin_angle * top_y ) ) * 1000.0 ;
+    corners[1].y = ( screen_y + ( sin_angle * rig_x + cos_angle * top_y ) ) * 1000.0 ;
 
-    corners[2].x = ( screen_x + ( cos_angle * lef_x - sin_angle * bot_y ) ) * 1000 ;
-    corners[2].y = ( screen_y + ( sin_angle * lef_x + cos_angle * bot_y ) ) * 1000 ;
+    corners[2].x = ( screen_x + ( cos_angle * lef_x - sin_angle * bot_y ) ) * 1000.0 ;
+    corners[2].y = ( screen_y + ( sin_angle * lef_x + cos_angle * bot_y ) ) * 1000.0 ;
 
-    corners[3].x = ( screen_x + ( cos_angle * rig_x - sin_angle * bot_y ) ) * 1000 ;
-    corners[3].y = ( screen_y + ( sin_angle * rig_x + cos_angle * bot_y ) ) * 1000 ;
+    corners[3].x = ( screen_x + ( cos_angle * rig_x - sin_angle * bot_y ) ) * 1000.0 ;
+    corners[3].y = ( screen_y + ( sin_angle * rig_x + cos_angle * bot_y ) ) * 1000.0 ;
 
 }
 
@@ -1939,8 +1939,8 @@ void gr_rotated_blit( GRAPH * dest, REGION * clip, int scrx, int scry, int flags
     VERTEX  vertex[4];
     int     i;
 
-    float   half_texel_size_x;
-    float   half_texel_size_y;
+    float   half_texel_size_x = 0;
+    float   half_texel_size_y = 0;
 
     /* Data for the left line */
     int     left_steps;
@@ -2327,13 +2327,12 @@ void gr_rotated_blit( GRAPH * dest, REGION * clip, int scrx, int scry, int flags
     /* The texture coordinates of each corner point are displaced
        to the center of the texel to sidestep precision errors */
 
-/*
     half_texel_size_x = 50.0 / scalex;
     half_texel_size_y = 50.0 / scaley;
-*/
 
-    half_texel_size_x = 0.5 / scalex;
-    half_texel_size_y = 0.5 / scaley;
+
+//    half_texel_size_x = 0.5 / scalex;
+//    half_texel_size_y = 0.5 / scaley;
 
     /* Fill the vertex array with the four obtained points */
 
@@ -2346,7 +2345,7 @@ void gr_rotated_blit( GRAPH * dest, REGION * clip, int scrx, int scry, int flags
     if ((( flags & B_VMIRROR ) && angle ) || (( flags & B_HMIRROR ) && !angle ) )
     {
         vertex[1].s = vertex[3].s = half_texel_size_y ;
-        vertex[0].s = vertex[2].s = gr->width - half_texel_size_x /*- 1*/ ;
+        vertex[0].s = vertex[2].s = gr->width - half_texel_size_x /*- 1*/;
     }
     else
     {
@@ -2357,12 +2356,12 @@ void gr_rotated_blit( GRAPH * dest, REGION * clip, int scrx, int scry, int flags
     if ((( flags & B_HMIRROR ) && angle ) || (( flags & B_VMIRROR ) && !angle ) )
     {
         vertex[2].t = vertex[3].t = half_texel_size_x;
-        vertex[0].t = vertex[1].t = gr->height - half_texel_size_y /*- 1*/ ;
+        vertex[0].t = vertex[1].t = gr->height - half_texel_size_y /*- 1*/;
     }
     else
     {
         vertex[0].t = vertex[1].t = half_texel_size_x;
-        vertex[2].t = vertex[3].t = gr->height - half_texel_size_y;
+        vertex[2].t = vertex[3].t = gr->height - half_texel_size_y ;
     }
 
     /* Sort the vertex list in y coordinate order */
@@ -2403,7 +2402,7 @@ void gr_rotated_blit( GRAPH * dest, REGION * clip, int scrx, int scry, int flags
     /* Draw the graphic a line each time, navigating through the
      * left and right line segments until reaching the graphic bottom */
 
-    int   x, x2;
+    int  x, x2;
     float s, t, s2, t2;
     int yi = vertex[0].y / 1000, yf = vertex[3].y / 1000;
 
