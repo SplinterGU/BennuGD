@@ -99,8 +99,10 @@ extern uint32_t default_colorequiv[256];
 /* --------------------------------------------------------------------------- */
 
 extern int find_nearest_color( PALETTE * pal, int first, int last, int r, int g, int b );
-extern int gr_map_rgb( PIXEL_FORMAT * format, int r, int g, int b );
-extern int gr_map_rgba( PIXEL_FORMAT * format, int r, int g, int b, int a );
+extern int _rgb( PIXEL_FORMAT * format, int r, int g, int b );
+extern int _rgba( PIXEL_FORMAT * format, int r, int g, int b, int a );
+void _get_rgb( PIXEL_FORMAT * format, int color, int *r, int *g, int *b );
+void _get_rgba( PIXEL_FORMAT * format, int color, int *r, int *g, int *b, int *a );
 extern void pal_refresh( PALETTE * pal );
 extern void pal_use( PALETTE * pal );
 extern int pal_discard( PALETTE * pal );
@@ -121,7 +123,6 @@ extern int gr_rgba_depth( int depth, int r, int g, int b, int a );
 extern void gr_get_rgb_depth( int depth, int color, int *r, int *g, int *b );
 extern void gr_get_rgba_depth( int depth, int color, int *r, int *g, int *b, int *a );
 extern int gr_find_nearest_color( int r, int g, int b );
-extern int gr_get_color( int r, int g, int b );
 extern void gr_make_trans_table();
 extern void gr_set_rgb( int color, int r, int g, int b );
 extern void gr_get_colors( int color, int num, uint8_t * pal );

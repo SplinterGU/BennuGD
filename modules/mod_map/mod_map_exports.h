@@ -132,14 +132,20 @@ DLSYSFUNCS  __bgdexport( mod_map, functions_exports )[] =
     FUNC( "PALETTE_CONVERT"     , "IIP"         , TYPE_INT      , modmap_convert_palette    ),
 
     FUNC( "COLOR_FIND"          , "BBB"         , TYPE_INT      , modmap_find_color         ),
+    FUNC( "COLOR_FIND"          , "IBBB"        , TYPE_INT      , modmap_find_color2        ),
+    FUNC( "COLOR_FIND"          , "IIBBB"       , TYPE_INT      , modmap_find_color3        ),
 
+    FUNC( "RGB"                 , "IIBBB"       , TYPE_INT      , modmap_rgb_map            ),
+    FUNC( "RGBA"                , "IIBBBB"      , TYPE_INT      , modmap_rgba_map           ),
     FUNC( "RGB"                 , "BBBI"        , TYPE_INT      , modmap_rgb_depth          ),
     FUNC( "RGBA"                , "BBBBI"       , TYPE_INT      , modmap_rgba_depth         ),
-    FUNC( "RGB_GET"             , "IPPPI"       , TYPE_INT      , modmap_get_rgb_depth      ),
-    FUNC( "RGBA_GET"            , "IPPPPI"      , TYPE_INT      , modmap_get_rgba_depth     ),
-
     FUNC( "RGB"                 , "BBB"         , TYPE_INT      , modmap_rgb                ),
     FUNC( "RGBA"                , "BBBB"        , TYPE_INT      , modmap_rgba               ),
+
+    FUNC( "RGB_GET"             , "IIIPPP"      , TYPE_INT      , modmap_get_rgb_map        ),
+    FUNC( "RGBA_GET"            , "IIIPPPP"     , TYPE_INT      , modmap_get_rgba_map       ),
+    FUNC( "RGB_GET"             , "IPPPI"       , TYPE_INT      , modmap_get_rgb_depth      ),
+    FUNC( "RGBA_GET"            , "IPPPPI"      , TYPE_INT      , modmap_get_rgba_depth     ),
     FUNC( "RGB_GET"             , "IPPP"        , TYPE_INT      , modmap_get_rgb            ),
     FUNC( "RGBA_GET"            , "IPPPP"       , TYPE_INT      , modmap_get_rgba           ),
 
@@ -201,13 +207,21 @@ DLSYSFUNCS  __bgdexport( mod_map, functions_exports )[] =
     FUNC( "UNLOAD_PAL"          , "I"           , TYPE_INT      , modmap_pal_unload         ),
     FUNC( "SAVE_PAL"            , "S"           , TYPE_INT      , modmap_save_system_pal    ),
     FUNC( "SAVE_PAL"            , "SI"          , TYPE_INT      , modmap_save_pal           ),
+
     FUNC( "SET_COLORS"          , "IIP"         , TYPE_INT      , modmap_set_colors         ),
     FUNC( "SET_COLORS"          , "IIIP"        , TYPE_INT      , modmap_pal_set            ),
     FUNC( "GET_COLORS"          , "IIP"         , TYPE_INT      , modmap_get_colors         ),
     FUNC( "GET_COLORS"          , "IIIP"        , TYPE_INT      , modmap_pal_get            ),
+
     FUNC( "ROLL_PALETTE"        , "III"         , TYPE_INT      , modmap_roll_palette       ),
     FUNC( "CONVERT_PALETTE"     , "IIP"         , TYPE_INT      , modmap_convert_palette    ),
+
     FUNC( "FIND_COLOR"          , "BBB"         , TYPE_INT      , modmap_find_color         ),
+    FUNC( "FIND_COLOR"          , "IBBB"        , TYPE_INT      , modmap_find_color2        ),
+    FUNC( "FIND_COLOR"          , "IIBBB"       , TYPE_INT      , modmap_find_color3        ),
+
+    FUNC( "GET_RGB"             , "IIIPPP"      , TYPE_INT      , modmap_get_rgb_map        ),
+    FUNC( "GET_RGBA"            , "IIIPPPP"     , TYPE_INT      , modmap_get_rgba_map       ),
     FUNC( "GET_RGB"             , "IPPPI"       , TYPE_INT      , modmap_get_rgb_depth      ),
     FUNC( "GET_RGBA"            , "IPPPPI"      , TYPE_INT      , modmap_get_rgba_depth     ),
     FUNC( "GET_RGB"             , "IPPP"        , TYPE_INT      , modmap_get_rgb            ),

@@ -498,6 +498,22 @@ static int modmap_find_color( INSTANCE * my, int * params )
 
 /* --------------------------------------------------------------------------- */
 
+static int modmap_find_color2( INSTANCE * my, int * params )
+{
+    return find_nearest_color( ( PALETTE * ) params[0], 0, 255, params[1], params[2], params[3] ) ;
+}
+
+/* --------------------------------------------------------------------------- */
+
+static int modmap_find_color3( INSTANCE * my, int * params )
+{
+    GRAPH * bmp = bitmap_get( params[0], params[1] ) ;
+    if ( !bmp || bmp->format->depth != 8 ) return 0 ;
+    return find_nearest_color( bmp->format->palette, 0, 255, params[2], params[3], params[4] ) ;
+}
+
+/* --------------------------------------------------------------------------- */
+
 static int modmap_get_rgb( INSTANCE * my, int * params )
 {
     gr_get_rgb( params[0], ( int * )params[1], ( int * )params[2], ( int * )params[3] ) ;
@@ -516,18 +532,14 @@ static int modmap_get_rgba( INSTANCE * my, int * params )
 
 static int modmap_rgb( INSTANCE * my, int * params )
 {
-    return sys_pixel_format->depth > 8 ?
-            gr_rgb( params[0], params[1], params[2] ) :
-            gr_find_nearest_color( params[0], params[1], params[2] ) ;
+    return gr_rgb( params[0], params[1], params[2] );
 }
 
 /* --------------------------------------------------------------------------- */
 
 static int modmap_rgba( INSTANCE * my, int * params )
 {
-    return sys_pixel_format->depth > 8 ?
-            gr_rgba( params[0], params[1], params[2], params[3] ) :
-            gr_find_nearest_color( params[0], params[1], params[2] ) ;
+    return gr_rgba( params[0], params[1], params[2], params[3] );
 }
 
 /* --------------------------------------------------------------------------- */
@@ -562,6 +574,40 @@ static int modmap_rgba_depth( INSTANCE * my, int * params )
     return params[4] > 8 ?
             gr_rgba_depth( params[4], params[0], params[1], params[2], params[3] ) :
             gr_find_nearest_color( params[0], params[1], params[2] ) ;
+}
+
+/* --------------------------------------------------------------------------- */
+
+static int modmap_get_rgb_map( INSTANCE * my, int * params )
+{
+    GRAPH * bmp = bitmap_get( params[0], params[1] ) ;
+    _get_rgb( bmp->format, params[2], ( int * )params[3], ( int * )params[4], ( int * )params[5] ) ;
+    return 1 ;
+}
+
+/* --------------------------------------------------------------------------- */
+
+static int modmap_get_rgba_map( INSTANCE * my, int * params )
+{
+    GRAPH * bmp = bitmap_get( params[0], params[1] ) ;
+    _get_rgba( bmp->format, params[2], ( int * )params[3], ( int * )params[4], ( int * )params[5], ( int * )params[6] ) ;
+    return 1 ;
+}
+
+/* --------------------------------------------------------------------------- */
+
+static int modmap_rgb_map( INSTANCE * my, int * params )
+{
+    GRAPH * bmp = bitmap_get( params[0], params[1] ) ;
+    return _rgb( bmp->format, params[2], params[3], params[4] ) ;
+}
+
+/* --------------------------------------------------------------------------- */
+
+static int modmap_rgba_map( INSTANCE * my, int * params )
+{
+    GRAPH * bmp = bitmap_get( params[0], params[1] ) ;
+    return _rgba( bmp->format, params[2], params[3], params[4], params[5] ) ;
 }
 
 /* --------------------------------------------------------------------------- */
