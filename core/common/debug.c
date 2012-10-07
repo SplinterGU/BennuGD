@@ -150,7 +150,6 @@ mnemonics[] =
     { "STR2FLOAT"                   , MN_STR2FLOAT              , 1 },
     { "FLOAT2STR"                   , MN_FLOAT2STR              , 1 },
     { "POINTER2STR"                 , MN_POINTER2STR            , 1 },
-/*    { "POINTER2BOL"                 , MN_POINTER2BOL            , 1 }, */
 
     { "A2STR"                       , MN_A2STR                  , 0 },
     { "STR2A"                       , MN_STR2A                  , 0 },
@@ -164,7 +163,7 @@ mnemonics[] =
     { "MN_RESUMEGOTO"               , MN_RESUMEGOTO             , 1 },
 
     { "DEBUG"                       , MN_DEBUG                  , 1 },
-    { "------"                      , MN_SENTENCE               , 1 },
+    { ""                            , MN_SENTENCE               , 1 },
 
     { "PUBLIC"                      , MN_PUBLIC                 , 1 },
     { "GET_PUBLIC"                  , MN_GET_PUBLIC             , 1 },
@@ -176,11 +175,16 @@ mnemonics[] =
 } ;
 
 /* ---------------------------------------------------------------------- */
+
+#ifdef __BGDRTM__
+extern int debug;
+#endif
+
 static int mnemonics_inited = 0;
 
 struct
 {
-    char * name;
+    char   name[21];
     int    params ;
 }
 mnemonics_sorted[256];
@@ -195,7 +199,7 @@ void mnemonic_dump( int i, int param )
     {
         while ( mnemonics[n].name )
         {
-            mnemonics_sorted[mnemonics[n].code & MN_MASK].name      = mnemonics[n].name;
+            sprintf( mnemonics_sorted[mnemonics[n].code & MN_MASK].name, "%-20s", mnemonics[n].name );
             mnemonics_sorted[mnemonics[n].code & MN_MASK].params    = mnemonics[n].params;
             n++ ;
         }
@@ -204,84 +208,104 @@ void mnemonic_dump( int i, int param )
 
     n = i & MN_MASK ;
 
-    if ( MN_PARAMS( i ) )
-        printf( "%08X %08X "    , i, param );
-    else
-        printf( "%08X          ", i );
+#ifdef __BGDRTM__
+    if ( debug > 1 )
+    {
+#endif
+        if ( MN_PARAMS( i ) ) printf( "%08X %08X "    , i, param );
+        else                  printf( "%08X          ", i );
+#ifdef __BGDRTM__
+    }
+#endif
 
     if ( mnemonics_sorted[ n ].name )
     {
-        switch ( MN_TYPEOF( i ) )
+#ifdef __BGDRTM__
+        if ( debug > 1 )
         {
-            case MN_UNSIGNED:
-                printf( "UNSIGNED " ) ;
-                break ;
-            case MN_WORD:
-                printf( "SHORT    " ) ;
-                break ;
-            case MN_WORD | MN_UNSIGNED:
-                printf( "WORD     " ) ;
-                break ;
-            case MN_BYTE:
-                printf( "CHAR     " ) ;
-                break ;
-            case MN_BYTE | MN_UNSIGNED:
-                printf( "BYTE     " ) ;
-                break ;
-            case MN_FLOAT:
-                printf( "FLOAT    " ) ;
-                break ;
-            case MN_STRING:
-                printf( "STRING   " ) ;
-                break ;
-            default:
-                printf( "         " ) ;
-                break ;
-        }
-
-        printf( "%-20s", mnemonics_sorted[n].name ) ;
-        if ( i == MN_SYSCALL || i == MN_SYSPROC )
-        {
-            printf( "%-8s (%d)", sysproc_name( param ), param ) ;
-        }
-        else if ( i == MN_CALL || i == MN_PROC || i == MN_TYPE )
-        {
-#ifndef __BGDRTM__
-            if ( libmode )
-                printf( "%-8s (%d)", identifier_name( (procdef_search(param))->identifier ), param ) ;
-            else
-                printf( "%-8s (%d)", identifier_name( (procdef_get(param))->identifier ), param ) ;
-#else
-            printf( "%-8s (%d)", procdef_get(param)->name, param ) ;
 #endif
+            switch ( MN_TYPEOF( i ) )
+            {
+                case MN_UNSIGNED:
+                    printf( "UNSIGNED " ) ;
+                    break ;
+
+                case MN_WORD:
+                    printf( "SHORT    " ) ;
+                    break ;
+
+                case MN_WORD | MN_UNSIGNED:
+                    printf( "WORD     " ) ;
+                    break ;
+
+                case MN_BYTE:
+                    printf( "CHAR     " ) ;
+                    break ;
+
+                case MN_BYTE | MN_UNSIGNED:
+                    printf( "BYTE     " ) ;
+                    break ;
+
+                case MN_FLOAT:
+                    printf( "FLOAT    " ) ;
+                    break ;
+
+                case MN_STRING:
+                    printf( "STRING   " ) ;
+                    break ;
+
+                default:
+                    printf( "         " ) ;
+                    break ;
+            }
+
+            printf( "%s", mnemonics_sorted[n].name ) ;
+
+            if ( i == MN_SYSCALL || i == MN_SYSPROC )
+            {
+                printf( "%s (%d)\n", sysproc_name( param ), param ) ;
+            }
+            else if ( i == MN_CALL || i == MN_PROC || i == MN_TYPE )
+            {
+#ifndef __BGDRTM__
+                if ( libmode )  printf( "%s (%d)\n", identifier_name( (procdef_search(param))->identifier ), param ) ;
+                else            printf( "%s (%d)\n", identifier_name( (procdef_get(param))->identifier ), param ) ;
+#else
+                printf( "%s (%d)\n", procdef_get(param)->name, param ) ;
+#endif
+            }
+            else if ( i != MN_SENTENCE )
+            {
+                switch ( MN_PARAMS( i ) )
+                {
+                    case    1:
+                            printf( "%d", param ) ;
+                            break;
+
+                }
+                printf( "\n" ) ;
+            }
+
+#ifdef __BGDRTM__
         }
-        else if ( i == MN_SENTENCE )
+#endif
+
+        if ( i == MN_SENTENCE )
         {
 #ifdef __BGDRTM__
             if ( dcb.sourcecount[param >> 24] )
             {
-                if ( dcb.data.Version == 0x0700 )
-                    printf( "%s:%d -> %s", dcb.sourcefiles[param >> 24], param & 0xFFFFFF, dcb.sourcelines[param >> 24] [( param & 0xFFFFFF )-1] ) ;
-                else
-                    printf( "%s:%d -> %s", dcb.sourcefiles[param >> 20], param & 0xFFFFF , dcb.sourcelines[param >> 20] [( param & 0xFFFFF  )-1] ) ;
+                if ( dcb.data.Version == 0x0700 ) printf( "%s:%-10d %s\n", dcb.sourcefiles[param >> 24], param & 0xFFFFFF, dcb.sourcelines[param >> 24] [( param & 0xFFFFFF )-1] ) ;
+                else                              printf( "%s:%-10d %s\n", dcb.sourcefiles[param >> 20], param & 0xFFFFF , dcb.sourcelines[param >> 20] [( param & 0xFFFFF  )-1] ) ;
             }
 #else
-            printf( "%s:%d", files[param>>20], param&(( 1 << 20 ) - 1 ) ) ;
+            printf( "%s:%-10d\n", files[param>>20], param&(( 1 << 20 ) - 1 ) ) ;
 #endif
         }
-        else if ( i == ( MN_PUSH | MN_FLOAT ) )
-        {
-            printf( "%-8f", *(( float * )&param ) ) ;
-        }
-        else
-        {
-            switch ( MN_PARAMS( i ) )
-            {
-                case    1:
-                    printf( "%-8d", param ) ;
-                    break;
-            }
-        }
-        printf( "\n" ) ;
     }
+#ifdef __BGDRTM__
+    else if ( debug > 1 )
+#endif
+        printf( "\n" );
+
 }

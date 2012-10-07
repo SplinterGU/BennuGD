@@ -114,59 +114,64 @@ DLVARFIXUP __bgdexport( mod_debug, globals_fixup )[] =
 #define CONSOLE_COLUMNS 80
 #define COMMAND_HISTORY 128
 
+#define MAX_EXPRESSIONS 128
+
 /* --------------------------------------------------------------------------- */
 
 #define HELPTXT \
-    "¬04Process Info¬07\n"                                                      \
-    "¬05INSTANCES      ¬07  List all running processes\n"                       \
-    "¬05GLOBALS        ¬07  Show global vars with values\n"                     \
-    "¬05LOCALS proc    ¬07  Show a process's local vars\n"                      \
-    "¬05PRIVATES proc  ¬07  Show a process's private vars\n"                    \
-    "¬05PUBLICS proc   ¬07  Show a process's public vars\n"                     \
-    "\n"                                                                        \
-    "¬04Execution Commands¬07\n"                                                \
-    "¬05GO             ¬07  Continue the execution\n"                           \
-    "¬05TRACE          ¬07  Execute one instruction and Debug\n"                \
-    "¬05NEXTFRAME      ¬07  Continue to next frame\n"                           \
-    "¬05NEXTPROC       ¬07  Continue to next process\n"                         \
-    "\n"                                                                        \
-    "¬04Breakpoints¬07\n"                                                       \
-    "¬05BREAK          ¬07  List breakpoints\n"                                 \
-    "¬05BREAK proc     ¬07  Set a breakpoint on process\n"                      \
-    "¬05BREAKALL       ¬07  Set breakpoints on all processes\n"                 \
-    "¬05BREAKALLTYPES  ¬07  Set breakpoints on all processes types\n"           \
-    "¬05DELETE proc    ¬07  Delete a breakpoint\n"                              \
-    "¬05DELETEALL      ¬07  Delete all breakpoints on all processess\n"         \
-    "¬05DELETEALLTYPES ¬07  Delete all breakpoints on all processess types\n"   \
-    "\n"                                                                        \
-    "¬04Process Interaction¬07\n"                                               \
-    "¬05RUN proc [args]¬07  Run a process\n"                                    \
-    "¬05KILL proc      ¬07  Kill a process\n"                                   \
-    "¬05WAKEUP proc    ¬07  Wakeup a process\n"                                 \
-    "¬05SLEEP proc     ¬07  Sleep a process\n"                                  \
-    "¬05FREEZE proc    ¬07  Freeze a process\n"                                 \
-    "¬05KILLALL proc   ¬07  Kill all process with criteria\n"                   \
-    "¬05WAKEUPALL proc ¬07  Wakeup all process with criteria\n"                 \
-    "¬05SLEEPALL proc  ¬07  Sleep all process with criteria\n"                  \
-    "¬05FREEZEALL proc ¬07  Freeze all process with criteria\n"                 \
-    "\n"                                                                        \
-    "¬04Misc¬07\n"                                                              \
-    "¬05SHOW expression¬07  Evaluate and show some expression\n"                \
-    "¬05STRINGS        ¬07  Show all strings in memory\n"                       \
-    "¬05VARS           ¬07  Show internals vars\n"                              \
-    "¬05QUIT           ¬07  Kill the program and exit\n"                        \
-    "\n"                                                                        \
-    "¬04Keys¬07\n"                                                              \
-    "¬05ESC            ¬07  Cancel command\n"                                   \
-    "¬05UP/DOWN        ¬07  Command history navigation\n"                       \
-    "¬05PGUP/PGDN      ¬07  Page Up/Page Down\n"                                \
-    "¬05CTRL+CURSORS   ¬07  Console scroll\n"                                   \
-    "¬05ALT+CURSORS    ¬07  Console window size\n"                              \
-    "¬05SHIFT+CURSORS  ¬07  List window scroll\n"                               \
-    "\n"                                                                        \
-    "You can evaluate free expressions in the console,\n"                       \
-    "and you can see/change local, public and private vars\n"                   \
-    "using the '.' operator (pe: 65535.X, MAIN.X, etc.)\n\n"
+    "¬04Process Info¬07\n"                                                       \
+    "¬05INSTANCES       ¬07  List all running processes\n"                       \
+    "¬05GLOBALS         ¬07  Show global vars with values\n"                     \
+    "¬05LOCALS proc     ¬07  Show a process's local vars\n"                      \
+    "¬05PRIVATES proc   ¬07  Show a process's private vars\n"                    \
+    "¬05PUBLICS proc    ¬07  Show a process's public vars\n"                     \
+    "\n"                                                                         \
+    "¬04Execution Commands¬07\n"                                                 \
+    "¬05GO              ¬07  Continue the execution\n"                           \
+    "¬05TRACE           ¬07  Execute one instruction and Debug\n"                \
+    "¬05NEXTFRAME       ¬07  Continue to next frame\n"                           \
+    "¬05NEXTPROC        ¬07  Continue to next process\n"                         \
+    "\n"                                                                         \
+    "¬04Breakpoints¬07\n"                                                        \
+    "¬05BREAK           ¬07  List breakpoints\n"                                 \
+    "¬05BREAK proc      ¬07  Set a breakpoint on process\n"                      \
+    "¬05BREAKALL        ¬07  Set breakpoints on all processes\n"                 \
+    "¬05BREAKALLTYPES   ¬07  Set breakpoints on all processes types\n"           \
+    "¬05DELETE proc     ¬07  Delete a breakpoint\n"                              \
+    "¬05DELETEALL       ¬07  Delete all breakpoints on all processess\n"         \
+    "¬05DELETEALLTYPES  ¬07  Delete all breakpoints on all processess types\n"   \
+    "\n"                                                                         \
+    "¬04Process Interaction¬07\n"                                                \
+    "¬05RUN proc [args] ¬07  Run a process\n"                                    \
+    "¬05KILL proc       ¬07  Kill a process\n"                                   \
+    "¬05WAKEUP proc     ¬07  Wakeup a process\n"                                 \
+    "¬05SLEEP proc      ¬07  Sleep a process\n"                                  \
+    "¬05FREEZE proc     ¬07  Freeze a process\n"                                 \
+    "¬05KILLALL proc    ¬07  Kill all process with criteria\n"                   \
+    "¬05WAKEUPALL proc  ¬07  Wakeup all process with criteria\n"                 \
+    "¬05SLEEPALL proc   ¬07  Sleep all process with criteria\n"                  \
+    "¬05FREEZEALL proc  ¬07  Freeze all process with criteria\n"                 \
+    "\n"                                                                         \
+    "¬04Misc¬07\n"                                                               \
+    "¬05SHOW expression ¬07  Evaluate and show some expression\n"                \
+    "¬05SHOW            ¬07  List all expressions to show\n"                     \
+    "¬05SHOWDEL ExpID   ¬07  Delete an expression (by ID, use SHOW)\n"           \
+    "¬05SHOWDELALL      ¬07  Delete all expression\n"                            \
+    "¬05STRINGS         ¬07  Show all strings in memory\n"                       \
+    "¬05VARS            ¬07  Show internals vars\n"                              \
+    "¬05QUIT            ¬07  Kill the program and exit\n"                        \
+    "\n"                                                                         \
+    "¬04Keys¬07\n"                                                               \
+    "¬05ESC             ¬07  Cancel command\n"                                   \
+    "¬05UP/DOWN         ¬07  Command history navigation\n"                       \
+    "¬05PGUP/PGDN       ¬07  Page Up/Page Down\n"                                \
+    "¬05CTRL+CURSORS    ¬07  Console scroll\n"                                   \
+    "¬05ALT+CURSORS     ¬07  Console window size\n"                              \
+    "¬05SHIFT+CURSORS   ¬07  List window scroll\n"                               \
+    "\n"                                                                         \
+    "You can evaluate free expressions in the console, and you can see/change\n" \
+    "local, public and private vars using the '.' operator\n"                    \
+    "(pe: 65535.X, MAIN.X, etc.)\n\n"
 
 /* --------------------------------------------------------------------------- */
 
@@ -229,7 +234,8 @@ static int command_head = 0 ;
 static int command_tail = 0 ;
 static int command_count = 0 ;
 
-static char * show_expression = 0;
+static char * show_expression[MAX_EXPRESSIONS] = { NULL };
+static int show_expression_count = 0;
 static int  console_showcolor = 0xffffff;
 
 static int console_y = 0 ;
@@ -251,6 +257,7 @@ console_vars[] =
 {
     { "SHOW_COLOR",         &console_showcolor,     CON_DWORD_HEX   },
     { "FILES",              &opened_files,          CON_DWORD       },
+    { "DEBUG_LEVEL",        &debug,                 CON_DWORD       },
 } ;
 
 /* --------------------------------------------------------------------------- */
@@ -1013,8 +1020,8 @@ static void eval_immediate()
         var2const() ;
         if ( result.type != T_CONSTANT )
         {
-            result.type = T_ERROR ;
             console_printf( "¬02Operand is not a number¬07" ) ;
+            result.type = T_ERROR ;
             return ;
         }
         result.value = -result.value ;
@@ -1060,8 +1067,8 @@ static void eval_immediate()
             get_token() ;
             if ( token.name[0] != '.' )
             {
-                result.type = T_ERROR ;
                 console_printf( "¬02Invalid use of a process name¬07" ) ;
+                result.type = T_ERROR ;
                 return ;
             }
             get_token() ;
@@ -1302,7 +1309,7 @@ static char * eval_expression( const char * here, int interactive )
     }
     else if ( result.type == T_STRING )
     {
-        console_printf( "¬07%s = \"%s\"", part, result.name ) ;
+        if ( interactive ) console_printf( "¬07%s = \"%s\"", part, result.name ) ;
     }
     else if ( result.type == T_VARIABLE )
     {
@@ -2037,8 +2044,96 @@ static void console_do( const char * command )
 
     if ( strcmp( action, "SHOW" ) == 0 )
     {
-        if ( show_expression ) free( show_expression );
-        show_expression = *ptr ? strdup( ptr ) : 0;
+        if ( *ptr )
+        {
+            char * res = eval_expression( ptr, 0 );
+
+            if ( !res || result.type == T_STRING )
+            {
+                console_printf( "¬02Invalid argument¬07" );
+                return ;
+            }
+
+            for ( n = 0; n < MAX_EXPRESSIONS; n++ )
+            {
+                if ( show_expression[n] && !strcmp( show_expression[n], ptr ) )
+                {
+                    console_printf( "¬02Already exists¬07" );
+                    return ;
+                }
+            }
+
+            for ( n = 0; n < MAX_EXPRESSIONS; n++ )
+            {
+                if ( !show_expression[n] )
+                {
+                    show_expression[n] = strdup( ptr );
+                    show_expression_count++;
+                    console_printf( "¬07OK" );
+                    return;
+                }
+            }
+
+            console_printf( "¬02No more expressions are possibles¬07" );
+        }
+        else
+        {
+            int nn;
+            for ( n = 0; n < MAX_EXPRESSIONS; n++ )
+            {
+                if ( show_expression[n] )
+                {
+                    console_printf( "%d: %s", n + 1, show_expression[n] );
+                    nn++;
+                }
+            }
+
+            if ( !nn ) console_printf( "¬02No expressions availables¬07" );
+        }
+
+        return;
+    }
+
+
+    if ( strcmp( action, "SHOWDEL" ) == 0 )
+    {
+        if ( *ptr )
+        {
+            char * p = ptr;
+
+            while( ISNUM( *p ) ) p++;
+
+            if ( ISNUM( *ptr ) )
+            {
+                int pos = atol( ptr ) - 1;
+                if ( pos >= 0 && pos < MAX_EXPRESSIONS && show_expression[pos] )
+                {
+                    free( show_expression[pos] );
+                    show_expression[pos] = NULL;
+                    show_expression_count--;
+                    console_printf( "¬07OK" );
+                    return;
+                }
+            }
+        }
+
+        console_printf( "¬02Invalid argument¬07" );
+
+        return;
+    }
+
+    if ( strcmp( action, "SHOWDELALL" ) == 0 )
+    {
+        for ( n = 0; n < MAX_EXPRESSIONS; n++ )
+        {
+            if ( show_expression[n] )
+            {
+                free( show_expression[n] );
+                show_expression[n] = NULL;
+                show_expression_count--;
+            }
+        }
+        console_printf( "¬07OK" );
         return;
     }
 
@@ -2547,36 +2642,43 @@ static void console_draw( INSTANCE * i, REGION * clip )
     x = ( scrbitmap->width - console_columns * CHARWIDTH ) / 2 ;
     y = -console_lines * CHARHEIGHT + console_y ;
 
-    if ( show_expression )
+    int current_show = 0;
+
+    for ( count = 0; count < MAX_EXPRESSIONS; count++ )
     {
-        char * result = eval_expression( show_expression, 0 );
-
-        if ( !result )
+        if ( show_expression[count] )
         {
-            free( show_expression );
-            show_expression = 0;
-        }
-        else
-        {
-            int ln = strlen( result );
-            int rl = ln * CHARWIDTH;
-            int xo = ( scrbitmap->width - rl ) / 2;
-            int yo = ( console_y < 1 ) ? 2 : console_y + CHARHEIGHT * 2 + 1;
+            char * res = eval_expression( show_expression[count], 0 );
 
-            systext_color( 0, 0 ) ;
-            systext_puts( scrbitmap, xo - 1, yo - 1, result, ln );
-            systext_puts( scrbitmap, xo - 1, yo    , result, ln );
-            systext_puts( scrbitmap, xo - 1, yo + 1, result, ln );
-            systext_puts( scrbitmap, xo    , yo + 1, result, ln );
-            systext_puts( scrbitmap, xo + 1, yo + 1, result, ln );
-            systext_puts( scrbitmap, xo + 1, yo    , result, ln );
-            systext_puts( scrbitmap, xo + 1, yo - 1, result, ln );
-            systext_puts( scrbitmap, xo    , yo - 1, result, ln );
+            if ( !res || result.type == T_ERROR )
+            {
+                free( show_expression[count] );
+                show_expression[count] = NULL;
+                show_expression_count--;
+            }
+            else
+            {
+                int ln = strlen( res );
+                int rl = ln * CHARWIDTH;
+                int xo = ( scrbitmap->width - rl ) / 2;
+                int yo = ( ( console_y < 1 ) ? 2 : console_y + CHARHEIGHT * 2 + 1 ) + CHARHEIGHT * current_show;
 
-            systext_color( console_showcolor, 0 ) ;
-            systext_puts( scrbitmap, xo, yo, result, ln );
+                systext_color( 0, 0 ) ;
+                systext_puts( scrbitmap, xo - 1, yo - 1, res, ln );
+                systext_puts( scrbitmap, xo - 1, yo    , res, ln );
+                systext_puts( scrbitmap, xo - 1, yo + 1, res, ln );
+                systext_puts( scrbitmap, xo    , yo + 1, res, ln );
+                systext_puts( scrbitmap, xo + 1, yo + 1, res, ln );
+                systext_puts( scrbitmap, xo + 1, yo    , res, ln );
+                systext_puts( scrbitmap, xo + 1, yo - 1, res, ln );
+                systext_puts( scrbitmap, xo    , yo - 1, res, ln );
 
-            gr_mark_rect( xo, yo, rl, CHARHEIGHT);
+                systext_color( console_showcolor, 0 ) ;
+                systext_puts( scrbitmap, xo, yo, res, ln );
+
+                gr_mark_rect( xo, yo, rl, CHARHEIGHT);
+                current_show++;
+            }
         }
     }
 
@@ -2685,7 +2787,7 @@ static void console_draw( INSTANCE * i, REGION * clip )
 
 static int console_info( INSTANCE * i, REGION * clip, int * z, int * drawme )
 {
-    * drawme = debug_mode || show_expression || ( console_y > 0 );
+    * drawme = debug_mode || show_expression_count || ( console_y > 0 );
 
     if ( debug_mode || ( console_y > 0 ) )
     {
@@ -2694,24 +2796,50 @@ static int console_info( INSTANCE * i, REGION * clip, int * z, int * drawme )
         clip->x2 = scrbitmap->width ;
         clip->y2 = scrbitmap->height ;
     }
-    else if ( show_expression )
+    else if ( show_expression_count )
     {
-        char * result = eval_expression( show_expression, 0 );
-        if ( !result )
+        int count, rl = 0, l;
+
+        for ( count = 0; count < MAX_EXPRESSIONS; count++ )
         {
-            * drawme = 0;
-            return 0;
+            if ( show_expression[count] )
+            {
+                char * res = eval_expression( show_expression[count], 0 );
+
+                if ( !res )
+                {
+                    free( show_expression[count] );
+                    show_expression[count] = NULL;
+                    show_expression_count--;
+                }
+                else
+                {
+                    if ( ( l = strlen( res ) * CHARWIDTH ) > rl ) rl = l ;
+                }
+            }
         }
 
-        int rl = strlen( result ) * CHARWIDTH;
+        if ( !show_expression_count )
+        {
+            *drawme = 0;
+            return 0;
+        }
 
         clip->x = ( scrbitmap->width - rl ) / 2 ;
         clip->y = ( console_y <= 0 ) ? 0 : ( console_y + CHARHEIGHT ) ;
         clip->x2 = clip->x + rl ;
-        clip->y2 = CHARHEIGHT ;
+        clip->y2 = CHARHEIGHT * show_expression_count;
     }
 
     return * drawme ;
+}
+
+/* --------------------------------------------------------------------------- */
+
+static int moddebug_trace( INSTANCE * my, int * params )
+{
+    debug = params[0];
+    return 0 ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -2740,11 +2868,11 @@ void __bgdexport( mod_debug, module_initialize )()
 }
 
 /* --------------------------------------------------------------------------- */
-
+/*
 void __bgdexport( mod_debug, module_finalize )()
 {
 }
-
+*/
 /* --------------------------------------------------------------------------- */
 /* exports                                                                     */
 /* --------------------------------------------------------------------------- */

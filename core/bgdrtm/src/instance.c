@@ -43,7 +43,7 @@
 #include "xstrings.h"
 
 #undef STACK_SIZE
-#define STACK_SIZE 16384
+#define STACK_SIZE 4096
 
 /* ---------------------------------------------------------------------- */
 

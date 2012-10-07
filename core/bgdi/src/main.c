@@ -79,6 +79,9 @@ int main( int argc, char *argv[] )
     INSTANCE * mainproc_running;
     dcb_signature dcb_signature;
 
+    /* disable stdout buffering */
+    setvbuf( stdout, NULL, _IONBF, BUFSIZ );
+
     /* get my executable name */
 
 #ifdef _WIN32
@@ -160,7 +163,7 @@ int main( int argc, char *argv[] )
                 j = 1 ;
                 while ( argv[i][j] )
                 {
-                    if ( argv[i][j] == 'd' ) debug = 1 ;
+                    if ( argv[i][j] == 'd' ) debug++;
                     if ( argv[i][j] == 'i' )
                     {
                         if ( argv[i][j+1] == 0 )
@@ -203,7 +206,7 @@ int main( int argc, char *argv[] )
                     "\n"
                     "Usage: %s [options] <data code block file>[.dcb]\n"
                     "\n"
-                    "   -d       Activate DEBUG mode\n"
+                    "   -d       Activate DEBUG mode (several -d for increment debug level)\n"
                     "   -i dir   Adds the directory to the PATH\n"
                     "\n"
                     "This software is provided 'as-is', without any express or implied\n"
