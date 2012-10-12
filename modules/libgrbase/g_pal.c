@@ -709,7 +709,7 @@ int gr_rgba_depth( int depth, int r, int g, int b, int a )
 void gr_get_rgb_depth( int depth, int color, int *r, int *g, int *b )
 {
     PIXEL_FORMAT * pf = bitmap_create_format( depth );
-    return _get_rgb( pf, color, r, g, b );
+    _get_rgb( pf, color, r, g, b );
     free( pf );
 }
 
@@ -718,7 +718,7 @@ void gr_get_rgb_depth( int depth, int color, int *r, int *g, int *b )
 void gr_get_rgba_depth( int depth, int color, int *r, int *g, int *b, int *a )
 {
     PIXEL_FORMAT * pf = bitmap_create_format( depth );
-    return _get_rgba( pf, color, r, g, b, a );
+    _get_rgba( pf, color, r, g, b, a );
     free( pf );
 }
 
