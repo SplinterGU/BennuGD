@@ -172,11 +172,12 @@ static int modproc_signal( INSTANCE * my, int * params )
     if ( params[0] == ALL_PROCESS )
     {
         /* Signal all process but my */
+        int myid = LOCDWORD( mod_proc, my, PROCESS_ID );
         fake_params[1] = ( params[1] >= S_TREE ) ? params[1] - S_TREE : params[1] ;
         i = first_instance ;
         while ( i )
         {
-            if ( LOCDWORD( mod_proc, i, PROCESS_ID ) != LOCDWORD( mod_proc, my, PROCESS_ID ) )
+            if ( LOCDWORD( mod_proc, i, PROCESS_ID ) != myid && ( LOCDWORD( mod_proc, i, STATUS ) & ~STATUS_WAITING_MASK ) > STATUS_KILLED )
             {
                 fake_params[0] = LOCDWORD( mod_proc, i, PROCESS_ID ) ;
                 modproc_signal( my, fake_params ) ;
@@ -202,7 +203,7 @@ static int modproc_signal( INSTANCE * my, int * params )
     i = instance_get( params[0] ) ;
     if ( i )
     {
-        if (( LOCDWORD( mod_proc, i, STATUS ) & ~STATUS_WAITING_MASK ) != STATUS_DEAD )
+        if (( LOCDWORD( mod_proc, i, STATUS ) & ~STATUS_WAITING_MASK ) > STATUS_KILLED )
         {
             switch ( params[1] )
             {
