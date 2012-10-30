@@ -132,7 +132,7 @@ static void do_mouse_events()
         ( last_mouse_x != -1 && GLOINT32( libmouse, MOUSEX ) != last_mouse_x ) ||
         ( last_mouse_y != -1 && GLOINT32( libmouse, MOUSEY ) != last_mouse_y ) )
     {
-        if ( scale_resolution )
+        if ( scale_resolution != -1 )
         {
             SDL_WarpMouse( GLOINT32( libmouse, MOUSEX ) / ( (double)screen->w / (double)scale_screen->w ), GLOINT32( libmouse, MOUSEY ) / ( (double)screen->h / (double)scale_screen->h ) ) ;
         }
@@ -156,7 +156,7 @@ static void do_mouse_events()
         switch ( e.type )
         {
             case SDL_MOUSEMOTION:
-                if ( scale_resolution )
+                if ( scale_resolution != -1 )
                 {
                     if ( scale_resolution_aspectratio == SRA_PRESERVE )
                     {

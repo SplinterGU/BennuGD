@@ -151,7 +151,7 @@ int gr_lock_screen()
 
     screen_locked = 1 ;
 
-    if ( scale_resolution != 0 )
+    if ( scale_resolution != -1 )
     {
         if ( SDL_MUSTLOCK( scale_screen ) ) SDL_LockSurface( scale_screen ) ;
     }
@@ -195,7 +195,7 @@ void gr_unlock_screen()
 
     screen_locked = 0 ;
 
-    if ( scale_resolution )
+    if ( scale_resolution != -1 )
     {
         uint8_t  * src8  = screen->pixels, * dst8  = scale_screen->pixels , * pdst = scale_screen->pixels ;
         uint16_t * src16 = screen->pixels, * dst16 = scale_screen->pixels ;

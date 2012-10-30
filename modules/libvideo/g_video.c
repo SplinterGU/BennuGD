@@ -68,7 +68,7 @@ int frameless = 0 ;
 int scale_mode = SCALE_NONE ;
 int waitvsync = 0 ;
 
-int scale_resolution = 0 ;
+int scale_resolution = -1 ;
 int * scale_resolution_table_w = NULL;
 int * scale_resolution_table_h = NULL;
 int scale_resolution_aspectratio = 0;
@@ -270,14 +270,14 @@ int gr_set_mode( int width, int height, int depth )
         scale_resolution_table_h = NULL;
     }
 
-    if ( scale_resolution )
+    if ( scale_resolution != -1 )
     {
         surface_width  = scale_resolution / 10000 ;
         surface_height = scale_resolution % 10000 ;
     }
     else
     {
-        scale_resolution = 0;
+        scale_resolution = -1;
 
         if ( scale_mode != SCALE_NONE ) enable_scale = 1;
         if ( enable_scale && scale_mode == SCALE_NONE ) scale_mode = SCALE_SCALE2X;
@@ -309,10 +309,18 @@ int gr_set_mode( int width, int height, int depth )
 
     sdl_flags |= hardware_scr ? SDL_HWSURFACE : SDL_SWSURFACE;
 
-    if ( scale_screen ) SDL_FreeSurface( scale_screen ) ;
-    if ( screen ) SDL_FreeSurface( screen ) ;
+    if ( scale_screen )
+    {
+        SDL_FreeSurface( scale_screen );
+        scale_screen = NULL;
+    }
+    if ( screen )
+    {
+        SDL_FreeSurface( screen );
+        screen = NULL;
+    }
 
-    if ( scale_resolution )
+    if ( scale_resolution != -1 )
     {
         switch ( scale_resolution_orientation )
         {
@@ -329,6 +337,13 @@ int gr_set_mode( int width, int height, int depth )
         scale_screen = SDL_SetVideoMode( surface_width, surface_height, depth, sdl_flags );
 
         if ( !scale_screen ) return -1;
+
+        if ( !width && !height )
+        {
+            width = scale_screen->w;
+            height = scale_screen->h;
+        }
+
         screen = SDL_CreateRGBSurface( sdl_flags,
                                        width,
                                        height,
@@ -409,8 +424,8 @@ int gr_set_mode( int width, int height, int depth )
             }
         }
 
-        if ( !( scale_resolution_table_w = malloc( surface_width  * sizeof( int ) ) ) ) return -1;
-        if ( !( scale_resolution_table_h = malloc( surface_height * sizeof( int ) ) ) ) return -1;
+        if ( !( scale_resolution_table_w = malloc( scale_screen->w * sizeof( int ) ) ) ) return -1;
+        if ( !( scale_resolution_table_h = malloc( scale_screen->h * sizeof( int ) ) ) ) return -1;
 
         for ( w = 0; w < scale_screen->w; w++ )
         {
@@ -485,16 +500,22 @@ int gr_set_mode( int width, int height, int depth )
 
 //    gr_make_trans_table();
 
+    if ( scale_resolution == -1 && enable_scale )
+    {
+        surface_width  = screen->w * 2;
+        surface_height = screen->h * 2;
+    }
+
     /* Bitmaps de fondo */
 
     /* Only allow background with same properties that video mode */
     if (
         !background ||
-        scr_width != width || scr_height != height ||
+        scr_width != screen->w || scr_height != screen->h ||
         sys_pixel_format->depth != background->format->depth )
     {
         if ( background ) bitmap_destroy( background );
-        background = bitmap_new( 0, width, height, sys_pixel_format->depth ) ;
+        background = bitmap_new( 0, screen->w, screen->h, sys_pixel_format->depth ) ;
         if ( background )
         {
             gr_clear( background ) ;
@@ -502,13 +523,13 @@ int gr_set_mode( int width, int height, int depth )
         }
     }
 
-    scr_width = width ;
-    scr_height = height ;
+    scr_width = screen->w ;
+    scr_height = screen->h ;
 
     regions[0].x  = 0 ;
     regions[0].y  = 0 ;
-    regions[0].x2 = width - 1 ;
-    regions[0].y2 = height - 1 ;
+    regions[0].x2 = screen->w - 1 ;
+    regions[0].y2 = screen->h - 1 ;
 
     // Finalmente seteamos icono de aplicacion
     // Necesitamos crear una surface a partir de un MAP generico de 16x16...
@@ -547,6 +568,7 @@ void __bgdexport( libvideo, module_initialize )()
         GLODWORD( libvideo, GRAPH_MODE ) = atoi(e);
     else
         GLODWORD( libvideo, GRAPH_MODE ) = MODE_16BITS;
+    if ( ( e = getenv( "VIDEO_FULLSCREEN" ) ) ) GLODWORD( libvideo, GRAPH_MODE ) |= atoi(e) ? MODE_FULLSCREEN : 0;
 
     gr_init( scr_width, scr_height ) ;
 }

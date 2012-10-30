@@ -101,7 +101,7 @@ char * __bgdexport( libvideo, globals_def ) =
     "graph_mode = 0;\n"
     "scale_mode = 0;\n"
     "full_screen = 0;\n"
-    "scale_resolution = 0;\n"
+    "scale_resolution = -1;\n"
     "scale_resolution_aspectratio = 0;\n"
     "scale_resolution_orientation = 0;\n"
     ;
