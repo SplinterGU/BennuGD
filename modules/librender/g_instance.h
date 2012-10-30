@@ -29,6 +29,9 @@
 #ifndef __G_INSTANCE_H
 #define __G_INSTANCE_H
 
+#include <bgddl.h>
+#include <g_bitmap.h>
+
 extern void instance_get_bbox( INSTANCE * i, GRAPH * gr, REGION * dest );
 extern void draw_instance_at( INSTANCE * i, REGION * r, int x, int y, GRAPH * dest ) ;
 extern void draw_instance( INSTANCE * i, REGION * clip ) ;
