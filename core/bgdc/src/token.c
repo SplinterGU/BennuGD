@@ -1290,7 +1290,7 @@ void token_next()
             token.line = line_count;
             token.file = current_file;
 
-            if ( maybe_label && *source_ptr == ':' )
+            if ( maybe_label && *source_ptr == ':' && identifier_search( buffer ) > reserved_words )
             {
                 source_ptr++;
                 token.code = identifier_search_or_add( buffer );

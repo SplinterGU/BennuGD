@@ -42,7 +42,7 @@ static identifier * identifier_hash[64] ;
 static int          identifier_code = 1 ;
 int                 identifier_count = 0 ;
 
-int identifier_hash_value (const char * string)
+int identifier_hash_value(const char * string)
 {
 	int t = 0 ;
 	const char * ptr = string ;
@@ -65,13 +65,13 @@ identifier * identifier_first()
 	return 0 ;
 }
 
-identifier * identifier_next (identifier * id)
+identifier * identifier_next(identifier * id)
 {
 	int n ;
 
 	if (id->next) return id->next ;
 
-	n = identifier_hash_value (id->name) ;
+	n = identifier_hash_value(id->name) ;
 	for (n++ ; n < 64 ; n++)
 	{
 		if (identifier_hash[n])
@@ -80,7 +80,7 @@ identifier * identifier_next (identifier * id)
 	return 0 ;
 }
 
-void identifier_init ()
+void identifier_init()
 {
 	int i ;
 
@@ -90,12 +90,12 @@ void identifier_init ()
 	identifier_code = 1 ;
 }
 
-void identifier_dump ()
+void identifier_dump()
 {
 	int i, ii ;
 	identifier * ptr ;
 
-	printf ("\n---- %d identifiers ----\n\n", identifier_count) ;
+	printf("\n---- %d identifiers ----\n\n", identifier_count) ;
 	for (i = 0 ; i < 64 ; i++)
 	{
 		ptr = identifier_hash[i] ;
@@ -103,27 +103,27 @@ void identifier_dump ()
 		while (ptr)
 		{
 			ii++;
-			printf ("%4d: %-32s [%04d] [%3d]\n", ptr->code, ptr->name, i, ii) ;
+			printf("%4d: %-32s [%04d] [%3d]\n", ptr->code, ptr->name, i, ii) ;
 			ptr = ptr->next ;
 		}
 	}
 }
 
-int identifier_add_as (const char * string, int code)
+int identifier_add_as(const char * string, int code)
 {
 	int hash = identifier_hash_value(string) ;
 	identifier * w = (identifier *)calloc(1, sizeof(identifier)) ;
 
 	if (!w)
 	{
-		fprintf (stdout, "identifier_add: out of memory\n") ;
+		fprintf(stdout, "identifier_add: out of memory\n") ;
 		exit(1);
 	}
 
 	w->name = strdup(string) ;
 	if (!w->name)
 	{
-		fprintf (stdout, "identifier_add: out of memory\n") ;
+		fprintf(stdout, "identifier_add: out of memory\n") ;
 		exit(1);
 	}
 	w->line = line_count ; /* Save First appearance */
@@ -136,16 +136,16 @@ int identifier_add_as (const char * string, int code)
 	return 1 ;
 }
 
-int identifier_add (const char * string)
+int identifier_add(const char * string)
 {
 	int code = identifier_code++ ;
-	if (!identifier_add_as (string, code)) return 0 ;
+	if (!identifier_add_as(string, code)) return 0 ;
 	return code ;
 }
 
-int identifier_search (const char * string)
+int identifier_search(const char * string)
 {
-	int hash = identifier_hash_value (string) ;
+	int hash = identifier_hash_value(string) ;
 	identifier * ptr = identifier_hash[hash] ;
 
 	while (ptr)
@@ -153,7 +153,7 @@ int identifier_search (const char * string)
 		if (!ptr->name) return 0;
 		if (ptr->name[0] == *string)
 		{
-			if (strcmp (string, ptr->name) == 0) break ;
+			if (strcmp(string, ptr->name) == 0) break ;
 		}
 		ptr = ptr->next ;
 	}
@@ -161,9 +161,9 @@ int identifier_search (const char * string)
 }
 
 /* Return line for the identifier */
-int identifier_line (int code)
+int identifier_line(int code)
 {
-int i ;
+    int i ;
 	identifier * ptr ;
 
 	for (i = 0 ; i < 64 ; i++)
@@ -181,7 +181,7 @@ int i ;
 }
 
 /* Return file for the identifier */
-int identifier_file (int code)
+int identifier_file(int code)
 {
     int i ;
 	identifier * ptr ;
@@ -200,7 +200,7 @@ int identifier_file (int code)
 	return 0 ;
 }
 
-const char * identifier_name (int code)
+const char * identifier_name(int code)
 {
 	int i ;
 	identifier * ptr ;
@@ -219,20 +219,20 @@ const char * identifier_name (int code)
 	return 0 ;
 }
 
-int identifier_search_or_add (const char * string)
+int identifier_search_or_add(const char * string)
 {
 	int result ;
 
-	result = identifier_search (string) ;
-	return result ? result : identifier_add (string) ;
+	result = identifier_search(string) ;
+	return result ? result : identifier_add(string) ;
 }
 
-int identifier_next_code ()
+int identifier_next_code()
 {
 	return identifier_code ;
 }
 
-int identifier_is_basic_type (int id)
+int identifier_is_basic_type(int id)
 {
 	return (
 		id == identifier_int ||
@@ -248,7 +248,7 @@ int identifier_is_basic_type (int id)
 		);
 }
 
-int identifier_is_type (int id)
+int identifier_is_type(int id)
 {
 	return identifier_is_basic_type(id) || segment_by_name(id) != NULL;
 }
