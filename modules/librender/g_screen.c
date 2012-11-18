@@ -320,8 +320,8 @@ void gr_unlock_screen()
                                         if ( scale_resolution_table_w[w] != -1 ) *dst16 = src16[scale_resolution_table_w[w]];
                                         dst16++;
                                     }
-                                    dst16 = ( uint16_t * ) ( pdst += scale_screen->pitch ) ;
                                 }
+                                dst16 = ( uint16_t * ) ( pdst += scale_screen->pitch ) ;
                             }
                         }
                         else
