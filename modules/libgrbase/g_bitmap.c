@@ -118,6 +118,8 @@ GRAPH * bitmap_new_ex( int code, int w, int h, int depth, void * data, int pitch
     GRAPH * gr ;
     int wb ;
 
+    if ( w < 1 || h < 1 ) return NULL;
+
     /* Create and fill the struct */
 
     gr = ( GRAPH * ) malloc( sizeof( GRAPH ) ) ;
@@ -160,6 +162,8 @@ GRAPH * bitmap_new( int code, int w, int h, int depth )
 {
     GRAPH * gr ;
     int bytesPerRow, wb ;
+
+    if ( w < 1 || h < 1 ) return NULL;
 
     /* Create and fill the struct */
 
