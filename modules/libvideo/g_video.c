@@ -52,8 +52,8 @@ SDL_Surface * scale_screen = NULL ;
 
 char * apptitle = NULL ;
 
-int scr_width = 320 ;
-int scr_height = 240 ;
+int scr_width = 0 ;
+int scr_height = 0 ;
 
 int scr_initialized = 0 ;
 
