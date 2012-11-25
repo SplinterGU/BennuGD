@@ -182,13 +182,10 @@ void describe_module( char *filename )
 
 #if defined( WIN32 )
 #define DLLEXT      ".dll"
-#define SIZEDLLEXT  4
 #elif defined(TARGET_MAC)
 #define DLLEXT      ".dylib"
-#define SIZEDLLEXT  6
 #else
 #define DLLEXT      ".so"
-#define SIZEDLLEXT  3
 #endif
 
     strncpy ( soname, filename, sizeof ( soname ) );

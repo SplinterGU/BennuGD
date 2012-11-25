@@ -37,8 +37,8 @@ case "$target_os" in
 	    ;;
 
     *)
-        CFLAGS+=" -Wall"
-        LDFLAGS+=" -lc -ldl"
+        CFLAGS+=" -Wall -m32"
+        LDFLAGS+=" -lc -ldl -m32"
 	    ;;
 
 esac

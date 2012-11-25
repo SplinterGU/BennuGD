@@ -105,14 +105,14 @@ static void * dlibopen( const char * fname )
 
     if ( !hnd )
     {
-        f = fname + strlen( fname );
+        f = ( char * ) fname + strlen( fname );
         while ( f > fname && f[-1] != '\\' && f[-1] != '/' ) f-- ;
 
         if ( strncmp( f, "lib", 3 ) )
         {
             if ( ( _fname = malloc( strlen( fname ) + 4 ) ) )
             {
-                sprintf( _fname, "%*.*slib%s", f - fname, f - fname, fname, f );
+                sprintf( _fname, "%.*slib%s", ( int ) ( f - fname ), fname, f );
 #ifdef _WIN32
                 hnd = LoadLibrary( _fname );
 #else
@@ -142,7 +142,7 @@ static void * dlibopen( const char * fname )
         return NULL;
     }
 
-    f = fname + strlen( fname );
+    f = ( char * ) fname + strlen( fname );
     while ( f > fname && f[-1] != '\\' && f[-1] != '/' ) f-- ;
     dlib->fname = strdup( f );
     if ( !dlib->fname )

@@ -134,7 +134,7 @@ GRAPH * gr_read_png( const char * filename )
     /* Recupera el fichero, convirtiendo a 16 bits si es preciso */
 
     rowbytes = png_get_rowbytes( png_ptr, info_ptr ) ;
-    bitmap = bitmap_new( 0, width, height, ( color == PNG_COLOR_TYPE_GRAY ) ? info_ptr->pixel_depth : ( color == PNG_COLOR_TYPE_PALETTE ) ? 8 : ( sys_pixel_format->depth == 16 ? 16 : 32 ) ) ;
+    bitmap = bitmap_new( 0, width, height, ( color == PNG_COLOR_TYPE_GRAY ) ? depth : ( color == PNG_COLOR_TYPE_PALETTE ) ? 8 : ( sys_pixel_format->depth == 16 ? 16 : 32 ) ) ;
     if ( !bitmap )
     {
         png_destroy_read_struct( &png_ptr, &info_ptr, &end_info ) ;
