@@ -2407,9 +2407,9 @@ void gr_rotated_blit( GRAPH * dest, REGION * clip, int scrx, int scry, int flags
 
     int  x, x2;
     float s, t, s2, t2;
-    int yi = vertex[0].y / 1000, yf = vertex[3].y / 1000;
+    int yf = vertex[3].y / 1000;
 
-    for ( i = yi ; i < yf; i++ )
+    for ( i = vertex[0].y / 1000; i < yf; i++ )
     {
         left_pos++;
         right_pos++;
