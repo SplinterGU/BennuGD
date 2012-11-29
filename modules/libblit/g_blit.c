@@ -1839,14 +1839,14 @@ static void gr_calculate_corners( GRAPH * dest, int screen_x, int screen_y, int 
     /* Calculate the non-rotated non-translated coordinates */
 
     lef_x = - center_x * scalexf;
-    rig_x = + ( dest->width  * scalexf - center_x * scalexf ) ;
+    rig_x = ( ( float ) dest->width  - center_x ) * scalexf;
     top_y = - center_y * scaleyf;
-    bot_y = + ( dest->height * scaleyf - center_y * scaleyf );
+    bot_y = ( ( float ) dest->height - center_y ) * scaleyf;
 
     /* Rotate the coordinates */
 
-    float cos_angle = ( float ) cos( angle * M_PI / -180000.0 );
-    float sin_angle = ( float ) sin( angle * M_PI / -180000.0 );
+    float cos_angle = ( float ) cos( ( float ) angle * M_PI / -180000.0 );
+    float sin_angle = ( float ) sin( ( float ) angle * M_PI / -180000.0 );
 
     /* Top-left, top-right, bottom-left, bottom-right */
 
@@ -2327,12 +2327,15 @@ void gr_rotated_blit( GRAPH * dest, REGION * clip, int scrx, int scry, int flags
     /* The texture coordinates of each corner point are displaced
        to the center of the texel to sidestep precision errors */
 
-    half_texel_size_x = 50.0 / scalex;
-    half_texel_size_y = 50.0 / scaley;
+//    half_texel_size_x = 50.0 / scalex;
+//    half_texel_size_y = 50.0 / scaley;
 
 
 //    half_texel_size_x = 0.5 / scalex;
 //    half_texel_size_y = 0.5 / scaley;
+
+    half_texel_size_x = 0;
+    half_texel_size_y = 0;
 
     /* Fill the vertex array with the four obtained points */
 
