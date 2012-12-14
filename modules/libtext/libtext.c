@@ -70,6 +70,9 @@ typedef struct _text
     char * text ;           /* Memoria dinámica */
     const void * var  ;  /* CHANGED TO VOID to allow diff. data types */
     int last_z ;
+    int last_color8 ;
+    int last_color16 ;
+    int last_color32 ;
     /* Internals, for speed up */
     int _x ;
     int _y ;
@@ -295,11 +298,17 @@ static int info_text( TEXT * text, REGION * bbox, int * z, int * drawme )
     /* Check if the var has changed since last call */
 
     changed =
+        text->color8  != text->last_color8  ||
+        text->color16 != text->last_color16 ||
+        text->color32 != text->last_color32 ||
         text->z != text->last_z ||
         bbox->x  != prev.x  || bbox->y  != prev.y ||
         bbox->x2 != prev.x2 || bbox->y2 != prev.y2;
 
     text->last_z = text->z;
+    text->last_color8 = text->color8;
+    text->last_color16 = text->color16;
+    text->last_color32 = text->color32;
 
     switch ( text->on )
     {
