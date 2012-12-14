@@ -1784,7 +1784,7 @@ static void gr_calculate_corners( GRAPH * dest, int screen_x, int screen_y, int 
         if (_angle)
         {
             center_y = dest->height - center_y - 1 ;
-            angle = 360000 + ( 180000 - angle );
+            angle = 180000 - angle;
         }
         else
             center_x = dest->width - center_x - 1 ;
@@ -1795,7 +1795,7 @@ static void gr_calculate_corners( GRAPH * dest, int screen_x, int screen_y, int 
         if (_angle)
         {
             center_x = dest->width - center_x - 1 ;
-            angle = 90000 + ( 90000 - angle );
+            angle = 180000 - angle;
         }
         else
             center_y = dest->height - center_y - 1 ;
