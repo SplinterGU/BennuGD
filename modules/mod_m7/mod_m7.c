@@ -918,14 +918,6 @@ static int modm7_stop( INSTANCE * my, int * params )
 }
 
 /* ----------------------------------------------------------------- */
-/* Funciones de inicializacion del modulo/plugin                     */
-
-void __bgdexport( mod_m7, module_initialize )()
-{
-    init_cos_tables() ;
-}
-
-/* ----------------------------------------------------------------- */
 /* exports                                                           */
 /* ----------------------------------------------------------------- */
 

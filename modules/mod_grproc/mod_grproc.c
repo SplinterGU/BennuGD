@@ -940,14 +940,6 @@ static int grproc_collision_circle( INSTANCE * my, int * params )
 }
 
 /* ----------------------------------------------------------------- */
-/* Funciones de inicializacion del modulo/plugin                     */
-
-void __bgdexport( mod_grproc, module_initialize )()
-{
-    init_cos_tables() ;
-}
-
-/* ----------------------------------------------------------------- */
 
 void __bgdexport( mod_grproc, process_exec_hook )( INSTANCE * r )
 {

@@ -69,7 +69,7 @@ char * __bgdexport( mod_m7, globals_def ) =
 char * __bgdexport( mod_m7, locals_def ) =
     "ctype;\n"
     "cnumber;\n"
-    "height;\n"
+    "height = 32;\n"
     "STRUCT _m7_reserved\n"
     "  distance1;\n"
     "END;\n";

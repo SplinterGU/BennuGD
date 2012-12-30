@@ -41,6 +41,8 @@
 #include "sysprocs_p.h"
 #include "xstrings.h"
 
+#include "fmath.h"
+
 #if defined(TARGET_GP2X_WIZ) || defined(TARGET_CAANOO)
     #include <sys/types.h>
     #include <sys/stat.h>
@@ -276,6 +278,8 @@ void bgdrtm_entry( int argc, char * argv[] )
 
     bgdrtm_ptimer_init();
 #endif
+
+    init_cos_tables();
 }
 
 /* --------------------------------------------------------------------------- */

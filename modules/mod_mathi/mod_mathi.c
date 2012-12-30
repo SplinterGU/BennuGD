@@ -137,14 +137,6 @@ static int math_finite( INSTANCE * my, int * params )
 
 /* --------------------------------------------------------------------------- */
 
-static int math_get_disty( INSTANCE * my, int * params )
-{
-    double angle = params[0] * M_PI / 180000.0 ;
-    return ( int )( params[1] * -sin( angle ) ) ;
-}
-
-/* --------------------------------------------------------------------------- */
-
 static int math_fget_angle( INSTANCE * my, int * params )
 {
     double dx = params[2] - params[0] ;
@@ -204,6 +196,14 @@ static int math_get_distx( INSTANCE * my, int * params )
 {
     double angle = params[0] * M_PI / 180000.0 ;
     return ( int )( params[1] * cos( angle ) ) ;
+}
+
+/* --------------------------------------------------------------------------- */
+
+static int math_get_disty( INSTANCE * my, int * params )
+{
+    double angle = params[0] * M_PI / 180000.0 ;
+    return ( int )( params[1] * -sin( angle ) ) ;
 }
 
 /* ----------------------------------------------------------------- */
