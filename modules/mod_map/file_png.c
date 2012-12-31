@@ -174,6 +174,7 @@ GRAPH * gr_read_png( const char * filename )
         png_colorp png_palette = ( png_colorp ) png_malloc( png_ptr, 256 * sizeof( png_color ) ) ;
         if ( !png_palette )
         {
+            bitmap_destroy( bitmap );
             png_destroy_read_struct( &png_ptr, &info_ptr, &end_info ) ;
             free( rowpointers ) ;
             free( row ) ;
