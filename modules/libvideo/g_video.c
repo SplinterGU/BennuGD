@@ -555,6 +555,8 @@ void __bgdexport( libvideo, module_initialize )()
 {
     char * e;
 
+    GLODWORD( libvideo, SCALE_RESOLUTION ) = -1; // hack for backward compatibility
+
     if ( !SDL_WasInit( SDL_INIT_VIDEO ) ) SDL_InitSubSystem( SDL_INIT_VIDEO );
 
 #ifdef _WIN32
