@@ -277,8 +277,6 @@ int gr_set_mode( int width, int height, int depth )
     }
     else
     {
-        scale_resolution = -1;
-
         if ( scale_mode != SCALE_NONE ) enable_scale = 1;
         if ( enable_scale && scale_mode == SCALE_NONE ) scale_mode = SCALE_SCALE2X;
 
