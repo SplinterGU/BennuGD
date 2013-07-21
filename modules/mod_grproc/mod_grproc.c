@@ -656,14 +656,14 @@ static int check_collision_with_mouse( INSTANCE * proc1, int colltype )
 
 /* --------------------------------------------------------------------------- */
 
-static int check_collision_circle( INSTANCE * proc1, GRAPH * bmp1, REGION * bbox1, INSTANCE * proc2 )
+static int check_collision_circle( INSTANCE * proc1, REGION * bbox1, INSTANCE * proc2 )
 {
     REGION bbox2 ;
-    GRAPH * bmp2 ;
+    GRAPH * bmp ;
     int cx1, cy1, cx2, cy2, dx1, dy1, dx2, dy2;
 
-    bmp2 = instance_graph( proc2 ) ; if ( !bmp2 ) return 0 ;
-    instance_get_bbox( proc2, bmp2, &bbox2 );
+    bmp = instance_graph( proc2 ) ; if ( !bmp ) return 0 ;
+    instance_get_bbox( proc2, bmp, &bbox2 );
 
     cx1 = bbox1->x + ( dx1 = ( bbox1->x2 - bbox1->x + 1 ) ) / 2 ;
     cy1 = bbox1->y + ( dy1 = ( bbox1->y2 - bbox1->y + 1 ) ) / 2 ;
@@ -678,13 +678,13 @@ static int check_collision_circle( INSTANCE * proc1, GRAPH * bmp1, REGION * bbox
 
 /* --------------------------------------------------------------------------- */
 
-static int check_collision_box( INSTANCE * proc1, GRAPH * bmp1, REGION * bbox1, INSTANCE * proc2 )
+static int check_collision_box( INSTANCE * proc1, REGION * bbox1, INSTANCE * proc2 )
 {
     REGION bbox2 ;
-    GRAPH * bmp2 ;
+    GRAPH * bmp ;
 
-    bmp2 = instance_graph( proc2 ) ; if ( !bmp2 ) return 0 ;
-    instance_get_bbox( proc2, bmp2, &bbox2 );
+    bmp = instance_graph( proc2 ) ; if ( !bmp ) return 0 ;
+    instance_get_bbox( proc2, bmp, &bbox2 );
 
     region_union( &bbox2, bbox1 ) ;
     if ( region_is_empty( &bbox2 ) ) return 0 ;
@@ -694,11 +694,11 @@ static int check_collision_box( INSTANCE * proc1, GRAPH * bmp1, REGION * bbox1, 
 
 /* --------------------------------------------------------------------------- */
 
-static int check_collision( INSTANCE * proc1, GRAPH * bmp1, REGION * bbox3, INSTANCE * proc2 )
+static int check_collision( INSTANCE * proc1, REGION * bbox3, INSTANCE * proc2 )
 {
     REGION bbox1, bbox2 ;
     int x, y, w, h ;
-    GRAPH * bmp2 ;
+    GRAPH * bmp1 = NULL, * bmp2 = NULL ;
 
     bbox1 = *bbox3;
 
@@ -829,7 +829,7 @@ static int __collision( INSTANCE * my, int id, int colltype )
 {
     INSTANCE * ptr, ** ctx ;
     int status, p ;
-    int ( *colfunc )( INSTANCE *, GRAPH *, REGION *, INSTANCE * );
+    int ( *colfunc )( INSTANCE *, REGION *, INSTANCE * );
     REGION bbox1 ;
     GRAPH * bmp1 ;
 
@@ -859,7 +859,7 @@ static int __collision( INSTANCE * my, int id, int colltype )
     int ctype = LOCDWORD( mod_grproc, my, CTYPE );
 
     /* Checks only for a single instance */
-    if ( id >= FIRST_INSTANCE_ID ) return ( ( ( ptr = instance_get( id ) ) && ctype == LOCDWORD( mod_grproc, ptr, CTYPE ) ) ? colfunc( my, bmp1, &bbox1, ptr ) : 0 ) ;
+    if ( id >= FIRST_INSTANCE_ID ) return ( ( ( ptr = instance_get( id ) ) && ctype == LOCDWORD( mod_grproc, ptr, CTYPE ) ) ? colfunc( my, &bbox1, ptr ) : 0 ) ;
 
     /* we must use full list of instances or get types from it */
     ptr = first_instance ;
@@ -880,7 +880,7 @@ static int __collision( INSTANCE * my, int id, int colltype )
                   (
                     ( status = ( LOCDWORD( mod_grproc, ptr, STATUS ) & ~STATUS_WAITING_MASK ) ) == STATUS_RUNNING ||
                     status == STATUS_FROZEN
-                  ) && colfunc( my, bmp1, &bbox1, ptr )
+                  ) && colfunc( my, &bbox1, ptr )
                 )
             {
                 LOCDWORD( mod_grproc, my, GRPROC_ID_SCAN ) = LOCDWORD( mod_grproc, ptr, PROCESS_ID ) ;
@@ -908,7 +908,7 @@ static int __collision( INSTANCE * my, int id, int colltype )
                 ( status = ( LOCDWORD( mod_grproc, ptr, STATUS ) & ~STATUS_WAITING_MASK ) ) == STATUS_RUNNING ||
                   status == STATUS_FROZEN
              ) &&
-             colfunc( my, bmp1, &bbox1, ptr )
+             colfunc( my, &bbox1, ptr )
            )
         {
             return LOCDWORD( mod_grproc, ptr, PROCESS_ID ) ;

@@ -861,7 +861,7 @@ static int modmap_fnt_new_charset( INSTANCE * my, int * params )
 
 /* --------------------------------------------------------------------------- */
 
-/** FNT_NEW (FILE, GRAPH, CHARSET, WITDH, HEIGHT, FIRST, LAST, FLAGS)
+/** FNT_NEW (FILE, GRAPH, CHARSET, WIDTH, HEIGHT, FIRST, LAST, FLAGS)
  *  Create a new font in memory (returns the font ID)
  */
 

@@ -31,8 +31,18 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <stdio.h>
-#include <math.h>
+#include <fmath.h>
 
+/*#include <math.h>
+typedef long int fixed ;
+#define FIXED_PREC      10000
+#define fixtof(a) (( ( float ) a ) / FIXED_PREC )
+#define fcos(a) (cos(a* M_PI / 180000.0)*FIXED_PREC)
+#define fsin(a) (sin(a* M_PI / 180000.0)*FIXED_PREC)
+#ifndef M_PI
+#define M_PI        3.14159265358979323846
+#endif
+*/
 #include "libblit.h"
 
 /* --------------------------------------------------------------------------- */
@@ -190,6 +200,8 @@ static int additive_blend32( int A, int B )
 
     return ( r | g | b /*| a*/ );
 }
+
+/* --------------------------------------------------------------------------- */
 
 /* Routine to sort vertexes in y, x order */
 static int compare_vertex_y( const VERTEX * a, const VERTEX * b )
@@ -1758,110 +1770,74 @@ static void draw_hspan_32to32_nocolorkey( uint32_t *scr, uint32_t * tex, int pix
  *
  */
 
-static void gr_calculate_corners( GRAPH * dest, int screen_x, int screen_y, int flags, int angle, int scalex, int scaley, _POINTF * corners )
+static void gr_calculate_corners( GRAPH * dest, int screen_x, int screen_y, int flags, int angle, int scalex, int scaley, _POINT * corners )
 {
-    float center_x, center_y;
-    float top_y, bot_y;
-    float lef_x, rig_x;
-    float scalexf, scaleyf;
-    int _angle = angle;
+    float center_x, center_y, sx = 1, sy = -1;
+
+    if ( scalex < 0 ) scalex = 0;
+    if ( scaley < 0 ) scaley = 0;
 
     /* Calculate the graphic center */
 
     if ( dest->ncpoints && dest->cpoints[0].x != CPOINT_UNDEFINED )
     {
-        center_x = dest->cpoints[0].x /*- 0.5*/ ;
-        center_y = dest->cpoints[0].y /*- 0.5*/ ;
+        center_x = dest->cpoints[0].x + 0.5;
+        center_y = dest->cpoints[0].y + 0.5;
     }
     else
     {
-        center_x = ( dest->width  / 2.0 );
-        center_y = ( dest->height / 2.0 );
+        center_x = dest->width  / 2.0;
+        center_y = dest->height / 2.0;
     }
 
-    if ( flags & B_HMIRROR )
-    {
-        if (_angle)
-        {
-            center_y = dest->height - center_y - 1 ;
-            angle = 180000 - angle;
-        }
-        else
-            center_x = dest->width - center_x - 1 ;
-    }
-
-    if ( flags & B_VMIRROR )
-    {
-        if (_angle)
-        {
-            center_x = dest->width - center_x - 1 ;
-            angle = 180000 - angle;
-        }
-        else
-            center_y = dest->height - center_y - 1 ;
-    }
-
-    if ( scalex == 100 && scaley == 100 && angle == 0 )
-    {
-        lef_x = - center_x ;
-        rig_x = + ( dest->width  - center_x ) ;
-        top_y = - center_y ;
-        bot_y = + ( dest->height - center_y ) ;
-
-        corners[0].x = ( screen_x  + lef_x ) * 1000.0 ;
-        corners[0].y = ( screen_y  + top_y ) * 1000.0 ;
-
-        corners[1].x = ( screen_x  + rig_x ) * 1000.0 ;
-        corners[1].y = ( screen_y  + top_y ) * 1000.0 ;
-
-        corners[2].x = ( screen_x  + lef_x ) * 1000.0 ;
-        corners[2].y = ( screen_y  + bot_y ) * 1000.0 ;
-
-        corners[3].x = ( screen_x  + rig_x ) * 1000.0 ;
-        corners[3].y = ( screen_y  + bot_y ) * 1000.0 ;
-
-        return;
-    }
-
-    /* Adjust size to prevent integer conversion errors */
-
-    if ( scalex < 0 ) scalex = 0;
-    if ( scaley < 0 ) scaley = 0;
-    /*
-        if ( scalex > 100 && scalex < 250 ) scalex = (( scalex - 4 ) & ~3 ) + 6;
-        if ( scaley > 100 && scaley < 250 ) scaley = (( scaley - 4 ) & ~3 ) + 6;
-    */
-    /* Scale the coordinates */
-
-    scalexf = scalex / 100.0 ;
-    scaleyf = scaley / 100.0 ;
-
-    /* Calculate the non-rotated non-translated coordinates */
-
-    lef_x = - center_x * scalexf;
-    rig_x = ( ( float ) dest->width  - center_x ) * scalexf;
-    top_y = - center_y * scaleyf;
-    bot_y = ( ( float ) dest->height - center_y ) * scaleyf;
+    if ( flags & B_HMIRROR ) sx = -1;
+    if ( flags & B_VMIRROR ) sy = 1;
 
     /* Rotate the coordinates */
 
-    float cos_angle = ( float ) cos( ( float ) angle * M_PI / -180000.0 );
-    float sin_angle = ( float ) sin( ( float ) angle * M_PI / -180000.0 );
+    float cos_angle = fixtof( fcos( -angle ) );
+    float sin_angle = fixtof( fsin( -angle ) );
 
     /* Top-left, top-right, bottom-left, bottom-right */
 
-    corners[0].x = ( screen_x + ( cos_angle * lef_x - sin_angle * top_y ) ) * 1000.0 ;
-    corners[0].y = ( screen_y + ( sin_angle * lef_x + cos_angle * top_y ) ) * 1000.0 ;
+    float x0 = ( (float)screen_x + 0.5 ) * 100.0,
+          y0 = ( (float)screen_y + 0.5 ) * 100.0;
 
-    corners[1].x = ( screen_x + ( cos_angle * rig_x - sin_angle * top_y ) ) * 1000.0 ;
-    corners[1].y = ( screen_y + ( sin_angle * rig_x + cos_angle * top_y ) ) * 1000.0 ;
+    float lef_x, top_y, rig_x, bot_y;
+/*
+    lef_x = - ( scalex * center_x - 0.5 ) ;
+    rig_x =   ( scalex * ( dest->width - center_x ) - 0.5 ) ;
 
-    corners[2].x = ( screen_x + ( cos_angle * lef_x - sin_angle * bot_y ) ) * 1000.0 ;
-    corners[2].y = ( screen_y + ( sin_angle * lef_x + cos_angle * bot_y ) ) * 1000.0 ;
+    top_y = - ( scaley * center_y - 0.5 ) ;
+    bot_y =   ( scaley * ( dest->height - center_y ) - 0.5 ) ;
+*/
 
-    corners[3].x = ( screen_x + ( cos_angle * rig_x - sin_angle * bot_y ) ) * 1000.0 ;
-    corners[3].y = ( screen_y + ( sin_angle * rig_x + cos_angle * bot_y ) ) * 1000.0 ;
+    lef_x = - ( (float) scalex * center_x ) ;
+    rig_x =   ( (float) scalex * ( dest->width - center_x ) ) ;
 
+    top_y = - ( (float) scaley * center_y ) ;
+    bot_y =   ( (float) scaley * ( dest->height - center_y ) ) ;
+
+    if ( (int) lef_x != (int) rig_x )
+    {
+        lef_x += 0.5;
+        rig_x -= 0.5;
+    }
+
+    if ( (int) top_y != (int) bot_y )
+    {
+        top_y += 0.5;
+        bot_y -= 0.5;
+    }
+
+    corners[0].x = ( lef_x * cos_angle + top_y * sin_angle ) * sx + x0;
+    corners[0].y = ( lef_x * sin_angle - top_y * cos_angle ) * sy + y0;
+    corners[1].x = ( rig_x * cos_angle + top_y * sin_angle ) * sx + x0;
+    corners[1].y = ( rig_x * sin_angle - top_y * cos_angle ) * sy + y0;
+    corners[2].x = ( lef_x * cos_angle + bot_y * sin_angle ) * sx + x0;
+    corners[2].y = ( lef_x * sin_angle - bot_y * cos_angle ) * sy + y0;
+    corners[3].x = ( rig_x * cos_angle + bot_y * sin_angle ) * sx + x0;
+    corners[3].y = ( rig_x * sin_angle - bot_y * cos_angle ) * sy + y0;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1886,7 +1862,7 @@ static void gr_calculate_corners( GRAPH * dest, int screen_x, int screen_y, int 
 
 void gr_get_bbox( REGION * dest, REGION * clip, int x, int y, int flags, int angle, int scalex, int scaley, GRAPH * gr )
 {
-    _POINTF corners[4];
+    _POINT  corners[4];
     _POINT  min, max;
     int     i;
 
@@ -1907,10 +1883,10 @@ void gr_get_bbox( REGION * dest, REGION * clip, int x, int y, int flags, int ang
         if ( max.y < corners[i].y ) max.y = corners[i].y;
     }
 
-    dest->x  = min.x / 1000 ;
-    dest->y  = min.y / 1000 ;
-    dest->x2 = max.x / 1000 ;
-    dest->y2 = max.y / 1000 ;
+    dest->x  = min.x / 100 ;
+    dest->y  = min.y / 100 ;
+    dest->x2 = max.x / 100 ;
+    dest->y2 = max.y / 100 ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1932,15 +1908,24 @@ void gr_get_bbox( REGION * dest, REGION * clip, int x, int y, int flags, int ang
  *
  */
 
-void gr_rotated_blit( GRAPH * dest, REGION * clip, int scrx, int scry, int flags, int angle, int scalex, int scaley, GRAPH * gr )
+void gr_rotated_blit(
+    GRAPH * dest,
+    REGION * clip,
+    int scrx,
+    int scry,
+    int flags,
+    int angle,
+    int scalex,
+    int scaley,
+    GRAPH * gr )
 {
-    _POINTF corners[4];
+    _POINT  corners[4];
     _POINT  min, max;
     VERTEX  vertex[4];
     int     i;
 
-    float   half_texel_size_x = 0;
-    float   half_texel_size_y = 0;
+    float   half_texel_size_x = 0.0;
+    float   half_texel_size_y = 0.0;
 
     /* Data for the left line */
     int     left_steps;
@@ -2327,15 +2312,10 @@ void gr_rotated_blit( GRAPH * dest, REGION * clip, int scrx, int scry, int flags
     /* The texture coordinates of each corner point are displaced
        to the center of the texel to sidestep precision errors */
 
-//    half_texel_size_x = 50.0 / scalex;
-//    half_texel_size_y = 50.0 / scaley;
-
-
-//    half_texel_size_x = 0.5 / scalex;
-//    half_texel_size_y = 0.5 / scaley;
-
-    half_texel_size_x = 0;
-    half_texel_size_y = 0;
+    half_texel_size_x = 50.0 / ( float ) scalex;
+    half_texel_size_y = 50.0 / ( float ) scaley;
+//    half_texel_size_x = 0.5 / ( float ) scalex;
+//    half_texel_size_y = 0.5 / ( float ) scaley;
 
     /* Fill the vertex array with the four obtained points */
 
@@ -2345,27 +2325,27 @@ void gr_rotated_blit( GRAPH * dest, REGION * clip, int scrx, int scry, int flags
         vertex[i].y = corners[i].y ;
     }
 
-    if ((( flags & B_VMIRROR ) && angle ) || (( flags & B_HMIRROR ) && !angle ) )
+   /* if ( flags & B_VMIRROR )
     {
         vertex[1].s = vertex[3].s = half_texel_size_y ;
-        vertex[0].s = vertex[2].s = gr->width - half_texel_size_x /*- 1*/;
+        vertex[0].s = vertex[2].s = gr->width - half_texel_size_x ;
     }
     else
-    {
+    {*/
         vertex[0].s = vertex[2].s = half_texel_size_y;
         vertex[1].s = vertex[3].s = gr->width - half_texel_size_x;
-    }
+    //}
 
-    if ((( flags & B_HMIRROR ) && angle ) || (( flags & B_VMIRROR ) && !angle ) )
+    /*if ( flags & B_HMIRROR )
     {
         vertex[2].t = vertex[3].t = half_texel_size_x;
-        vertex[0].t = vertex[1].t = gr->height - half_texel_size_y /*- 1*/;
+        vertex[0].t = vertex[1].t = gr->height - half_texel_size_y ;
     }
     else
-    {
+    {*/
         vertex[0].t = vertex[1].t = half_texel_size_x;
-        vertex[2].t = vertex[3].t = gr->height - half_texel_size_y ;
-    }
+        vertex[2].t = vertex[3].t = gr->height - half_texel_size_y;
+  //  }
 
     /* Sort the vertex list in y coordinate order */
 
@@ -2391,11 +2371,11 @@ void gr_rotated_blit( GRAPH * dest, REGION * clip, int scrx, int scry, int flags
         right_start = &vertex[0];
     }
 
-    left_steps  = ( left_end->y  - left_start->y ) / 1000 ;
+    left_steps  = ( left_end->y  - left_start->y ) / 100 ;
     left_texture_increment.x  = ( left_end->s  - left_start->s ) / ( float )( left_steps ) ;
     left_texture_increment.y  = ( left_end->t  - left_start->t ) / ( float )( left_steps ) ;
 
-    right_steps = ( right_end->y - right_start->y ) / 1000;
+    right_steps = ( right_end->y - right_start->y ) / 100;
     right_texture_increment.x = ( right_end->s - right_start->s ) / ( float )( right_steps ) ;
     right_texture_increment.y = ( right_end->t - right_start->t ) / ( float )( right_steps ) ;
 
@@ -2405,33 +2385,33 @@ void gr_rotated_blit( GRAPH * dest, REGION * clip, int scrx, int scry, int flags
     /* Draw the graphic a line each time, navigating through the
      * left and right line segments until reaching the graphic bottom */
 
-    int  x, x2;
+    int   x, x2;
     float s, t, s2, t2;
-    int yf = vertex[3].y / 1000;
+    int y, y2 = vertex[3].y / 100;
 
-    for ( i = vertex[0].y / 1000; i < yf; i++ )
+    for ( y = vertex[0].y / 100 ; y <= y2; y++ )
     {
         left_pos++;
         right_pos++;
 
         /* Calculate the left point coordinates in screen and texture */
-        x  = left_start->x / 1000 ;
+        x  = left_start->x / 100 ;
         s  = left_start->s;
         t  = left_start->t;
         if ( left_pos > 0 && left_steps > 0 )
         {
-            x += (( left_end->x - left_start->x ) / 1000 ) * left_pos / left_steps;
+            x += (( left_end->x - left_start->x ) / 100 ) * left_pos / left_steps;
             s += left_texture_increment.x * left_pos ;
             t += left_texture_increment.y * left_pos ;
         }
 
         /* Calculate the right point coordinates in screen and texture */
-        x2 = right_start->x / 1000;
+        x2 = right_start->x / 100;
         s2 = right_start->s;
         t2 = right_start->t;
         if ( right_pos > 0 && right_steps > 0 )
         {
-            x2 += (( right_end->x - right_start->x ) / 1000 ) * right_pos / right_steps;
+            x2 += (( right_end->x - right_start->x ) / 100 ) * right_pos / right_steps;
             s2 += right_texture_increment.x * right_pos ;
             t2 += right_texture_increment.y * right_pos ;
         }
@@ -2440,19 +2420,19 @@ void gr_rotated_blit( GRAPH * dest, REGION * clip, int scrx, int scry, int flags
            should be equal to i. However, precision errors may prevent it. */
 
         /* Clip the resulting coordinates */
-        if ( i >= min.y && i <= max.y )
+        if ( y >= min.y && y <= max.y )
         {
             if ( x < min.x && x2 > x )
             {
-                s += ( min.x - x ) * (( s2 - s ) / ( x2 - x ) );
-                t += ( min.x - x ) * (( t2 - t ) / ( x2 - x ) );
+                s += ( min.x - x ) * (( s2 - s ) / ( x2 - x + 1 ) );
+                t += ( min.x - x ) * (( t2 - t ) / ( x2 - x + 1 ) );
                 x  = min.x;
             }
 
             if ( x2 > max.x && x2 > x )
             {
-                s2 -= ( x2 - max.x ) * (( s2 - s ) / ( x2 - x ) );
-                t2 -= ( x2 - max.x ) * (( t2 - t ) / ( x2 - x ) );
+                s2 -= ( x2 - max.x ) * (( s2 - s ) / ( x2 - x + 1 ) );
+                t2 -= ( x2 - max.x ) * (( t2 - t ) / ( x2 - x + 1 ) );
                 x2  = max.x;
             }
 
@@ -2464,12 +2444,12 @@ void gr_rotated_blit( GRAPH * dest, REGION * clip, int scrx, int scry, int flags
                     dest,
                     gr,
                     x,
-                    i,
+                    y,
                     x2 - x + 1,
                     ( int )( s * 65536 ),
                     ( int )( t * 65536 ),
-                    ( int )(( s2 - s ) / ( x2 - x ) * 65536 ),
-                    ( int )(( t2 - t ) / ( x2 - x ) * 65536 )
+                    ( int )(( s2 - s ) / ( x2 - x + 1 ) * 65536 ),      //increm destino
+                    ( int )(( t2 - t ) / ( x2 - x + 1 ) * 65536 )       //increm text
                 );
             }
         }
@@ -2482,7 +2462,7 @@ void gr_rotated_blit( GRAPH * dest, REGION * clip, int scrx, int scry, int flags
             left_start = left_end;
             left_end   = &vertex[3];
             left_pos   = -1 ;
-            left_steps = ( left_end->y - left_start->y ) / 1000;
+            left_steps = ( left_end->y - left_start->y ) / 100;
             if ( left_steps > 0 )
             {
                 left_texture_increment.x = ( left_end->s - left_start->s ) / ( float )( left_steps ) ;
@@ -2497,7 +2477,7 @@ void gr_rotated_blit( GRAPH * dest, REGION * clip, int scrx, int scry, int flags
             right_start = right_end;
             right_end   = &vertex[3];
             right_pos   = -1 ;
-            right_steps = ( right_end->y - right_start->y ) / 1000;
+            right_steps = ( right_end->y - right_start->y ) / 100;
             if ( right_steps > 0 )
             {
                 right_texture_increment.x = ( right_end->s - right_start->s ) / ( float )( right_steps ) ;
@@ -2908,8 +2888,8 @@ void gr_blit( GRAPH * dest, REGION * clip, int scrx, int scry, int flags, GRAPH 
     }
     else
     {
-        center.x = gr->width / 2.0;
-        center.y = gr->height / 2.0;
+        center.x = gr->width  / 2;
+        center.y = gr->height / 2;
     }
 
     if ( flags & B_HMIRROR ) center.x = gr->width  - 1 - center.x;
@@ -2952,23 +2932,23 @@ void gr_blit( GRAPH * dest, REGION * clip, int scrx, int scry, int flags, GRAPH 
 
     /* Calculate the initial pointers and advances */
 
-    posx    = s;
+    posx = s;
     if ( dest->format->depth == 1 )
-        scr = ( uint8_t * ) dest->data + dest->pitch * y + ( x / 8 ) ;
+        scr = ( uint8_t * ) dest->data + dest->pitch * y + x / 8;
     else
-        scr = ( uint8_t * ) dest->data + dest->pitch * y + x * dest->format->depthb ;
+        scr = ( uint8_t * ) dest->data + dest->pitch * y + x * dest->format->depthb;
 
+    //s,t -> x,y para lectura de textura...
     if ( gr->format->depth == 1 )
         tex = ( uint8_t * ) gr->data + gr->pitch * t + s / 8;
     else
         tex = ( uint8_t * ) gr->data + gr->pitch * t + s * gr->format->depthb;
 
     scr_inc   = dest->pitch ;
-    tex_inc   = gr->pitch ;
-    direction = 1;
 
-    if ( flags & B_VMIRROR ) tex_inc = -tex_inc;
-    if ( flags & B_HMIRROR ) direction = -1;
+
+    if ( flags & B_VMIRROR ) tex_inc = -gr->pitch; else tex_inc = gr->pitch ;
+    if ( flags & B_HMIRROR ) direction = -1; else direction = 1;
 
     if ( p > 0 ) draw_hspan( scr, tex, p, direction, l, scr_inc, tex_inc );
 
@@ -2977,3 +2957,4 @@ void gr_blit( GRAPH * dest, REGION * clip, int scrx, int scry, int flags, GRAPH 
 }
 
 /* --------------------------------------------------------------------------- */
+

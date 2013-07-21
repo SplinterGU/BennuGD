@@ -164,8 +164,8 @@ int gr_mark_rects( REGION * rects )
                     }
                     rects[ count ].x = w * x;
                     rects[ count ].y = h * y;
-                    rects[ count ].x2 = w * cw - 1 /* + rects[ count ].x */;
-                    rects[ count ].y2 = h * ch - 1 /* + rects[ count ].y */;
+                    rects[ count ].x2 = w * cw /* + rects[ count ].x */;
+                    rects[ count ].y2 = h * ch /* + rects[ count ].y */;
                     count++;
                 }
             }
@@ -192,8 +192,8 @@ int gr_mark_rects( REGION * rects )
 
                 rects[ count ].x = w * x;
                 rects[ count ].y = h * y;
-                rects[ count ].x2 = MIN( w * cw - 1, scr_width - 1 );
-                rects[ count ].y2 = MIN( h * ch - 1, scr_height - 1 );
+                rects[ count ].x2 = MIN( w * cw, scr_width - 1 );
+                rects[ count ].y2 = MIN( h * ch, scr_height - 1 );
 
                 count++;
             }

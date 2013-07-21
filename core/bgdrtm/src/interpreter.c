@@ -282,6 +282,7 @@ int instance_go( INSTANCE * r )
             }
             else if ( debug > 1 ) printf( "[%4u] ", ( ptr - r->code ) ) ;
             mnemonic_dump( *ptr, ptr[1] ) ;
+            fflush(stdout);
         }
 
         switch ( *ptr )

@@ -175,13 +175,9 @@ void draw_instance_at( INSTANCE * i, REGION * region, int x, int y, GRAPH * dest
     /* XGRAPH does not rotate destination graphic.
        WARNING: don't remove "scalex != 100 || scaley != 100 ||" from begin the next condition */
     if ( scalex != 100 || scaley != 100 || ( LOCINT32( librender, i, ANGLE ) && !LOCDWORD( librender, i, XGRAPH ) ) )
-    {
         gr_rotated_blit( dest, region, x, y, flags, LOCDWORD( librender, i, XGRAPH ) ? 0 : LOCINT32( librender, i, ANGLE ), scalex, scaley, map ) ;
-    }
     else
-    {
         gr_blit( dest, region, x, y, flags, map ) ;
-    }
 
     if ( paletteid ) map->format->palette = palette;
     if ( blendop ) map->blend_table = blend_table;
