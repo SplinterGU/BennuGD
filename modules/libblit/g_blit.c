@@ -1795,8 +1795,10 @@ static void gr_calculate_corners( GRAPH * dest, int screen_x, int screen_y, int 
 
     /* Rotate the coordinates */
 
-    float cos_angle = fixtof( fcos( -angle ) );
-    float sin_angle = fixtof( fsin( -angle ) );
+//    float cos_angle = fixtof( fcos( -angle ) );
+//    float sin_angle = fixtof( fsin( -angle ) );
+    float cos_angle = fixtof( fcos( angle ) );
+    float sin_angle = fixtof( fsin( angle ) );
 
     /* Top-left, top-right, bottom-left, bottom-right */
 
@@ -1830,14 +1832,14 @@ static void gr_calculate_corners( GRAPH * dest, int screen_x, int screen_y, int 
         bot_y -= 0.5;
     }
 
-    corners[0].x = ( lef_x * cos_angle + top_y * sin_angle ) * sx + x0;
-    corners[0].y = ( lef_x * sin_angle - top_y * cos_angle ) * sy + y0;
-    corners[1].x = ( rig_x * cos_angle + top_y * sin_angle ) * sx + x0;
-    corners[1].y = ( rig_x * sin_angle - top_y * cos_angle ) * sy + y0;
-    corners[2].x = ( lef_x * cos_angle + bot_y * sin_angle ) * sx + x0;
-    corners[2].y = ( lef_x * sin_angle - bot_y * cos_angle ) * sy + y0;
-    corners[3].x = ( rig_x * cos_angle + bot_y * sin_angle ) * sx + x0;
-    corners[3].y = ( rig_x * sin_angle - bot_y * cos_angle ) * sy + y0;
+    corners[0].x = ( lef_x * cos_angle - top_y * sin_angle ) * sx + x0;
+    corners[0].y = ( lef_x * sin_angle + top_y * cos_angle ) * sy + y0;
+    corners[1].x = ( rig_x * cos_angle - top_y * sin_angle ) * sx + x0;
+    corners[1].y = ( rig_x * sin_angle + top_y * cos_angle ) * sy + y0;
+    corners[2].x = ( lef_x * cos_angle - bot_y * sin_angle ) * sx + x0;
+    corners[2].y = ( lef_x * sin_angle + bot_y * cos_angle ) * sy + y0;
+    corners[3].x = ( rig_x * cos_angle - bot_y * sin_angle ) * sx + x0;
+    corners[3].y = ( rig_x * sin_angle + bot_y * cos_angle ) * sy + y0;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -2424,15 +2426,15 @@ void gr_rotated_blit(
         {
             if ( x < min.x && x2 > x )
             {
-                s += ( min.x - x ) * (( s2 - s ) / ( x2 - x + 1 ) );
-                t += ( min.x - x ) * (( t2 - t ) / ( x2 - x + 1 ) );
+                s += ( min.x - x ) * (( s2 - s ) / ( x2 - x ) );
+                t += ( min.x - x ) * (( t2 - t ) / ( x2 - x ) );
                 x  = min.x;
             }
 
             if ( x2 > max.x && x2 > x )
             {
-                s2 -= ( x2 - max.x ) * (( s2 - s ) / ( x2 - x + 1 ) );
-                t2 -= ( x2 - max.x ) * (( t2 - t ) / ( x2 - x + 1 ) );
+                s2 -= ( x2 - max.x ) * (( s2 - s ) / ( x2 - x ) );
+                t2 -= ( x2 - max.x ) * (( t2 - t ) / ( x2 - x ) );
                 x2  = max.x;
             }
 
@@ -2448,8 +2450,8 @@ void gr_rotated_blit(
                     x2 - x + 1,
                     ( int )( s * 65536 ),
                     ( int )( t * 65536 ),
-                    ( int )(( s2 - s ) / ( x2 - x + 1 ) * 65536 ),      //increm destino
-                    ( int )(( t2 - t ) / ( x2 - x + 1 ) * 65536 )       //increm text
+                    ( int )(( s2 - s ) / ( x2 - x ) * 65536 ),      //increm destino
+                    ( int )(( t2 - t ) / ( x2 - x ) * 65536 )       //increm text
                 );
             }
         }
