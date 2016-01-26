@@ -273,7 +273,7 @@ void bitmap_set_cpoint( GRAPH * map, uint32_t point, int x, int y )
 
     if ( point < 0 ) return ;
 
-    if ( point == 0 ) map->modified = 1;
+    if ( point == 0 && !map->modified ) map->modified = 1;
 
     if ( map->ncpoints <= point )
     {
@@ -316,11 +316,11 @@ void bitmap_destroy( GRAPH * map )
 void bitmap_analize( GRAPH * bitmap )
 {
     uint32_t x, y;
+    int color_present = 0, tranparent_present = 0;
 
     if ( bitmap->modified > 1 ) bitmap->modified = 1 ;
 
-//    bitmap->info_flags &= ~( GI_CLEAN | GI_NOCOLORKEY );
-    bitmap->info_flags |= GI_CLEAN | GI_NOCOLORKEY;
+    bitmap->info_flags &= ~( GI_CLEAN | GI_NOCOLORKEY );
 
     /* Search for transparent pixels (value 0).
      * If none found, set the flag GI_NOCOLORKEY */
@@ -330,10 +330,15 @@ void bitmap_analize( GRAPH * bitmap )
         case    8:
         {
             uint8_t * ptr = ( uint8_t * ) bitmap->data ;
+            int inc = bitmap->pitch - bitmap->widthb ;
 
-            for ( y = bitmap->height; y--; ptr += bitmap->pitch )
+            for ( y = bitmap->height; y--; ptr = ((( uint8_t * ) ptr ) + inc ) )
             {
-                if ( memchr( ptr, 0, bitmap->width ) ) { bitmap->info_flags &= ~GI_CLEAN; break; }
+                for ( x = bitmap->width; x--; ) {
+                    if ( *ptr ) color_present = 1;
+                    if ( !*ptr++ ) tranparent_present = 1;
+                }
+                if ( color_present && tranparent_present ) break;
             }
         }
         break;
@@ -344,8 +349,11 @@ void bitmap_analize( GRAPH * bitmap )
 
             for ( y = bitmap->height; y--; ptr = ( int16_t * )((( uint8_t * ) ptr ) + inc ) )
             {
-                for ( x = bitmap->width; x--; ) if ( !*ptr++ ) break;
-                if ( x >= 0 ) { bitmap->info_flags &= ~GI_CLEAN; break; }
+                for ( x = bitmap->width; x--; ) {
+                    if ( *ptr ) color_present = 1;
+                    if ( !*ptr++ ) tranparent_present = 1;
+                }
+                if ( color_present && tranparent_present ) break;
             }
         }
         break;
@@ -357,16 +365,21 @@ void bitmap_analize( GRAPH * bitmap )
             for ( y = bitmap->height; y--; ptr = ( int32_t * )((( uint8_t * ) ptr ) + inc ) )
             {
                 for ( x = bitmap->width; x--; ) {
-                    if ( ( *ptr & 0xff000000 ) != 0xff000000 ) bitmap->info_flags &= ~GI_NOCOLORKEY ;
-                    if ( *ptr++ ) bitmap->info_flags &= ~GI_CLEAN ;
+                    if ( ( *ptr & 0xff000000 ) != 0x00000000 ) color_present = 1;
+                    if ( !*ptr ) tranparent_present = 1;
+                    ptr++;
                 }
-                if ( !( bitmap->info_flags & ( GI_CLEAN | GI_NOCOLORKEY ) ) ) break;
-//                if ( x >= 0 ) break;
+                if ( color_present && tranparent_present ) break;
             }
         }
     }
-//    if ( y < 0 ) bitmap->info_flags |= GI_NOCOLORKEY ;
-//    if ( y < 0 ) bitmap->info_flags |= GI_CLEAN ;
+
+    if ( color_present && !tranparent_present ) {
+        bitmap->info_flags |= GI_NOCOLORKEY ;
+    } else
+    if ( !color_present && tranparent_present ) {
+        bitmap->info_flags |= GI_CLEAN ;
+    }
 }
 
 /* --------------------------------------------------------------------------- */
