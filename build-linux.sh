@@ -1,13 +1,16 @@
 #!/bin/sh
 
-TARGET=gnu-linux
+PKG_CONFIG_PATH=/usr/lib/i386-linux-gnu/pkgconfig
+
+#TARGET=gnu-linux
+TARGET=i386-linux-gnu
 
 echo "### Building BennuGD Core ###"
 
 cd core
 case $1 in
     release)
-        ./configure --build=i686-pc-linux-gnu && make clean && make
+        ./configure --build=i686-pc-linux-gnu PKG_CONFIG_LIBDIR=${PKG_CONFIG_PATH} && make clean && make
         ;;
 
     *)
@@ -25,7 +28,7 @@ echo "### Building BennuGD Modules ###"
 cd modules
 case $1 in
     release)
-        ./configure --build=i686-pc-linux-gnu && make clean && make
+        ./configure --build=i686-pc-linux-gnu PKG_CONFIG_LIBDIR=${PKG_CONFIG_PATH} && make clean && make
         ;;
 
     *)
@@ -43,7 +46,7 @@ echo "### Building BennuGD Tools ###"
 cd tools/moddesc
 case $1 in
     release)
-        ./configure --build=i686-pc-linux-gnu && make clean && make
+        ./configure --build=i686-pc-linux-gnu PKG_CONFIG_LIBDIR=${PKG_CONFIG_PATH} && make clean && make
         ;;
 
     *)

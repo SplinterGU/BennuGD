@@ -319,7 +319,8 @@ void bitmap_analize( GRAPH * bitmap )
 
     if ( bitmap->modified > 1 ) bitmap->modified = 1 ;
 
-    bitmap->info_flags &= ~GI_ANALIZE_MASK ;
+//    bitmap->info_flags &= ~( GI_CLEAN | GI_NOCOLORKEY );
+    bitmap->info_flags |= GI_CLEAN | GI_NOCOLORKEY;
 
     /* Search for transparent pixels (value 0).
      * If none found, set the flag GI_NOCOLORKEY */
@@ -332,7 +333,7 @@ void bitmap_analize( GRAPH * bitmap )
 
             for ( y = bitmap->height; y--; ptr += bitmap->pitch )
             {
-                if ( memchr( ptr, 0, bitmap->width ) ) break ;
+                if ( memchr( ptr, 0, bitmap->width ) ) { bitmap->info_flags &= ~GI_CLEAN; break; }
             }
         }
         break;
@@ -344,7 +345,7 @@ void bitmap_analize( GRAPH * bitmap )
             for ( y = bitmap->height; y--; ptr = ( int16_t * )((( uint8_t * ) ptr ) + inc ) )
             {
                 for ( x = bitmap->width; x--; ) if ( !*ptr++ ) break;
-                if ( x >= 0 ) break;
+                if ( x >= 0 ) { bitmap->info_flags &= ~GI_CLEAN; break; }
             }
         }
         break;
@@ -355,13 +356,17 @@ void bitmap_analize( GRAPH * bitmap )
 
             for ( y = bitmap->height; y--; ptr = ( int32_t * )((( uint8_t * ) ptr ) + inc ) )
             {
-                for ( x = bitmap->width; x--; ) if ( !*ptr++ ) break;
-                if ( x >= 0 ) break;
+                for ( x = bitmap->width; x--; ) {
+                    if ( ( *ptr & 0xff000000 ) != 0xff000000 ) bitmap->info_flags &= ~GI_NOCOLORKEY ;
+                    if ( *ptr++ ) bitmap->info_flags &= ~GI_CLEAN ;
+                }
+                if ( !( bitmap->info_flags & ( GI_CLEAN | GI_NOCOLORKEY ) ) ) break;
+//                if ( x >= 0 ) break;
             }
         }
     }
-
-    if ( y < 0 ) bitmap->info_flags |= GI_NOCOLORKEY ;
+//    if ( y < 0 ) bitmap->info_flags |= GI_NOCOLORKEY ;
+//    if ( y < 0 ) bitmap->info_flags |= GI_CLEAN ;
 }
 
 /* --------------------------------------------------------------------------- */
