@@ -1795,10 +1795,8 @@ static void gr_calculate_corners( GRAPH * dest, int screen_x, int screen_y, int 
 
     /* Rotate the coordinates */
 
-//    float cos_angle = fixtof( fcos( -angle ) );
-//    float sin_angle = fixtof( fsin( -angle ) );
-    float cos_angle = fixtof( fcos( angle ) );
-    float sin_angle = fixtof( fsin( angle ) );
+    float cos_angle = fixtof( fcos( -angle ) );
+    float sin_angle = fixtof( fsin( -angle ) );
 
     /* Top-left, top-right, bottom-left, bottom-right */
 
@@ -1832,14 +1830,14 @@ static void gr_calculate_corners( GRAPH * dest, int screen_x, int screen_y, int 
         bot_y -= 0.5;
     }
 
-    corners[0].x = ( lef_x * cos_angle - top_y * sin_angle ) * sx + x0;
-    corners[0].y = ( lef_x * sin_angle + top_y * cos_angle ) * sy + y0;
-    corners[1].x = ( rig_x * cos_angle - top_y * sin_angle ) * sx + x0;
-    corners[1].y = ( rig_x * sin_angle + top_y * cos_angle ) * sy + y0;
-    corners[2].x = ( lef_x * cos_angle - bot_y * sin_angle ) * sx + x0;
-    corners[2].y = ( lef_x * sin_angle + bot_y * cos_angle ) * sy + y0;
-    corners[3].x = ( rig_x * cos_angle - bot_y * sin_angle ) * sx + x0;
-    corners[3].y = ( rig_x * sin_angle + bot_y * cos_angle ) * sy + y0;
+    corners[0].x = ( lef_x * cos_angle + top_y * sin_angle ) * sx + x0;
+    corners[0].y = ( lef_x * sin_angle - top_y * cos_angle ) * sy + y0;
+    corners[1].x = ( rig_x * cos_angle + top_y * sin_angle ) * sx + x0;
+    corners[1].y = ( rig_x * sin_angle - top_y * cos_angle ) * sy + y0;
+    corners[2].x = ( lef_x * cos_angle + bot_y * sin_angle ) * sx + x0;
+    corners[2].y = ( lef_x * sin_angle - bot_y * cos_angle ) * sy + y0;
+    corners[3].x = ( rig_x * cos_angle + bot_y * sin_angle ) * sx + x0;
+    corners[3].y = ( rig_x * sin_angle - bot_y * cos_angle ) * sy + y0;
 }
 
 /* --------------------------------------------------------------------------- */
