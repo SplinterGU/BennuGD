@@ -62,35 +62,35 @@ static int gr_read_lib( file * fp )
     if ( libid < 0 ) return -1 ;
 
     lib = grlib_get( libid );
-    if ( !lib )
-    {
+    if ( !lib ) {
         grlib_destroy( libid ) ;
         return -1 ;
     }
 
-    file_read( fp, header, 8 ) ;
+    if ( file_read( fp, header, sizeof( header ) ) != sizeof( header ) ) {
+        grlib_destroy( libid ) ;
+        return -1 ;
+    }
 
     if ( strcmp( header, F32_MAGIC ) == 0 ) bpp = 32 ;
     else if ( strcmp( header, F16_MAGIC ) == 0 ) bpp = 16 ;
     else if ( strcmp( header, FPG_MAGIC ) == 0 ) bpp = 8 ;
     else if ( strcmp( header, F01_MAGIC ) == 0 ) bpp = 1 ;
-    else
-    {
+    else {
         grlib_destroy( libid ) ;
         return -1 ;
     }
 
-    if ( bpp == 8 && !( pal = gr_read_pal_with_gamma( fp ) ) )
-    {
+    if ( bpp == 8 && !( pal = gr_read_pal_with_gamma( fp ) ) ) {
         grlib_destroy( libid ) ;
         return -1 ;
     }
 
-    while ( !file_eof( fp ) )
-    {
-        if ( !file_read( fp, &chunk, 64 ) ) break ;
+    while ( !file_eof( fp ) ) {
+        if ( file_read( fp, &chunk, sizeof( chunk ) ) != sizeof( chunk ) ) break ;
 
         ARRANGE_DWORD( &chunk.code ) ;
+        if ( chunk.code < 0 || chunk.code > 999 ) break;
         ARRANGE_DWORD( &chunk.regsize ) ;
         ARRANGE_DWORD( &chunk.width ) ;
         ARRANGE_DWORD( &chunk.height ) ;
@@ -105,7 +105,7 @@ static int gr_read_lib( file * fp )
             if ( bpp == 8 ) pal_destroy( pal ) ; // Elimino la instancia inicial
             return -1 ;
         }
-        memcpy( gr->name, chunk.name, 32 ) ;
+        memcpy( gr->name, chunk.name, sizeof( chunk.name ) ) ;
         gr->name[31] = 0 ;
         gr->ncpoints = chunk.flags ;
         gr->modified = 2 ;
@@ -113,42 +113,34 @@ static int gr_read_lib( file * fp )
 
         /* Puntos de control */
 
-        if ( gr->ncpoints )
-        {
+        if ( gr->ncpoints ) {
             gr->cpoints = ( CPOINT * ) malloc( gr->ncpoints * sizeof( CPOINT ) ) ;
-            if ( !gr->cpoints )
-            {
+            if ( !gr->cpoints ) {
                 bitmap_destroy( gr ) ;
                 grlib_destroy( libid ) ;
                 if ( bpp == 8 ) pal_destroy( pal ) ;
                 return -1 ;
             }
-            for ( c = 0 ; c < gr->ncpoints ; c++ )
-            {
+            for ( c = 0 ; c < gr->ncpoints ; c++ ) {
                 file_readSint16( fp, &px ) ;
                 file_readSint16( fp, &py ) ;
-                if ( px == -1 && py == -1 )
-                {
+                if ( px == -1 && py == -1 ) {
                     gr->cpoints[c].x = CPOINT_UNDEFINED ;
                     gr->cpoints[c].y = CPOINT_UNDEFINED ;
-                }
-                else
-                {
+                } else {
                     gr->cpoints[c].x = px ;
                     gr->cpoints[c].y = py ;
                 }
             }
-        }
-        else gr->cpoints = 0 ;
+        } else
+            gr->cpoints = 0 ;
 
         /* Datos del gráfico */
 
-        for ( y = 0 ; y < gr->height ; y++ )
-        {
+        for ( y = 0 ; y < gr->height ; y++ ) {
             uint8_t * line = ( uint8_t * )gr->data + gr->pitch * y;
 
-            switch ( bpp )
-            {
+            switch ( bpp ) {
                 case    32:
                     st = file_readUint32A( fp, ( uint32_t * ) line, gr->width );
                     break;
@@ -159,12 +151,11 @@ static int gr_read_lib( file * fp )
 
                 case    8:
                 case    1:
-                    st = file_read( fp, line, gr->widthb );
+                    if ( ( st = file_read( fp, line, gr->widthb ) ) != gr->widthb ) st = 0;
                     break;
             }
 
-            if ( !st )
-            {
+            if ( !st ) {
                 bitmap_destroy( gr );
                 grlib_destroy( libid ) ;
                 if ( bpp == 8 ) pal_destroy( pal );
@@ -246,10 +237,8 @@ int gr_save_fpg( int libid, const char * filename )
 
     nmaps = lib->map_reserved < 1000 ? lib->map_reserved : 1000;
 
-    for ( bpp = n = 0 ; n < nmaps ; n++ )
-    {
-        if ( lib->maps[n] )
-        {
+    for ( bpp = n = 0 ; n < nmaps ; n++ ) {
+        if ( lib->maps[n] ) {
             if ( bpp && lib->maps[n]->format->depth != bpp ) return 0; /* save_fpg: don't allow save maps with differents bpp */
             bpp = lib->maps[n]->format->depth;
             if ( !palette && bpp == 8 && lib->maps[n]->format->palette ) palette = lib->maps[n]->format->palette->rgb;
@@ -270,25 +259,22 @@ int gr_save_fpg( int libid, const char * filename )
     /* Write the header */
 
     header[7] = 0x00; /* Version */
-    file_write( fp, header, 8 );
+    file_write( fp, header, sizeof( header ) );
 
     /* Write the color palette */
 
-    if ( bpp == 8 )
-    {
+    if ( bpp == 8 ) {
         uint8_t colors[256][3] ;
         uint8_t gamma[576];
 
-        if ( !palette )
-        {
+        if ( !palette ) {
             if ( sys_pixel_format->palette )
                 palette = sys_pixel_format->palette->rgb;
             else
                 palette = ( rgb_component * ) default_palette;
         }
 
-        for ( n = 0 ; n < 256 ; n++ )
-        {
+        for ( n = 0 ; n < 256 ; n++ ) {
             colors[n][0] = palette[n].r >> 2 ;
             colors[n][1] = palette[n].g >> 2 ;
             colors[n][2] = palette[n].b >> 2 ;
@@ -301,12 +287,10 @@ int gr_save_fpg( int libid, const char * filename )
 
     /* Write each map */
 
-    for ( n = 0 ; n < nmaps ; n++ )
-    {
+    for ( n = 0 ; n < nmaps ; n++ ) {
         GRAPH * gr = lib->maps[n];
 
-        if ( gr )
-        {
+        if ( gr ) {
             /* Write the bitmap header */
 
             chunk.code = n;
@@ -323,42 +307,33 @@ int gr_save_fpg( int libid, const char * filename )
             ARRANGE_DWORD( &chunk.height );
             ARRANGE_DWORD( &chunk.flags );
 
-            file_write( fp, &chunk, 64 );
+            file_write( fp, &chunk, sizeof( chunk ) );
 
             /* Write the control points */
 
-            for ( c = 0 ; c < gr->ncpoints ; c++ )
-            {
+            for ( c = 0 ; c < gr->ncpoints ; c++ ) {
                 file_writeSint16( fp, &gr->cpoints[c].x );
                 file_writeSint16( fp, &gr->cpoints[c].y );
             }
 
             /* Write the bitmap pixel data */
 
-            if ( bpp > 8 )
-            {
-                if ( !( block = malloc( gr->widthb ) ) )
-                {
+            if ( bpp > 8 ) {
+                if ( !( block = malloc( gr->widthb ) ) ) {
                     file_close( fp );
                     return 0; /* No memory */
                 }
             }
 
-            for ( y = 0 ; y < gr->height ; y++ )
-            {
-                if ( bpp > 8 )
-                {
+            for ( y = 0 ; y < gr->height ; y++ ) {
+                if ( bpp > 8 ) {
                     memcpy( block, ( uint8_t * )gr->data + gr->pitch*y, gr->widthb );
-                    if ( bpp == 16 )
-                    {
+                    if ( bpp == 16 ) {
 /*                        gr_convert16_ScreenTo565(( uint16_t * )block, gr->width ); */
                         file_writeUint16A( fp, ( uint16_t * ) block, gr->width );
-                    }
-                    else
+                    } else
                         file_writeUint32A( fp, ( uint32_t * ) block, gr->width );
-                }
-                else
-                {
+                } else {
                     file_write( fp, ( uint8_t * )gr->data + gr->pitch*y, gr->widthb );
                 }
             }

@@ -38,7 +38,7 @@ PALETTE * gr_read_pal( file * fp )
     int i;
     uint8_t colors[256*3] ;
 
-    if ( !file_read( fp, colors, sizeof( colors ) ) ) return NULL ;
+    if ( file_read( fp, colors, sizeof( colors ) ) != sizeof( colors ) ) return NULL ;
 
     for ( i = 0; i < 768; i++ ) colors[i] <<= 2;
 
@@ -162,7 +162,7 @@ int gr_load_pal( const char * filename )
 
     if ( !fp ) return 0 ;
 
-    file_read( fp, header, 8 ) ;
+    if ( file_read( fp, header, sizeof( header ) ) != sizeof( header ) ) return 0;
     if ( !strcmp( header, MAP_MAGIC ) )
     {
         file_seek( fp, 48, SEEK_SET ) ;
