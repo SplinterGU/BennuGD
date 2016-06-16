@@ -1,7 +1,7 @@
 /*
- *  Copyright © 2006-2013 SplinterGU (Fenix/Bennugd)
- *  Copyright © 2002-2006 Fenix Team (Fenix)
- *  Copyright © 1999-2002 José Luis Cebrián Pagüe (Fenix)
+ *  Copyright ï¿½ 2006-2013 SplinterGU (Fenix/Bennugd)
+ *  Copyright ï¿½ 2002-2006 Fenix Team (Fenix)
+ *  Copyright ï¿½ 1999-2002 Josï¿½ Luis Cebriï¿½n Pagï¿½e (Fenix)
  *
  *  This file is part of Bennu - Game Development
  *
@@ -28,6 +28,7 @@
 
 /* --------------------------------------------------------------------------- */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -158,6 +159,7 @@ void gr_clear_region( GRAPH * dest, REGION * region )
     int y, l ;
 
     if ( !dest ) dest = scrbitmap ;
+
     if ( !region )
     {
         region = &base_region ;
@@ -170,11 +172,16 @@ void gr_clear_region( GRAPH * dest, REGION * region )
     {
         base_region = *region ;
         region = &base_region ;
+
         region->x = MAX( MIN( region->x, region->x2 ), 0 ) ;
         region->y = MAX( MIN( region->y, region->y2 ), 0 ) ;
         region->x2 = MIN( MAX( region->x, region->x2 ), dest->width - 1 ) ;
         region->y2 = MIN( MAX( region->y, region->y2 ), dest->height - 1 ) ;
     }
+
+
+    if ( region->x > dest->width || region->y > dest->height ) return;
+    if ( region->x2 < 0 || region->y2 < 0 ) return;
 
     switch ( dest->format->depth )
     {
