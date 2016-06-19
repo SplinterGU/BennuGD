@@ -47,7 +47,7 @@ MAKE=make -f Makefile
 #CFLAG= -O4 -funroll-loops -fomit-frame-pointer
 #CFLAG= -O3 -fomit-frame-pointer
 
-CFLAGS+=$(OPTS) $(CFLAG) -fPIC
+CFLAGS+=$(OPTS) -fPIC
 #CPP=$(CC) -E
 #AS=as
 
@@ -118,7 +118,8 @@ cc:
 	$(MAKE) CC=cc CFLAGS="-O $(OPTS) $(CFLAG)" all
 
 gcc:
-	$(MAKE) CC=gcc CFLAGS="-O3 -fomit-frame-pointer $(OPTS) $(CFLAG)" all
+	$(MAKE) CFLAGS="-O3 -fomit-frame-pointer $(OPTS) $(CFLAG)" all
+#	$(MAKE) CC=gcc CFLAGS="-O3 -fomit-frame-pointer $(OPTS) $(CFLAG)" all
 
 x86-elf:
 	$(MAKE) DES_ENC='asm/dx86-elf.o asm/yx86-elf.o' CC=$(CC) CFLAGS="-DELF $(OPTS) $(CFLAG)" all

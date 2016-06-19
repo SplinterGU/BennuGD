@@ -1,15 +1,15 @@
 #!/bin/sh
 
-WIN32CROSS=/usr/i586-mingw32msvc
+WIN32CROSS=/usr/i686-w64-mingw32
 
 ## HOST and TARGET - These should be the canonical tool names of your tool.
 ## For the sake of this script HOST and TARGET should be the same.
-## Defaults would be 'i586-mingw32msvc' for a normal WIN32CROSS tool-chain.
+## Defaults would be 'i686-w64-mingw32' for a normal WIN32CROSS tool-chain.
 
-HOST=i586-mingw32msvc
-TARGET=i586-mingw32msvc
+HOST=i686-w64-mingw32
+TARGET=i686-w64-mingw32
 BUILD=`uname -m`
-PKG_CONFIG_PATH=/usr/i586-mingw32msvc/lib/pkgconfig
+PKG_CONFIG_PATH=/usr/i686-w64-mingw32/lib/pkgconfig
 
 ## -- END WIN32CROSS USER SETTINGS
 
