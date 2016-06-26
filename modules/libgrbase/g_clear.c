@@ -179,7 +179,6 @@ void gr_clear_region( GRAPH * dest, REGION * region )
         region->y2 = MIN( MAX( region->y, region->y2 ), dest->height - 1 ) ;
     }
 
-
     if ( region->x > dest->width || region->y > dest->height ) return;
     if ( region->x2 < 0 || region->y2 < 0 ) return;
 

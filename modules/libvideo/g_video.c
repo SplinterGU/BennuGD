@@ -506,6 +506,9 @@ int gr_set_mode( int width, int height, int depth )
 */
     /* Bitmaps de fondo */
 
+    scr_width = screen->w / ( scale_mode != 0 ? 2 : 1 ) ;
+    scr_height = screen->h / ( scale_mode != 0 ? 2 : 1 ) ;
+
     /* Only allow background with same properties that video mode */
     if (
         !background ||
@@ -513,7 +516,7 @@ int gr_set_mode( int width, int height, int depth )
         sys_pixel_format->depth != background->format->depth )
     {
         if ( background ) bitmap_destroy( background );
-        background = bitmap_new( 0, screen->w, screen->h, sys_pixel_format->depth ) ;
+        background = bitmap_new( 0, scr_width, scr_height, sys_pixel_format->depth ) ;
         if ( background )
         {
             gr_clear( background ) ;
@@ -521,13 +524,10 @@ int gr_set_mode( int width, int height, int depth )
         }
     }
 
-    scr_width = screen->w ;
-    scr_height = screen->h ;
-
     regions[0].x  = 0 ;
     regions[0].y  = 0 ;
-    regions[0].x2 = screen->w - 1 ;
-    regions[0].y2 = screen->h - 1 ;
+    regions[0].x2 = scr_width - 1 ;
+    regions[0].y2 = scr_height - 1 ;
 
     // Finalmente seteamos icono de aplicacion
     // Necesitamos crear una surface a partir de un MAP generico de 16x16...
