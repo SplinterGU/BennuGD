@@ -36,10 +36,20 @@ case "$target_os" in
 	    CFLAGS+=" -DWIN32 -D_WIN32 "
 	    ;;
 
-    *)
-        CFLAGS+=" -Wall -m32"
-        LDFLAGS+=" -lc -ldl -m32"
-	    ;;
+    linux-gnu*)
+          case "$target_cpu" in
+              i*86*)
+                  CFLAGS+=" -Wall -m32 -DTARGET_LINUX"
+                  LDFLAGS+=" -lc -ldl -m32"
+                  ;;
+
+              *)
+                  CFLAGS+=" -Wall -DTARGET_LINUX"
+                  LDFLAGS+=" -lc -ldl"
+                  ;;
+
+          esac
+  	    ;;
 
 esac
 

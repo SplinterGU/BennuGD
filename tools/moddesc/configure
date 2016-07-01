@@ -11579,10 +11579,20 @@ case "$target_os" in
 	    CFLAGS+=" -DWIN32 -D_WIN32 "
 	    ;;
 
-    *)
-        CFLAGS+=" -Wall -m32"
-        LDFLAGS+=" -lc -ldl -m32"
-	    ;;
+    linux-gnu*)
+          case "$target_cpu" in
+              i*86*)
+                  CFLAGS+=" -Wall -m32 -DTARGET_LINUX"
+                  LDFLAGS+=" -lc -ldl -m32"
+                  ;;
+
+              *)
+                  CFLAGS+=" -Wall -DTARGET_LINUX"
+                  LDFLAGS+=" -lc -ldl"
+                  ;;
+
+          esac
+  	    ;;
 
 esac
 
@@ -13941,4 +13951,3 @@ if test -n "$ac_unrecognized_opts" && test "$enable_option_checking" != no; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: unrecognized options: $ac_unrecognized_opts" >&5
 $as_echo "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
-
