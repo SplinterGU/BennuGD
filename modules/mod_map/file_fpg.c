@@ -216,7 +216,6 @@ int gr_save_fpg( int libid, const char * filename )
 {
     file  * fp;
     GRLIB * lib;
-    uint8_t * block = NULL;
     int     n, y, c;
     int     bpp;
     int     nmaps;
@@ -318,27 +317,22 @@ int gr_save_fpg( int libid, const char * filename )
 
             /* Write the bitmap pixel data */
 
-            if ( bpp > 8 ) {
-                if ( !( block = malloc( gr->widthb ) ) ) {
-                    file_close( fp );
-                    return 0; /* No memory */
-                }
-            }
-
             for ( y = 0 ; y < gr->height ; y++ ) {
-                if ( bpp > 8 ) {
-                    memcpy( block, ( uint8_t * )gr->data + gr->pitch*y, gr->widthb );
-                    if ( bpp == 16 ) {
-/*                        gr_convert16_ScreenTo565(( uint16_t * )block, gr->width ); */
-                        file_writeUint16A( fp, ( uint16_t * ) block, gr->width );
-                    } else
-                        file_writeUint32A( fp, ( uint32_t * ) block, gr->width );
-                } else {
-                    file_write( fp, ( uint8_t * )gr->data + gr->pitch*y, gr->widthb );
+                switch( bpp ) {
+                    case    32:
+                            file_writeUint32A( fp, ( uint32_t * ) ( uint8_t * )gr->data + gr->pitch*y, gr->width );
+                            break;
+
+                    case    16:
+                            file_writeUint16A( fp, ( uint16_t * ) ( uint8_t * )gr->data + gr->pitch*y, gr->width );
+                            break;
+
+                    case    8:
+                    case    1:
+                            file_write( fp, ( uint8_t * )gr->data + gr->pitch*y, gr->widthb );
+                            break;
                 }
             }
-
-            if ( bpp > 8 ) free( block );
         }
     }
 
