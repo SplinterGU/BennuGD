@@ -38,17 +38,17 @@ fi
 #    exit 1
 #fi
 
-./build-win32-cross-opensuse.sh release
-if [ $? -ne 0 ]; then
-    echo "*** ABORT ***"
-    exit 1
-fi
-
-#./build-win32-cross.sh
+#./build-win32-cross-opensuse.sh release
 #if [ $? -ne 0 ]; then
 #    echo "*** ABORT ***"
 #    exit 1
 #fi
+
+./build-win32-cross.sh
+if [ $? -ne 0 ]; then
+    echo "*** ABORT ***"
+    exit 1
+fi
 
 #./build-win32.sh
 #if [ $? -ne 0 ]; then
