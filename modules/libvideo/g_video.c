@@ -512,7 +512,7 @@ int gr_set_mode( int width, int height, int depth )
     /* Only allow background with same properties that video mode */
     if (
         !background ||
-        scr_width != screen->w || scr_height != screen->h ||
+        background->width != scr_width || background->height != scr_height ||
         sys_pixel_format->depth != background->format->depth )
     {
         if ( background ) bitmap_destroy( background );

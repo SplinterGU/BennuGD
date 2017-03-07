@@ -10,7 +10,7 @@ echo "### Building BennuGD Core ###"
 cd core
 case $1 in
     release)
-        ./configure --build=i686-pc-linux-gnu PKG_CONFIG_LIBDIR=${PKG_CONFIG_PATH} && make clean && make
+        ./configure --build=i686-pc-linux-gnu PKG_CONFIG_PATH=${PKG_CONFIG_PATH} PKG_CONFIG_LIBDIR=${PKG_CONFIG_PATH} && make clean && make
         ;;
 
     *)
@@ -28,7 +28,7 @@ echo "### Building BennuGD Modules ###"
 cd modules
 case $1 in
     release)
-        ./configure --build=i686-pc-linux-gnu PKG_CONFIG_LIBDIR=${PKG_CONFIG_PATH} && make clean && make
+        ./configure --build=i686-pc-linux-gnu PKG_CONFIG_PATH=${PKG_CONFIG_PATH} PKG_CONFIG_LIBDIR=${PKG_CONFIG_PATH} SDL_CFLAGS="-I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT" SDL_LIBS="-L/usr/lib/${TARGET} -lSDL-1.2" && make clean && make
         ;;
 
     *)
@@ -46,7 +46,7 @@ echo "### Building BennuGD Tools ###"
 cd tools/moddesc
 case $1 in
     release)
-        ./configure --build=i686-pc-linux-gnu PKG_CONFIG_LIBDIR=${PKG_CONFIG_PATH} && make clean && make
+        ./configure --build=i686-pc-linux-gnu PKG_CONFIG_PATH=${PKG_CONFIG_PATH} PKG_CONFIG_LIBDIR=${PKG_CONFIG_PATH} && make clean && make
         ;;
 
     *)

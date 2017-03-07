@@ -42,7 +42,7 @@ case "$target_os" in
         case "$target_cpu" in
             i*86*)
                 COMMON_CFLAGS="$COMMON_CFLAGS -m32"
-                COMMON_LDFLAGS="$COMMON_LDFLAGS -m32 -L/lib32"
+                COMMON_LDFLAGS="$COMMON_LDFLAGS -m32 -L/lib32 -L/usr/lib/$TARGET"
                 LM=-lm
                 LIBSSL="crypto"
                 USE_OPENSSL=yes
