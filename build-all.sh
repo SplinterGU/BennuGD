@@ -44,7 +44,7 @@ fi
 #    exit 1
 #fi
 
-./build-win32-cross.sh
+./build-win32-cross.sh release
 if [ $? -ne 0 ]; then
     echo "*** ABORT ***"
     exit 1

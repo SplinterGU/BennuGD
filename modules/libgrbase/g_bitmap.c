@@ -365,7 +365,7 @@ void bitmap_analize( GRAPH * bitmap )
             for ( y = bitmap->height; y--; ptr = ( int32_t * )((( uint8_t * ) ptr ) + inc ) )
             {
                 for ( x = bitmap->width; x--; ) {
-                    if ( ( *ptr & 0xff000000 ) != 0x00000000 ) color_present = 1;
+                    if ( ( *ptr & 0x00ffffff ) != 0x00000000 ) color_present = 1;
                     if ( ( *ptr & 0xff000000 ) != 0xff000000 ) tranparent_present = 1;
                     ptr++;
                 }
