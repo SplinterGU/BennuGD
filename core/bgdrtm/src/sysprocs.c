@@ -83,6 +83,10 @@ FN_HOOK * module_finalize_list = NULL ;
 int module_finalize_allocated = 0 ;
 int module_finalize_count = 0 ;
 
+CFG_HOOK * module_config_list = NULL ;
+int module_config_allocated = 0 ;
+int module_config_count = 0 ;
+
 /* ---------------------------------------------------------------------- */
 
 #define hook_add(new_hook, hook_list, hook_allocated, hook_count) \
@@ -406,15 +410,15 @@ void sysproc_init()
     DLVARFIXUP    * globals_fixup = NULL ;
     DLVARFIXUP    * locals_fixup = NULL ;
     DLSYSFUNCS    * functions_exports = NULL ;
-    FN_HOOK         module_initialize ;
-    FN_HOOK         module_finalize ;
-    INSTANCE_HOOK   instance_create_hook ;
-    INSTANCE_HOOK   instance_destroy_hook ;
-    INSTANCE_HOOK   instance_pre_execute_hook ;
-    INSTANCE_HOOK   instance_pos_execute_hook ;
-    INSTANCE_HOOK   process_exec_hook ;
-    HOOK          * handler_hooks = NULL ;
-
+    FN_HOOK         module_initialize = NULL ;
+    FN_HOOK         module_finalize = NULL ;
+    INSTANCE_HOOK   instance_create_hook = NULL ;
+    INSTANCE_HOOK   instance_destroy_hook = NULL ;
+    INSTANCE_HOOK   instance_pre_execute_hook = NULL ;
+    INSTANCE_HOOK   instance_pos_execute_hook = NULL ;
+    INSTANCE_HOOK   process_exec_hook = NULL ;
+    HOOK          * handler_hooks = NULL;
+    CFG_HOOK        module_config = NULL;
     int             maxcode = 0 ;
 
     char soname[ __MAX_PATH ], fullsoname[ __MAX_PATH ], **spath ;
@@ -474,6 +478,8 @@ void sysproc_init()
 
         handler_hooks = ( HOOK * ) _dlibaddr( library, "handler_hooks" ) ;
 
+        module_config = ( CFG_HOOK ) _dlibaddr( library, "module_config" ) ;
+
         /* Fixups */
 
         if ( globals_fixup )
@@ -501,6 +507,9 @@ void sysproc_init()
 
         if ( module_finalize )
             hook_add( module_finalize, module_finalize_list, module_finalize_allocated, module_finalize_count ) ;
+
+        if ( module_config )
+            hook_add( module_config, module_config_list, module_config_allocated, module_config_count ) ;
 
         if ( instance_create_hook )
             hook_add( instance_create_hook, instance_create_hook_list, instance_create_hook_allocated, instance_create_hook_count ) ;
@@ -549,6 +558,9 @@ void sysproc_init()
     /* Sort handler_hooks */
     if ( handler_hook_list )
         qsort( handler_hook_list, handler_hook_count, sizeof( handler_hook_list[0] ), ( int ( * )( const void *, const void * ) ) compare_priority ) ;
+
+
+    config_read();
 
     /* Initialize all modules */
     if ( module_initialize_count )

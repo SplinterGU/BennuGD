@@ -57,6 +57,8 @@ extern char *appexename;
 extern char *appexepath;
 extern char *appexefullpath;
 
+extern char *configfile;
+
 extern int debug ;          /* 1 if running in debug mode                    */
 
 /* Trace */
@@ -102,6 +104,10 @@ extern unsigned long bgdrtm_ptimer_get_ticks_us(void);
 extern void bgdrtm_ptimer_cleanup(void);
 
 #endif
+
+/* --------------------------------------------------------------------------- */
+
+extern int config_read();
 
 /* --------------------------------------------------------------------------- */
 

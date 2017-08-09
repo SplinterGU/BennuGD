@@ -74,6 +74,10 @@ extern FN_HOOK * module_finalize_list ;
 extern int module_finalize_allocated ;
 extern int module_finalize_count ;
 
+extern CFG_HOOK * module_config_list ;
+extern int module_config_allocated ;
+extern int module_config_count ;
+
 /* ---------------------------------------------------------------------- */
 
 #endif

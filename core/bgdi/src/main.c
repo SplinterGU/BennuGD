@@ -309,6 +309,11 @@ fflush(stdout);
 
     /* Initialization (modules needed after dcb_load) */
 
+    /* config file name */
+
+    configfile = calloc( 1, strlen( appname ) + 4 + 1 );
+    sprintf( configfile, "%s.ini", appname );
+
     sysproc_init() ;
 
 #ifdef _WIN32
@@ -329,6 +334,7 @@ fflush(stdout);
 
     bgdrtm_exit( ret );
 
+    free( configfile        );
     free( appexename        );
     free( appexepath        );
     free( appexefullpath    );

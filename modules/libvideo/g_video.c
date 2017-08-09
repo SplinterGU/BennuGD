@@ -79,6 +79,18 @@ int scale_resolution_aspectratio_offy = 0;
 
 /* --------------------------------------------------------------------------- */
 
+static struct {
+    int width;
+    int height;
+    int depth;
+    int fullscreen;
+    int scale_resolution;
+    int scale_resolution_aspectratio;
+    int scale_resolution_orientation;
+} video_config = { 0, 0, 0, 0, -1, -1, -1 };
+
+/* --------------------------------------------------------------------------- */
+
 enum {
     GRAPH_MODE = 0,
     SCALE_MODE,
@@ -213,7 +225,6 @@ int gr_set_mode( int width, int height, int depth )
     int sdl_flags = 0;
     int surface_width = width;
     int surface_height = height;
-    char * e;
 
     enable_scale = ( GLODWORD( libvideo, GRAPH_MODE ) & MODE_2XSCALE ) ? 1 : 0 ;
     full_screen = ( GLODWORD( libvideo, GRAPH_MODE ) & MODE_FULLSCREEN ) ? 1 : 0 ;
@@ -232,9 +243,9 @@ int gr_set_mode( int width, int height, int depth )
 
     /* Overwrite all params */
 
-    if ( ( e = getenv( "SCALE_RESOLUTION"             ) ) ) scale_resolution = atol( e );
-    if ( ( e = getenv( "SCALE_RESOLUTION_ASPECTRATIO" ) ) ) scale_resolution_aspectratio = atol( e );
-    if ( ( e = getenv( "SCALE_RESOLUTION_ORIENTATION" ) ) ) scale_resolution_orientation = atol( e );
+    if ( ( video_config.scale_resolution             != -1 ) ) scale_resolution = video_config.scale_resolution;
+    if ( ( video_config.scale_resolution_aspectratio != -1 ) ) scale_resolution_aspectratio = video_config.scale_resolution_aspectratio;
+    if ( ( video_config.scale_resolution_orientation != -1 ) ) scale_resolution_orientation = video_config.scale_resolution_orientation;
 
     if ( scale_resolution_orientation < 0 || scale_resolution_orientation > 4 ) scale_resolution_orientation = 0;
 
@@ -542,13 +553,6 @@ int gr_set_mode( int width, int height, int depth )
 
 /* --------------------------------------------------------------------------- */
 
-int gr_init( int width, int height )
-{
-    return gr_set_mode( width, height, 0 );
-}
-
-/* --------------------------------------------------------------------------- */
-
 void __bgdexport( libvideo, module_initialize )()
 {
     char * e;
@@ -562,15 +566,17 @@ void __bgdexport( libvideo, module_initialize )()
 #endif
     apptitle = appname;
 
-    if ( ( e = getenv( "VIDEO_WIDTH"  ) ) ) scr_width = atoi(e);
-    if ( ( e = getenv( "VIDEO_HEIGHT" ) ) ) scr_height = atoi(e);
-    if ( ( e = getenv( "VIDEO_DEPTH"  ) ) )
-        GLODWORD( libvideo, GRAPH_MODE ) = atoi(e);
-    else
-        GLODWORD( libvideo, GRAPH_MODE ) = MODE_16BITS;
-    if ( ( e = getenv( "VIDEO_FULLSCREEN" ) ) ) GLODWORD( libvideo, GRAPH_MODE ) |= atoi(e) ? MODE_FULLSCREEN : 0;
+    if ( ( e = getenv( "SCALE_RESOLUTION"             ) ) ) video_config.scale_resolution = atol( e );
+    if ( ( e = getenv( "SCALE_RESOLUTION_ASPECTRATIO" ) ) ) video_config.scale_resolution_aspectratio = atol( e );
+    if ( ( e = getenv( "SCALE_RESOLUTION_ORIENTATION" ) ) ) video_config.scale_resolution_orientation = atol( e );
 
-    gr_init( scr_width, scr_height ) ;
+    if ( ( e = getenv( "VIDEO_WIDTH"                  ) ) ) video_config.width = atoi(e);
+    if ( ( e = getenv( "VIDEO_HEIGHT"                 ) ) ) video_config.height = atoi(e);
+    if ( ( e = getenv( "VIDEO_DEPTH"                  ) ) ) video_config.depth = atoi(e);
+    if ( ( e = getenv( "VIDEO_FULLSCREEN"             ) ) ) GLODWORD( libvideo, GRAPH_MODE ) = atoi(e) ? MODE_FULLSCREEN : 0;
+    else                                                    GLODWORD( libvideo, GRAPH_MODE ) = video_config.fullscreen ? MODE_FULLSCREEN : 0;
+
+    gr_set_mode( video_config.width, video_config.height, video_config.depth ) ;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -590,6 +596,51 @@ void __bgdexport( libvideo, module_finalize )()
     }
 #endif
     if ( SDL_WasInit( SDL_INIT_VIDEO ) ) SDL_QuitSubSystem( SDL_INIT_VIDEO );
+}
+
+/* --------------------------------------------------------------------------- */
+
+int __bgdexport( libvideo, module_config )(int line, char * section, char * key, char * value )
+{
+    if ( !strcmp( section, "bennugd" ) ) {
+        if ( !strcmp( key, "video.mode" ) ) {
+            char * saveptr = NULL, * token;
+            // width
+            if ( ( token = strtok_r(value, "x", &saveptr) ) ) {
+                video_config.width = atoi( token );
+                // height
+                if ( ( token = strtok_r(NULL, "x", &saveptr) ) ) {
+                    video_config.height = atoi( token );
+                    // depth
+                    if ( ( token = strtok_r(NULL, "x", &saveptr) ) ) {
+                        video_config.depth = atoi( token );
+                    }
+                }
+            }
+        } else
+        if ( !strcmp( key, "video.fullscreen" ) ) {
+            video_config.fullscreen = atoi( value );
+        } else
+        if ( !strcmp( key, "video.scale_resolution" ) ) {
+            char * saveptr = NULL, * token;
+            int w, h;
+            // width
+            if ( ( token = strtok_r(value, "x", &saveptr) ) ) {
+                w = atoi( token );
+                // height
+                if ( ( token = strtok_r(NULL, "x", &saveptr) ) ) {
+                    h = atoi( token );
+                    video_config.scale_resolution = w * 10000 + h;
+                }
+            }
+        } else
+        if ( !strcmp( key, "video.scale_resolution_aspectratio" ) ) {
+            video_config.scale_resolution_aspectratio = atoi( value );
+        } else
+        if ( !strcmp( key, "video.scale_resolution_orientation" ) ) {
+            video_config.scale_resolution_orientation = atoi( value );
+        }
+    }
 }
 
 /* --------------------------------------------------------------------------- */

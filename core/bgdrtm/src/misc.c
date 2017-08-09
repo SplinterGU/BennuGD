@@ -58,6 +58,8 @@ char * appexename       = NULL;
 char * appexepath       = NULL;
 char * appexefullpath   = NULL;
 
+char * configfile       = NULL;
+
 /* --------------------------------------------------------------------------- */
 
 int debug = 0;  /* 1 if running in debug mode      */

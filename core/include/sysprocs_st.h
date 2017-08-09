@@ -39,6 +39,7 @@
 
 typedef void ( * FN_HOOK )( void );
 typedef void ( * INSTANCE_HOOK )( INSTANCE * );
+typedef void ( * CFG_HOOK )( int, const char *, const char *, const char * );
 
 typedef struct
 {
