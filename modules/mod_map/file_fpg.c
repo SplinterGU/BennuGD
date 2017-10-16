@@ -320,11 +320,11 @@ int gr_save_fpg( int libid, const char * filename )
             for ( y = 0 ; y < gr->height ; y++ ) {
                 switch( bpp ) {
                     case    32:
-                            file_writeUint32A( fp, ( uint32_t * ) ( uint8_t * )gr->data + gr->pitch*y, gr->width );
+                            file_writeUint32A( fp, ( uint32_t * ) ( ( uint8_t * )gr->data + gr->pitch*y), gr->width );
                             break;
 
                     case    16:
-                            file_writeUint16A( fp, ( uint16_t * ) ( uint8_t * )gr->data + gr->pitch*y, gr->width );
+                            file_writeUint16A( fp, ( uint16_t * ) ( ( uint8_t * )gr->data + gr->pitch*y), gr->width );
                             break;
 
                     case    8:
