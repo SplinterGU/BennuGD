@@ -1342,6 +1342,7 @@ expresion_result compile_cast()
         {
             codeblock_add( code, MN_A2STR, 0 );
             res.type = typedef_new( TYPE_STRING );
+            res.lvalue = 0;
         }
         else if ( typedef_is_pointer( res.type ) )
         {
@@ -2277,7 +2278,7 @@ expresion_result compile_comparison_2()
         if ( token.type == IDENTIFIER && ( token.code == identifier_eq ||  /* "==" */
                 token.code == identifier_ne ) ) /* "!=" or "<>" */
         {
-            int is_unsigned = 0;
+//            int is_unsigned = 0;
 
             op = token.code ;
             if ( left.lvalue && ( left.type.chunk[0].type != TYPE_ARRAY || left.type.chunk[1].type != TYPE_CHAR ) )
@@ -2290,7 +2291,7 @@ expresion_result compile_comparison_2()
             t = check_numeric_or_string_types( &left, &right ) ;
             if ( t != MN_FLOAT && t != MN_STRING ) t = MN_DWORD ;
 
-            if ( typedef_is_unsigned( left.type ) && typedef_is_unsigned( right.type ) ) is_unsigned = MN_UNSIGNED;
+//            if ( typedef_is_unsigned( left.type ) && typedef_is_unsigned( right.type ) ) is_unsigned = MN_UNSIGNED;
 
             res.value = 0 ;
 
