@@ -248,7 +248,8 @@ static char * strrev( char * str )
     char *left = str;
     char ch;
 
-    while ( *str++ ); str -= 2;
+    while ( *str++ );
+    str -= 2;
 
     while ( left < str )
     {
@@ -307,6 +308,63 @@ static int modstring_formatFI( INSTANCE * my, int * params )
     string_use( r ) ;
     return r;
 }
+
+/** STRING_BUFFER ( STRING )
+ *  Get String Buffer
+ *  WARNING: USE THIS WITH CAUTION !!!
+ */
+
+static int modstring_get_buffer( INSTANCE * my, int * params )
+{
+    int r = (int) string_get( params[0] );
+    string_discard( params[0] ) ;
+    return r;
+}
+
+/** STRING_ALLOC ()
+ *  Create a new "string *"
+ */
+
+static int modstring_string_alloc( INSTANCE * my, int * params )
+{
+    return ( int ) calloc( 1, sizeof( int ) ) ;
+}
+
+
+/** STRING_ALLOC ( STRING )
+ *  Create a new "string *" with value
+ */
+
+static int modstring_string_alloc2( INSTANCE * my, int * params )
+{
+    int * r = malloc( sizeof( int ) ) ;
+    if ( !r ) {
+        string_discard( params[0] ) ;
+        return ( int ) NULL ;
+    }
+    *r = params[0] ;
+    return ( int ) r ;
+}
+
+/** STRING_RELEASE( STRING ** )
+ * Release an allocated string
+ */
+static int modstring_string_release( INSTANCE * my, int * params )
+{
+    int ** ppstr = ( int ** ) params[0] ;
+    if ( !ppstr ) return 0 ;
+    if ( *ppstr ) string_discard( **ppstr ) ;
+    free( *ppstr ) ;
+    *ppstr = NULL ;
+    return 1 ;
+}
+
+static int modstring_string_dump( INSTANCE * my, int * params )
+{
+    string_dump( NULL ) ;
+    return 1 ;
+}
+
 
 /* ----------------------------------------------------------------- */
 /* exports                                                           */

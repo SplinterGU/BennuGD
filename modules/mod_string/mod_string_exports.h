@@ -60,6 +60,14 @@ DLSYSFUNCS  __bgdexport( mod_string, functions_exports )[] =
     FUNC( "FORMAT"     , "I"   , TYPE_STRING, modstring_formatI    ),
     FUNC( "FORMAT"     , "F"   , TYPE_STRING, modstring_formatF    ),
     FUNC( "FORMAT"     , "FI"  , TYPE_STRING, modstring_formatFI   ),
+
+    FUNC( "STRING_BUFFER"   , "S"   , TYPE_POINTER  , modstring_get_buffer      ),
+    FUNC( "STRING_ALLOC"    , ""    , TYPE_POINTER  , modstring_string_alloc    ),
+    FUNC( "STRING_ALLOC"    , "S"   , TYPE_POINTER  , modstring_string_alloc2   ),
+    FUNC( "STRING_RELEASE"  , "P"   , TYPE_UNDEFINED, modstring_string_release  ),
+
+    FUNC( "STRING_DUMP"     , ""    , TYPE_UNDEFINED, modstring_string_dump     ),
+
     FUNC( 0            , 0     , 0          , 0                    )
 };
 
