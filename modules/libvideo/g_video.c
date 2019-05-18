@@ -320,13 +320,9 @@ int gr_set_mode( int width, int height, int depth )
 
     if ( scale_screen )
     {
-        SDL_FreeSurface( scale_screen );
-        scale_screen = NULL;
-    }
-    if ( screen )
-    {
         SDL_FreeSurface( screen );
         screen = NULL;
+        scale_screen = NULL;
     }
 
     if ( scale_resolution != -1 )
