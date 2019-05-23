@@ -1,5 +1,5 @@
 /*
- *  Copyright © 2006-2017 SplinterGU (Fenix/Bennugd)
+ *  Copyright © 2006-2019 SplinterGU (Fenix/Bennugd)
  *  Copyright © 2002-2006 Fenix Team (Fenix)
  *  Copyright © 1999-2002 José Luis Cebrián Pagüe (Fenix)
  *
@@ -157,6 +157,7 @@ int compile_array_data( VARSPACE * n, segment * data, int size, int subsize, BAS
     return count ;
 }
 
+/*
 static BASETYPE get_basetype( VARSPACE * v )
 {
     TYPEDEF t ;
@@ -189,6 +190,7 @@ static BASETYPE get_basetype( VARSPACE * v )
     }
     return type ;
 }
+*/
 
 /*
  *  FUNCTION : compile_struct_data
@@ -409,8 +411,7 @@ int compile_varspace( VARSPACE * n, segment * data, int additive, int copies, in
     int i, j, total_count, last_count = 0 ;
     int base_offset = data->current ;
     int total_length ;
-    int size, count ;
-    int code ;
+    int count ;
     expresion_result res ;
     VARIABLE * var ;
     int unsigned_prefix = 0;
@@ -665,7 +666,6 @@ int compile_varspace( VARSPACE * n, segment * data, int additive, int copies, in
 
         if ( constants_search( token.code ) ) compile_error( MSG_CONSTANT_REDECLARED_AS_VARIABLE ) ;
 
-        code = token.code ;
         n->vars[n->count].code = token.code ;
         n->vars[n->count].offset = data->current;
 
@@ -712,7 +712,7 @@ int compile_varspace( VARSPACE * n, segment * data, int additive, int copies, in
             }
             varspace_init( members ) ;
 
-            size = compile_varspace( members, data, 0, count, 0, NULL, 0, duplicateignore ) ;
+            (void) compile_varspace( members, data, 0, count, 0, NULL, 0, duplicateignore ) ;
 
             type.varspace = members ;
 

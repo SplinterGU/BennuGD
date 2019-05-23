@@ -1,5 +1,5 @@
 /*
- *  Copyright © 2006-2017 SplinterGU (Fenix/Bennugd)
+ *  Copyright © 2006-2019 SplinterGU (Fenix/Bennugd)
  *  Copyright © 2002-2006 Fenix Team (Fenix)
  *  Copyright © 1999-2002 José Luis Cebrián Pagüe (Fenix)
  *
@@ -55,7 +55,7 @@ GRAPH * gr_read_png( const char * filename )
 
     png_structp png_ptr ;
     png_infop info_ptr, end_info ;
-    png_uint_32 width, height, rowbytes;
+    png_uint_32 width, height/*, rowbytes*/;
     int depth, color ;
 
     /* Abre el fichero y se asegura de que screen está inicializada */
@@ -133,7 +133,7 @@ GRAPH * gr_read_png( const char * filename )
 
     /* Recupera el fichero, convirtiendo a 16 bits si es preciso */
 
-    rowbytes = png_get_rowbytes( png_ptr, info_ptr ) ;
+//    rowbytes = png_get_rowbytes( png_ptr, info_ptr ) ;
     bitmap = bitmap_new( 0, width, height, ( color == PNG_COLOR_TYPE_GRAY ) ? depth : ( color == PNG_COLOR_TYPE_PALETTE ) ? 8 : ( sys_pixel_format->depth == 16 ? 16 : 32 ) ) ;
     if ( !bitmap )
     {

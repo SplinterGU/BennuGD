@@ -1,5 +1,5 @@
 /*
- *  Copyright © 2006-2017 SplinterGU (Fenix/Bennugd)
+ *  Copyright © 2006-2019 SplinterGU (Fenix/Bennugd)
  *  Copyright © 2002-2006 Fenix Team (Fenix)
  *  Copyright © 1999-2002 José Luis Cebrián Pagüe (Fenix)
  *
@@ -60,8 +60,8 @@ extern int trans_table_updated ;
  *
  * */
 
-#define ROTATEDX(x,y,sina,cosa) (fmul(x,cosa) - fmul(y,sina))
-#define ROTATEDY(x,y,sina,cosa) (fmul(x,sina) + fmul(y,cosa))
+#define ROTATEDX(x,y,sina,cosa) (fixmul(x,cosa) - fixmul(y,sina))
+#define ROTATEDY(x,y,sina,cosa) (fixmul(x,sina) + fixmul(y,cosa))
 
 /* Esta estructura guarda información que se recalcula a cada frame.
  * Quizá no sería necesario recalcularlo todo. El incremento podría
@@ -485,8 +485,8 @@ static void draw_mode7( int n, REGION * clip )
 
     angle = LOCINT32( mod_m7, camera, ANGLE ) ;
 
-    cosa = fcos( -angle ) ;
-    sina = fsin( -angle ) ;
+    cosa = fixcos( -angle ) ;
+    sina = fixsin( -angle ) ;
 
     /* Averigua la posición de inicio */
 
@@ -534,8 +534,8 @@ static void draw_mode7( int n, REGION * clip )
 
         //if (point_z >= camera_z) break ;
 
-        lines[y].left_bmp_x = fdiv( fmul(( point_x - camera_x ), -camera_z ), ( point_z - camera_z ) ) + camera_x ;
-        lines[y].left_bmp_y = fdiv( fmul(( point_y - camera_y ), -camera_z ), ( point_z - camera_z ) ) + camera_y ;
+        lines[y].left_bmp_x = fixdiv( fixmul(( point_x - camera_x ), -camera_z ), ( point_z - camera_z ) ) + camera_x ;
+        lines[y].left_bmp_y = fixdiv( fixmul(( point_y - camera_y ), -camera_z ), ( point_z - camera_z ) ) + camera_y ;
 
         /* Lo mismo para el punto (width,y) */
 
@@ -549,8 +549,8 @@ static void draw_mode7( int n, REGION * clip )
 
         //if (point_z >= camera_z) break ;
 
-        lines[y].right_bmp_x = fdiv( fmul(( point_x - camera_x ), -camera_z ), ( point_z - camera_z ) ) + camera_x ;
-        lines[y].right_bmp_y = fdiv( fmul(( point_y - camera_y ), -camera_z ), ( point_z - camera_z ) ) + camera_y ;
+        lines[y].right_bmp_x = fixdiv( fixmul(( point_x - camera_x ), -camera_z ), ( point_z - camera_z ) ) + camera_x ;
+        lines[y].right_bmp_y = fixdiv( fixmul(( point_y - camera_y ), -camera_z ), ( point_z - camera_z ) ) + camera_y ;
 
         /* Averigua el incremento necesario para cada paso de la línea */
 
@@ -884,7 +884,7 @@ static int __m7_start( int n, int fileid, int inid, int outid, int region, int h
     mode7_inf[n].region  = region_get( region ) ;
 
     if ( mode7_inf[n].id ) gr_destroy_object( mode7_inf[n].id );
-    mode7_inf[n].id = gr_new_object( dat->z, info_mode7, draw_mode7, n );
+    mode7_inf[n].id = gr_new_object( dat->z, ( OBJ_INFO * ) info_mode7, ( OBJ_DRAW * ) draw_mode7, ( void * ) n );
 
     return 1;
 }

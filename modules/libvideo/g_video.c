@@ -1,5 +1,5 @@
 /*
- *  Copyright � 2006-2017 SplinterGU (Fenix/Bennugd)
+ *  Copyright � 2006-2019 SplinterGU (Fenix/Bennugd)
  *  Copyright � 2002-2006 Fenix Team (Fenix)
  *  Copyright � 1999-2002 Jos� Luis Cebri�n Pag�e (Fenix)
  *
@@ -596,7 +596,7 @@ void __bgdexport( libvideo, module_finalize )()
 
 /* --------------------------------------------------------------------------- */
 
-int __bgdexport( libvideo, module_config )(int line, char * section, char * key, char * value )
+void __bgdexport( libvideo, module_config )(int line, char * section, char * key, char * value )
 {
     if ( !strcmp( section, "bennugd" ) ) {
         if ( !strcmp( key, "video.mode" ) ) {

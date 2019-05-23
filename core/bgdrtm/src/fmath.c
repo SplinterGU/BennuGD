@@ -1,5 +1,5 @@
 /*
- *  Copyright © 2006-2017 SplinterGU (Fenix/Bennugd)
+ *  Copyright © 2006-2019 SplinterGU (Fenix/Bennugd)
  *  Copyright © 2002-2006 Fenix Team (Fenix)
  *  Copyright © 1999-2002 José Luis Cebrián Pagüe (Fenix)
  *
@@ -96,7 +96,7 @@ int fixceil( fixed x )
 
 /* --------------------------------------------------------------------------- */
 
-fixed fcos( int x )
+fixed fixcos( int x )
 {
     if ( x < 0 ) x = -x ;
     if ( x > 360000 ) x %= 360000 ;
@@ -108,9 +108,9 @@ fixed fcos( int x )
 
 /* --------------------------------------------------------------------------- */
 
-fixed fsin( int x )
+fixed fixsin( int x )
 {
-    if ( x < 0 ) return -fsin( -x ) ;
+    if ( x < 0 ) return -fixsin( -x ) ;
     if ( x > 360000 ) x %= 360000 ;
     if ( x > 270000 ) return -cos_table[x - 270000] ;
     if ( x > 180000 ) return -cos_table[270000 - x] ;
@@ -120,14 +120,14 @@ fixed fsin( int x )
 
 /* --------------------------------------------------------------------------- */
 
-fixed fmul( int x, int y )
+fixed fixmul( int x, int y )
 {
     return ftofix( fixtof( x ) * fixtof( y ) ) ;
 }
 
 /* --------------------------------------------------------------------------- */
 
-fixed fdiv( int x, int y )
+fixed fixdiv( int x, int y )
 {
     return ftofix( fixtof( x ) / fixtof( y ) ) ;
 }

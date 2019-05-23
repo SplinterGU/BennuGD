@@ -1,5 +1,5 @@
 /*
- *  Copyright © 2006-2017 SplinterGU (Fenix/Bennugd)
+ *  Copyright © 2006-2019 SplinterGU (Fenix/Bennugd)
  *  Copyright © 2002-2006 Fenix Team (Fenix)
  *  Copyright © 1999-2002 Josι Luis Cebriαn Pagόe (Fenix)
  *
@@ -994,7 +994,7 @@ void systext_puts( GRAPH * map, int x, int y, char * str, int len );
 
 /* --------------------------------------------------------------------------- */
 
-static uint8_t * letters = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.:;=%abcdefghijklmnopqrstuvwxyz[](){}-><_,\\/+*!‘?Ώ\"'\x01\x02\x03ΑΙΝΣΪΡαινσϊρ" ;
+static uint8_t * letters = ( uint8_t * ) " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.:;=%abcdefghijklmnopqrstuvwxyz[](){}-><_,\\/+*!‘?Ώ\"'\x01\x02\x03ΑΙΝΣΪΡαινσϊρ" ;
 
 static int fg = 0, bg = 0;
 

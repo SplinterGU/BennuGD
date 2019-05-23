@@ -1,5 +1,5 @@
 /*
- *  Copyright © 2006-2017 SplinterGU (Fenix/Bennugd)
+ *  Copyright © 2006-2019 SplinterGU (Fenix/Bennugd)
  *  Copyright © 2002-2006 Fenix Team (Fenix)
  *  Copyright © 1999-2002 José Luis Cebrián Pagüe (Fenix)
  *
@@ -136,8 +136,8 @@ DLVARFIXUP __bgdexport( mod_grproc, globals_fixup )[] =
 static int grproc_advance( INSTANCE * my, int * params )
 {
     int angle = LOCINT32( mod_grproc, my, ANGLE ) ;
-    LOCINT32( mod_grproc, my, COORDX ) += fixtoi( fmul( fcos( angle ), itofix( params[0] ) ) ) ;
-    LOCINT32( mod_grproc, my, COORDY ) -= fixtoi( fmul( fsin( angle ), itofix( params[0] ) ) ) ;
+    LOCINT32( mod_grproc, my, COORDX ) += fixtoi( fixmul( fixcos( angle ), itofix( params[0] ) ) ) ;
+    LOCINT32( mod_grproc, my, COORDY ) -= fixtoi( fixmul( fixsin( angle ), itofix( params[0] ) ) ) ;
     return 1 ;
 }
 
@@ -146,8 +146,8 @@ static int grproc_advance( INSTANCE * my, int * params )
 static int grproc_xadvance( INSTANCE * my, int * params )
 {
     int angle = params[0] ;
-    LOCINT32( mod_grproc, my, COORDX ) += fixtoi( fmul( fcos( angle ), itofix( params[1] ) ) ) ;
-    LOCINT32( mod_grproc, my, COORDY ) -= fixtoi( fmul( fsin( angle ), itofix( params[1] ) ) ) ;
+    LOCINT32( mod_grproc, my, COORDX ) += fixtoi( fixmul( fixcos( angle ), itofix( params[1] ) ) ) ;
+    LOCINT32( mod_grproc, my, COORDY ) -= fixtoi( fixmul( fixsin( angle ), itofix( params[1] ) ) ) ;
     return 1 ;
 }
 

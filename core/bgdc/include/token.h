@@ -1,5 +1,5 @@
 /*
- *  Copyright © 2006-2017 SplinterGU (Fenix/Bennugd)
+ *  Copyright © 2006-2019 SplinterGU (Fenix/Bennugd)
  *  Copyright © 2002-2006 Fenix Team (Fenix)
  *  Copyright © 1999-2002 José Luis Cebrián Pagüe (Fenix)
  *
@@ -61,7 +61,7 @@ typedef struct _tok_pos
         struct _token   token_prev;
         int             line_count;
         int             current_file;
-        char            *source_ptr;
+        const char      *source_ptr;
     } tok_pos;
 
 extern void token_init( const char * source, int file ) ;

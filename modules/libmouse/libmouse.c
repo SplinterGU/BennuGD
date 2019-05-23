@@ -1,5 +1,5 @@
 /*
- *  Copyright © 2006-2017 SplinterGU (Fenix/Bennugd)
+ *  Copyright © 2006-2019 SplinterGU (Fenix/Bennugd)
  *  Copyright © 2002-2006 Fenix Team (Fenix)
  *  Copyright © 1999-2002 José Luis Cebrián Pagüe (Fenix)
  *
@@ -442,7 +442,7 @@ HOOK __bgdexport( libmouse, handler_hooks )[] =
 
 void __bgdexport( libmouse, module_initialize )()
 {
-    gr_new_object( GLOINT32( libmouse, MOUSEZ ), mouse_info, mouse_draw, 0 );
+    gr_new_object( GLOINT32( libmouse, MOUSEZ ),  ( OBJ_INFO * ) mouse_info, ( OBJ_DRAW * ) mouse_draw, ( void * ) 0 );
 }
 
 /* --------------------------------------------------------------------------- */

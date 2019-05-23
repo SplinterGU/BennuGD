@@ -1,5 +1,5 @@
 /*
- *  Copyright © 2006-2013 SplinterGU (Fenix/Bennugd)
+ *  Copyright © 2006-2019 SplinterGU (Fenix/Bennugd)
  *  Copyright © 2002-2006 Fenix Team (Fenix)
  *  Copyright © 1999-2002 José Luis Cebrián Pagüe (Fenix)
  *
@@ -30,20 +30,21 @@
 #define __PSLANG_H
 
 /* --------------------- */
-/* Flags para mnemónicos */
+/* mnemonic flags        */
 /* --------------------- */
 
-/* Número de parámetros */
+/* Parameters number */
 
 #define MN_0_PARAMS     (0x00)
 #define MN_1_PARAMS     (0x80)
 
 #define MN_PARAMS(code) (((code) & 0x80) >> 7)
 
-/* Mascara */
+/* Mask */
+
 #define MN_MASK         0xFF
 
-/* Tipo de dato */
+/* Data type */
 
 #define MN_DWORD        (0x000)
 #define MN_WORD         (0x100)
@@ -55,16 +56,16 @@
 #define MN_TYPEOF(code) ((code) & 0xF00)
 
 /* -------------------- */
-/* Códigos de mnemónico */
+/* mnemonic codes       */
 /* -------------------- */
 
-/* Salidas */
+/* Exits */
 
 #define MN_END                  (0x00| MN_0_PARAMS)
 #define MN_RETURN               (0x01| MN_0_PARAMS)
 #define MN_FRAME                (0x02| MN_0_PARAMS)
 
-/* Operaciones con la pila */
+/* Stack operations */
 
 #define MN_DUP                  (0x03| MN_0_PARAMS)
 #define MN_PUSH                 (0x04| MN_1_PARAMS)
@@ -76,7 +77,7 @@
 #define MN_CASE                 (0x07| MN_0_PARAMS)
 #define MN_CASE_R               (0x08| MN_0_PARAMS)
 
-/* Llamadas */
+/* Calls */
 
 #define MN_CALL                 (0x09| MN_1_PARAMS)
 #define MN_SYSCALL              (0x0A| MN_1_PARAMS)
@@ -87,7 +88,7 @@
 #define MN_TYPE                 (0x0E| MN_1_PARAMS)
 #define MN_DEBUG                (0x0F| MN_0_PARAMS)
 
-/* Direccionamiento */
+/* Addressing */
 
 #define MN_INDEX                (0x10| MN_1_PARAMS)
 #define MN_ARRAY                (0x11| MN_1_PARAMS)
@@ -97,14 +98,14 @@
 #define MN_REMOTE               (0x15| MN_1_PARAMS)
 #define MN_PTR                  (0x16| MN_0_PARAMS)
 
-/* Acceso a variables */
+/* Variable access */
 
 #define MN_GET_PRIV             (0x17| MN_1_PARAMS)
 #define MN_GET_LOCAL            (0x18| MN_1_PARAMS)
 #define MN_GET_GLOBAL           (0x19| MN_1_PARAMS)
 #define MN_GET_REMOTE           (0x1A| MN_1_PARAMS)
 
-/* Control de flujo */
+/* Flow control */
 
 #define MN_JUMP                 (0x1B| MN_1_PARAMS)
 #define MN_JFALSE               (0x1C| MN_1_PARAMS)
@@ -113,12 +114,12 @@
 #define MN_JTTRUE               (0x1F| MN_1_PARAMS)
 #define MN_JNOCASE              (0x20| MN_1_PARAMS)
 
-/* Operaciones unarias - aceptan tipos de dato numéricos */
+/* Unary operators - numeric data types are accepted */
 
 #define MN_NEG                  (0x21| MN_0_PARAMS)
 #define MN_NOT                  (0x22| MN_0_PARAMS)
 
-/* Operaciones binarias - Aceptan tipos de dato numéricos */
+/* Binary operators - numeric data types are accepted */
 
 #define MN_MUL                  (0x23| MN_0_PARAMS)
 #define MN_DIV                  (0x24| MN_0_PARAMS)
@@ -131,7 +132,7 @@
 #define MN_OR                   (0x2B| MN_0_PARAMS)
 #define MN_XOR                  (0x2C| MN_0_PARAMS)
 
-/* Comparaciones binarias */
+/* Binary comparations */
 
 #define MN_EQ                   (0x2D| MN_0_PARAMS)
 #define MN_NE                   (0x2E| MN_0_PARAMS)
@@ -140,14 +141,14 @@
 #define MN_GTE                  (0x31| MN_0_PARAMS)
 #define MN_LTE                  (0x32| MN_0_PARAMS)
 
-/* Post/pre-operadores */
+/* Post/pre-operators */
 
 #define MN_POSTINC              (0x33| MN_1_PARAMS)
 #define MN_POSTDEC              (0x34| MN_1_PARAMS)
 #define MN_INC                  (0x35| MN_1_PARAMS)
 #define MN_DEC                  (0x36| MN_1_PARAMS)
 
-/* Alteración directa de variables */
+/* Direct variable modification */
 
 #define MN_LET                  (0x37| MN_0_PARAMS)
 #define MN_VARADD               (0x38| MN_0_PARAMS)
@@ -161,7 +162,7 @@
 #define MN_VARROR               (0x40| MN_0_PARAMS)
 #define MN_VARROL               (0x41| MN_0_PARAMS)
 
-/* Funciones de cadena */
+/* String functions */
 
 #define MN_SUBSTR               (0x42| MN_0_PARAMS)
 #define MN_STRI2CHR             (0x43| MN_0_PARAMS)
@@ -169,11 +170,11 @@
 #define MN_FLOAT2STR            (0x45| MN_1_PARAMS)
 #define MN_CHR2STR              (0x46| MN_1_PARAMS)
 
-/* Optimizaciones */
+/* Optimizations */
 
 #define MN_LETNP                (0x47| MN_0_PARAMS)
 
-/* Operadores Bitwise */
+/* Bitwise operators */
 
 #define MN_BNOT                 (0x48| MN_0_PARAMS)
 #define MN_BAND                 (0x49| MN_0_PARAMS)
@@ -182,7 +183,7 @@
 
 /*** Free 4C, 4D, 4E, 4F ***/
 
-/* Funciones de conversión */
+/* Convert functions */
 
 #define MN_INT2FLOAT            (0x50| MN_1_PARAMS)
 #define MN_FLOAT2INT            (0x51| MN_1_PARAMS)
@@ -195,7 +196,7 @@
 #define MN_INT2WORD             (0x63| MN_1_PARAMS)
 #define MN_INT2BYTE             (0x64| MN_1_PARAMS)
 
-/* Funciones de control de flujo */
+/* Flow control functions */
 #define MN_NCALL                (0x65| MN_1_PARAMS)
 
 /*** Free 66, 67, 68, 69 ****/
@@ -208,7 +209,7 @@
 
 /*** Free 6E, 6F ****/
 
-/* Mnemónicos inexistentes - usados por el compilador internamente */
+/* nonexisten mnemonics - internal use for the compiler */
 
 #define MN_REPEAT               (0x70| MN_1_PARAMS)
 #define MN_BREAK                (0x71| MN_1_PARAMS)
@@ -216,7 +217,7 @@
 #define MN_RETRUE               (0x73| MN_1_PARAMS)
 #define MN_REFALSE              (0x74| MN_1_PARAMS)
 
-/* Funciones de cadena (2) */
+/* String functions (2) */
 
 #define MN_POINTER2STR          (0x75| MN_1_PARAMS)
 /* #define MN_POINTER2BOL          (0x76| MN_1_PARAMS) */
@@ -224,7 +225,7 @@
 #define MN_STR2FLOAT            (0x78| MN_1_PARAMS)
 #define MN_STR2CHR              (0x79| MN_1_PARAMS)
 
-/* Tratamiento de Locales a proceso */
+/* Local variables */
 
 #define MN_PUBLIC               (0x7A| MN_1_PARAMS)     /* Direccionamiento */
 #define MN_GET_PUBLIC           (0x7B| MN_1_PARAMS)     /* Acceso a variables */
@@ -236,7 +237,7 @@
 
 #define MN_NOP                  (0x7E| MN_0_PARAMS)
 
-/* Depurado */
+/* Debbug */
 
 #define MN_SENTENCE             (0x7F| MN_1_PARAMS)
 

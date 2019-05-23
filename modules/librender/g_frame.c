@@ -1,5 +1,5 @@
 /*
- *  Copyright © 2006-2017 SplinterGU (Fenix/Bennugd)
+ *  Copyright © 2006-2019 SplinterGU (Fenix/Bennugd)
  *  Copyright © 2002-2006 Fenix Team (Fenix)
  *  Copyright © 1999-2002 José Luis Cebrián Pagüe (Fenix)
  *
@@ -274,50 +274,30 @@ void gr_draw_frame()
 {
     if ( jump ) return ;
 
-    /* Actualiza paleta */
+    /* Palette update */
 
     if ( palette_changed ) gr_refresh_palette();
 
     if ( !trans_table_updated ) gr_make_trans_table();
 
-    /* Bloquea el bitmap de pantalla */
+    /* lock screen bitmap */
 
     if ( gr_lock_screen() < 0 ) return ;
 
-    /* Dibuja la pantalla */
+    /* Draw screen */
 
     gr_draw_screen( scrbitmap, GLODWORD( librender, RESTORETYPE ), GLODWORD( librender, DUMPTYPE ) );
 
     /* Fading */
 
-    if ( fade_on || fade_set )
-    {
+    if ( ( fade_on || fade_set ) && frame_completed ) {
         gr_fade_step() ;
         if ( background ) background->modified = 1 ;
     }
 
-    /* Actualiza la paleta y la pantalla */
+    /* Update palette and screen */
 
     gr_unlock_screen() ;
-
-}
-
-/* --------------------------------------------------------------------------- */
-
-void __bgdexport( librender, module_initialize )()
-{
-#ifndef TARGET_DINGUX_A320
-    if ( !SDL_WasInit( SDL_INIT_TIMER ) ) SDL_InitSubSystem( SDL_INIT_TIMER );
-#endif
-}
-
-/* --------------------------------------------------------------------------- */
-
-void __bgdexport( librender, module_finalize )()
-{
-#ifndef TARGET_DINGUX_A320
-    if ( SDL_WasInit( SDL_INIT_TIMER ) ) SDL_QuitSubSystem( SDL_INIT_TIMER );
-#endif
 }
 
 /* --------------------------------------------------------------------------- */

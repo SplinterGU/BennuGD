@@ -1,5 +1,5 @@
 /*
- *  Copyright © 2006-2017 SplinterGU (Fenix/Bennugd)
+ *  Copyright © 2006-2019 SplinterGU (Fenix/Bennugd)
  *  Copyright © 2002-2006 Fenix Team (Fenix)
  *  Copyright © 1999-2002 José Luis Cebrián Pagüe (Fenix)
  *
@@ -250,7 +250,7 @@ static int _moddraw_object_new( DRAWING_OBJECT * dr, int z )
     dr->color16 = pixel_color16;
     dr->color32 = pixel_color32;
 
-    dr->id = gr_new_object( z, _moddraw_object_info, _moddraw_object_draw, dr );
+    dr->id = gr_new_object( z, ( OBJ_INFO * ) _moddraw_object_info, ( OBJ_DRAW * ) _moddraw_object_draw, ( void * ) dr );
 
     drawing_objects = dr;
 

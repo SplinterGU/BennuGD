@@ -1,5 +1,5 @@
 /*
- *  Copyright � 2006-2017 SplinterGU (Fenix/Bennugd)
+ *  Copyright � 2006-2019 SplinterGU (Fenix/Bennugd)
  *  Copyright � 2002-2006 Fenix Team (Fenix)
  *  Copyright � 1999-2002 Jos� Luis Cebri�n Pag�e (Fenix)
  *
@@ -33,16 +33,6 @@
 #include <stdio.h>
 #include <fmath.h>
 
-/*#include <math.h>
-typedef long int fixed ;
-#define FIXED_PREC      10000
-#define fixtof(a) (( ( float ) a ) / FIXED_PREC )
-#define fcos(a) (cos(a* M_PI / 180000.0)*FIXED_PREC)
-#define fsin(a) (sin(a* M_PI / 180000.0)*FIXED_PREC)
-#ifndef M_PI
-#define M_PI        3.14159265358979323846
-#endif
-*/
 #include "libblit.h"
 
 /* --------------------------------------------------------------------------- */
@@ -1795,8 +1785,8 @@ static void gr_calculate_corners( GRAPH * dest, int screen_x, int screen_y, int 
 
     /* Rotate the coordinates */
 
-    float cos_angle = fixtof( fcos( angle ) );
-    float sin_angle = fixtof( fsin( angle ) );
+    float cos_angle = fixtof( fixcos( angle ) );
+    float sin_angle = fixtof( fixsin( angle ) );
 
     /* Top-left, top-right, bottom-left, bottom-right */
 

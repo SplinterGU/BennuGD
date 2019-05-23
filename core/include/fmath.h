@@ -1,5 +1,5 @@
 /*
- *  Copyright © 2006-2013 SplinterGU (Fenix/Bennugd)
+ *  Copyright © 2006-2019 SplinterGU (Fenix/Bennugd)
  *  Copyright © 2002-2006 Fenix Team (Fenix)
  *  Copyright © 1999-2002 José Luis Cebrián Pagüe (Fenix)
  *
@@ -53,10 +53,10 @@ extern float fixtof( fixed x );
 extern fixed itofix( int x );
 extern int fixtoi( fixed x );
 extern int fixceil( fixed x );
-extern fixed fcos( int x );
-extern fixed fsin( int x );
-extern fixed fmul( int x, int y );
-extern fixed fdiv( int x, int y );
+extern fixed fixcos( int x );
+extern fixed fixsin( int x );
+extern fixed fixmul( int x, int y );
+extern fixed fixdiv( int x, int y );
 extern void init_cos_tables();
 
 #endif

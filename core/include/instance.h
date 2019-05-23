@@ -1,5 +1,5 @@
 /*
- *  Copyright © 2006-2013 SplinterGU (Fenix/Bennugd)
+ *  Copyright © 2006-2019 SplinterGU (Fenix/Bennugd)
  *  Copyright © 2002-2006 Fenix Team (Fenix)
  *  Copyright © 1999-2002 José Luis Cebrián Pagüe (Fenix)
  *
@@ -64,6 +64,8 @@ extern int          instance_exists( INSTANCE * i ) ;
 
 extern INSTANCE     * instance_next_by_priority();
 extern void         instance_dirty( INSTANCE * i ) ;
+
+extern void         instance_reset_iterator_by_priority() ;
 
 /* Las siguientes funciones son el punto de entrada del intérprete */
 

@@ -58,7 +58,7 @@ enum
 /* (usada en tiempo de ejecucion)                                    */
 DLVARFIXUP __bgdexport( mod_proc, locals_fixup )[]  =
 {
-    /* Nombre de variable local, offset al dato, tamaño del elemento, cantidad de elementos */
+    /* Nombre de variable local, offset al dato, tamaï¿½o del elemento, cantidad de elementos */
     { "id", NULL, -1, -1 },
     { "reserved.process_type", NULL, -1, -1 },
     { "reserved.status", NULL, -1, -1 },
@@ -71,7 +71,7 @@ DLVARFIXUP __bgdexport( mod_proc, locals_fixup )[]  =
 
 /* ----------------------------------------------------------------- */
 
-void __bgdexport( mod_proc, process_exec_hook )( INSTANCE * r )
+void __bgdexport( mod_proc, instance_pre_execute_hook )( INSTANCE * r )
 {
     LOCDWORD( mod_proc, r, TYPE_SCAN ) = 0;
     LOCDWORD( mod_proc, r, ID_SCAN ) = 0;
@@ -79,7 +79,7 @@ void __bgdexport( mod_proc, process_exec_hook )( INSTANCE * r )
 }
 
 /* ----------------------------------------------------------------- */
-/* Interacción entre procesos */
+/* Interacciï¿½n entre procesos */
 
 static void _modproc_kill_all()
 {
@@ -110,8 +110,7 @@ static int modproc_exit_0( INSTANCE * my, int * params )
 
 static int modproc_exit_1( INSTANCE * my, int * params )
 {
-    printf( string_get( params[0] ) );
-    printf( "\n" );
+    printf( "%s\n", string_get( params[0] ) );
     fflush( stdout );
     string_discard( params[0] );
 
@@ -127,8 +126,7 @@ static int modproc_exit( INSTANCE * my, int * params )
 {
     _modproc_kill_all();
 
-    printf( string_get( params[0] ) );
-    printf( "\n" );
+    printf( "%s\n", string_get( params[0] ) );
     fflush( stdout );
     string_discard( params[0] );
 

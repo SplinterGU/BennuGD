@@ -1,5 +1,5 @@
 /*
- *  Copyright © 2006-2017 SplinterGU (Fenix/Bennugd)
+ *  Copyright © 2006-2019 SplinterGU (Fenix/Bennugd)
  *
  *  This file is part of Bennu - Game Development
  *
@@ -76,7 +76,7 @@ static int modsys_exec( INSTANCE * my, int * params )
     }
     else if ( child == 0 )
     {
-        execvp( filename, ( const char ** )argv );
+        execvp( filename, ( char * const * )argv );
         exit(-1);
     }
     else

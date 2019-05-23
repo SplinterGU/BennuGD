@@ -1,5 +1,5 @@
 /*
- *  Copyright © 2006-2017 SplinterGU (Fenix/Bennugd)
+ *  Copyright © 2006-2019 SplinterGU (Fenix/Bennugd)
  *  Copyright © 2002-2006 Fenix Team (Fenix)
  *  Copyright © 1999-2002 José Luis Cebrián Pagüe (Fenix)
  *
@@ -390,7 +390,7 @@ int draw_instance_info( INSTANCE * i, REGION * region, int * z, int * drawme )
 void __bgdexport( librender, instance_create_hook )( INSTANCE * r )
 {
     /* COORZ is 0 when a new instance is created */
-    LOCDWORD( librender, r, OBJECTID ) = gr_new_object( /* LOCINT32( librender, r, COORDZ ) */ 0, draw_instance_info, draw_instance, r );
+    LOCDWORD( librender, r, OBJECTID ) = gr_new_object( /* LOCINT32( librender, r, COORDZ ) */ 0, ( OBJ_INFO * ) draw_instance_info, ( OBJ_DRAW * ) draw_instance, ( void * ) r );
 }
 
 /*

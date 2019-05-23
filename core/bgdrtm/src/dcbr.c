@@ -1,5 +1,5 @@
 /*
- *  Copyright © 2006-2017 SplinterGU (Fenix/Bennugd)
+ *  Copyright © 2006-2019 SplinterGU (Fenix/Bennugd)
  *  Copyright © 2002-2006 Fenix Team (Fenix)
  *  Copyright © 1999-2002 José Luis Cebrián Pagüe (Fenix)
  *
@@ -210,7 +210,7 @@ DCB_VAR * read_and_arrange_varspace( file * fp, int count )
 
 /* ---------------------------------------------------------------------- */
 
-int dcb_load_from( file * fp, char * filename, int offset )
+int dcb_load_from( file * fp, const char * filename, int offset )
 {
     unsigned int n ;
     uint32_t size;

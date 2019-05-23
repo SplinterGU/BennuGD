@@ -1,5 +1,5 @@
 /*
- *  Copyright © 2006-2017 SplinterGU (Fenix/Bennugd)
+ *  Copyright © 2006-2019 SplinterGU (Fenix/Bennugd)
  *  Copyright © 2002-2006 Fenix Team (Fenix)
  *  Copyright © 1999-2002 José Luis Cebrián Pagüe (Fenix)
  *
@@ -213,7 +213,7 @@ static FLIC * flic_open( const char * filename )
     else
         flic->speed_ms = flic->header.speed ;
 
-    flic->objid = gr_new_object( 0, info_fli, draw_fli, flic );
+    flic->objid = gr_new_object( 0, ( OBJ_INFO * ) info_fli, ( OBJ_DRAW * ) draw_fli, ( void * ) flic );
 
     return flic ;
 }

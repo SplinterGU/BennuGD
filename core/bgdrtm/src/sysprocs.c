@@ -1,5 +1,5 @@
 /*
- *  Copyright © 2006-2017 SplinterGU (Fenix/Bennugd)
+ *  Copyright © 2006-2019 SplinterGU (Fenix/Bennugd)
  *  Copyright © 2002-2006 Fenix Team (Fenix)
  *  Copyright © 1999-2002 José Luis Cebrián Pagüe (Fenix)
  *
@@ -421,7 +421,7 @@ void sysproc_init()
     CFG_HOOK        module_config = NULL;
     int             maxcode = 0 ;
 
-    char soname[ __MAX_PATH ], fullsoname[ __MAX_PATH ], **spath ;
+    char soname[ __MAX_PATH ], fullsoname[ __MAX_PATH + 2 ], **spath ;
 
 #if defined( WIN32 )
 #define DLLEXT      ".dll"
@@ -450,7 +450,7 @@ void sysproc_init()
         spath = dlsearchpath;
         while( !library && spath && *spath )
         {
-            sprintf( fullsoname, "%s%s/%s", appexepath, *spath, filename );
+            snprintf( fullsoname, sizeof( fullsoname ), "%s%s/%s", appexepath, *spath, filename );
             library  = dlibopen( fullsoname ) ;
             spath++;
         }
@@ -459,7 +459,7 @@ void sysproc_init()
 
         if ( !library )
         {
-            printf( dliberror() ) ;
+            printf( "%s", dliberror() ) ;
             exit( 0 );
         }
 

@@ -1,5 +1,5 @@
 /*
- *  Copyright © 2006-2013 SplinterGU (Fenix/Bennugd)
+ *  Copyright © 2006-2019 SplinterGU (Fenix/Bennugd)
  *
  *  This file is part of Bennu - Game Development
  *
@@ -102,6 +102,10 @@ static void * dlibopen( const char * fname )
 #else
     void * hnd = dlopen( fname, RTLD_NOW | RTLD_GLOBAL );
 #endif
+
+    // Avoid unused warning in compiller
+    (void) &dliberror;
+    (void) &dlibclose;
 
     if ( !hnd )
     {

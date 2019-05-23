@@ -1,5 +1,5 @@
 /*
- *  Copyright © 2006-2017 SplinterGU (Fenix/Bennugd)
+ *  Copyright © 2006-2019 SplinterGU (Fenix/Bennugd)
  *  Copyright © 2002-2006 Fenix Team (Fenix)
  *  Copyright © 1999-2002 José Luis Cebrián Pagüe (Fenix)
  *
@@ -73,10 +73,9 @@ static int embedded    = 0;  /* 1 only if this is a stub with an embedded DCB */
 
 int main( int argc, char *argv[] )
 {
-    char * filename = NULL, dcbname[ __MAX_PATH ], *ptr, *arg0, *ext ;
+    char * filename = NULL, dcbname[ __MAX_PATH ], *ptr, *arg0;
     int i, j, ret = -1;
     file * fp = NULL;
-    INSTANCE * mainproc_running;
     dcb_signature dcb_signature;
 
     /* disable stdout buffering */
@@ -200,7 +199,7 @@ int main( int argc, char *argv[] )
             printf( BGDI_VERSION "\n"
                     "Bennu Game Development Interpreter\n"
                     "\n"
-                    "Copyright (c) 2006-2017 SplinterGU (Fenix/BennuGD)\n"
+                    "Copyright (c) 2006-2019 SplinterGU (Fenix/BennuGD)\n"
                     "Copyright (c) 2002-2006 Fenix Team (Fenix)\n"
                     "Copyright (c) 1999-2002 José Luis Cebrián Pagüe (Fenix)\n"
                     "\n"
@@ -300,7 +299,7 @@ fflush(stdout);
     }
     else
     {
-        dcb_load_from( fp, dcbname, dcb_signature.dcb_offset );
+        dcb_load_from( fp, (const char *) dcbname, dcb_signature.dcb_offset );
     }
 
     /* If the dcb is not in debug mode */
@@ -328,7 +327,7 @@ fflush(stdout);
 
     if ( mainproc )
     {
-        mainproc_running = instance_new( mainproc, NULL ) ;
+        (void) instance_new( mainproc, NULL ) ;
         ret = instance_go_all() ;
     }
 
@@ -342,4 +341,3 @@ fflush(stdout);
 
     return ret;
 }
-

@@ -1,5 +1,5 @@
 /*
- *  Copyright © 2006-2017 SplinterGU (Fenix/Bennugd)
+ *  Copyright © 2006-2019 SplinterGU (Fenix/Bennugd)
  *  Copyright © 2002-2006 Fenix Team (Fenix)
  *  Copyright © 1999-2002 José Luis Cebrián Pagüe (Fenix)
  *
@@ -843,7 +843,6 @@ void draw_rectangle( GRAPH * dest, REGION * clip, int x, int y, int w, int h )
 void draw_circle( GRAPH * dest, REGION * clip, int x, int y, int r )
 {
     int cx = 0, cy = r;
-    int lcy = -1;
     int df = 1 - r, de = 3, dse = -2 * r + 5;
     int old_stipple = drawing_stipple;
     REGION base_clip ;
@@ -911,7 +910,6 @@ void draw_circle( GRAPH * dest, REGION * clip, int x, int y, int r )
         }
         drawing_stipple = (( drawing_stipple << 1 ) | (( drawing_stipple & 0x80000000 ) ? 1 : 0 ) );
 
-        lcy = cy;
         cx++ ;
         if ( df < 0 ) df += de, de += 2, dse += 2 ;
         else df += dse, de += 2, dse += 4, cy-- ;

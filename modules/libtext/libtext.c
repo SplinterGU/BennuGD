@@ -1,5 +1,5 @@
 /*
- *  Copyright © 2006-2017 SplinterGU (Fenix/Bennugd)
+ *  Copyright © 2006-2019 SplinterGU (Fenix/Bennugd)
  *  Copyright © 2002-2006 Fenix Team (Fenix)
  *  Copyright © 1999-2002 José Luis Cebrián Pagüe (Fenix)
  *
@@ -435,7 +435,7 @@ int gr_text_new2( int fontid, int x, int y, int z, int alignment, const char * t
     texts[textid].color8 = fntcolor8 ;
     texts[textid].color16 = fntcolor16 ;
     texts[textid].color32 = fntcolor32 ;
-    texts[textid].objectid = gr_new_object( texts[textid].z, info_text, draw_text, &texts[textid] );
+    texts[textid].objectid = gr_new_object( texts[textid].z, ( OBJ_INFO * ) info_text, ( OBJ_DRAW * ) draw_text, ( void * ) &texts[textid] );
     texts[textid].last_value = 0 ;
     texts[textid].last_z = 0 ;
 
@@ -730,13 +730,13 @@ GRAPH * gr_text_bitmap( int fontid, const char * text, int alignment )
 {
     GRAPH * gr ;
     int x, y ;
-    FONT   * f ;
+//    FONT   * f ;
 
     // Splinter
     if ( !text || !*text ) return NULL;
     if ( fontid < 0 || fontid >= MAX_FONTS || !fonts[fontid] ) return NULL; // Incorrect font type
 
-    f = fonts[fontid] ;
+//    f = fonts[fontid] ;
 
     /* Un refresco de paleta en mitad de gr_text_put puede provocar efectos
      * desagradables al modificar el tipo de letra del sistema */

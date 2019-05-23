@@ -1,5 +1,5 @@
 /*
- *  Copyright © 2006-2017 SplinterGU (Fenix/Bennugd)
+ *  Copyright © 2006-2019 SplinterGU (Fenix/Bennugd)
  *  Copyright © 2002-2006 Fenix Team (Fenix)
  *  Copyright © 1999-2002 José Luis Cebrián Pagüe (Fenix)
  *
@@ -59,26 +59,30 @@ extern char *appexefullpath;
 
 extern char *configfile;
 
-extern int debug ;          /* 1 if running in debug mode                    */
+extern int debug ;          /* 1 if running in debug mode */
 
 /* Trace */
-extern int debug_mode;
-
 extern int exit_value;
 extern int must_exit;
 
-extern int force_debug;
-extern int debug_next;
+extern int frame_completed;
 
 extern int trace_sentence;
 extern INSTANCE * trace_instance;
+
+extern int debugger_show_console;        // debuggin
+extern int debugger_trace;               // 1 single sentence
+extern int debugger_step;                // execute 1 sentence or 1 procedure or 1 function as an unit
+// extern int debugger_step_out;            // execute until return or exit procedure or function
+// extern int debugger_goto_next_instance;  // break on next instance
+// extern int debugger_next_frame;          // run until next frame is complete
 
 /* --------------------------------------------------------------------------- */
 
 extern int strncmpi( char * str1, char * str2, int sz );
 
 extern int dcb_load( const char * filename ) ;
-extern int dcb_load_from( file * fp, char * dcbname, int offset ) ;
+extern int dcb_load_from( file * fp, const char * dcbname, int offset ) ;
 
 extern char * getid_name( unsigned int code );
 

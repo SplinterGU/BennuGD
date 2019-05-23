@@ -1,5 +1,5 @@
 /*
- *  Copyright � 2006-2013 SplinterGU (Fenix/Bennugd)
+ *  Copyright � 2006-2019 SplinterGU (Fenix/Bennugd)
  *  Copyright � 2002-2006 Fenix Team (Fenix)
  *  Copyright � 1999-2002 Jos� Luis Cebri�n Pag�e (Fenix)
  *
@@ -77,7 +77,7 @@ void xfile_init( int maxfiles )
     max_x_files = maxfiles;
 }
 
-void file_add_xfile( file * fp, char * stubname, long offset, char * name, int size )
+void file_add_xfile( file * fp, const char * stubname, long offset, char * name, int size )
 {
     char * ptr ;
 
@@ -182,6 +182,7 @@ int file_qputs( file * fp, char * buffer )
 int file_qgets( file * fp, char * buffer, int len )
 {
     char * ptr, * result = NULL ;
+    size_t sz;
 
     if ( fp->type == F_XFILE )
     {
@@ -199,7 +200,11 @@ int file_qgets( file * fp, char * buffer, int len )
                 fp->eof = 1 ;
                 break ;
             }
-            fread( ptr, 1, 1, fp->fp ) ;
+            sz = fread( ptr, 1, 1, fp->fp ) ;
+            if ( sz <= 0 ) {
+                if ( feof( fp->fp ) ) fp->eof = 1;
+                break;
+            }
             l++ ;
             fp->pos++ ;
             if ( *ptr++ == '\n' ) break ;
@@ -257,6 +262,7 @@ int file_puts( file * fp, char * buffer )
 int file_gets( file * fp, char * buffer, int len )
 {
     char * result = NULL ;
+    size_t sz;
 
     if ( fp->type == F_XFILE )
     {
@@ -274,7 +280,11 @@ int file_gets( file * fp, char * buffer, int len )
                 fp->eof = 1 ;
                 break ;
             }
-            fread( ptr, 1, 1, fp->fp ) ;
+            sz = fread( ptr, 1, 1, fp->fp ) ;
+            if ( sz <= 0 ) {
+                if ( feof( fp->fp ) ) fp->eof = 1;
+                break;
+            }
             l++ ;
             fp->pos++ ;
             if ( *ptr++ == '\n' ) break ;
@@ -854,12 +864,24 @@ char * getfullpath( char *rel_path )
 {
     char fullpath[ __MAX_PATH ] = "";
 #ifdef _WIN32
-    GetFullPathName( rel_path, sizeof( fullpath ), fullpath, NULL );
-#else
-    realpath( rel_path, fullpath );
-#endif
-    if ( *fullpath ) return strdup( fullpath );
+    char * fpath = NULL;
+    DWORD sz = GetFullPathName( rel_path, sizeof( fullpath ), fullpath, NULL );
+    if ( sz > sizeof( fullpath ) ) {
+        fpath = malloc( sz + 1 );
+        if ( fpath ) {
+            if ( GetFullPathName( rel_path, sz, fpath, NULL ) ) ) return fpath;
+            free( fpath );
+        }
+        return NULL;
+    }
+    if ( sz ) return strdup( fullpath );
     return NULL;
+#else
+    char * r = realpath( rel_path, fullpath );
+    (void) &r; // avoid compiler warning
+    if ( !*fullpath ) return NULL;
+    return strdup( fullpath );
+#endif
 }
 
 /* ------------------------------------------------------------------------------------ */
