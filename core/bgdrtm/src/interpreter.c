@@ -41,7 +41,6 @@
 
 #include <assert.h>
 
-#include <time.h>
 /* ---------------------------------------------------------------------- */
 /* Interpreter's main module                                              */
 /* ---------------------------------------------------------------------- */
@@ -84,20 +83,19 @@ static int stack_dump( INSTANCE * r ) {
 
 int instance_go_all() {
     INSTANCE * i = NULL;
-    int n;
-    int status;
+    int n, status, i_count;
 
     must_exit = 0;
 
-    // Reset iterator by priority
-    instance_reset_iterator_by_priority();
 
     while ( first_instance ) {
         frame_completed = 0;
 
-        instance_reset_iterator_by_priority();
+        // Reset iterator by priority
+        instance_reset_iterator_by_priority(); // Don't must be neccessary
         i = instance_next_by_priority();
 
+        i_count = 0;
         while ( i ) {
             if ( LOCINT32( i, FRAME_PERCENT ) < 100 ) {
                 status = LOCDWORD( i, STATUS );
@@ -116,18 +114,18 @@ int instance_go_all() {
 
                 instance_go( i );
 
-                if ( must_exit ) break;
+                i_count++;
+
+                if ( must_exit ) goto instance_go_all_exit;
 
             }
 
             i = instance_next_by_priority();
         }
 
-        if ( must_exit ) break;
-
         /* If frame is complete, then update internal vars and execute main hooks. */
 
-        if ( !i ) {
+        if ( !i_count ) {
             frame_completed = 1;
             /* Honors the signal-changed status of the process and
              * saves so it is used in this loop the next frame
@@ -157,7 +155,7 @@ int instance_go_all() {
             continue;
         }
     }
-
+instance_go_all_exit:
     return exit_value;
 
 }
@@ -173,7 +171,6 @@ int instance_go( INSTANCE * r ) {
     int n, return_value = LOCDWORD( r, PROCESS_ID );
     SYSPROC * p = NULL;
     INSTANCE * i = NULL;
-    static char buffer[16];
     char * str = NULL;
     int status;
 
@@ -1329,12 +1326,15 @@ main_loop_instance_go:
                 break;
 
             case MN_CHR2STR:
+            {
+                char buffer[2];
                 buffer[0] = ( uint8_t )r->stack_ptr[-ptr[1] - 1];
                 buffer[1] = 0;
                 r->stack_ptr[-ptr[1] - 1] = string_new( buffer );
                 string_use( r->stack_ptr[-ptr[1] - 1] );
                 ptr += 2;
                 break;
+            }
 
             case MN_STRI2CHR:
                 n = string_char( r->stack_ptr[-2], r->stack_ptr[-1] );
