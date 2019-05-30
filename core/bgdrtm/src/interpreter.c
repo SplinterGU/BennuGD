@@ -87,7 +87,6 @@ int instance_go_all() {
 
     must_exit = 0;
 
-
     while ( first_instance ) {
         frame_completed = 0;
 
@@ -155,7 +154,9 @@ int instance_go_all() {
             continue;
         }
     }
+
 instance_go_all_exit:
+
     return exit_value;
 
 }

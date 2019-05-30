@@ -869,7 +869,7 @@ char * getfullpath( char *rel_path )
     if ( sz > sizeof( fullpath ) ) {
         fpath = malloc( sz + 1 );
         if ( fpath ) {
-            if ( GetFullPathName( rel_path, sz, fpath, NULL ) ) ) return fpath;
+            if ( GetFullPathName( rel_path, sz, fpath, NULL ) ) return fpath;
             free( fpath );
         }
         return NULL;
