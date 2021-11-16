@@ -44,11 +44,11 @@ uint32_t drawing_stipple = 0xFFFFFFFF;
 
 /* --------------------------------------------------------------------------- */
 
-#ifdef __GNUC__
-#define _inline inline
+#ifndef __GNUC__
+#define inline __inline
 #endif
 
-_inline void _HLine8_nostipple( uint8_t * ptr, uint32_t length )
+static inline void _HLine8_nostipple( uint8_t * ptr, uint32_t length )
 {
     if ( pixel_alpha == 255 )
     {
@@ -64,7 +64,7 @@ _inline void _HLine8_nostipple( uint8_t * ptr, uint32_t length )
 
 /* --------------------------------------------------------------------------- */
 
-_inline void _HLine8_stipple( uint8_t * ptr, uint32_t length )
+static inline void _HLine8_stipple( uint8_t * ptr, uint32_t length )
 {
     register int n;
 
@@ -88,7 +88,7 @@ _inline void _HLine8_stipple( uint8_t * ptr, uint32_t length )
 
 /* --------------------------------------------------------------------------- */
 
-_inline void _HLine16_nostipple( uint16_t * ptr, uint32_t length )
+static inline void _HLine16_nostipple( uint16_t * ptr, uint32_t length )
 {
     register int n ;
 
@@ -104,7 +104,7 @@ _inline void _HLine16_nostipple( uint16_t * ptr, uint32_t length )
 
 /* --------------------------------------------------------------------------- */
 
-_inline void _HLine16_stipple( uint16_t * ptr, uint32_t length )
+static inline void _HLine16_stipple( uint16_t * ptr, uint32_t length )
 {
     register int n ;
 
@@ -128,7 +128,7 @@ _inline void _HLine16_stipple( uint16_t * ptr, uint32_t length )
 
 /* --------------------------------------------------------------------------- */
 
-_inline void _HLine32_nostipple( uint32_t * ptr, uint32_t length )
+static inline void _HLine32_nostipple( uint32_t * ptr, uint32_t length )
 {
     register int n ;
 
@@ -190,7 +190,7 @@ _inline void _HLine32_nostipple( uint32_t * ptr, uint32_t length )
 
 /* --------------------------------------------------------------------------- */
 
-_inline void _HLine32_stipple( uint32_t * ptr, uint32_t length )
+static inline void _HLine32_stipple( uint32_t * ptr, uint32_t length )
 {
     register int n ;
 

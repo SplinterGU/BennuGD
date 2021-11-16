@@ -2505,12 +2505,6 @@ void __bgdexport( mod_debug, module_initialize )() {
 }
 
 /* --------------------------------------------------------------------------- */
-/*
-void __bgdexport( mod_debug, module_finalize )() {
-}
-*/
-
-/* --------------------------------------------------------------------------- */
 
 /* Bigest priority first execute
    Lowest priority last execute */

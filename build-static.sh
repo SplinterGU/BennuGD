@@ -24,6 +24,9 @@
 #    distribution.
 #
 
+
+TARGET=i386-linux-gnu-static
+
 cflags()
 {
 for i in $(ls -d $PWD/modules/*|grep -v mathi); do if [ -d $i ]; then echo -n " -I$i "; fi; done
@@ -36,18 +39,39 @@ for i in $(find modules -name '*.a'|grep -v mod_mathi); do echo -n "-L$PWD/$(dir
 
 echo "#### building necessaries files ####"
 
-cd core
-./make-fakedl.sh
+cd 3rdparty/des-4.04b
+case $1 in
+    release)
+        make -f Makefile.uni clean
+        ;;
+esac
+make -f Makefile.uni
 cd -
 
+COMMON_LDFLAGS="-L$PWD/3rdparty/des-4.04b -ldes"
+COMMON_CFLAGS="-I$PWD/3rdparty/des-4.04b -DUSE_LIBDES"
+
 cd core
-./configure --enable-static
+./make-fakedl.sh
+
+case $1 in
+    release)
+        ./configure --enable-static COMMON_LDFLAGS="$COMMON_LDFLAGS" COMMON_CFLAGS="$COMMON_CFLAGS" CFLAGS="$COMMON_CFLAGS" && make clean
+        cd bgdrtm && make clean
+        cd -
+        ;;
+esac
+
 cd bgdrtm
 make
-cd ..
+cd -
 
 cd ../modules
-./configure --enable-static
+case $1 in
+    release)
+        ./configure --enable-static COMMON_LDFLAGS="$COMMON_LDFLAGS" COMMON_CFLAGS="$COMMON_CFLAGS" CFLAGS="$COMMON_CFLAGS" && make clean
+        ;;
+esac
 make
 cd ..
 
@@ -60,9 +84,30 @@ export EXTRA_STATIC_CFLAGS
 export EXTRA_STATIC_LDFLAGS
 
 cd core/bgdc
+case $1 in
+    release)
+        make clean
+        ;;
+esac
 make
 cd -
 
 cd core/bgdi
+case $1 in
+    release)
+        make clean
+        ;;
+esac
 make
 cd -
+
+echo "### Copying files to bin folder ###"
+
+mkdir -p bin/$TARGET 2>/dev/null
+#cp 3rdparty/des-4.04b/libdes.so bin/$TARGET
+cp core/bgdi/src/bgdi bin/$TARGET
+cp core/bgdc/src/bgdc bin/$TARGET
+
+echo "### Build done! ###"
+
+exit 0
