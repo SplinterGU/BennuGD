@@ -51,6 +51,14 @@ static int audio_initialized = 0 ;
 
 /* --------------------------------------------------------------------------- */
 
+typedef struct __sound_handle
+{
+    void * hnd;
+    SDL_RWops * rwops;
+} __sound_handle ;
+
+/* --------------------------------------------------------------------------- */
+
 #define SOUND_FREQ              0
 #define SOUND_MODE              1
 #define SOUND_CHANNELS          2
@@ -116,6 +124,28 @@ static SDL_RWops *SDL_RWFromBGDFP( file *fp )
         rwops->hidden.unknown.data1 = fp;
     }
     return( rwops );
+}
+
+/* --------------------------------------------------------------------------- */
+
+static __sound_handle * sound_handle_alloc( file * fp ) {
+    
+    if ( !fp ) return NULL;
+
+    __sound_handle * h = malloc( sizeof( __sound_handle ) );
+    if ( !h ) return NULL;
+
+    __sound_handle->rwops = SDL_RWFromBGDFP( fp );
+    return h;
+}
+
+/* --------------------------------------------------------------------------- */
+
+static void sound_handle_free( __sound_handle * id ) {
+    if ( id ) {
+        if ( id->rwops ) SDL_FreeRW( id->rwops );
+        free( id );
+    }
 }
 
 /* --------------------------------------------------------------------------- */
@@ -232,14 +262,21 @@ static int load_song( const char * filename )
 
     if ( !( fp = file_open( filename, "rb0" ) ) ) return ( 0 );
 
-    if ( !( music = Mix_LoadMUS_RW( SDL_RWFromBGDFP( fp ) ) ) )
+    __sound_handle * h = sound_handle_alloc( fp );
+    if ( !h ) {
+        file_close( fp );
+        return( 0 );
+    }
+
+    if ( !( h->music = Mix_LoadMUS_RW( h->rwops ) ) )
     {
         file_close( fp );
+        sound_handle_free( h );
         fprintf( stderr, "Couldn't load %s: %s\n", filename, SDL_GetError() );
         return( 0 );
     }
 
-    return (( int )music );
+    return (( int )h );
 }
 
 /* --------------------------------------------------------------------------- */
@@ -260,9 +297,10 @@ static int load_song( const char * filename )
 
 static int play_song( int id, int loops )
 {
-    if ( audio_initialized && id )
+    __sound_handle * h = (__sound_handle *) id;
+    if ( audio_initialized && id && h->hnd )
     {
-        int result = Mix_PlayMusic(( Mix_Music * )id, loops );
+        int result = Mix_PlayMusic(( Mix_Music * )h->hnd, loops );
         if ( result == -1 ) fprintf( stderr, "%s", Mix_GetError() );
         return result;
     }
@@ -290,7 +328,8 @@ static int play_song( int id, int loops )
 
 static int fade_music_in( int id, int loops, int ms )
 {
-    if ( audio_initialized && id ) return( Mix_FadeInMusic(( Mix_Music * )id, loops, ms ) );
+    __sound_handle * h = (__sound_handle *) id;
+    if ( audio_initialized && id && h->hnd ) return( Mix_FadeInMusic(( Mix_Music * )h->hnd, loops, ms ) );
     return( -1 );
 }
 
@@ -334,10 +373,13 @@ static int fade_music_off( int ms )
 
 static int unload_song( int id )
 {
-    if ( audio_initialized && id )
+    __sound_handle * h = (__sound_handle *) id;
+    if ( audio_initialized && id && h->hnd )
     {
         if ( Mix_PlayingMusic() ) Mix_HaltMusic();
-        Mix_FreeMusic(( Mix_Music * )id );
+        Mix_FreeMusic(( Mix_Music * ) h->hnd );
+        file_close( h->rwops->hidden.unknown.data1 );
+        sound_handle_free( h );
     }
     return ( 0 ) ;
 }
@@ -487,13 +529,21 @@ static int load_wav( const char * filename )
 
     if ( !( fp = file_open( filename, "rb0" ) ) ) return ( 0 );
 
-    if ( !( music = Mix_LoadWAV_RW( SDL_RWFromBGDFP( fp ), 1 ) ) )
+    __sound_handle * h = sound_handle_alloc( fp );
+    if ( !h ) {
+        file_close( fp );
+        return( 0 );
+    }
+
+    if ( !( h->music = Mix_LoadWAV_RW( h->rwops, 0 ) ) )
     {
         file_close( fp );
+        sound_handle_free( h );
         fprintf( stderr, "Couldn't load %s: %s\n", filename, SDL_GetError() );
         return( 0 );
     }
-    return (( int )music );
+
+    return (( int )h );
 }
 
 /* --------------------------------------------------------------------------- */
@@ -516,7 +566,8 @@ static int load_wav( const char * filename )
 
 static int play_wav( int id, int loops, int channel )
 {
-    if ( audio_initialized && id ) return ( ( int ) Mix_PlayChannel( channel, ( Mix_Chunk * )id, loops ) );
+    __sound_handle * h = (__sound_handle *) id;
+    if ( audio_initialized && id && h->hnd ) return ( ( int ) Mix_PlayChannel( channel, ( Mix_Chunk * )h->hnd, loops ) );
     return ( -1 );
 }
 
@@ -538,7 +589,12 @@ static int play_wav( int id, int loops, int channel )
 
 static int unload_wav( int id )
 {
-    if ( audio_initialized && id ) Mix_FreeChunk(( Mix_Chunk * )id );
+    __sound_handle * h = (__sound_handle *) id;
+    if ( audio_initialized && id && h->hnd ) ´{
+        Mix_FreeChunk(( Mix_Chunk * ) h->hnd );
+        file_close( h->rwops->hidden.unknown.data1 );
+        sound_handle_free( h );
+    }
     return ( 0 );
 }
 
@@ -558,9 +614,9 @@ static int unload_wav( int id )
  *
  */
 
-static int stop_wav( int canal )
+static int stop_wav( int channel )
 {
-    if ( audio_initialized && Mix_Playing( canal ) ) return( Mix_HaltChannel( canal ) );
+    if ( audio_initialized && Mix_Playing( channel ) ) return( Mix_HaltChannel( channel ) );
     return ( -1 ) ;
 }
 
@@ -580,11 +636,11 @@ static int stop_wav( int canal )
  *
  */
 
-static int pause_wav( int canal )
+static int pause_wav( int channel )
 {
-    if ( audio_initialized && Mix_Playing( canal ) )
+    if ( audio_initialized && Mix_Playing( channel ) )
     {
-        Mix_Pause( canal );
+        Mix_Pause( channel );
         return ( 0 ) ;
     }
     return ( -1 ) ;
@@ -606,11 +662,11 @@ static int pause_wav( int canal )
  *
  */
 
-static int resume_wav( int canal )
+static int resume_wav( int channel )
 {
-    if ( audio_initialized && Mix_Playing( canal ) )
+    if ( audio_initialized && Mix_Playing( channel ) )
     {
-        Mix_Resume( canal );
+        Mix_Resume( channel );
         return ( 0 ) ;
     }
     return ( -1 ) ;
@@ -633,9 +689,9 @@ static int resume_wav( int canal )
  *
  */
 
-static int is_playing_wav( int canal )
+static int is_playing_wav( int channel )
 {
-    if ( audio_initialized ) return( Mix_Playing( canal ) );
+    if ( audio_initialized ) return( Mix_Playing( channel ) );
     return ( 0 );
 }
 
@@ -656,14 +712,15 @@ static int is_playing_wav( int canal )
  *
  */
 
-static int  set_wav_volume( int sample, int volume )
+static int set_wav_volume( int sample, int volume )
 {
     if ( !audio_initialized ) return ( -1 );
 
     if ( volume < 0 ) volume = 0;
     if ( volume > 128 ) volume = 128;
 
-    if ( sample ) return( Mix_VolumeChunk(( Mix_Chunk * )sample, volume ) );
+    __sound_handle * h = (__sound_handle *) sample;
+    if ( sample && h->hnd ) return( Mix_VolumeChunk(( Mix_Chunk * )h->hnd, volume ) );
 
     return -1 ;
 }
@@ -685,14 +742,14 @@ static int  set_wav_volume( int sample, int volume )
  *
  */
 
-static int  set_channel_volume( int canal, int volume )
+static int set_channel_volume( int channel, int volume )
 {
     if ( !audio_initialized && sound_init() ) return ( -1 );
 
     if ( volume < 0 ) volume = 0;
     if ( volume > 128 ) volume = 128;
 
-    return( Mix_Volume( canal, volume ) );
+    return( Mix_Volume( channel, volume ) );
 }
 
 /* --------------------------------------------------------------------------- */
@@ -711,10 +768,10 @@ static int  set_channel_volume( int canal, int volume )
  *
  */
 
-static int reserve_channels( int canales )
+static int reserve_channels( int channels )
 {
     if ( !audio_initialized && sound_init() ) return ( -1 );
-    return Mix_ReserveChannels( canales );
+    return Mix_ReserveChannels( channels );
 }
 
 /* --------------------------------------------------------------------------- */
@@ -731,13 +788,13 @@ static int reserve_channels( int canales )
  *
  */
 
-static int set_panning( int canal, int left, int right )
+static int set_panning( int channel, int left, int right )
 {
     if ( !audio_initialized && sound_init() ) return ( -1 );
 
-    if ( Mix_Playing( canal ) )
+    if ( Mix_Playing( channel ) )
     {
-        Mix_SetPanning( canal, ( Uint8 )left, ( Uint8 )right );
+        Mix_SetPanning( channel, ( Uint8 )left, ( Uint8 )right );
         return ( 0 ) ;
     }
     return ( -1 ) ;
@@ -757,13 +814,13 @@ static int set_panning( int canal, int left, int right )
  *
  */
 
-static int set_position( int canal, int angle, int dist )
+static int set_position( int channel, int angle, int dist )
 {
     if ( !audio_initialized && sound_init() ) return ( -1 );
 
-    if ( Mix_Playing( canal ) )
+    if ( Mix_Playing( channel ) )
     {
-        Mix_SetPosition( canal, ( Sint16 )angle, ( Uint8 )dist );
+        Mix_SetPosition( channel, ( Sint16 )angle, ( Uint8 )dist );
         return ( 0 ) ;
     }
     return ( -1 ) ;
@@ -784,13 +841,13 @@ static int set_position( int canal, int angle, int dist )
  *
  */
 
-static int set_distance( int canal, int dist )
+static int set_distance( int channel, int dist )
 {
     if ( !audio_initialized && sound_init() ) return ( -1 );
 
-    if ( Mix_Playing( canal ) )
+    if ( Mix_Playing( channel ) )
     {
-        Mix_SetDistance( canal, ( Uint8 )dist );
+        Mix_SetDistance( channel, ( Uint8 )dist );
         return ( 0 ) ;
     }
 
@@ -810,13 +867,13 @@ static int set_distance( int canal, int dist )
  *
  */
 
-static int reverse_stereo( int canal, int flip )
+static int reverse_stereo( int channel, int flip )
 {
     if ( !audio_initialized && sound_init() ) return ( -1 );
 
-    if ( Mix_Playing( canal ) )
+    if ( Mix_Playing( channel ) )
     {
-        Mix_SetReverseStereo( canal, flip );
+        Mix_SetReverseStereo( channel, flip );
         return ( 0 ) ;
     }
 
