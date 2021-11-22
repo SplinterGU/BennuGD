@@ -135,16 +135,16 @@ static __sound_handle * sound_handle_alloc( file * fp ) {
     __sound_handle * h = malloc( sizeof( __sound_handle ) );
     if ( !h ) return NULL;
 
-    __sound_handle->rwops = SDL_RWFromBGDFP( fp );
+    h->rwops = SDL_RWFromBGDFP( fp );
     return h;
 }
 
 /* --------------------------------------------------------------------------- */
 
-static void sound_handle_free( __sound_handle * id ) {
-    if ( id ) {
-        if ( id->rwops ) SDL_FreeRW( id->rwops );
-        free( id );
+static void sound_handle_free( __sound_handle * h ) {
+    if ( h ) {
+        if ( h->rwops ) SDL_FreeRW( h->rwops );
+        free( h );
     }
 }
 
@@ -255,7 +255,6 @@ static void sound_close()
 
 static int load_song( const char * filename )
 {
-    Mix_Music *music = NULL;
     file      *fp;
 
     if ( !audio_initialized && sound_init() ) return ( 0 );
@@ -268,7 +267,7 @@ static int load_song( const char * filename )
         return( 0 );
     }
 
-    if ( !( h->music = Mix_LoadMUS_RW( h->rwops ) ) )
+    if ( !( h->hnd = ( void * ) Mix_LoadMUS_RW( h->rwops ) ) )
     {
         file_close( fp );
         sound_handle_free( h );
@@ -522,7 +521,6 @@ static int set_song_volume( int volume )
 
 static int load_wav( const char * filename )
 {
-    Mix_Chunk *music = NULL;
     file      *fp;
 
     if ( !audio_initialized && sound_init() ) return ( 0 );
@@ -535,7 +533,7 @@ static int load_wav( const char * filename )
         return( 0 );
     }
 
-    if ( !( h->music = Mix_LoadWAV_RW( h->rwops, 0 ) ) )
+    if ( !( h->hnd = ( void * ) Mix_LoadWAV_RW( h->rwops, 0 ) ) )
     {
         file_close( fp );
         sound_handle_free( h );
@@ -590,7 +588,7 @@ static int play_wav( int id, int loops, int channel )
 static int unload_wav( int id )
 {
     __sound_handle * h = (__sound_handle *) id;
-    if ( audio_initialized && id && h->hnd ) ´{
+    if ( audio_initialized && id && h->hnd ) {
         Mix_FreeChunk(( Mix_Chunk * ) h->hnd );
         file_close( h->rwops->hidden.unknown.data1 );
         sound_handle_free( h );

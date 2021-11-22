@@ -39,67 +39,84 @@ for i in $(find modules -name '*.a'|grep -v mod_mathi); do echo -n "-L$PWD/$(dir
 
 echo "#### building necessaries files ####"
 
-cd 3rdparty/des-4.04b
+cd 3rdparty/des-4.04b > /dev/null 2> /dev/null
 case $1 in
     release)
         make -f Makefile.uni clean
         ;;
 esac
 make -f Makefile.uni
-cd -
+cd - > /dev/null 2> /dev/null
 
 COMMON_LDFLAGS="-L$PWD/3rdparty/des-4.04b -ldes"
 COMMON_CFLAGS="-I$PWD/3rdparty/des-4.04b -DUSE_LIBDES"
 
-cd core
+EXTRA_STATIC_CFLAGS="$(sdl-config --cflags)"
+export EXTRA_STATIC_CFLAGS
+
+EXTRA_STATIC_LDFLAGS=$(ldflags)
+export EXTRA_STATIC_LDFLAGS
+
+cd core > /dev/null 2> /dev/null
 ./make-fakedl.sh
 
 case $1 in
     release)
         ./configure --enable-static COMMON_LDFLAGS="$COMMON_LDFLAGS" COMMON_CFLAGS="$COMMON_CFLAGS" CFLAGS="$COMMON_CFLAGS" && make clean
-        cd bgdrtm && make clean
-        cd -
+        make clean
         ;;
 esac
 
-cd bgdrtm
+cd bgdrtm > /dev/null 2> /dev/null
 make
-cd -
+if [ $? -ne 0 ]; then
+    echo "*** ABORT ***"
+    exit 1
+fi
+cd - > /dev/null 2> /dev/null
 
-cd ../modules
+cd ../modules > /dev/null 2> /dev/null
 case $1 in
     release)
         ./configure --enable-static COMMON_LDFLAGS="$COMMON_LDFLAGS" COMMON_CFLAGS="$COMMON_CFLAGS" CFLAGS="$COMMON_CFLAGS" && make clean
         ;;
 esac
 make
-cd ..
-
-### sdl-config hack for libjoy
+if [ $? -ne 0 ]; then
+    echo "*** ABORT ***"
+    exit 1
+fi
+cd .. > /dev/null 2> /dev/null
 
 EXTRA_STATIC_CFLAGS="$(cflags) $(sdl-config --cflags)"
-EXTRA_STATIC_LDFLAGS=$(ldflags)
 
-export EXTRA_STATIC_CFLAGS
-export EXTRA_STATIC_LDFLAGS
+rm -Rf core/bgdi/src/bgdi core/bgdc/src/bgdc
 
-cd core/bgdc
+cd core/bgdc > /dev/null 2> /dev/null
 case $1 in
     release)
         make clean
         ;;
 esac
 make
-cd -
+if [ $? -ne 0 ]; then
+    echo "*** ABORT ***"
+    exit 1
+fi
+cd - > /dev/null 2> /dev/null
 
-cd core/bgdi
+cd core/bgdi > /dev/null 2> /dev/null
 case $1 in
     release)
         make clean
         ;;
 esac
 make
-cd -
+if [ $? -ne 0 ]; then
+    echo "*** ABORT ***"
+    exit 1
+fi
+cd - > /dev/null 2> /dev/null
 
 echo "### Copying files to bin folder ###"
 
