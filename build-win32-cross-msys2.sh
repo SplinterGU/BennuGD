@@ -145,7 +145,7 @@ mkdir -p bin/$TARGET 2>/dev/null
 cp core/bgdi/src/.libs/bgdi.exe bin/$TARGET
 cp core/bgdc/src/.libs/bgdc.exe bin/$TARGET
 cp core/bgdrtm/src/.libs/libbgdrtm.dll bin/$TARGET
-# cp modules/*/.libs/*.dll bin/$TARGET
+cp modules/*/.libs/*.dll bin/$TARGET
 cp tools/moddesc/.libs/moddesc.exe bin/$TARGET
 
 strip bin/$TARGET/*
