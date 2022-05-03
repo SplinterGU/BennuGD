@@ -5310,7 +5310,8 @@ mingw* | pw32*)
   # unless we find 'file', for example because we are cross-compiling.
   # func_win32_libid assumes BSD nm, so disallow it if using MS dumpbin.
   if ( test "$lt_cv_nm_interface" = "BSD nm" && file / ) >/dev/null 2>&1; then
-    lt_cv_deplibs_check_method='file_magic ^x86 archive import|^x86 DLL'
+    #lt_cv_deplibs_check_method='file_magic ^x86 archive import|^x86 DLL'
+    lt_cv_deplibs_check_method='pass_all'
     lt_cv_file_magic_cmd='func_win32_libid'
   else
     # Keep this pattern in sync with the one in func_win32_libid.
@@ -11576,8 +11577,12 @@ fi
 
 case "$target_os" in
     mingw32|mingw32msvc)
-	    CFLAGS+=" -DWIN32 -D_WIN32 "
-	    ;;
+	  CFLAGS+=" -DWIN32 -D_WIN32 "
+    INCLUDES="-I/mingw32/include"
+    COMMON_CFLAGS="$COMMON_CFLAGS $CFLAGS"
+    COMMON_LDFLAGS="$COMMON_LDFLAGS $LDFLAGS -L/mingw32/lib -lshlwapi -lkernel32 -Wl,--enable-auto-import"
+	  COMMON_CFLAGS="$COMMON_CFLAGS $INCLUDES -DTARGET_WIN32 -DWIN32 -D_WIN32"
+	  ;;
 
     linux-gnu*)
           case "$target_cpu" in

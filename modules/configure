@@ -4316,7 +4316,8 @@ mingw* | pw32*)
   # unless we find 'file', for example because we are cross-compiling.
   # func_win32_libid assumes BSD nm, so disallow it if using MS dumpbin.
   if ( test "$lt_cv_nm_interface" = "BSD nm" && file / ) >/dev/null 2>&1; then
-    lt_cv_deplibs_check_method='file_magic ^x86 archive import|^x86 DLL'
+    # lt_cv_deplibs_check_method='file_magic ^x86 archive import|^x86 DLL'
+    lt_cv_deplibs_check_method='pass_all'
     lt_cv_file_magic_cmd='func_win32_libid'
   else
     # Keep this pattern in sync with the one in func_win32_libid.
@@ -11301,10 +11302,13 @@ case "$target_os" in
 	    ;;
 
     mingw32)
-	    COMMON_CFLAGS="$COMMON_CFLAGS $CFLAGS -I/usr/local/include -DTARGET_WIN32 -DWIN32 -D_WIN32 -DUSE_LIBDES -I`pwd`/../3rdparty/des-4.04b"
-	    COMMON_LDFLAGS="$COMMON_LDFLAGS $LDFLAGS -L`pwd`/../3rdparty/des-4.04b -ldes -L/usr/local/lib -lshlwapi -lkernel32 -Wl,--enable-auto-import"
-        LM=-lm
-        USE_OPENSSL=no
+      INCLUDES="-I/mingw32/include"
+      COMMON_CFLAGS="$COMMON_CFLAGS $CFLAGS"
+      COMMON_LDFLAGS="$COMMON_LDFLAGS $LDFLAGS -L/mingw32/lib -lshlwapi -lkernel32 -Wl,--enable-auto-import -Wl,-rpath=."
+	    COMMON_CFLAGS="$COMMON_CFLAGS $INCLUDES -DTARGET_WIN32 -DWIN32 -D_WIN32"
+	    LIBSSL="crypto"
+      USE_OPENSSL=yes
+      LM=-lm
 	    ;;
 
     mingw32msvc)
