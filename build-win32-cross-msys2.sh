@@ -148,7 +148,23 @@ cp core/bgdrtm/src/.libs/libbgdrtm.dll bin/$TARGET
 cp modules/*/.libs/*.dll bin/$TARGET
 cp tools/moddesc/.libs/moddesc.exe bin/$TARGET
 
+echo "### Stripping files in bin folder ###"
+
 strip bin/$TARGET/*
+
+echo "### Copying extra libraries to bin folder ###"
+
+cp $WIN32CROSS/bin/zlib1.dll bin/$TARGET
+cp $WIN32CROSS/bin/libcrypto-1_1.dll bin/$TARGET
+cp $WIN32CROSS/bin/libgcc_s_dw2-1.dll bin/$TARGET
+cp $WIN32CROSS/bin/libmad-0.dll bin/$TARGET
+cp $WIN32CROSS/bin/libogg-0.dll bin/$TARGET
+cp $WIN32CROSS/bin/libpng16-16.dll bin/$TARGET
+cp $WIN32CROSS/bin/libSDL_mixer-1-2-0.dll bin/$TARGET
+cp $WIN32CROSS/bin/libvorbis-0.dll bin/$TARGET
+cp $WIN32CROSS/bin/libvorbisfile-3.dll bin/$TARGET
+cp $WIN32CROSS/bin/libwinpthread-1.dll bin/$TARGET
+cp $WIN32CROSS/bin/SDL.dll bin/$TARGET
 
 echo "### Build done! ###"
 
