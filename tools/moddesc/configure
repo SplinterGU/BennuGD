@@ -11577,11 +11577,10 @@ fi
 
 case "$target_os" in
     mingw32|mingw32msvc)
-	  CFLAGS+=" -DWIN32 -D_WIN32 "
     INCLUDES="-I/mingw32/include"
     COMMON_CFLAGS="$COMMON_CFLAGS $CFLAGS"
     COMMON_LDFLAGS="$COMMON_LDFLAGS $LDFLAGS -L/mingw32/lib -lshlwapi -lkernel32 -Wl,--enable-auto-import"
-	  COMMON_CFLAGS="$COMMON_CFLAGS $INCLUDES -DTARGET_WIN32 -DWIN32 -D_WIN32"
+	  COMMON_CFLAGS="$COMMON_CFLAGS $INCLUDES -DTARGET_WIN32 -DWIN32 -D_WIN32 "
 	  ;;
 
     linux-gnu*)
