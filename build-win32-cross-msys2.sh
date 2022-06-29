@@ -37,7 +37,7 @@ DLLTOOL="dlltool"
 OBJDUMP="objdump"
 WINDRES="windres"
 
-CFLAGS="-O2 -I${WIN32CROSS}/include -I${WIN32CROSS}/include/libxml2 -I${WIN32CROSS}/include/SDL -Wl,-rpath=."
+CFLAGS="-I${WIN32CROSS}/include -I${WIN32CROSS}/include/SDL -Wl,-rpath=."
 LDFLAGS="-L${WIN32CROSS}/lib"
 PKG_CONFIG="${WIN32CROSS}/bin/pkg-config"
 
@@ -89,7 +89,7 @@ echo "### Building BennuGD Core ###"
 cd core
 case $1 in
     release)
-        ./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared PKG_CONFIG_LIBDIR=${PKG_CONFIG_PATH} && make clean && make
+        ./configure --enable-debug --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared PKG_CONFIG_LIBDIR=${PKG_CONFIG_PATH} && make clean && make
         ;;
 
     *)
@@ -107,7 +107,7 @@ echo "### Building BennuGD Modules ###"
 cd modules
 case $1 in
     release)
-        ./configure --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared PKG_CONFIG_LIBDIR=${PKG_CONFIG_PATH} && make clean && make
+        ./configure --enable-debug --prefix=${PREFIX} --target=${TARGET} --host=${HOST} --build=${BUILD} --enable-shared PKG_CONFIG_LIBDIR=${PKG_CONFIG_PATH} && make clean && make
         ;;
 
     *)
@@ -140,31 +140,32 @@ cd -
 
 echo "### Copying files to bin folder ###"
 
-mkdir -p bin/$TARGET 2>/dev/null
+DEST_DIR=deploy/BennuGD
+# mkdir -p bin/$TARGET 2>/dev/null
+mkdir -p $DEST_DIR 2>/dev/null
 # cp 3rdparty/des-4.04b/libdes.dll bin/$TARGET
-cp core/bgdi/src/.libs/bgdi.exe bin/$TARGET
-cp core/bgdc/src/.libs/bgdc.exe bin/$TARGET
-cp core/bgdrtm/src/.libs/libbgdrtm.dll bin/$TARGET
-cp modules/*/.libs/*.dll bin/$TARGET
-cp tools/moddesc/.libs/moddesc.exe bin/$TARGET
+cp core/bgdi/src/.libs/bgdi.exe $DEST_DIR
+cp core/bgdc/src/.libs/bgdc.exe $DEST_DIR
+cp core/bgdrtm/src/.libs/libbgdrtm.dll $DEST_DIR
+cp modules/*/.libs/*.dll $DEST_DIR
+cp tools/moddesc/.libs/moddesc.exe $DEST_DIR
 
-echo "### Stripping files in bin folder ###"
-
-strip bin/$TARGET/*
+# echo "### Stripping files in bin folder ###"
+# strip $DEST_DIR/*
 
 echo "### Copying extra libraries to bin folder ###"
 
-cp $WIN32CROSS/bin/zlib1.dll bin/$TARGET
-cp $WIN32CROSS/bin/libcrypto-1_1.dll bin/$TARGET
-cp $WIN32CROSS/bin/libgcc_s_dw2-1.dll bin/$TARGET
-cp $WIN32CROSS/bin/libmad-0.dll bin/$TARGET
-cp $WIN32CROSS/bin/libogg-0.dll bin/$TARGET
-cp $WIN32CROSS/bin/libpng16-16.dll bin/$TARGET
-cp $WIN32CROSS/bin/libSDL_mixer-1-2-0.dll bin/$TARGET
-cp $WIN32CROSS/bin/libvorbis-0.dll bin/$TARGET
-cp $WIN32CROSS/bin/libvorbisfile-3.dll bin/$TARGET
-cp $WIN32CROSS/bin/libwinpthread-1.dll bin/$TARGET
-cp $WIN32CROSS/bin/SDL.dll bin/$TARGET
+cp $WIN32CROSS/bin/zlib1.dll $DEST_DIR
+cp $WIN32CROSS/bin/libcrypto-1_1.dll $DEST_DIR
+cp $WIN32CROSS/bin/libgcc_s_dw2-1.dll $DEST_DIR
+cp $WIN32CROSS/bin/libmad-0.dll $DEST_DIR
+cp $WIN32CROSS/bin/libogg-0.dll $DEST_DIR
+cp $WIN32CROSS/bin/libpng16-16.dll $DEST_DIR
+cp $WIN32CROSS/bin/libSDL_mixer-1-2-0.dll $DEST_DIR
+cp $WIN32CROSS/bin/libvorbis-0.dll $DEST_DIR
+cp $WIN32CROSS/bin/libvorbisfile-3.dll $DEST_DIR
+cp $WIN32CROSS/bin/libwinpthread-1.dll $DEST_DIR
+cp $WIN32CROSS/bin/SDL.dll $DEST_DIR
 
 echo "### Build done! ###"
 
