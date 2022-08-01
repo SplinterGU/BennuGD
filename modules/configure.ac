@@ -128,6 +128,7 @@ fi
 dnl librerias para todos
 
 dnl Check for SDL library
+
 PKG_CHECK_MODULES([SDL], [sdl >= 1.2])
 PKG_CHECK_MODULES(ZLIB, [ zlib ])
 PKG_CHECK_MODULES([PNG], [libpng >= 1.2])
