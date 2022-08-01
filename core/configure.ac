@@ -1,4 +1,4 @@
-AC_INIT([bennu],[1.1.0])
+AC_INIT([bennu],[1.0.0])
 
 LT_INIT([disable-static])
 
