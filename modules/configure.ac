@@ -128,10 +128,10 @@ fi
 dnl librerias para todos
 
 dnl Check for SDL library
-PKG_CHECK_MODULES(SDL, [sdl])
-PKG_CHECK_MODULES(SDL_mixer, [SDL_mixer])
+PKG_CHECK_MODULES(SDL, [sdl >= 1.2])
 PKG_CHECK_MODULES(ZLIB, [ zlib ])
 PKG_CHECK_MODULES([PNG], [libpng >= 1.2])
+PKG_CHECK_MODULES(SDL_mixer, [SDL_mixer])
 
 if test "$USE_OPENSSL" = "yes"; then
 AC_CHECK_LIB($LIBSSL, DES_ecb_encrypt, [AC_CHECK_HEADER(openssl/des.h,CRYPT_LDFLAGS=-l$LIBSSL,)], [AC_MSG_ERROR($LIBSSL not found!)])
